@@ -30,10 +30,9 @@
 #include <rw/math/MetricUtil.hpp>
 #include <rw/math/MetricFactory.hpp>
 
-#include <iostream>
+#include <sstream>
 #include <iomanip>
 #include <string>
-
 
 using namespace rw::math;
 

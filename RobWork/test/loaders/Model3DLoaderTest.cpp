@@ -17,24 +17,6 @@
 
 
 #include "../TestSuiteConfig.hpp"
-#include <rw/models/WorkCell.hpp>
-#include <rw/models/SerialDevice.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Rotation3D.hpp>
-#include <rw/trajectory/Path.hpp>
 
-
-
-#include <cmath>
-
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
-
-using namespace rw::trajectory;
-using namespace rw::loaders;
-
-BOOST_AUTO_TEST_CASE( OBJLoaderTest )
-{
-
+BOOST_AUTO_TEST_CASE( OBJLoaderTest ) {
 }

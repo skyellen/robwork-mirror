@@ -19,7 +19,6 @@
 
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/RPY.hpp>
-#include <rwlibs/algorithms/RANSACModel.hpp>
 #include <rwlibs/algorithms/LineModel.hpp>
 #include <rwlibs/algorithms/StructuredLineModel.hpp>
 #include <rwlibs/algorithms/PlaneModel.hpp>

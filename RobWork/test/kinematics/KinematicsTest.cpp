@@ -23,14 +23,11 @@
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/math/RPY.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/kinematics/Stateless.hpp>
 #include <rw/kinematics/StatelessData.hpp>
 
-#include <boost/foreach.hpp>
-
-using namespace boost::unit_test;
+//#include <boost/foreach.hpp>
 
 using namespace rw::kinematics;
 using namespace rw::math;

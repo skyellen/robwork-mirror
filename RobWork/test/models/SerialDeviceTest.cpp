@@ -35,14 +35,11 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/RPY.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
-#include <rw/math/Math.hpp>
 #include <rw/math/MetricFactory.hpp>
 
-using namespace rw;
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::models;
-using namespace boost::numeric::ublas;
 
 namespace
 {

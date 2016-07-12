@@ -18,8 +18,6 @@
 #include "../TestSuiteConfig.hpp"
 
 #include <rw/common/StringUtil.hpp>
-#include <boost/foreach.hpp>
-#include <iostream>
 
 using namespace rw::common;
 

@@ -20,32 +20,27 @@
  */
 
 #include <iostream>
-#include <vector>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
-#include <sys/stat.h>
-
-#include <rw/rw.hpp>
-
-USE_ROBWORK_NAMESPACE
-using namespace std;
-using namespace robwork;
-
 
 #include "../TestSuiteConfig.hpp"
 
 #include <boost/test/unit_test.hpp>
 
+#include <rw/kinematics/FKTable.hpp>
+#include <rw/math/Q.hpp>
+#include <rw/models/Device.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 #include <rwsimlibs/ode/ODESimulator.hpp>
 #include <rwsim/control/SerialDeviceController.hpp>
 
-using namespace rwsim::loaders;
-using namespace rwsim::simulator;
-using namespace rwsim::dynamics;
-using namespace rwsim::control;
+using rw::common::ownedPtr;
+using namespace rw::kinematics;
+using rw::math::Q;
+using rw::models::Device;
+using rwsim::loaders::DynamicWorkCellLoader;
+using rwsim::simulator::ODESimulator;
+using rwsim::dynamics::DynamicWorkCell;
+using rwsim::control::SerialDeviceController;
 
 BOOST_AUTO_TEST_CASE( ODEControlDeviceTest )
 {

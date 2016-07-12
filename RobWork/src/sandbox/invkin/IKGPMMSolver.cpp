@@ -18,10 +18,11 @@
 
 #include "IKGPMMSolver.hpp"
 
+#include <rw/kinematics/FKRange.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
-#include <rw/common/Property.hpp>
-#include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Quaternion.hpp>
+#include <rw/models/JointDevice.hpp>
+#include <rw/models/TreeDevice.hpp>
 
 using namespace rwlibs::algorithms;
 

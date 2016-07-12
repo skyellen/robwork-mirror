@@ -17,17 +17,13 @@
 
 
 #include "../TestSuiteConfig.hpp"
-
-#include <rw/math/EAA.hpp>
+/*
 
 #include <rw/trajectory/Path.hpp>
 #include <rw/trajectory/TrajectoryFactory.cpp>
-#include <rw/trajectory/CubicSplineFactory.hpp>
 #include <rw/math/Q.hpp>
-#include <rw/math/Constants.hpp>
 
 #include <rw/models/WorkCell.hpp>
-#include <rw/models/SerialDevice.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 
 #include <sandbox/AsciiPathSaver.hpp>
@@ -40,7 +36,7 @@ using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::loaders;
 using namespace rw::trajectory;
-
+*/
 BOOST_AUTO_TEST_CASE( PathTest ){
 	/*
     BOOST_MESSAGE("- Testing Path");

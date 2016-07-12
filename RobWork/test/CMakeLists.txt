@@ -97,7 +97,7 @@ TARGET_LINK_LIBRARIES( rw_invkin-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_invkin-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_invkin-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_invkin-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( rw_loader-test ${DO_EXCLUDE} test-main.cpp loaders/TULLoaderTest.cpp loaders/Model3DLoaderTest.cpp)       
+ADD_EXECUTABLE( rw_loader-test ${DO_EXCLUDE} test-main.cpp loaders/TULLoaderTest.cpp)       
 TARGET_LINK_LIBRARIES( rw_loader-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_loader-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_loader-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_loader-test ${TEST_DEPENDENCIES})

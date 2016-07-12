@@ -17,30 +17,13 @@
 
 #include "../TestSuiteConfig.hpp"
 
-#include <rw/geometry/GeometryUtil.hpp>
 #include <rw/geometry/TriangleUtil.hpp>
 #include <rw/geometry/Box.hpp>
-#include <rw/geometry/Cone.hpp>
-#include <rw/geometry/Cylinder.hpp>
-#include <rw/geometry/Pyramid.hpp>
-#include <rw/geometry/Sphere.hpp>
-#include <rw/geometry/Tube.hpp>
 #include <rw/geometry/Plane.hpp>
 #include <rw/math/Vector3D.hpp>
 
-#if RW_HAVE_ASSIMP
-#include <rw/loaders/model3d/LoaderAssimp.hpp>
-using namespace rw::graphics;
-#else
-#include <rw/loaders/model3d/STLFile.hpp>
-#endif
-
-using namespace rw::common;
 using namespace rw::geometry;
-using namespace rw::kinematics;
-using namespace rw::loaders;
-using namespace rw::math;
-
+using rw::math::Vector3D;
 
 BOOST_AUTO_TEST_CASE( DivideTriMeshBox ){
 	Box box;

@@ -19,11 +19,14 @@
 #include "BasicGPMM.hpp"
 
 #include <rw/common/macros.hpp>
+#include <rw/kinematics/FKRange.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Jacobian.hpp>
+#include <rw/models/TreeDevice.hpp>
+#include <rw/models/JointDevice.hpp>
 
-#include <boost/numeric/ublas/matrix.hpp>
+//#include <boost/numeric/ublas/matrix.hpp>
 
 using namespace rw::math;
 using namespace rw::models;

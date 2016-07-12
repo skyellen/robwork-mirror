@@ -18,38 +18,34 @@
 
 #include "../TestSuiteConfig.hpp"
 
-#include <rw/proximity/CollisionStrategy.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
-#include <rw/proximity/CollisionSetup.hpp>
-#include <rw/proximity/BasicFilterStrategy.hpp>
-
+#include <rw/geometry/DistanceUtil.hpp>
+#include <rw/geometry/Geometry.hpp>
+#include <rw/kinematics/StateStructure.hpp>
+#include <rw/kinematics/FixedFrame.hpp>
+#include <rw/math/Random.hpp>
+#include <rw/math/Math.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/loaders/GeometryFactory.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/models/Device.hpp>
-#include <rw/kinematics/StateStructure.hpp>
-#include <rw/kinematics/FixedFrame.hpp>
-#include <rw/kinematics/MovableFrame.hpp>
-#include <rw/loaders/WorkCellLoader.hpp>
-#include <rw/pathplanning/PlannerConstraint.hpp>
-#include <boost/foreach.hpp>
-#include <boost/bind.hpp>
-#include <rw/geometry/DistanceUtil.hpp>
+#include <rw/proximity/DistanceStrategy.hpp>
 
 #if RW_HAVE_PQP == 1
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
+using rwlibs::proximitystrategies::ProximityStrategyPQP;
 #endif
 
-#include <rw/proximity/rwstrategy/ProximityStrategyRW.hpp>
+//#include <rw/proximity/rwstrategy/ProximityStrategyRW.hpp>
+
+#include <boost/foreach.hpp>
 #include <string>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
+using rw::common::ownedPtr;
+using namespace rw::geometry;
+using namespace rw::kinematics;
+using namespace rw::math;
+using rw::proximity::DistanceStrategy;
 
 using namespace boost::unit_test;
-using namespace rwlibs::proximitystrategies;
 
 namespace
 {
@@ -87,8 +83,8 @@ void testStrategy0(const DistanceStrategy::Ptr& strategy)
 
     // check if distance between z-rays correspond to distance between cylinders
     for(int i=0; i<10000; i++){
-        Vector3D<> v1( Math::ran(-3,3), Math::ran(-3,3), Math::ran(-3,3));
-        Vector3D<> v2( Math::ran(-3,3), Math::ran(-3,3), Math::ran(-3,3));
+        Vector3D<> v1( Random::ran(-3,3), Random::ran(-3,3), Random::ran(-3,3));
+        Vector3D<> v2( Random::ran(-3,3), Random::ran(-3,3), Random::ran(-3,3));
 
         Rotation3D<> rot1 = Math::ranRotation3D<double>();
         Rotation3D<> rot2 = Math::ranRotation3D<double>();

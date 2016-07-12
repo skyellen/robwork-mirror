@@ -17,21 +17,16 @@
 
 #include "../TestSuiteConfig.hpp"
 
-#include <boost/test/unit_test.hpp>
-#include <rw/loaders/WorkCellLoader.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/models/Device.hpp>
+#include <rw/math/MetricUtil.hpp>
+#include <rw/trajectory/Trajectory.hpp>
+#include <rw/trajectory/TrajectorySequence.hpp>
+#include <rw/trajectory/RampInterpolator.hpp>
+#include <rw/trajectory/CubicSplineFactory.hpp>
+#include <rw/trajectory/LinearInterpolator.hpp>
 
-#include <rw/trajectory.hpp>
-
-#include <fstream>
-
-using namespace rw;
-using namespace rw::loaders;
-using namespace rw::math;
-using namespace rw::models;
-using namespace rw::trajectory;
 using namespace rw::common;
+using namespace rw::math;
+using namespace rw::trajectory;
 
 namespace {
     bool isContinues(QTrajectory& traj, double stepSize){

@@ -20,11 +20,9 @@
 #include <rw/math/Quaternion.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
-#include <rw/math/Transform3D.hpp>
 #include <rw/math/RPY.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/math/MetricUtil.hpp>
-#include <iostream>
 #include <rw/common/Timer.hpp>
 #include <math.h>
 #include <boost/math/special_functions/sign.hpp>

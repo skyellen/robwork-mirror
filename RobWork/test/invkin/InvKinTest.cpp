@@ -17,16 +17,20 @@
 
 #include "../TestSuiteConfig.hpp"
 
-#include <rw/rw.hpp>
+#include <rw/invkin.hpp>
+#include <rw/loaders/WorkCellLoader.hpp>
+#include <rw/models/DHParameterSet.hpp>
+#include <rw/models/SerialDevice.hpp>
+#include <rw/models/TreeDevice.hpp>
 
 #include <string>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
-
-using namespace boost::unit_test;
-//using namespace rwlibs::algorithms;
-using namespace rw::loaders;
+using rw::common::ownedPtr;
+using namespace rw::invkin;
+using rw::kinematics::State;
+using rw::loaders::WorkCellLoader;
+using namespace rw::math;
+using namespace rw::models;
 
 typedef IterativeIK::Ptr (* MakeIKSolver)(SerialDevice*, State&);
 typedef IterativeMultiIK::Ptr (* MakeMultiIKSolver)(TreeDevice*, State&);

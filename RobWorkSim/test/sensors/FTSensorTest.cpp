@@ -24,19 +24,22 @@
 #include <RobWorkSimConfig.hpp>
 #ifdef RWSIM_HAVE_ODE
 
-#include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
-
-//#include <rws/rws.hpp>
-#include <rwsim/rwsim.hpp>
+#include <rwsim/dynamics/KinematicBody.hpp>
+#include <rwsim/dynamics/RigidBody.hpp>
+#include <rwsim/loaders/DynamicWorkCellLoader.hpp>
+#include <rwsim/sensor/SimulatedFTSensor.hpp>
 #include <rwsimlibs/ode/ODESimulator.hpp>
 
-USE_ROBWORK_NAMESPACE
-RWSIM_USE_RWP_NAMESPACE
-using namespace std;
-using namespace robwork;
-using namespace rwp;
+using rw::common::ownedPtr;
+using rw::kinematics::State;
+using rw::math::Vector3D;
+using namespace rw::trajectory;
+
+using namespace rwsim::dynamics;
+using rwsim::loaders::DynamicWorkCellLoader;
+using rwsim::sensor::SimulatedFTSensor;
+using rwsim::simulator::ODESimulator;
 
 BOOST_AUTO_TEST_CASE( FTSensorTest )
 {

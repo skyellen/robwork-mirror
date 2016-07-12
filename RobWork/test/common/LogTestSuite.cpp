@@ -20,11 +20,9 @@
 #include <rw/common/Log.hpp>
 #include <rw/common/LogStreamWriter.hpp>
 #include <rw/common/LogBufferedMsg.hpp>
-#include <rw/common/LogBufferedChar.hpp>
+//#include <rw/common/LogBufferedChar.hpp>
 #include <rw/common/macros.hpp>
 #include <sstream>
-
-#include <boost/shared_ptr.hpp>
 
 #include <iostream>
 

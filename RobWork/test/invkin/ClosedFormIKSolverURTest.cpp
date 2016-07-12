@@ -22,11 +22,11 @@
 #include <rw/models/WorkCell.hpp>
 #include <rw/invkin/ClosedFormIKSolverUR.hpp>
 
-using namespace rw::kinematics;
-using namespace rw::loaders;
+using rw::kinematics::State;
+using rw::loaders::WorkCellLoader;
 using namespace rw::math;
 using namespace rw::models;
-using namespace rw::invkin;
+using rw::invkin::ClosedFormIKSolverUR;
 
 BOOST_AUTO_TEST_CASE( ClosedFormIKSolverURTest ){
 	static const double EPS = 1e-14;

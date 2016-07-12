@@ -18,15 +18,15 @@
 
 #include "../TestSuiteConfig.hpp"
 #include "MultivariateNormalDistribution.hpp"
-#include <rw/models.hpp>
-#include <rw/kinematics.hpp>
-#include <rw/loaders.hpp>
+#include <rw/models/SerialDevice.hpp>
+#include <rw/kinematics/Kinematics.hpp>
+#include <rw/loaders/rwxml/XMLRWLoader.hpp>
 #include <rwlibs/calibration.hpp>
 
 using namespace rwlibs::calibration;
 using namespace rw::math;
 using namespace rw::kinematics;
-using namespace rw::models;
+using rw::models::SerialDevice;
 
 std::vector<CalibrationMeasurement::Ptr> generateMeasurements(rw::models::SerialDevice::Ptr serialDevice, const std::vector<Frame*>& sensorFrames, Frame::Ptr markerFrame, rw::kinematics::State state, unsigned int measurementCount, bool addNoise);
 

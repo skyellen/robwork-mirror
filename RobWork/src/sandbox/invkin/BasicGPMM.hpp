@@ -22,13 +22,13 @@
 #include <rw/math/Q.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
 
-#include <rw/models/TreeDevice.hpp>
-#include <rw/models/JointDevice.hpp>
 #include <rw/kinematics/State.hpp>
 
-#include <rw/kinematics/FKRange.hpp>
-
-
+namespace rw { namespace kinematics { class FKRange; } }
+namespace rw { namespace models { class Device; } }
+namespace rw { namespace models { class JacobianCalculator; } }
+namespace rw { namespace models { class JointDevice; } }
+namespace rw { namespace models { class TreeDevice; } }
 
 namespace rwlibs {
 namespace algorithms {
@@ -171,7 +171,7 @@ public:
 private:
     const rw::models::Device* _device;
 
-    rw::models::JacobianCalculatorPtr _jacCalc;
+    rw::common::Ptr<rw::models::JacobianCalculator> _jacCalc;
     std::vector<rw::kinematics::Frame*> _foi; // frames of interest, end frames
     std::vector<boost::shared_ptr<rw::kinematics::FKRange> > _fkranges;
 

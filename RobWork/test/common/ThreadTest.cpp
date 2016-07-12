@@ -22,14 +22,14 @@
 #include <rw/common/ThreadPool.hpp>
 #include <rw/common/ThreadSafeVariable.hpp>
 #include <rw/common/ThreadTask.hpp>
-#include <rw/math/Math.hpp>
+#include <rw/math/Random.hpp>
 
 #include <boost/foreach.hpp>
 #include <boost/function.hpp>
 #include <boost/test/unit_test_monitor.hpp>
 
 using namespace rw::common;
-using namespace rw::math;
+using rw::math::Random;
 
 static const unsigned int THREADS = 3;
 static const unsigned int JOBS = 50;
@@ -205,7 +205,7 @@ public:
 	void run() {
 		boost::mutex::scoped_lock lock(eventMutex);
 		events.push_back(Event(Event::SubTask,Event::Run,_taskID,_id));
-		Timer::sleepMs(Math::ranI(0,25));
+		Timer::sleepMs(Random::ranI(0,25));
 	};
 	void subTaskDone(ThreadTask* subtask) { // should not be called!
 		boost::mutex::scoped_lock lock(eventMutex);

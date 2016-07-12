@@ -21,8 +21,6 @@
 #include "../TestSuiteConfig.hpp"
 #include <rw/math/VelocityScrew6D.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/math/RPY.hpp>
-#include <rw/math/Constants.hpp>
 
 using namespace rw::math;
 

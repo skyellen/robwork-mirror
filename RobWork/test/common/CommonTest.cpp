@@ -17,13 +17,9 @@
 
 #include "../TestSuiteConfig.hpp"
 
-#include <rw/common/StringUtil.hpp>
-#include <boost/foreach.hpp>
 #include <iostream>
 #include <rw/common/Timer.hpp>
 #include <rw/common/Ptr.hpp>
-
-
 #include <rw/common/Event.hpp>
 #include <boost/any.hpp>
 #include <boost/function.hpp>

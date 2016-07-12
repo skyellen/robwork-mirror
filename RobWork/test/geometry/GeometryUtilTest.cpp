@@ -30,17 +30,17 @@
 
 #if RW_HAVE_ASSIMP
 #include <rw/loaders/model3d/LoaderAssimp.hpp>
-using namespace rw::graphics;
+using rw::graphics::Model3D;
+using rw::loaders::LoaderAssimp;
 #else
 #include <rw/loaders/model3d/STLFile.hpp>
+using rw::loaders::STLFile;
 #endif
 
-using namespace rw::common;
+using rw::common::ownedPtr;
 using namespace rw::geometry;
-using namespace rw::kinematics;
-using namespace rw::loaders;
+using rw::kinematics::State;
 using namespace rw::math;
-
 
 BOOST_AUTO_TEST_CASE( EstimateVolumeTest ){
 	{

@@ -15,23 +15,22 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
-#include <rwlibs/task/GraspTask.hpp>
-#include <rwsim/loaders/DynamicWorkCellLoader.hpp>
-#include <rwsim/simulator/GraspTaskSimulator.hpp>
-
-USE_ROBWORK_NAMESPACE
-using namespace std;
-using namespace robwork;
-
 #include "../TestSuiteConfig.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
-using namespace rwsim::loaders;
-using namespace rwsim::simulator;
+#include <rw/loaders/path/PathLoader.hpp>
+#include <rwlibs/task/GraspTask.hpp>
+#include <rwsim/loaders/DynamicWorkCellLoader.hpp>
+#include <rwsim/simulator/GraspTaskSimulator.hpp>
+
+using namespace rw::common;
+using rw::kinematics::State;
+using rw::models::WorkCell;
+using rwlibs::task::GraspTask;
+using rwsim::loaders::DynamicWorkCellLoader;
+using rwsim::simulator::GraspTaskSimulator;
 using namespace rwsim::dynamics;
 
 BOOST_AUTO_TEST_CASE( SimpleParallelGraspAndHoldStabilityTest )

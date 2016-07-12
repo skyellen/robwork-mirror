@@ -23,9 +23,6 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Constants.hpp>
 
-#include <iostream>
-
-
 using namespace rw::math;
 
 namespace

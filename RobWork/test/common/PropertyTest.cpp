@@ -23,8 +23,6 @@
 
 #include <boost/foreach.hpp>
 
-#include <iostream>
-
 using namespace boost;
 using namespace rw::common;
 

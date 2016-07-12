@@ -17,11 +17,10 @@
 
 
 #include "../TestSuiteConfig.hpp"
-#include <rw/models/WorkCell.hpp>
-#include <rw/models/SerialDevice.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Rotation3D.hpp>
+//#include <rw/models/SerialDevice.hpp>
+//#include <rw/kinematics/State.hpp>
+//#include <rw/math/Vector3D.hpp>
+//#include <rw/math/Rotation3D.hpp>
 #include <rw/trajectory/Path.hpp>
 
 #include <rw/loaders/WorkCellLoader.hpp>
@@ -29,12 +28,12 @@
 
 #include <cmath>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
-
-using namespace rw::trajectory;
+using rw::math::Q;
+using rw::models::WorkCell;
+using rw::trajectory::QPath;
 using namespace rw::loaders;
 
+/*
 namespace
 {
     double norm_inf(const Vector3D<>& v)
@@ -50,7 +49,6 @@ namespace
     bool isZero(double x) { return fabs(x) < 1e-14; }
 }
 
-/*
 BOOST_AUTO_TEST_CASE( TULLoaderTest )
 {
     BOOST_TEST_MESSAGE("TULTestTestSuite");
@@ -99,17 +97,12 @@ BOOST_AUTO_TEST_CASE( TULLoaderTest )
 }
 */ 
 
-#include <rw/loaders/rwxml/XMLRWLoader.hpp>
-#include <rw/loaders/tul/TULLoader.hpp>
-
-
-
 BOOST_AUTO_TEST_CASE( WorkCellLoaderTest ) 
 {
     BOOST_TEST_MESSAGE("- Testing WorkCellLoader");
     // Load a tree device that has revolute joints only.
 	std::string file = testFilePath() + "SchunkHand/SchunkHand.xml";
-	WorkCell::Ptr workcell = WorkCellLoader::Factory::load(file);
+	rw::common::Ptr<WorkCell> workcell = WorkCellLoader::Factory::load(file);
 
 
 	BOOST_CHECK(workcell != NULL);

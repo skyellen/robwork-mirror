@@ -27,7 +27,6 @@
 
 #include <rw/invkin/IterativeMultiIK.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rw/models/SerialDevice.hpp>
 
 namespace rw { namespace models {
     class SerialDevice;
