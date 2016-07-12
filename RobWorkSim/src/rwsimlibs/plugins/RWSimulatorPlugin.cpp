@@ -21,69 +21,54 @@
 
 #include <vector>
 
-#include <QLayout>
-#include <QVariant>
-#include <QTreeWidgetItem>
-#include <QInputDialog>
 #include <QPushButton>
 #include <QLabel>
-#include <QShortcut>
-#include <QKeySequence>
 #include <QGroupBox>
 #include <QComboBox>
-
-#include <boost/bind.hpp>
-#include <boost/foreach.hpp>
+#include <QCheckBox>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QDoubleSpinBox>
+#include <QTimer>
+#include <QVBoxLayout>
+#include <QGridLayout>
 
 #include <RobWorkStudio.hpp>
 
-#include <rw/kinematics/Frame.hpp>
-#include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/common/StringUtil.hpp>
-#include <rw/models/Device.hpp>
+//#include <rw/models/Device.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
 
-#include <rw/sensor/TactileArray.hpp>
-
-#include <rwsim/dynamics/KinematicDevice.hpp>
-#include <rwsim/dynamics/RigidDevice.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
-#include <rwsim/control/VelRampController.hpp>
-#include <rwsim/control/PDController.hpp>
-#include <rwsim/control/SyncPDController.hpp>
 #include <rwlibs/opengl/TactileArrayRender.hpp>
-#include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwlibs/simulation/SimulatedSensor.hpp>
 #include <rwsim/sensor/TactileArraySensor.hpp>
 
-#include <rwsim/simulator/PhysicsEngineFactory.hpp>
+#include <rwsim/simulator/DynamicSimulator.hpp>
+#include <rwsim/simulator/PhysicsEngine.hpp>
 
 #include <rw/common/Log.hpp>
 #include <rw/common/Exception.hpp>
 #include <rw/common/LogStreamWriter.hpp>
 
-#include <iostream>
+#include <sstream>
 #include <fstream>
 
+#include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
-using namespace rw::models;
 using namespace rw::math;
-using namespace rw::sensor;
 using namespace rw::common;
-using namespace rw::graphics;
-using namespace rw::trajectory;
-using namespace rw::kinematics;
+using rw::graphics::Render;
+using rw::trajectory::Timed;
+using rw::kinematics::State;
 using namespace rwlibs::opengl;
-using namespace rwsim::dynamics;
-using namespace rwsim::loaders;
-using namespace rwsim::drawable;
+using rwsim::dynamics::DynamicWorkCell;
+using rwsim::loaders::DynamicWorkCellLoader;
 using namespace rwsim::simulator;
-using namespace rwsim::control;
-using namespace rwlibs::simulation;
-using namespace rwlibs::control;
-using namespace rws;
+using rwlibs::simulation::SimulatedSensor;
+using rws::RobWorkStudioPlugin;
 
 #define RW_DEBUGRWS( str ) std::cout << str  << std::endl;
 
@@ -127,10 +112,10 @@ RWSimulatorPlugin::RWSimulatorPlugin():
     //_miscForces(40),
     _timeStep(0.03),
     _nextTime(0.0),
-    _save(true),
-    _jointDialog(NULL),
-    _jointDialog1(NULL),
-    _ghost(NULL)
+    _save(true)
+    //_jointDialog(NULL),
+    //_jointDialog1(NULL),
+    //_ghost(NULL)
 {
     // Construct layout and widget
     QWidget *widg = new QWidget(this);
@@ -188,7 +173,7 @@ RWSimulatorPlugin::RWSimulatorPlugin():
             QLabel *label = new QLabel("Physics engine");
             lay->addWidget(label, row++, 0);
             std::vector<std::string> engineIDs =
-                PhysicsEngineFactory::getEngineIDs();
+                PhysicsEngine::Factory::getEngineIDs();
             _engineBox = new QComboBox();
             BOOST_FOREACH(std::string engineID, engineIDs){
                 _engineBox->addItem(engineID.c_str());
@@ -529,7 +514,7 @@ void RWSimulatorPlugin::open(const std::string& file)
 
         std::string engineId = _engineBox->currentText().toStdString();
         RW_DEBUGRWS("- Selected physics engine: " << engineId);
-        _simulator = ownedPtr( new DynamicSimulator(_dworkcell, PhysicsEngineFactory::makePhysicsEngine(engineId,_dworkcell.get())) );
+        _simulator = ownedPtr( new DynamicSimulator(_dworkcell, PhysicsEngine::Factory::makePhysicsEngine(engineId,_dworkcell.get())) );
 
         getRobWorkStudio()->setWorkcell( _dworkcell->getWorkcell() );
 

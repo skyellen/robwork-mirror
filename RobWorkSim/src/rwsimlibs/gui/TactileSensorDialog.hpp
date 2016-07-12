@@ -8,27 +8,15 @@
 #ifndef TACTILESENSORDIALOG_HPP_
 #define TACTILESENSORDIALOG_HPP_
 
-#ifdef __WIN32
-#include <windows.h>
-#endif
-
 #include <QObject>
-#include <QtGui>
-#include <QTimer>
 #include <QDialog>
-#include <QGraphicsScene>
 
-#include <rw/kinematics/State.hpp>
+#include <rw/common/Ptr.hpp>
+#include <rw/math/Vector2D.hpp>
 
-#include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/simulator/ThreadSimulator.hpp>
-#include <rwsim/sensor/TactileArraySensor.hpp>
-#include <rw/kinematics/FrameMap.hpp>
-#include <rw/math.hpp>
-#include <rwsim/util/MovingAverage.hpp>
-
-#include <rw/proximity/CollisionDetector.hpp>
+namespace rw { namespace kinematics { class State; } }
+namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
+namespace rwsim { namespace sensor { class TactileArraySensor; } }
 
 struct Moment {
     rw::math::Vector2D<> center;
@@ -38,6 +26,11 @@ struct Moment {
 namespace Ui {
     class TactileSensorDialog;
 }
+
+class QGraphicsScene;
+class QGraphicsRectItem;
+class QGraphicsEllipseItem;
+class QGraphicsLineItem;
 
 /**
  * @brief a grphical interface for calculating resting configurations of

@@ -27,8 +27,6 @@
 #include <rws/RobWorkStudioPlugin.hpp>
 #include <rwsimlibs/test/EngineTest.hpp>
 
-#include <QListWidgetItem>
-
 #include <boost/any.hpp>
 
 class PropertyViewEditor;
@@ -39,6 +37,8 @@ namespace rwsim { namespace log { class SimulatorLogScope; } }
 namespace rwsimlibs { namespace gui { class SimulatorLogWidget; } }
 
 namespace Ui { class EngineTestPlugin; }
+
+class QListWidgetItem;
 
 namespace rwsimlibs {
 namespace plugins {

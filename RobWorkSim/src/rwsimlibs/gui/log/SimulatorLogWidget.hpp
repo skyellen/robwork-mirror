@@ -27,7 +27,8 @@
 #include <rw/common/Ptr.hpp>
 
 #include <QWidget>
-#include <QItemSelection>
+
+#include <map>
 
 namespace rw { namespace graphics { class GroupNode; } }
 namespace rwlibs { namespace opengl { class Drawable; } }
@@ -39,6 +40,9 @@ namespace rws { class SceneOpenGLViewer; }
 
 class GLViewRW;
 namespace Ui { class SimulatorLogWidget; }
+
+class QItemSelection;
+class QModelIndex;
 
 namespace rwsimlibs {
 namespace gui {

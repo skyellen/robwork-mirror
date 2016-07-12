@@ -20,8 +20,6 @@
 
 #include <rw/geometry/TriMesh.hpp>
 #include <rw/proximity/ProximityStrategyData.hpp>
-#include <rwsim/dynamics/SuctionCup.hpp>
-#include <rwsim/dynamics/Body.hpp>
 
 #include <ode/ode.h>
 #include "ODEBody.hpp"
@@ -30,6 +28,8 @@
 namespace rw { namespace kinematics { class State; } }
 namespace rw { namespace proximity { class ProximityModel; } }
 namespace rwlibs { namespace proximitystrategies { class ProximityStrategyPQP; } }
+namespace rwsim { namespace dynamics { class Body; } }
+namespace rwsim { namespace dynamics { class SuctionCup; } }
 namespace rwsim { namespace sensor { class BodyContactSensor; } }
 
 namespace rwsim {
@@ -105,13 +105,13 @@ namespace simulator {
         //std::vector<std::pair<rwsim::dynamics::Body*,rwsim::dynamics::Body*> > _bodyPairs;
         //std::vector<rw::math::Transform3D<> > _bodyTransforms;
         std::string _name;
-        rwsim::dynamics::SuctionCup::Ptr _dev;
+        rw::common::Ptr<rwsim::dynamics::SuctionCup> _dev;
         rw::common::Ptr<rwsim::sensor::BodyContactSensor> _sensor;
-        rwsim::dynamics::Body::Ptr _tcp;
+        rw::common::Ptr<rwsim::dynamics::Body> _tcp;
         double _v;
 
         bool _isInContact;
-        rwsim::dynamics::Body::Ptr _object;
+        rw::common::Ptr<rwsim::dynamics::Body> _object;
 
         rw::geometry::TriMesh::Ptr  _spikedCupMesh;
         rw::geometry::Geometry::Ptr _spikedCup;

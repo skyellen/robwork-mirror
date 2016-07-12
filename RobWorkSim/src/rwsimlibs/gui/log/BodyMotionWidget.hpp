@@ -25,12 +25,13 @@
  */
 
 #include "SimulatorLogEntryWidget.hpp"
-#include <QItemSelection>
 
 namespace rwsim { namespace log { class LogPositions; } }
 namespace rwsim { namespace log { class LogVelocities; } }
 
 namespace Ui { class BodyMotionWidget; }
+
+class QItemSelection;
 
 namespace rwsimlibs {
 namespace gui {

@@ -20,20 +20,14 @@
 #ifndef JOGGROUP_H
 #define JOGGROUP_H
 
-#ifdef __WIN32
-#include <windows.h>
-#endif
-
 #include <QWidget>
-#include <QDoubleSpinBox>
-#include <QSlider>
-#include <QGridLayout>
 
-#include <QMouseEvent>
-
-#include <rw/kinematics/State.hpp>
-#include <rw/models/Device.hpp>
 #include <rw/math/Q.hpp>
+
+class QDoubleSpinBox;
+class QSlider;
+class QGridLayout;
+class QWheelEvent;
 
 // The widget for a single joint.
 class JointLine : public QWidget

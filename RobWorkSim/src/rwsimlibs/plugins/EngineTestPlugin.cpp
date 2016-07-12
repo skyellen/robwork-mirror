@@ -33,6 +33,8 @@
 
 #include "ui_EngineTestPlugin.h"
 
+#include <QListWidgetItem>
+
 using namespace rw::common;
 using namespace rw::math;
 using namespace rw::trajectory;

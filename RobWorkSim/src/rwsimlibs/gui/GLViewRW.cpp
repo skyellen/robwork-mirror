@@ -20,16 +20,24 @@
 #include "GLViewRW.hpp"
 
 #include <rw/common/Timer.hpp>
-#include <rw/common/macros.hpp>
+#include <rw/graphics/WorkCellScene.hpp>
 #include <rw/math/Constants.hpp>
 #include <rw/math/RPY.hpp>
 
-#include <rw/kinematics/Kinematics.hpp>
+#include <rwlibs/opengl/Drawable.hpp>
 #include <rwlibs/opengl/DrawableUtil.hpp>
+#include <rwlibs/os/rwgl.hpp>
 
 #include "RobWorkStudio.hpp"
 
-#include <QThread>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QString>
+#include <QMouseEvent>
+#include <QAction>
+#include <QToolBar>
+#include <QMenu>
+
 #include <boost/foreach.hpp>
 
 USE_ROBWORK_NAMESPACE
@@ -43,7 +51,6 @@ const GLfloat BOTTOM_BG_COLOR[] = {0.2f,0.2f,1.0f};
 using namespace robwork;
 using namespace rw::proximity;
 using namespace rwlibs::opengl;
-using namespace rw::kinematics;
 using namespace rws;
 namespace
 {
@@ -159,12 +166,21 @@ namespace
 
 }
 
+struct GLViewRW::GLData {
+	GLData(): sphereObj(gluNewQuadric()) {}
+	~GLData() {
+	    gluDeleteQuadric(sphereObj);
+	}
+    GLUquadricObj* sphereObj;
+};
+
 GLViewRW::GLViewRW(QWidget* parent) :
     QGLWidget(QGLFormat(QGL::DepthBuffer), parent),
     _viewRotation(RPY<float>( 0, 0, -45*Deg2Rad ).toRotation3D()),
     _viewPos(0,0,-5),
     _drawType(DrawableNode::SOLID),
     _alpha(1),
+	_gl(new GLData()),
     _width(640),
     _height(480),
     _arcBall(_width,_height),
@@ -174,7 +190,6 @@ GLViewRW::GLViewRW(QWidget* parent) :
     _viewLogo("RWSim")
 {
     // add the default cameraview
-    _sphereObj = gluNewQuadric();
     _showSolidAction = new QAction(QIcon(":/images/solid.png"), tr("&Solid"), this); // owned
     _showSolidAction->setCheckable(true);
     _showSolidAction->setChecked(true);
@@ -237,9 +252,8 @@ GLViewRW::GLViewRW(QWidget* parent) :
     this->setFocusPolicy(Qt::StrongFocus);
 }
 
-GLViewRW::~GLViewRW()
-{
-    gluDeleteQuadric(_sphereObj);
+GLViewRW::~GLViewRW() {
+	delete _gl;
 }
 
 void GLViewRW::keyPressEvent(QKeyEvent *e)
@@ -425,7 +439,7 @@ void GLViewRW::drawGLStuff(bool showPivot){
 
     // draw center point
     if (showPivot){
-        drawPivot(_pivotPoint, _viewPos.norm2()*0.01, _zoomScale, _sphereObj);
+        drawPivot(_pivotPoint, _viewPos.norm2()*0.01, _zoomScale, _gl->sphereObj);
     }
 
     glScalef(_zoomScale,_zoomScale,_zoomScale);

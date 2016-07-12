@@ -1,44 +1,41 @@
 #include "GraspSelectionDialog.hpp"
 
-#include <iostream>
+#include <sstream>
 
 #include <QFileDialog>
+#include <QTimer>
 
 #include <boost/foreach.hpp>
 
 #include <rw/math/RPY.hpp>
-#include <rw/math/Math.hpp>
+#include <rw/math/Random.hpp>
 #include <rw/math/Constants.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
 
 #include <rwsim/simulator/DynamicSimulator.hpp>
-#include <rwsim/simulator/PhysicsEngineFactory.hpp>
+#include <rwsim/simulator/PhysicsEngine.hpp>
+#include <rwsim/simulator/ThreadSimulator.hpp>
 
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
-#include <rw/loaders/path/PathLoader.hpp>
 #include <rw/graspplanning/GraspTable.hpp>
-#include <rwsim/loaders/ScapePoseFormat.hpp>
 #include <rwsim/sensor/TactileArraySensor.hpp>
-#include <stdio.h>
 
 #include "ui_GraspSelectionDialog.h"
 
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
 using namespace rwsim::sensor;
-//using namespace rwsim::control;
-using namespace rwsim::util;
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::common;
 using namespace rw::proximity;
-using namespace rw::loaders;
 using namespace rw::trajectory;
 using namespace rw::graspplanning;
 
@@ -131,7 +128,7 @@ void GraspSelectionDialog::initializeStart(){
     for(int i=0;i<threads;i++){
         // create simulator
         RW_DEBUGS("sim " << i);
-        PhysicsEngine::Ptr pengine = PhysicsEngineFactory::makePhysicsEngine("ODE",_dwc);
+        PhysicsEngine::Ptr pengine = PhysicsEngine::Factory::makePhysicsEngine("ODE",_dwc);
         DynamicSimulator::Ptr dsim = ownedPtr( new DynamicSimulator(_dwc, pengine));
         RW_DEBUGS("Initialize simulator " << i);
         dsim->init(state);
@@ -490,9 +487,9 @@ void GraspSelectionDialog::calcRandomCfg(std::vector<RigidBody::Ptr> &bodies, rw
 
 
     BOOST_FOREACH(RigidBody::Ptr rbody, bodies){
-        double roll = Math::ran(lowR, highR);
-        double pitch = Math::ran(lowP, highP);
-        double yaw = Math::ran(lowY, highY);
+        double roll = Random::ran(lowR, highR);
+        double pitch = Random::ran(lowP, highP);
+        double yaw = Random::ran(lowY, highY);
         Transform3D<> t3d = Kinematics::worldTframe(rbody->getMovableFrame(), _defstate);
         Transform3D<> nt3d = t3d;
         nt3d.R() = t3d.R()*Rotation3D<>( RPY<>(roll,pitch,yaw).toRotation3D() );

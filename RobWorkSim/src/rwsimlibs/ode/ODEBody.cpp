@@ -20,6 +20,8 @@
 #include <rw/common/macros.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Transform3D.hpp>
+#include <rwsim/dynamics/RigidBody.hpp>
+#include <rwsim/dynamics/KinematicBody.hpp>
 
 #include "ODEUtil.hpp"
 #include "ODESimulator.hpp"

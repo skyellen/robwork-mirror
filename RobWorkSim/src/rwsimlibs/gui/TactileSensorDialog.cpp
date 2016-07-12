@@ -1,21 +1,23 @@
 #include "TactileSensorDialog.hpp"
 
-#include <iostream>
+#include <sstream>
 #include <fstream>
 
 #include <QGraphicsTextItem>
 #include <QGraphicsRectItem>
 #include <QGraphicsEllipseItem>
 #include <QGraphicsLineItem>
+#include <QGraphicsScene>
 #include <QFileDialog>
+#include <QWheelEvent>
 
 #include <boost/foreach.hpp>
 
-#include <rw/rw.hpp>
-
-#include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/simulator/PhysicsEngineFactory.hpp>
-#include <rwsim/loaders/ScapePoseFormat.hpp>
+#include <rw/common/TimerUtil.hpp>
+#include <rw/math/LinearAlgebra.hpp>
+#include <rw/math/Rotation2D.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
+#include <rwsim/sensor/TactileArraySensor.hpp>
 
 #include "ui_TactileSensorDialog.h"
 
@@ -24,13 +26,7 @@ using namespace rwsim::sensor;
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::common;
-using namespace rw::proximity;
-using namespace rw::loaders;
-using namespace rw::trajectory;
 using namespace rwlibs::simulation;
-
-
-#define RW_DEBUGS( str ) //std::cout << str  << std::endl;
 
 namespace {
 

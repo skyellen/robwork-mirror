@@ -23,9 +23,11 @@
 
 #include "ui_SimulatorStatisticsWidget.h"
 
+#include <QItemSelection>
+
 using namespace rwsim::log;
 using namespace rwsimlibs::gui;
-#include <boost/foreach.hpp>
+
 SimulatorStatisticsWidget::SimulatorStatisticsWidget(rw::common::Ptr<const SimulatorStatistics> stats, QWidget* parent):
 	QWidget(parent),
 	_ui(new Ui::SimulatorStatisticsWidget()),

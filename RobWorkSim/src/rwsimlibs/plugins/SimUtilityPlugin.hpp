@@ -20,25 +20,20 @@
 #ifndef SIMUTILITYPLUGIN_HPP
 #define SIMUTILITYPLUGIN_HPP
 
-#ifdef __WIN32
-#include <windows.h>
-#endif
-
-
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rw/common/Ptr.hpp>
 #include <RobWorkStudioPlugin.hpp>
 
 #include <QObject>
-#include <QtGui>
 
+namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
+
+struct RestingConfig;
+class GraspRestingPoseDialog;
+class GraspSelectionDialog;
 class RestingPoseDialog;
 class SupportPoseAnalyserDialog;
 
-#include <rwsimlibs/gui/GraspRestingPoseDialog.hpp>
-#include <rwsimlibs/gui/GraspSelectionDialog.hpp>
+class QPushButton;
 
 /**
  * @brief This plugin defines a set of utilities that are useful for analysis

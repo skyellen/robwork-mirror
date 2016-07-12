@@ -19,71 +19,32 @@
 
 #include "SimUtilityPlugin.hpp"
 
-#include <vector>
-#include <rw/common/TimerUtil.hpp>
-//#include <btBulletDynamicsCommon.h>
+//#include <rw/common/TimerUtil.hpp>
 
-#include <QLayout>
-#include <QVariant>
-#include <QTreeWidgetItem>
-#include <QInputDialog>
+#include <QGridLayout>
+#include <QVBoxLayout>
 #include <QPushButton>
-#include <QLabel>
-#include <QShortcut>
-#include <QKeySequence>
 #include <QGroupBox>
-
-#include <boost/foreach.hpp>
+#include <QTimer>
 
 #include <RobWorkStudio.hpp>
 
-#include <rw/kinematics/Frame.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Transform3D.hpp>
-#include <rw/common/StringUtil.hpp>
-#include <rw/models/Device.hpp>
-#include <rwlibs/opengl/Drawable.hpp>
-
-#include <rwsim/dynamics/KinematicDevice.hpp>
-#include <rwsim/dynamics/RigidDevice.hpp>
-#include <rwsim/loaders/DynamicWorkCellLoader.hpp>
-#include <rwsim/control/VelRampController.hpp>
-#include <rwsim/control/PDController.hpp>
-#include <rwsim/control/SyncPDController.hpp>
-#include <rwlibs/opengl/TactileArrayRender.hpp>
-
-#include <rwsim/simulator/PhysicsEngineFactory.hpp>
-
 #include <rw/common/Log.hpp>
-#include <rw/common/Exception.hpp>
-#include <rw/common/LogStreamWriter.hpp>
-
-#include <rw/proximity/CollisionDetector.hpp>
 
 #include <rwsimlibs/gui/RestingPoseDialog.hpp>
 #include <rwsimlibs/gui/GraspRestingPoseDialog.hpp>
+#include <rwsimlibs/gui/GraspSelectionDialog.hpp>
 #include <rwsimlibs/gui/SupportPoseAnalyserDialog.hpp>
 
-#include <iostream>
-#include <fstream>
+#include <sstream>
 
-#include <boost/foreach.hpp>
+#include <boost/bind.hpp>
 
-using namespace rw::models;
-using namespace rw::math;
-using namespace rw::sensor;
-using namespace rw::common;
-using namespace rw::trajectory;
-using namespace rw::graphics;
-using namespace rwlibs::opengl;
-using namespace rw::kinematics;
-using namespace rwsim::dynamics;
-using namespace rwsim::loaders;
+using rw::kinematics::State;
+using rwsim::dynamics::DynamicWorkCell;
 using namespace rwsim::drawable;
 
-using namespace rws;
-
-//#define RW_DEBUG( str ) std::cout << str  << std::endl;
+using rws::RobWorkStudioPlugin;
 
 SimUtilityPlugin::SimUtilityPlugin():
     RobWorkStudioPlugin("SimUtilityPlugin", QIcon(":/SimulationIcon.png")),
@@ -151,7 +112,7 @@ void SimUtilityPlugin::btnPressed(){
 
 	    if (!_poseAnalyserDialog ) {
 	        State state = getRobWorkStudio()->getState();
-	        rw::proximity::CollisionDetector::Ptr colDect = getRobWorkStudio()->getCollisionDetector();
+	        rw::common::Ptr<rw::proximity::CollisionDetector> colDect = getRobWorkStudio()->getCollisionDetector();
 	        _poseAnalyserDialog = new SupportPoseAnalyserDialog(state, _dwc.get(), colDect.get(),  getRobWorkStudio(), NULL);
 	        connect(_poseAnalyserDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(stateChangedEvent(const rw::kinematics::State&)) );
 	    }
@@ -165,7 +126,7 @@ void SimUtilityPlugin::btnPressed(){
 
 	    if (!_restPoseDialog ) {
 	        State state = getRobWorkStudio()->getState();
-	        rw::proximity::CollisionDetector::Ptr colDect = getRobWorkStudio()->getCollisionDetector();
+	        rw::common::Ptr<rw::proximity::CollisionDetector> colDect = getRobWorkStudio()->getCollisionDetector();
 	        _restPoseDialog = new RestingPoseDialog(state, _dwc.get(), colDect.get(),  NULL);
 	        connect(_restPoseDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(stateChangedEvent(const rw::kinematics::State&)) );
 	    }
@@ -179,7 +140,7 @@ void SimUtilityPlugin::btnPressed(){
 		log().info() << "creating grasp rest pose \n";
 	    if (!_graspRestPoseDialog ) {
 	        State state = getRobWorkStudio()->getState();
-	        rw::proximity::CollisionDetector::Ptr colDect = getRobWorkStudio()->getCollisionDetector();
+	        rw::common::Ptr<rw::proximity::CollisionDetector> colDect = getRobWorkStudio()->getCollisionDetector();
 	        _graspRestPoseDialog = new GraspRestingPoseDialog(state, _dwc.get(), colDect.get(),  NULL);
 	        connect(_graspRestPoseDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(stateChangedEvent(const rw::kinematics::State&)) );
 	        connect(_graspRestPoseDialog,SIGNAL(restingPoseEvent(const RestingConfig&)),
@@ -197,7 +158,7 @@ void SimUtilityPlugin::btnPressed(){
 
 	    if (!_graspSelectionDialog ) {
 	        State state = getRobWorkStudio()->getState();
-	        rw::proximity::CollisionDetector::Ptr colDect = getRobWorkStudio()->getCollisionDetector();
+	        rw::common::Ptr<rw::proximity::CollisionDetector> colDect = getRobWorkStudio()->getCollisionDetector();
 	        _graspSelectionDialog = new GraspSelectionDialog(state, _dwc.get(), colDect.get(),  NULL);
 	        connect(_graspSelectionDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(stateChangedEvent(const rw::kinematics::State&)) );
 	    }
@@ -276,7 +237,7 @@ void SimUtilityPlugin::genericEventListener(const std::string& event){
             log().info() << "creating grasp rest pose \n";
             if (!_graspRestPoseDialog ) {
                 State state = getRobWorkStudio()->getState();
-                rw::proximity::CollisionDetector::Ptr colDect = getRobWorkStudio()->getCollisionDetector();
+                rw::common::Ptr<rw::proximity::CollisionDetector> colDect = getRobWorkStudio()->getCollisionDetector();
                 _graspRestPoseDialog = new GraspRestingPoseDialog(state, _dwc.get(), colDect.get(),  NULL);
                 connect(_graspRestPoseDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(stateChangedEvent(const rw::kinematics::State&)) );
     	        connect(_graspRestPoseDialog,SIGNAL(restingPoseEvent(const RestingConfig&)),

@@ -26,11 +26,12 @@
 
 #include <rw/common/Ptr.hpp>
 #include <QWidget>
-#include <QItemSelection>
 
 namespace rwsim { namespace log { class SimulatorStatistics; } }
 
 namespace Ui { class SimulatorStatisticsWidget; }
+
+class QItemSelection;
 
 namespace rwsimlibs {
 namespace gui {

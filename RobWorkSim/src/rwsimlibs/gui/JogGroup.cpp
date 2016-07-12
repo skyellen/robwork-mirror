@@ -19,22 +19,13 @@
 
 #include "JogGroup.hpp"
 
-#include <QVBoxLayout>
 #include <QGridLayout>
-#include <QHBoxLayout>
-#include <QMessageBox>
+#include <QDoubleSpinBox>
 #include <QLabel>
 #include <QSlider>
+#include <QWheelEvent>
 
-
-#include <QMouseEvent>
-
-#include <rw/models/Device.hpp>
-#include <rw/models/Joint.hpp>
-
-using namespace rw::math;
-using namespace rw::models;
-using namespace rw::kinematics;
+using rw::math::Q;
 
 namespace
 {

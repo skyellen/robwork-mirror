@@ -26,6 +26,8 @@
 #include <rwsim/contacts/ContactModel.hpp>
 #include <rwsim/contacts/ContactStrategyTracking.hpp>
 
+#include <ode/collision.h>
+
 using namespace rw::common;
 using namespace rw::geometry;
 using namespace rw::kinematics;

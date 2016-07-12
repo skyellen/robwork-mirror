@@ -23,8 +23,10 @@
 
 #include <rw/geometry/TriMesh.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
+#include <rwsim/dynamics/Body.hpp>
 #include <rwsim/dynamics/MaterialDataMap.hpp>
 #include <rwsim/dynamics/ContactDataMap.hpp>
+#include <rwsim/dynamics/SuctionCup.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
 
 #include <ode/ode.h>

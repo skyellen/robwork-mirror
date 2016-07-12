@@ -27,6 +27,8 @@
 #include <rwsim/log/LogCollisionResult.hpp>
 #include <rwsim/log/LogPositions.hpp>
 
+#include <QItemSelection>
+
 using namespace rw::common;
 using namespace rw::geometry;
 using namespace rw::graphics;

@@ -8,22 +8,13 @@
 #ifndef CREATEENGINEDIALOG_HPP_
 #define CREATEENGINEDIALOG_HPP_
 
-#ifdef __WIN32
-#include <windows.h>
-#endif
-
-
-#include <rw/kinematics/State.hpp>
-
-#include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/simulator/DynamicSimulator.hpp>
 #include <rw/common/Ptr.hpp>
 
 #include <QObject>
-#include <QtGui>
-#include <QTimer>
 #include <QDialog>
+
+namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
 
 namespace Ui {
     class CreateEngineDialog;

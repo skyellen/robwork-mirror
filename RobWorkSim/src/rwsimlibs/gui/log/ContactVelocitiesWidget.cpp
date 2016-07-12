@@ -26,6 +26,8 @@
 
 #include "ui_ContactVelocitiesWidget.h"
 
+#include <QItemSelection>
+
 using namespace rw::common;
 using namespace rw::graphics;
 using namespace rw::kinematics;

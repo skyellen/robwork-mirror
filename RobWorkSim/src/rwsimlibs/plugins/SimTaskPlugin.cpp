@@ -1,34 +1,35 @@
 #include "SimTaskPlugin.hpp"
 
-#include <rwsim/simulator/GraspTaskSimulator.hpp>
-
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <rws/RobWorkStudio.hpp>
 #include <RobWorkStudioConfig.hpp>
 
-#include <rw/graspplanning/GWSMeasure3D.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
-#include <rwsim/util/SurfacePoseSampler.hpp>
-
 #include <rwlibs/task/GraspTask.hpp>
 
-#include <boost/lexical_cast.hpp>
-#include <QPushButton>
+#include <rwsim/drawable/SimulatorDebugRender.hpp>
+#include <rwsim/dynamics/RigidBody.hpp>
+#include <rwsim/simulator/GraspTaskSimulator.hpp>
+#include <rwsim/util/SurfacePoseSampler.hpp>
+
+#include <QFileDialog>
 #include <QInputDialog>
+#include <QMessageBox>
+#include <QTimer>
 
-#include <fstream>
-#include <iostream>
+//#include <fstream>
+#include <sstream>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
-
-USE_ROBWORKSIM_NAMESPACE
-using namespace robworksim;
-
-using namespace rws;
-using namespace rwlibs::proximitystrategies;
-using namespace rwlibs::simulation;
+using namespace rw::common;
+using namespace rw::models;
+using namespace rw::kinematics;
+using namespace rw::math;
+using rw::geometry::Geometry;
+using rw::proximity::CollisionDetector;
 using namespace rwlibs::task;
+using rws::RobWorkStudioPlugin;
+using namespace rwsim::dynamics;
+using rwsim::drawable::SimulatorDebugRender;
+using rwsim::simulator::GraspTaskSimulator;
 
 SimTaskPlugin::SimTaskPlugin():
     RobWorkStudioPlugin("SimTaskPluginUI", QIcon(":/simtaskplugin/pa_icon.png")),
@@ -439,7 +440,7 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     if(body==NULL){
         RW_THROW("OBJECT DOES NOT EXIST: " << objectName);
     }
-    std::vector<Geometry::Ptr> geoms = body->getGeometry();
+    std::vector<rw::common::Ptr<Geometry> > geoms = body->getGeometry();
     SurfacePoseSampler ssurf( geoms );
     ssurf.setRandomRotationEnabled(false);
 

@@ -8,31 +8,29 @@
 #ifndef GraspTableGeneratorPlugin_HPP_
 #define GraspTableGeneratorPlugin_HPP_
 
-#ifdef __WIN32
-#include <windows.h>
-#endif
-
 #include <rws/RobWorkStudioPlugin.hpp>
 
 #include <rw/kinematics/State.hpp>
 
-#include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/simulator/ThreadSimulator.hpp>
-#include <rwsim/control/PDController.hpp>
 #include <rw/kinematics/FrameMap.hpp>
-#include <rw/graspplanning/GraspTable.hpp>
 #include <rwsim/util/MovingAverage.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
-#include <rwsim/dynamics/RigidDevice.hpp>
-#include <rwsim/sensor/BodyContactSensor.hpp>
-#include <rwsim/util/RestingPoseGenerator.hpp>
-
-#include <rwsim/util/GraspStrategy.hpp>
-#include <rwsim/util/GraspPolicy.hpp>
 
 #include <rwsimlibs/gui/ThreadSafeStack.hpp>
+
+namespace rw { namespace graspplanning { class GraspTable; } }
+namespace rw { namespace kinematics { class MovableFrame; } }
+namespace rw { namespace proximity { class CollisionDetector; } }
+namespace rwsim { namespace control { class PDController; } }
+namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
+namespace rwsim { namespace dynamics { class RigidBody; } }
+namespace rwsim { namespace dynamics { class RigidDevice; } }
+namespace rwsim { namespace sensor { class BodyContactSensor; } }
+namespace rwsim { namespace simulator { class DynamicSimulator; } }
+namespace rwsim { namespace simulator { class ThreadSimulator; } }
+namespace rwsim { namespace util { class GraspPolicy; } }
+namespace rwsim { namespace util { class GraspStrategy; } }
+namespace rwsim { namespace util { class RestingPoseGenerator; } }
 
 namespace Ui {
     class GraspTableGeneratorPlugin;
@@ -164,14 +162,14 @@ class GraspTableGeneratorPlugin : public rws::RobWorkStudioPlugin
         rwsim::util::MovingAverage _avgSimTime;
         rwsim::util::MovingAverage _avgTime;
 
-        std::vector<rwsim::control::PDControllerPtr> _controllers;
+        std::vector<rw::common::Ptr<rwsim::control::PDController> > _controllers;
         std::vector<rw::math::Q> _preshapes;
         std::vector<rw::math::Q> _targetQ;
         rwsim::dynamics::RigidBody *_body;
         rwsim::dynamics::RigidDevice *_hand;
         rw::kinematics::MovableFrame *_handBase,*_object;
 
-        rwsim::sensor::BodyContactSensorPtr _bodySensor;
+        rw::common::Ptr<rwsim::sensor::BodyContactSensor> _bodySensor;
 
         bool _exitHard;
 
@@ -197,9 +195,9 @@ class GraspTableGeneratorPlugin : public rws::RobWorkStudioPlugin
         int _nrOfGraspsInGroup, _lastTableBackupCnt;
         int _tactileDataOnAllCnt;
 
-        rwsim::util::GraspStrategy::Ptr _gstrategy;
-        rwsim::util::GraspPolicy::Ptr _gpolicy;
-        rwsim::simulator::DynamicSimulator::Ptr _simulator;
+        rw::common::Ptr<rwsim::util::GraspStrategy> _gstrategy;
+        rw::common::Ptr<rwsim::util::GraspPolicy> _gpolicy;
+        rw::common::Ptr<rwsim::simulator::DynamicSimulator> _simulator;
 
         rw::graspplanning::GraspTable *_gtable;
         std::string _configFile; // loadet on initialization

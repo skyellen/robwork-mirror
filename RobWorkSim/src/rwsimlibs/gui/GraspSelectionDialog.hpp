@@ -8,34 +8,29 @@
 #ifndef GRASPSELECTIONDIALOG_HPP_
 #define GRASPSELECTIONDIALOG_HPP_
 
-#ifdef __WIN32
-#include <windows.h>
-#endif
-
-
-
 #include <rw/kinematics/State.hpp>
 #include <rw/graspplanning/GraspTable.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/simulator/ThreadSimulator.hpp>
 
 #include <rw/kinematics/FrameMap.hpp>
 
 #include <rwsim/util/MovingAverage.hpp>
 
-#include <rw/proximity/CollisionDetector.hpp>
-
 #include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
 
 #include <QObject>
-#include <QtGui>
-#include <QTimer>
 #include <QDialog>
+
+namespace rw { namespace proximity { class CollisionDetector; } }
+namespace rw { namespace models { class Device; } }
+namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
+namespace rwsim { namespace simulator { class ThreadSimulator; } }
 
 namespace Ui {
     class GraspSelectionDialog;
 }
+
+class QTimer;
 
 /**
  * @brief a grphical interface for calculating resting configurations of

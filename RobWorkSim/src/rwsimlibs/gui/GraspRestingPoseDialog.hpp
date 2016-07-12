@@ -8,40 +8,32 @@
 #ifndef GRASPRESTINGPOSEDIALOG_HPP_
 #define GRASPRESTINGPOSEDIALOG_HPP_
 
-#ifdef __WIN32
-#include <windows.h>
-#endif
-
 #include <QObject>
-#include <QtGui>
-#include <QTimer>
 #include <QDialog>
 
 #include <rw/kinematics/State.hpp>
 
 #include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/simulator/ThreadSimulator.hpp>
-#include <rwsim/control/PDController.hpp>
 #include <rw/kinematics/FrameMap.hpp>
 
 #include <rw/graspplanning/GraspTable.hpp>
 #include <rwsim/util/MovingAverage.hpp>
 
-#include <boost/numeric/ublas/matrix.hpp>
-
-#include <rw/proximity/CollisionDetector.hpp>
-#include <rwsim/dynamics/RigidDevice.hpp>
-#include <rwsim/simulator/DynamicSimulator.hpp>
-#include <rwsim/sensor/BodyContactSensor.hpp>
-
-
 #include "ThreadSafeStack.hpp"
+
+namespace rw { namespace proximity { class CollisionDetector; } }
+namespace rwsim { namespace control { class PDController; } }
+namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
+namespace rwsim { namespace dynamics { class RigidDevice; } }
+namespace rwsim { namespace sensor { class BodyContactSensor; } }
+namespace rwsim { namespace simulator { class DynamicSimulator; } }
+namespace rwsim { namespace simulator { class ThreadSimulator; } }
 
 namespace Ui {
     class GraspRestingPoseDialog;
 }
 
+class QTimer;
 
 struct RestingConfig {
             RestingConfig(const rw::kinematics::State& state, const std::string& str):
@@ -132,9 +124,9 @@ class GraspRestingPoseDialog : public QDialog
          */
         void calcColFreeRandomCfg(rw::kinematics::State& state);
 
-        bool isSimulationFinished( rwsim::simulator::DynamicSimulator::Ptr sim, const rw::kinematics::State& state );
+        bool isSimulationFinished( rw::common::Ptr<rwsim::simulator::DynamicSimulator> sim, const rw::kinematics::State& state );
 
-        bool saveRestingState( int simidx, rwsim::simulator::DynamicSimulator::Ptr sim , const rw::kinematics::State& state );
+        bool saveRestingState( int simidx, rw::common::Ptr<rwsim::simulator::DynamicSimulator> sim , const rw::kinematics::State& state );
 
 
     private:
@@ -173,14 +165,14 @@ class GraspRestingPoseDialog : public QDialog
         rwsim::util::MovingAverage _avgSimTime;
         rwsim::util::MovingAverage _avgTime;
 
-        std::vector<rwsim::control::PDControllerPtr> _controllers;
+        std::vector<rw::common::Ptr<rwsim::control::PDController> > _controllers;
         std::vector<rw::math::Q> _preshapes;
         std::vector<rw::math::Q> _targetQ;
         rwsim::dynamics::RigidBody::Ptr _body;
-        rwsim::dynamics::RigidDevice::Ptr _hand;
+        rw::common::Ptr<rwsim::dynamics::RigidDevice> _hand;
         rw::kinematics::MovableFrame *_handBase,*_object;
 
-        rwsim::sensor::BodyContactSensorPtr _bodySensor;
+        rw::common::Ptr<rwsim::sensor::BodyContactSensor> _bodySensor;
 
         bool _exitHard;
 

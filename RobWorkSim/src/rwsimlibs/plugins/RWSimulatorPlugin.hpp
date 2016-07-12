@@ -20,39 +20,29 @@
 #ifndef RWSIM_RWSIMULATORPLUGIN_HPP
 #define RWSIM_RWSIMULATORPLUGIN_HPP
 
-
-#ifdef __WIN32
-#include <windows.h>
-#endif
-
-#include <rw/models/Device.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/State.hpp>
-
 #include <rw/trajectory/Path.hpp>
-#include <rw/trajectory/TrajectoryFactory.hpp>
 
-#include <rw/graphics/WorkCellScene.hpp>
-#include <rwlibs/opengl/Drawable.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
+//#include <rwsim/drawable/RenderContacts.hpp>
 
-#include <rwsim/simulator/DynamicSimulator.hpp>
-#include <rwsim/rwphysics/ConstantForceManipulator.hpp>
-
-#include <rwsim/drawable/RenderContacts.hpp>
-#include <rwsim/drawable/RenderGhost.hpp>
-
-#include <rwlibs/control/JointController.hpp>
-
-#include <rwsimlibs/gui/JointControlDialog.hpp>
+//#include <rwlibs/control/JointController.hpp>
 
 #include <RobWorkStudioPlugin.hpp>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QLabel>
+
 #include <QObject>
-#include <QtGui>
-#include <QTimer>
+
+namespace rwlibs { namespace opengl { class Drawable; } }
+//namespace rwsim { namespace drawable { class RenderGhost; } }
+namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
+//namespace rwsim { namespace simulator { class ConstantForceManipulator; } }
+namespace rwsim { namespace simulator { class DynamicSimulator; } }
+
+//class JointControlDialog;
+
+class QComboBox;
+class QCheckBox;
+class QDoubleSpinBox;
+class QLabel;
+class QTimer;
 
 class RWSimulatorPlugin: public rws::RobWorkStudioPlugin {
 Q_OBJECT
@@ -100,22 +90,22 @@ private:
     rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> _dworkcell;
 //    rw::kinematics::State *_state;
     rw::kinematics::State _jointState;
-    rwsim::simulator::ConstantForceManipulator *_gravity;
+    //rwsim::simulator::ConstantForceManipulator *_gravity;
     QTimer *_timer;
 
-    rwsim::drawable::RenderContacts _miscForces;
-    rwsim::drawable::RenderContacts _bodyForces;
+    //rwsim::drawable::RenderContacts _miscForces;
+    //rwsim::drawable::RenderContacts _bodyForces;
 
     double _timeStep;
     double _nextTime;
     bool _save;
-    JointControlDialog *_jointDialog,*_jointDialog1;
-    rwsim::drawable::RenderGhost *_ghost;
+    //JointControlDialog *_jointDialog,*_jointDialog1;
+    //rwsim::drawable::RenderGhost *_ghost;
 
     //std::vector<rwsim::dynamics::FixedDevice*> _fdevs;
     QLabel* _timeLabel;
     rw::trajectory::TimedStatePath _statePath;
-    rwsim::simulator::DynamicSimulator::Ptr _simulator;
+    rw::common::Ptr<rwsim::simulator::DynamicSimulator> _simulator;
 
 
     //std::vector<rwlibs::control::JointController*> _controllers;

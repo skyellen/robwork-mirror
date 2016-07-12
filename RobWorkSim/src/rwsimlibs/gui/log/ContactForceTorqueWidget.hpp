@@ -25,7 +25,6 @@
  */
 
 #include "SimulatorLogEntryWidget.hpp"
-#include <QItemSelection>
 #include <rw/math/Wrench6D.hpp>
 
 namespace rwsim { namespace contacts { class Contact; } }
@@ -33,6 +32,8 @@ namespace rwsim { namespace log { class LogContactSet; } }
 namespace rwsim { namespace log { class LogContactForceTorque; } }
 
 namespace Ui { class ContactForceTorqueWidget; }
+
+class QItemSelection;
 
 namespace rwsimlibs {
 namespace gui {

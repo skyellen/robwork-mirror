@@ -1,20 +1,20 @@
 #include "GraspTableGeneratorPlugin.hpp"
 
-#include <iostream>
-#include <fstream>
+#include <sstream>
 #include <string>
 
+#include <boost/bind.hpp>
 #include <boost/foreach.hpp>
-#include <boost/filesystem/operations.hpp>
 
-#include <rw/rw.hpp>
+#include <rw/loaders/xml/XMLPropertyLoader.hpp>
+#include <rw/loaders/xml/XMLPropertySaver.hpp>
 
 #include <rws/RobWorkStudio.hpp>
 
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/simulator/PhysicsEngineFactory.hpp>
-#include <rwsim/loaders/ScapePoseFormat.hpp>
-#include <rwsim/sensor/TactileArraySensor.hpp>
+#include <rwsim/dynamics/RigidDevice.hpp>
+#include <rwsim/simulator/DynamicSimulator.hpp>
 
 #include <rwsim/util/GraspPolicyFactory.hpp>
 #include <rwsim/util/GraspStrategyFactory.hpp>
@@ -42,8 +42,6 @@ using namespace rw::models;
 using namespace rw::geometry;
 using namespace rw::graspplanning;
 using namespace rwlibs::simulation;
-
-namespace bfs=boost::filesystem;
 
 using namespace boost::numeric::ublas;
 
@@ -469,6 +467,8 @@ void GraspTableGeneratorPlugin::startTableGeneration(){
 
 
 #if 0
+#include <rwsim/loaders/ScapePoseFormat.hpp>
+#include <rwsim/sensor/TactileArraySensor.hpp>
 namespace {
 
 	std::vector<matrix<float> > getTactileData(const std::vector<SimulatedSensorPtr>& sensors){

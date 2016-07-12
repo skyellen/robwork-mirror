@@ -1,20 +1,15 @@
 #ifndef BODYCONTROLLERWIDGET_HPP_
 #define BODYCONTROLLERWIDGET_HPP_
 
-#include <rwsim/control/BodyController.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/control/BodyController.hpp>
-#include <rwsim/simulator/DynamicSimulator.hpp>
-
-#include "JogGroup.hpp"
+#include <rw/common/Ptr.hpp>
 
 #include <QDialog>
-#include <QFileInfo>
-#include <QString>
-#include <QTabWidget>
-#include <QComboBox>
 
+namespace rwsim { namespace control { class BodyController; } }
+//namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
+namespace rwsim { namespace simulator { class DynamicSimulator; } }
 
+class JogGroup;
 
 /**
  * @brief dialog used to control dynamic bodies in the scene
@@ -24,12 +19,12 @@ class BodyControlDialog : public QDialog
     Q_OBJECT
 
 public:
-    BodyControlDialog(rwsim::dynamics::DynamicWorkCell::Ptr dwc,
-                      rwsim::control::BodyController::Ptr bodycontroller,
+    BodyControlDialog(//rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc,
+                      rw::common::Ptr<rwsim::control::BodyController> bodycontroller,
                       QWidget *parent = 0);
 
-    BodyControlDialog(rwsim::dynamics::DynamicWorkCell::Ptr dwc,
-                      rwsim::simulator::DynamicSimulator::Ptr simulator,
+    BodyControlDialog(//rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc,
+                      rw::common::Ptr<rwsim::simulator::DynamicSimulator> simulator,
                       QWidget *parent = 0);
 
     virtual ~BodyControlDialog(){}
@@ -37,11 +32,8 @@ public:
 
 
 private:
-    QComboBox *_bodyBox;
-    QTabWidget *tabWidget;
-
-    rwsim::control::BodyController::Ptr _bodyctrl;
-    rwsim::simulator::DynamicSimulator::Ptr _sim;
+    rw::common::Ptr<rwsim::control::BodyController> _bodyctrl;
+    //rw::common::Ptr<rwsim::simulator::DynamicSimulator> _sim;
     JogGroup *_jogGroup;
 };
 

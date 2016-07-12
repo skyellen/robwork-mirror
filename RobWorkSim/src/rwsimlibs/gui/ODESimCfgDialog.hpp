@@ -8,23 +8,12 @@
 #ifndef ODESIMCFGDIALOG_HPP_
 #define ODESIMCFGDIALOG_HPP_
 
-#ifdef __WIN32
-#include <windows.h>
-#endif
-
 #include <QDialog>
 #include <QObject>
-#include <QtGui>
-#include <QTimer>
 
-#include <rw/kinematics/State.hpp>
-
-#include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/simulator/DynamicSimulator.hpp>
-#include <rwsim/simulator/ThreadSimulator.hpp>
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/FrameMap.hpp>
+
+namespace rwsim { namespace simulator { class DynamicSimulator; } }
 
 namespace Ui {
     class ODESimCfgForm;

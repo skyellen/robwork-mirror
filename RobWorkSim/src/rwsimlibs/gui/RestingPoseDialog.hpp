@@ -8,30 +8,24 @@
 #ifndef RESTINGPOSEDIALOG_HPP_
 #define RESTINGPOSEDIALOG_HPP_
 
-#ifdef __WIN32
-#include <windows.h>
-#endif
-
+#include <rw/kinematics/FrameMap.hpp>
 #include <rw/kinematics/State.hpp>
 
 #include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/simulator/ThreadSimulator.hpp>
-
-#include <rw/kinematics/FrameMap.hpp>
-
 #include <rwsim/util/MovingAverage.hpp>
 
-#include <rw/proximity/CollisionDetector.hpp>
-
 #include <QObject>
-#include <QtGui>
-#include <QTimer>
 #include <QDialog>
+
+namespace rw { namespace proximity { class CollisionDetector; } }
+namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
+namespace rwsim { namespace simulator { class ThreadSimulator; } }
 
 namespace Ui {
     class RestingPoseDialog;
 }
+
+class QTimer;
 
 /**
  * @brief a grphical interface for calculating resting configurations of

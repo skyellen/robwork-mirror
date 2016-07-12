@@ -18,8 +18,9 @@
 #ifndef RWSIM_SIMULATOR_ODEDEVICE_HPP_
 #define RWSIM_SIMULATOR_ODEDEVICE_HPP_
 
-#include <rw/kinematics/State.hpp>
 #include <rwlibs/simulation/Simulator.hpp>
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwsim {
 namespace simulator {

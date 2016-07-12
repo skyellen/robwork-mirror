@@ -1,14 +1,15 @@
 #include "JointControlDialog.hpp"
 
-#include <RobWorkStudioConfig.hpp>
-#if RWS_USE_QT5
-#include <QtWidgets>
-#else
-#include <QtGui>
-#endif
+#include "JogGroup.hpp"
+
+#include <rwlibs/control/JointController.hpp>
+#include <rwsim/dynamics/DynamicDevice.hpp>
+
+#include <QPushButton>
+#include <QTabWidget>
+#include <QVBoxLayout>
 
 using namespace rwlibs::control;
-
 
 VelTab::VelTab(rwlibs::control::JointController::Ptr jcontroller, QWidget *parent)
 : QWidget(parent)
@@ -121,3 +122,10 @@ JointControlDialog::JointControlDialog(
     setWindowTitle(tr("Joint Control"));
 }
 
+CurTab::CurTab(rw::common::Ptr<rwlibs::control::JointController> jcontroller, QWidget *parent):
+		QWidget(parent)
+{
+	if( !(jcontroller->getControlModes() & rwlibs::control::JointController::CURRENT) )
+		this->setDisabled(true);
+
+}

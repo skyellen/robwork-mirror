@@ -28,6 +28,8 @@
 
 #include "ui_BodyMotionWidget.h"
 
+#include <QItemSelection>
+
 using namespace rw::common;
 using namespace rw::geometry;
 using namespace rw::graphics;

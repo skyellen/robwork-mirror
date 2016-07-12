@@ -2,12 +2,23 @@
 
 #include <boost/foreach.hpp>
 
-#include <rw/rw.hpp>
+#include <rw/loaders/path/PathLoader.hpp>
+#include <rw/loaders/xml/XMLPropertyLoader.hpp>
+#include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/graspplanning/CMDistCCPMeasure3D.hpp>
+#include <rw/graspplanning/WrenchMeasure3D.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
 
+#include <rwsim/control/PDController.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/simulator/PhysicsEngineFactory.hpp>
+#include <rwsim/dynamics/RigidDevice.hpp>
+#include <rwsim/simulator/PhysicsEngine.hpp>
 #include <rwsim/loaders/ScapePoseFormat.hpp>
+#include <rwsim/sensor/BodyContactSensor.hpp>
 #include <rwsim/sensor/TactileArraySensor.hpp>
+#include <rwsim/simulator/DynamicSimulator.hpp>
+#include <rwsim/simulator/ThreadSimulator.hpp>
 
 #include <boost/filesystem/operations.hpp>
 #include <iostream>
@@ -15,6 +26,8 @@
 #include <string>
 
 #include "ui_GraspRestingPoseDialog.h"
+
+#include <QTimer>
 
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
@@ -539,7 +552,7 @@ void GraspRestingPoseDialog::initializeStart(){
         state = _defstate;
         // create simulator
         RW_DEBUGS("-- sim nr " << i);
-        PhysicsEngine::Ptr pengine = PhysicsEngineFactory::makePhysicsEngine("ODE",_dwc);
+        PhysicsEngine::Ptr pengine = PhysicsEngine::Factory::makePhysicsEngine("ODE",_dwc);
         DynamicSimulator::Ptr sim = ownedPtr(new DynamicSimulator(_dwc, pengine));
         RW_DEBUGS("-- Initialize simulator " << i);
         sim->init(state);

@@ -25,12 +25,13 @@
  */
 
 #include "SimulatorLogEntryWidget.hpp"
-#include <QItemSelection>
 
 namespace rwsim { namespace log { class LogCollisionResult; } }
 namespace rwsim { namespace log { class LogPositions; } }
 
 namespace Ui { class CollisionResultWidget; }
+
+class QItemSelection;
 
 namespace rwsimlibs {
 namespace gui {

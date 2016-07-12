@@ -1,20 +1,21 @@
 #ifndef SimTaskPlugin_HPP
 #define SimTaskPlugin_HPP
 
-#include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
-#include <rwsim/rwsim.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
-#include <rwsim/control/BodyController.hpp>
 #include "ui_SimTaskPlugin.h"
 
+#include <rw/common/Timer.hpp>
 #include <rwsim/simulator/GraspTaskSimulator.hpp>
 
 #include <QObject>
-#include <QtGui>
-#include <QTimer>
-#include <rws/propertyview/PropertyViewEditor.hpp>
-#include <rw/common/Timer.hpp>
+
+namespace rwsim { namespace drawable { class SimulatorDebugRender; } }
+namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
+namespace rwsim { namespace simulator { class GraspTaskSimulator; } }
+
+class PropertyViewEditor;
+
+class QTimer;
 
 /**
  * @brief A plugin that continuesly grasps an object from a target pose whereafter it is
@@ -88,14 +89,14 @@ private:
     rwlibs::task::GraspTask::Ptr generateTasks(int nrTasks);
 private:
     rw::models::WorkCell* _wc;
-    rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
-    rwsim::simulator::GraspTaskSimulator::Ptr _graspSim;
+    rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> _dwc;
+    rw::common::Ptr<rwsim::simulator::GraspTaskSimulator> _graspSim;
 
     QTimer *_timer;
     rw::common::Timer _wallTimer, _wallTotalTimer;
     double _restingTime, _simTime;
 
-    rwsim::drawable::SimulatorDebugRender::Ptr _debugRender;
+    rw::common::Ptr<rwsim::drawable::SimulatorDebugRender> _debugRender;
     rw::common::PropertyMap _config;
     PropertyViewEditor *_propertyView;
     rw::kinematics::State _initState;

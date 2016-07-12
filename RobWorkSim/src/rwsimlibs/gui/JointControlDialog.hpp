@@ -1,30 +1,32 @@
 #ifndef JOINTCONTROLDIALOG_HPP_
 #define JOINTCONTROLDIALOG_HPP_
 
-#include <QDialog>
-#include <QFileInfo>
-#include <QString>
-#include <QTabWidget>
+#include <rw/common/Ptr.hpp>
 
-#include "JogGroup.hpp"
-#include <rwlibs/control/JointController.hpp>
-#include <rwsim/dynamics/DynamicDevice.hpp>
+#include <QDialog>
+
+namespace rwlibs { namespace control { class JointController; } }
+namespace rwsim { namespace dynamics { class DynamicDevice; } }
+
+class JogGroup;
+
+class QTabWidget;
 
 class JointControlDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    JointControlDialog(rwlibs::control::JointController::Ptr jcontroller, QWidget *parent = 0);
-    JointControlDialog(rwsim::dynamics::DynamicDevice::Ptr device, QWidget *parent = 0);
+    JointControlDialog(rw::common::Ptr<rwlibs::control::JointController> jcontroller, QWidget *parent = 0);
+    JointControlDialog(rw::common::Ptr<rwsim::dynamics::DynamicDevice> device, QWidget *parent = 0);
 
     virtual ~JointControlDialog(){}
 
 private:
     QTabWidget *tabWidget;
 
-    rwlibs::control::JointController::Ptr _controller;
-    rwsim::dynamics::DynamicDevice::Ptr _device;
+    rw::common::Ptr<rwlibs::control::JointController> _controller;
+    rw::common::Ptr<rwsim::dynamics::DynamicDevice> _device;
 };
 
 
@@ -33,7 +35,7 @@ class SyncTab : public QWidget
     Q_OBJECT
 
 public:
-    SyncTab(rwlibs::control::JointControllerPtr jcontroller, QWidget *parent=0)
+    SyncTab(rw::common::Ptr<rwlibs::control::JointController> jcontroller, QWidget *parent=0)
     : QWidget(parent)
     {
     }
@@ -46,7 +48,7 @@ class PosTab : public QWidget
     Q_OBJECT
 
 public:
-    PosTab(rwlibs::control::JointControllerPtr jcontroller,QWidget *parent=0);
+    PosTab(rw::common::Ptr<rwlibs::control::JointController> jcontroller,QWidget *parent=0);
 
     virtual ~PosTab(){};
 
@@ -58,7 +60,7 @@ private slots:
 
 private:
     JogGroup *_jogGroup;
-    rwlibs::control::JointControllerPtr _jcont;
+    rw::common::Ptr<rwlibs::control::JointController> _jcont;
 };
 
 class VelTab : public QWidget
@@ -66,13 +68,13 @@ class VelTab : public QWidget
     Q_OBJECT
 
 public:
-    VelTab(rwsim::dynamics::DynamicDevice::Ptr device, QWidget *parent=0)
+    VelTab(rw::common::Ptr<rwsim::dynamics::DynamicDevice> device, QWidget *parent=0)
     : QWidget(parent)
     {
 
     }
 
-    VelTab(rwlibs::control::JointController::Ptr jcontroller, QWidget *parent=0);
+    VelTab(rw::common::Ptr<rwlibs::control::JointController> jcontroller, QWidget *parent=0);
 
     virtual ~VelTab(){};
 };
@@ -82,13 +84,7 @@ class CurTab : public QWidget
     Q_OBJECT
 
 public:
-    CurTab(rwlibs::control::JointControllerPtr jcontroller, QWidget *parent=0)
-    : QWidget(parent)
-    {
-        if( !(jcontroller->getControlModes() & rwlibs::control::JointController::CURRENT) )
-            this->setDisabled(true);
-
-    }
+    CurTab(rw::common::Ptr<rwlibs::control::JointController> jcontroller, QWidget *parent=0);
     virtual ~CurTab(){};
 };
 

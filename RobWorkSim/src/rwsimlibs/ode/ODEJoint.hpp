@@ -19,7 +19,6 @@
 #define RWSIM_SIMULATOR_ODEJOINT_HPP_
 
 #include <ode/ode.h>
-#include <rwsim/dynamics/Body.hpp>
 //#include <rwsim/dynamics/RigidJoint.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/models/Joint.hpp>

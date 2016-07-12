@@ -22,11 +22,10 @@
 #include <rw/math/Transform3D.hpp>
 #include <rwlibs/simulation/Simulator.hpp>
 
-#include <rwsim/dynamics/Body.hpp>
-
 #include <vector>
 #include <ode/ode.h>
 
+namespace rwsim { namespace dynamics { class Body; } }
 namespace rwsim { namespace sensor { class SimulatedTactileSensor; } }
 
 namespace rwsim {
@@ -45,12 +44,12 @@ namespace simulator {
 
         void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
-        void addFeedbackGlobal(dJointFeedback*, rwsim::dynamics::Body::Ptr a, rwsim::dynamics::Body::Ptr b, int body);
+        void addFeedbackGlobal(dJointFeedback*, rw::common::Ptr<rwsim::dynamics::Body> a, rw::common::Ptr<rwsim::dynamics::Body> b, int body);
 
 		void addFeedback(const std::vector<dJointFeedback*>& fback,
 		                 const std::vector<dContactGeom> &g,
-		                 rwsim::dynamics::Body::Ptr a,
-						 rwsim::dynamics::Body::Ptr b,
+						 rw::common::Ptr<rwsim::dynamics::Body> a,
+						 rw::common::Ptr<rwsim::dynamics::Body> b,
 		                 int body);
 
 		// this is for contacts that are not directly specified by the physics solver, eg. if you emulate
@@ -58,7 +57,7 @@ namespace simulator {
 		void addContact(const rw::math::Vector3D<>& pos,
 		                const rw::math::Vector3D<>& force,
 		                const rw::math::Vector3D<>& normal,
-		                dynamics::Body::Ptr b);
+						rw::common::Ptr<rwsim::dynamics::Body> b);
 
 	//    void setContacts(const rw::proximity::MultiDistanceResult& res,
 	//                     rw::math::Transform3D<> wTa,
@@ -73,25 +72,25 @@ namespace simulator {
 		std::vector<std::vector<dContactGeom> > _geoms;
 		//std::vector<rw::proximity::MultiDistanceResult> _contacts;
 
-		std::vector<dynamics::Body::Ptr> _rwBody;
+		std::vector<rw::common::Ptr<rwsim::dynamics::Body> > _rwBody;
 		std::vector<int> _bodyFixed;
 		sensor::SimulatedTactileSensor *_rwsensor;
 		//rw::math::Vector3D<> point;
 		std::vector<int> _bodyIdx, _bodyGlobalIdx;
-		std::vector<dynamics::Body::Ptr> _bodyGlobal;
+		std::vector<rw::common::Ptr<rwsim::dynamics::Body> > _bodyGlobal;
 		std::vector<int> _bodyGlobalFixed;
 
 		struct DirectContact {
 		    DirectContact(const rw::math::Vector3D<>& pos,
 		                  const rw::math::Vector3D<>& force,
 		                  const rw::math::Vector3D<>& normal,
-		                  dynamics::Body::Ptr body):
+						  rw::common::Ptr<rwsim::dynamics::Body> body):
 		        p(pos),f(force),n(normal),b(body)
 		    {}
 		    rw::math::Vector3D<> p;
 		    rw::math::Vector3D<> f;
 		    rw::math::Vector3D<> n;
-		    dynamics::Body::Ptr b;
+		    rw::common::Ptr<rwsim::dynamics::Body> b;
 		};
 
 		std::vector< DirectContact > _directContacts;

@@ -34,9 +34,10 @@
 #include <rwsim/log/SimulatorLogEntry.hpp>
 #include <rwsim/log/SimulatorStatistics.hpp>
 
-#include <iostream>
 #include <queue>
 #include <rwsim/log/LogStep.hpp>
+
+#include <QItemSelection>
 
 using namespace rw::common;
 using namespace rw::geometry;

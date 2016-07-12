@@ -6,14 +6,17 @@
 
 #include <rw/math/RPY.hpp>
 #include <rw/math/Math.hpp>
+#include <rw/math/Random.hpp>
 #include <rw/math/Constants.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
 
-#include <rwsim/simulator/PhysicsEngineFactory.hpp>
+#include <rwsim/simulator/PhysicsEngine.hpp>
+#include <rwsim/simulator/ThreadSimulator.hpp>
 
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/Ptr.hpp>
@@ -24,6 +27,9 @@
 #include <stdio.h>
 
 #include "ui_RestingPoseDialog.h"
+
+#include <QTime>
+#include <QTimer>
 
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
@@ -88,15 +94,15 @@ void RestingPoseDialog::initializeStart(){
     }
 
     std::string engineId = _dwc->getEngineSettings().get<std::string>("Engine","ODE");
-    if( !PhysicsEngineFactory::hasEngineID(engineId) ){
+    if( !PhysicsEngine::Factory::hasEngineID(engineId) ){
         RW_WARN("Engine id: " << engineId << " not supported!");
-        engineId = PhysicsEngineFactory::getEngineIDs()[0];
+        engineId = PhysicsEngine::Factory::getEngineIDs()[0];
     }
 
     for(int i=0;i<threads;i++){
         // create simulator
         RW_DEBUGS("sim " << i);
-        PhysicsEngine::Ptr pengine = PhysicsEngineFactory::makePhysicsEngine(engineId,_dwc);
+        PhysicsEngine::Ptr pengine = PhysicsEngine::Factory::makePhysicsEngine(engineId,_dwc);
         DynamicSimulator::Ptr sim = ownedPtr( new DynamicSimulator(_dwc, pengine) );
         RW_DEBUGS("Initialize simulator " << i);
         sim->init(state);
@@ -430,7 +436,7 @@ void RestingPoseDialog::calcColFreeRandomCfg(rw::kinematics::State& state){
 namespace {
 
     Rotation3D<> ranRotation3D(double maxAngle){
-        EAA<> rot(Math::ran(-maxAngle, maxAngle), Math::ran(-maxAngle, maxAngle), Math::ran(-maxAngle, maxAngle));
+        EAA<> rot(Random::ran(-maxAngle, maxAngle), Random::ran(-maxAngle, maxAngle), Random::ran(-maxAngle, maxAngle));
         return rot.toRotation3D();
     }
 
@@ -441,29 +447,29 @@ namespace {
      * @return
      */
     Rotation3D<> ranRotation3D(const rw::math::Rotation3D<>& point, double maxAngle){
-        EAA<> rot(Math::ran(-maxAngle, maxAngle), Math::ran(-maxAngle, maxAngle), Math::ran(-maxAngle, maxAngle));
+        EAA<> rot(Random::ran(-maxAngle, maxAngle), Random::ran(-maxAngle, maxAngle), Random::ran(-maxAngle, maxAngle));
         return point*rot.toRotation3D();
     }
 
     Rotation3D<> ranNormalDistRotation3D(double sigma_a){
-        EAA<> rot(Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a));
+        EAA<> rot(Random::ranNormalDist(0,sigma_a), Random::ranNormalDist(0,sigma_a), Random::ranNormalDist(0,sigma_a));
         return rot.toRotation3D();
     }
 
     Rotation3D<> ranNormalDistRotation3D(const rw::math::Rotation3D<>& point, double sigma_a){
-        EAA<> rot(Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a));
+        EAA<> rot(Random::ranNormalDist(0,sigma_a), Random::ranNormalDist(0,sigma_a), Random::ranNormalDist(0,sigma_a));
         return point*rot.toRotation3D();
     }
 
     Transform3D<> ranTransform3D(const rw::math::Transform3D<>& point, double maxPos,  double maxAngle){
-        Vector3D<> pos(Math::ran(-maxPos,maxPos), Math::ran(-maxPos,maxPos), Math::ran(-maxPos,maxPos));
-        EAA<> rot(Math::ran(-maxAngle, maxAngle), Math::ran(-maxAngle, maxAngle), Math::ran(-maxAngle, maxAngle));
+        Vector3D<> pos(Random::ran(-maxPos,maxPos), Random::ran(-maxPos,maxPos), Random::ran(-maxPos,maxPos));
+        EAA<> rot(Random::ran(-maxAngle, maxAngle), Random::ran(-maxAngle, maxAngle), Random::ran(-maxAngle, maxAngle));
         return point*Transform3D<>(pos,rot);
     }
 
     Transform3D<> ranNormalDistTransform3D(const rw::math::Transform3D<>& point, double sigma_p,  double sigma_a){
-        Vector3D<> pos(Math::ranNormalDist(0,sigma_p), Math::ranNormalDist(0,sigma_p), Math::ranNormalDist(0,sigma_p));
-        EAA<> rot(Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a));
+        Vector3D<> pos(Random::ranNormalDist(0,sigma_p), Random::ranNormalDist(0,sigma_p), Random::ranNormalDist(0,sigma_p));
+        EAA<> rot(Random::ranNormalDist(0,sigma_a), Random::ranNormalDist(0,sigma_a), Random::ranNormalDist(0,sigma_a));
         return point*Transform3D<>(pos,rot);
     }
 
@@ -491,15 +497,15 @@ void RestingPoseDialog::calcRandomCfg(std::vector<RigidBody::Ptr> &bodies, rw::k
         const double lowY = Deg2Rad * ( _ui->_lowYawSpin->value() );
         const double highY = Deg2Rad * ( _ui->_highYawSpin->value() );
 
-        double roll = Math::ran(lowR, highR);
-        double pitch = Math::ran(lowP, highP);
-        double yaw = Math::ran(lowY, highY);
+        double roll = Random::ran(lowR, highR);
+        double pitch = Random::ran(lowP, highP);
+        double yaw = Random::ran(lowY, highY);
         rot = RPY<>(roll,pitch,yaw).toRotation3D();
     }
 
-    pos[0] = Math::ran(_ui->_xLimit->value(), std::max(_ui->_xLimit->value(), _ui->_xLimit_2->value()));
-    pos[1] = Math::ran(_ui->_yLimit->value(), std::max(_ui->_yLimit->value(), _ui->_yLimit_2->value()));
-    pos[2] = Math::ran(_ui->_zLimit->value(), std::max(_ui->_zLimit->value(), _ui->_zLimit_2->value()));
+    pos[0] = Random::ran(_ui->_xLimit->value(), std::max(_ui->_xLimit->value(), _ui->_xLimit_2->value()));
+    pos[1] = Random::ran(_ui->_yLimit->value(), std::max(_ui->_yLimit->value(), _ui->_yLimit_2->value()));
+    pos[2] = Random::ran(_ui->_zLimit->value(), std::max(_ui->_zLimit->value(), _ui->_zLimit_2->value()));
 
     BOOST_FOREACH(RigidBody::Ptr rbody, bodies){
         Transform3D<> t3d = Kinematics::worldTframe(rbody->getMovableFrame(), _defstate);

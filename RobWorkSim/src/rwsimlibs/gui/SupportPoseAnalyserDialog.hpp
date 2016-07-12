@@ -13,33 +13,32 @@
 #endif
 
 #include <QObject>
-#include <QtGui>
-#include <QTimer>
-#include <QGraphicsPixmapItem>
+#include <QDialog>
 
-#include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/simulator/ThreadSimulator.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/FrameMap.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
 #include <rw/trajectory/Path.hpp>
-#include <rw/math/Math.hpp>
-#include <rwsim/util/MovingAverage.hpp>
-#include <rwsim/util/SupportPose.hpp>
+#include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/util/CircleModel.hpp>
-#include <rwsim/drawable/RenderPoints.hpp>
-#include <rwsim/drawable/RenderPlanes.hpp>
-#include <rwsim/drawable/RenderCircles.hpp>
-#include <rw/math/Pose6D.hpp>
-#include <rwlibs/opengl/RenderFrame.hpp>
+#include <rwsim/util/SupportPose.hpp>
 
-#include "RestingPoseDialog.hpp"
-#include "GLViewRW.hpp"
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace models { class WorkCell; } }
+namespace rw { namespace proximity { class CollisionDetector; } }
+namespace rwlibs { namespace opengl { class Drawable; } }
+namespace rwlibs { namespace opengl { class RenderFrame; } }
+namespace rws { class RobWorkStudio; }
+namespace rwsim { namespace drawable { class RenderPoints; } }
+namespace rwsim { namespace drawable { class RenderPlanes; } }
+namespace rwsim { namespace drawable { class RenderCircles; } }
+namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
+
+class RestingPoseDialog;
+class GLViewRW;
 
 namespace Ui {
     class SupportPoseAnalyserDialog;
 }
+
+class QGraphicsPixmapItem;
 
 /**
  * @brief gaphical user interface for calculating support pose and related

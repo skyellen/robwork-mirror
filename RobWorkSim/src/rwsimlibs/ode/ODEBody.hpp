@@ -20,14 +20,14 @@
 
 #include <ode/ode.h>
 #include <rwsim/dynamics/Body.hpp>
-#include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwlibs/simulation/Simulator.hpp>
 #include <rw/math/Vector3D.hpp>
 #include "ODEUtil.hpp"
 
 namespace rw { namespace kinematics { class MovableFrame; } }
 namespace rw { namespace kinematics { class State; } }
+namespace rwsim { namespace dynamics { class RigidBody; } }
+namespace rwsim { namespace dynamics { class KinematicBody; } }
 
 namespace rwsim {
 namespace simulator {
@@ -69,7 +69,7 @@ namespace simulator {
 		 * @return
 		 */
 		ODEBody(dBodyID odeBody,
-				dynamics::RigidBody::Ptr rwbody,
+				rw::common::Ptr<rwsim::dynamics::RigidBody> rwbody,
 				rw::math::Vector3D<> offset,
 				int matID, int conID);
 
@@ -84,7 +84,7 @@ namespace simulator {
 		 * @param type
 		 */
         ODEBody(dBodyID odeBody,
-                dynamics::Body::Ptr body,
+        		dynamics::Body::Ptr body,
                 rw::math::Vector3D<> offset,
                 int matID, int conID,
                 ODEBodyType type);
@@ -96,7 +96,7 @@ namespace simulator {
 		 * @param offset [in] offset of the center of mass relative to \b rwbody
 		 * @return
 		 */
-		ODEBody(dBodyID odeBody, dynamics::KinematicBody::Ptr rwbody,int matID, int conID);
+		ODEBody(dBodyID odeBody, rw::common::Ptr<rwsim::dynamics::KinematicBody> rwbody,int matID, int conID);
 
 		/**
 		 * @brief constructor for fixed bodies
@@ -203,8 +203,8 @@ namespace simulator {
         std::vector<dGeomID> _geomIds;
         std::vector<ODEUtil::TriGeomData*> _triGeomDatas;
 
-        dynamics::RigidBody::Ptr _rwBody;
-        dynamics::KinematicBody::Ptr _kBody;
+        rw::common::Ptr<rwsim::dynamics::RigidBody> _rwBody;
+        rw::common::Ptr<rwsim::dynamics::KinematicBody> _kBody;
 
         rw::math::Vector3D<> _offset;
 		rw::math::Vector3D<> _lastForce;

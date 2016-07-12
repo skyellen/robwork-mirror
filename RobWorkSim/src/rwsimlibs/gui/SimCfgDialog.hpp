@@ -8,22 +8,12 @@
 #ifndef SIMULATORCFGDIALOG_HPP_
 #define SIMULATORCFGDIALOG_HPP_
 
-#ifdef __WIN32
-#include <windows.h>
-#endif
-
-#include <rw/kinematics/State.hpp>
-
-#include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/simulator/ThreadSimulator.hpp>
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/FrameMap.hpp>
 
 #include <QObject>
-#include <QtGui>
-#include <QTimer>
 #include <QDialog>
+
+namespace rwsim { namespace simulator { class DynamicSimulator; } }
 
 namespace Ui {
     class SimCfgDialog;
@@ -42,8 +32,6 @@ class SimCfgDialog : public QDialog
 
     private:
         Ui::SimCfgDialog *_ui;
-
-        rw::common::Ptr<rwsim::simulator::DynamicSimulator> _sim;
 };
 
 

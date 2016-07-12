@@ -8,30 +8,10 @@
 #ifndef RWSIMPLUGIN_HPP_
 #define RWSIMPLUGIN_HPP_
 
-#ifdef __WIN32
-#include <windows.h>
-#endif
-
-
-
 #include "ui_RWSimPlugin.h"
 
-#include <rwsimlibs/gui/TactileSensorDialog.hpp>
-#include <rwsim/simulator/PhysicsEngineFactory.hpp>
-
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/simulator/ThreadSimulator.hpp>
-#include <rwsim/util/MovingAverage.hpp>
-#include <rw/graspplanning/GraspTable.hpp>
-
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/FrameMap.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
 #include <rw/trajectory/Path.hpp>
-
-#include <rwlibs/opengl/Drawable.hpp>
 
 #include <rws/RobWorkStudioPlugin.hpp>
 
@@ -42,10 +22,15 @@
 #include <rwsimlibs/swig/ScriptTypes.hpp>
 #endif
 
-
 #include <QObject>
-#include <QtGui>
-#include <QTimer>
+
+namespace rwlibs { namespace opengl { class Drawable; } }
+namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
+namespace rwsim { namespace simulator { class ThreadSimulator; } }
+
+class TactileSensorDialog;
+
+class QTimer;
 
 struct UserContext {
 	std::string _previousOpenDirectory;

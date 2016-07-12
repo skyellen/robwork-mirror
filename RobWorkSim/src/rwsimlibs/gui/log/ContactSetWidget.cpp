@@ -24,6 +24,8 @@
 #include <rwsim/log/LogContactSet.hpp>
 #include "ui_ContactSetWidget.h"
 
+#include <QItemSelection>
+
 using namespace rw::common;
 using namespace rw::graphics;
 using namespace rw::kinematics;

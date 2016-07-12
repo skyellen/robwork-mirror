@@ -1,12 +1,18 @@
 #include "BodyControllerWidget.hpp"
 
+#include "JogGroup.hpp"
+
+#include <rwsim/simulator/DynamicSimulator.hpp>
+
+#include <QVBoxLayout>
+
 using namespace rwsim::dynamics;
 using namespace rwsim::control;
 using namespace rw::math;
 
 using rwsim::control::BodyController;
 
-BodyControlDialog::BodyControlDialog(DynamicWorkCell::Ptr dwc,
+BodyControlDialog::BodyControlDialog(//DynamicWorkCell::Ptr dwc,
                   BodyController::Ptr bodycontroller,
                   QWidget *parent)
 : QDialog(parent),_bodyctrl(bodycontroller)
@@ -23,7 +29,7 @@ BodyControlDialog::BodyControlDialog(DynamicWorkCell::Ptr dwc,
     setLayout(mainLayout);
 }
 
-BodyControlDialog::BodyControlDialog(rwsim::dynamics::DynamicWorkCell::Ptr dwc,
+BodyControlDialog::BodyControlDialog(//rwsim::dynamics::DynamicWorkCell::Ptr dwc,
         rwsim::simulator::DynamicSimulator::Ptr simulator,
         QWidget *parent):
         QDialog(parent),
