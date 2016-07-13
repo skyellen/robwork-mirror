@@ -153,7 +153,7 @@ namespace {
             return (NULL);
         }
 
-        if ((raw->type & 0xFF00) == 0x0100) {
+        if ((raw->type & 0xFF00) == 0x0100) { // if Run Length Encoding is used (RLE)
             x = raw->sizeY * raw->sizeZ * sizeof(GLuint);
             raw->rowStart = (GLuint *) malloc(x);
             raw->rowSize = (GLint *) malloc(x);
@@ -190,12 +190,17 @@ namespace {
         unsigned char *iPtr, *oPtr, pixel;
         int count;
         size_t stat;
-        if ((raw->type & 0xFF00) == 0x0100) {
+        if ((raw->type & 0xFF00) == 0x0100) { // Run Length Encoding (RLE)
             fseek(raw->file, raw->rowStart[y + z * raw->sizeY], SEEK_SET);
             stat = fread(raw->tmp, 1, (unsigned int) raw->rowSize[y + z * raw->sizeY],
                   raw->file);
             if (stat != (size_t)raw->rowSize[y + z * raw->sizeY]) {RW_THROW("Reading error");}
 
+            // If an even number of bytes has been read, we add an implicit zero count
+            // at the end to make sure that the following while loop exits correctly.
+            // (Otherwise issues with the GIMP "Aggressive RLE" has been observed)
+            if (stat%2 == 0)
+            	*(raw->tmp+stat) = 0;
             iPtr = raw->tmp;
             oPtr = buf;
             while (1) {
