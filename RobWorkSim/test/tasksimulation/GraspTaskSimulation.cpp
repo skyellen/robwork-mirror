@@ -17,6 +17,8 @@
 
 #include "../TestSuiteConfig.hpp"
 
+#include <RobWorkSimConfig.hpp>
+
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
@@ -24,6 +26,11 @@
 #include <rwlibs/task/GraspTask.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 #include <rwsim/simulator/GraspTaskSimulator.hpp>
+
+#if RWSIM_HAVE_ODE
+#include <rwsimlibs/ode/ODEThreading.hpp>
+using rwsim::simulator::ODEThreading;
+#endif
 
 using namespace rw::common;
 using rw::kinematics::State;
@@ -65,7 +72,15 @@ BOOST_AUTO_TEST_CASE( GraspTaskSimulatorTest )
     WorkCell::Ptr wc = dwc->getWorkcell();
 
     // create GraspTaskSimulator
-    GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 2) );
+    GraspTaskSimulator::Ptr graspSim;
+#if RWSIM_HAVE_ODE
+    if (ODEThreading::isSupported())
+        graspSim = ownedPtr( new GraspTaskSimulator(dwc, 2) );
+    else
+        graspSim = ownedPtr( new GraspTaskSimulator(dwc, 1) );
+#else
+    graspSim = ownedPtr( new GraspTaskSimulator(dwc, 2) );
+#endif
 
     GraspTask::Ptr grasptask = GraspTask::load( grasptask_file );
     graspSim->setStoreTimedStatePaths(true);

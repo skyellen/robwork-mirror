@@ -50,6 +50,7 @@
 #include "ODEUtil.hpp"
 #include "ODESuctionCupDevice.hpp"
 #include "ODEMaterialMap.hpp"
+#include "ODEThreading.hpp"
 
 #include <rwsim/dynamics/OBRManifold.hpp>
 
@@ -535,6 +536,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
         }
 
 */
+        ODEThreading::checkSecureStepBegin(); // for user-friendly error if multiple simultaneous steps are not supported.
 	    try {
 	        switch(_stepMethod){
 	        case(WorldStep): TIMING("Step: ", dWorldStep(_worldId, dttmp)); break;
@@ -549,6 +551,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	        Log::errorLog() << "******************** Caught exeption in step function!*******************" << std::endl;
 	        RW_THROW("ODESimulator caught exception.");
 	    }
+        ODEThreading::checkSecureStepEnd();
 
 	    // if the solution is bad then we need to reduce timestep
 	    if(!badLCPSolution){
@@ -969,6 +972,8 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 	state.upgrade();
     RW_DEBUGS( "- RESETTING SCENE " );
 	resetScene(state);
+
+	ODEThreading::initThreading(_worldId);
 }
 
 void ODESimulator::addController(rwlibs::simulation::SimulatedController::Ptr controller){
@@ -2492,6 +2497,8 @@ void ODESimulator::exitPhysics()
 	}
 	_odeBodies.clear();
 
+	ODEThreading::destroyThreading(_worldId);
+
 	// only if init physics have been called
 	dJointGroupDestroy( _contactGroupId );
 	dWorldDestroy(_worldId);
@@ -2501,5 +2508,4 @@ void ODESimulator::exitPhysics()
 
 	_frameToModels.clear();
 	_bpstrategy = NULL;
-
 }
