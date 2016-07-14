@@ -161,11 +161,11 @@ ADD_DEPENDENCIES( rw_calibration-test ${TEST_DEPENDENCIES} )
 SET( CALIBRATION_TEST rw_calibration-test )
 
 # RANSAC fitting
-ADD_EXECUTABLE( rw_ransac-test ${DO_EXCLUDE} test-main.cpp algorithms/RANSACTest.cpp )
-TARGET_LINK_LIBRARIES( rw_ransac-test ${TEST_LIBRARIES} )
-ADD_TEST( rw_ransac-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_ransac-test ${DEFAULT_TEST_ARGS} )
-ADD_DEPENDENCIES( rw_ransac-test ${TEST_DEPENDENCIES} )
-SET( RANSAC_TEST rw_ransac-test )
+#ADD_EXECUTABLE( rw_ransac-test ${DO_EXCLUDE} test-main.cpp algorithms/RANSACTest.cpp )
+#TARGET_LINK_LIBRARIES( rw_ransac-test ${TEST_LIBRARIES} )
+#ADD_TEST( rw_ransac-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_ransac-test ${DEFAULT_TEST_ARGS} )
+#ADD_DEPENDENCIES( rw_ransac-test ${TEST_DEPENDENCIES} )
+#SET( RANSAC_TEST rw_ransac-test )
 
 # Mathematica
 IF ( RW_HAVE_MATHEMATICA )
@@ -179,7 +179,7 @@ ADD_CUSTOM_TARGET(rw_all-tests ctest -V
   DEPENDS rw_math-test rw_common-test rw_geometry-test rw_models-test rw_invkin-test 
           rw_loader-test rw_kinematics-test 
           rw_trajectory-test rw_collision-test 
-          rw_graphics-test rw_planner-test ${CALIBRATION_TEST} ${RANSAC_TEST}
+          rw_graphics-test rw_planner-test ${CALIBRATION_TEST} #${RANSAC_TEST}
           ${SANDBOX_TEST} ${PERFORMANCE_TEST} ${RW_EXTRA_TESTS}
           ${TEST_DEPENDENCIES}
     WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
@@ -188,7 +188,8 @@ INSTALL(TARGETS
             rw_math-test rw_common-test rw_models-test rw_geometry-test 
             rw_invkin-test rw_loader-test rw_kinematics-test 
             rw_trajectory-test rw_collision-test 
-            rw_graphics-test rw_planner-test ${CALIBRATION_TEST} ${RANSAC_TEST} ${SANDBOX_TEST} ${PERFORMANCE_TEST}
+            rw_graphics-test rw_planner-test ${CALIBRATION_TEST} #${RANSAC_TEST}
+            ${SANDBOX_TEST} ${PERFORMANCE_TEST}
         DESTINATION ${RW_INSTALL_DIR}/test)
 
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.xml.install
