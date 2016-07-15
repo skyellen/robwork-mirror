@@ -1,16 +1,10 @@
 
-#include <iostream>
+#include <sstream>
 #include <vector>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
-#include <sys/stat.h>
-#include <vector>
 
-#include <rw/rw.hpp>
+#include <rw/loaders/path/PathLoader.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rwlibs/task.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 #include <rwsim/simulator/GraspTaskSimulator.hpp>
@@ -26,15 +20,17 @@
 
 #include <rw/models/Models.hpp>
 
-#include <rwsimlibs/ode/ODESimulator.hpp>
-
-USE_ROBWORK_NAMESPACE
 using namespace std;
-using namespace robwork;
+using namespace rw::common;
+using rw::kinematics::State;
+using rw::loaders::PathLoader;
+using namespace rw::math;
+using namespace rw::models;
+using namespace rw::trajectory;
 using namespace rwlibs::task;
-using namespace rwsim::simulator;
-using namespace rwsim::dynamics;
-using namespace rwsim::loaders;
+using rwsim::simulator::GraspTaskSimulator;
+using rwsim::dynamics::DynamicWorkCell;
+using rwsim::loaders::DynamicWorkCellLoader;
 using namespace boost::program_options;
 
 void addPertubations(GraspTask::Ptr grasptask, double sigma_p, double sigma_a, int pertubationsPerTarget);

@@ -17,8 +17,8 @@
 
 #include <ctime>
 
-#include <rw/common/INIArchive.hpp>
-
+#include <rw/geometry/Cylinder.hpp>
+#include <rw/geometry/Tube.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 
 #include <rwlibs/assembly/AssemblyTask.hpp>

@@ -1,21 +1,11 @@
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
-#include <sys/stat.h>
-#include <vector>
-
-#include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
+#include <rwlibs/task/Task.hpp>
+#include <rwlibs/task/loader/XMLTaskSaver.hpp>
 #include <rw/math/Vector3D.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace std;
-using namespace robwork;
-
+using namespace rw::common;
+using namespace rw::math;
+using namespace rwlibs::task;
 
 int main(int argc, char** argv)
 {

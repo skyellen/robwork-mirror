@@ -8,20 +8,22 @@
 #include <vector>
 
 #include <rw/common/Log.hpp>
-#include <rw/kinematics.hpp>
-#include <rw/loaders.hpp>
-#include <rw/math.hpp>
+#include <rw/common/TimerUtil.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
+#include <rw/loaders/path/PathLoader.hpp>
+#include <rw/math/MetricUtil.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/trajectory/Path.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 
+#include <fstream>
+
 using namespace rw::common;
 using namespace rw::kinematics;
-using namespace rw::loaders;
+using rw::loaders::PathLoader;
 using namespace rw::math;
-using namespace rwsim::loaders;
-using namespace rwsim::dynamics;
-using namespace boost::numeric;
+using rwsim::loaders::DynamicWorkCellLoader;
+using rwsim::dynamics::DynamicWorkCell;
 
 void saveDist(std::string filename, std::vector<Transform3D<> >& poses, Rotation3D<> rot){
     std::cout << "Openning file: " << filename << std::endl;
@@ -74,27 +76,27 @@ int main(int argc, char** argv)
 
 	Log::infoLog() << "saving workcell" << std::endl;
 
-	rw::trajectory::TimedStatePath::Ptr path = PathLoader::loadTimedStatePath(*dwc->getWorkcell(),endpath).release();
-	rw::trajectory::TimedStatePath::Ptr startPath = PathLoader::loadTimedStatePath(*dwc->getWorkcell(),startpath).release();
+	const rw::trajectory::TimedStatePath path = PathLoader::loadTimedStatePath(*dwc->getWorkcell(),endpath);
+	const rw::trajectory::TimedStatePath startPath = PathLoader::loadTimedStatePath(*dwc->getWorkcell(),startpath);
 
 	rw::trajectory::TimedStatePath outpath, startoutpath, outpathmisses, startoutpathmisses;
 	std::vector<Transform3D<> > endTrans, startTrans;
 	std::vector<Transform3D<> > endTransMisses, startTransMisses;
 	//Unused: bool rotSet=false;
 	Vector3D<> rotAxis;
-	for(std::size_t i=0;i<path->size();i++){
-	    const State &state = (*path)[i].getValue();
+	for(std::size_t i=0;i<path.size();i++){
+	    const State &state = path[i].getValue();
 
 	    Transform3D<> t = plate->getTransform(state);
 	    Vector3D<> p(1.95147, 1.54077, 0.654097);
 
-	    Transform3D<> tStart = plate->getTransform( (*startPath)[i].getValue() );
+	    Transform3D<> tStart = plate->getTransform( startPath[i].getValue() );
 
 	    if( MetricUtil::dist2(t.P(),p)<0.10 ){
 
 	        outpath.push_back(rw::trajectory::TimedState(outpath.size(), state) );
 
-	        const State &sstate =  (*startPath)[i].getValue();
+	        const State &sstate =  startPath[i].getValue();
 	        startoutpath.push_back(rw::trajectory::TimedState(startoutpath.size()-1, sstate) );
 
 	        endTrans.push_back(t);
@@ -102,7 +104,7 @@ int main(int argc, char** argv)
 	    } else {
             outpathmisses.push_back(rw::trajectory::TimedState(outpath.size(), state) );
 
-            const State &sstate =  (*startPath)[i].getValue();
+            const State &sstate =  startPath[i].getValue();
             startoutpathmisses.push_back(rw::trajectory::TimedState(startoutpath.size()-1, sstate) );
 
 
@@ -120,7 +122,7 @@ int main(int argc, char** argv)
     PathLoader::storeTimedStatePath(*dwc->getWorkcell(), startoutpathmisses, "startconfigmisses.rwplay");
 
 
-    rotAxis = plate->getTransform((*path)[2].getValue()).R()*Vector3D<>(0,0,1);
+    rotAxis = plate->getTransform(path[2].getValue()).R()*Vector3D<>(0,0,1);
     Rotation3D<> rot = EAA<>(rotAxis, Vector3D<>(0,0,1)).toRotation3D() ;
     Vector3D<> iz = EAA<>(0,90*Deg2Rad,0).toRotation3D()*Vector3D<>(0,0,1);
     std::cout << Rad2Deg*angle(rotAxis, iz) << std::endl;

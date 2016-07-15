@@ -1,6 +1,4 @@
 
-#include <rw/rw.hpp>
-
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/option.hpp>
@@ -8,27 +6,21 @@
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
-#include <boost/math/special_functions/fpclassify.hpp>
-#include <boost/lexical_cast.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
-#include <rw/loaders/WorkCellFactory.hpp>
-#include <rw/geometry/IntersectUtil.hpp>
+#include <rw/math/Constants.hpp>
+#include <rw/math/EAA.hpp>
+#include <rw/math/Random.hpp>
 #include <rwlibs/task/GraspTask.hpp>
-#include <iostream>
+
+#include <sstream>
 #include <fstream>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
-#include <sys/stat.h>
 
 #include "CutActionParam.hpp"
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
 using namespace boost::program_options;
 using namespace std;
-using namespace rwlibs::proximitystrategies;
+using rw::common::Log;
+using namespace rw::math;
 using namespace rwlibs::task;
 
 
@@ -137,9 +129,9 @@ int main(int argc, char** argv){
                 // to do simulation we prepare a parameter file for the cut script
                 // and prepare the console parameters for the cutting
 
-                Vector3D<> pos(Math::ranNormalDist(0,sigma_p), Math::ranNormalDist(0,sigma_p), Math::ranNormalDist(0,sigma_p));
+                Vector3D<> pos(Random::ranNormalDist(0,sigma_p), Random::ranNormalDist(0,sigma_p), Random::ranNormalDist(0,sigma_p));
                 // we can do this only for small sigmas (approximation)
-                EAA<> rot(Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a));
+                EAA<> rot(Random::ranNormalDist(0,sigma_a), Random::ranNormalDist(0,sigma_a), Random::ranNormalDist(0,sigma_a));
 
                 Transform3D<> ntarget = Transform3D<>(base.posObj, base.rpyObj); //*Transform3D<>(pos, rot);
                 exp.posObj = ntarget.P();
@@ -154,7 +146,8 @@ int main(int argc, char** argv){
     CutActionParam::save(cut_experiments, cut_actions_output.str());
     std::cout << "Simulating cutting of grasp: " << std::endl;
     //int ret = system(cmd.str().c_str());
-    system(cmd.str().c_str());
+    if (!system(cmd.str().c_str()))
+    	RW_THROW("Command \"" << cmd.str() << "\" failed.");
     // read back the results
     std::vector<int> successes = parseSuccess(out_dir + "/resultCompact.txt");
 

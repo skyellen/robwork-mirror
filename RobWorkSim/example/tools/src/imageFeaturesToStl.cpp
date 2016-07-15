@@ -1,28 +1,23 @@
-#include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
-#include <sys/stat.h>
-#include <iostream>
-#include <vector>
 
-#include <rw/rw.hpp>
+#include <rw/geometry/Box.hpp>
 #include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/loaders/model3d/STLFile.hpp>
+#include <rw/geometry/Plane.hpp>
+#include <rw/math/Random.hpp>
 #include <rw/math/Vector3D.hpp>
+#include <rw/loaders/model3d/STLFile.hpp>
 
 #include <boost/lexical_cast.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace std;
-using namespace robwork;
-using namespace boost::numeric::ublas;
+using namespace rw::geometry;
+using rw::loaders::STLFile;
+using namespace rw::math;
 
 int main(int argc, char** argv)
 {
-    Math::seed(time(NULL));
+    Random::seed(time(NULL));
     srand ( time(NULL) );
 
     if( argc < 4 ){

@@ -12,13 +12,9 @@
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Vector3D.hpp>
 
-#include <boost/tuple/tuple.hpp>
-
 using namespace rw::geometry;
-using namespace rw::loaders;
+using rw::loaders::GeometryFactory;
 using namespace rw::math;
-using namespace boost::numeric;
-using namespace boost::numeric::ublas;
 
 int main(int argc, char** argv)
 {

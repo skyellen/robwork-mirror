@@ -1,25 +1,29 @@
-#include <iostream>
+#include <sstream>
+#include <fstream>
 #include <vector>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
-#include <sys/stat.h>
-#include <vector>
 
-#include <rw/rw.hpp>
+#include <rw/geometry/GeometryUtil.hpp>
 #include <rw/geometry/Triangle.hpp>
+#include <rw/geometry/TriMesh.hpp>
+#include <rw/kinematics/Kinematics.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
 #include <rw/math/Vector3D.hpp>
+#include <rw/models/Device.hpp>
+#include <rw/models/TreeDevice.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
 #include <rwlibs/algorithms/kdtree/KDTree.hpp>
 #include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
-#include <rwlibs/task.hpp>
 #include <rwlibs/task/GraspTask.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 
-USE_ROBWORK_NAMESPACE
 using namespace std;
-using namespace robwork;
-using namespace boost::numeric::ublas;
+using namespace rw::geometry;
+using namespace rw::kinematics;
+using namespace rw::math;
+using namespace rw::models;
+using namespace rw::proximity;
+using namespace rwlibs::algorithms;
+using namespace rwlibs::task;
 
 const double SOFT_LAYER_SIZE = 0.0005;
 
@@ -160,7 +164,7 @@ int main(int argc, char** argv)
     // now
     std::vector<std::string> successes;
     std::vector<std::string> failures;
-    size_t q_dim;
+    size_t q_dim = 0;
 	BOOST_FOREACH(GraspSubTask& stask, gtask_exp->getSubTasks()){
 	    BOOST_FOREACH(GraspTarget& target,stask.targets ){
 	        std::stringstream ss;

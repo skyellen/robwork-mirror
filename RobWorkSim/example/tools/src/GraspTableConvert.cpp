@@ -5,10 +5,10 @@
  *      Author: jimali
  */
 
-#include <vector>
-
 #include <rw/common/Log.hpp>
 #include <rw/graspplanning/GraspTable.hpp>
+#include <rw/math/MetricUtil.hpp>
+#include <rw/math/Random.hpp>
 #include <rw/math/Vector3D.hpp>
 
 using namespace rw::common;
@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 	const double EPSILON = 0.000001;
 	for(int i=0;i<1000000;i++){
 		//generate random vector
-		Vector3D<> v(Math::ran(0,1),Math::ran(0,1),Math::ran(0,1));
+		Vector3D<> v(Random::ran(0,1),Random::ran(0,1),Random::ran(0,1));
 		if(MetricUtil::norm2(v)<0.001)
 			continue;
 

@@ -1,21 +1,16 @@
-#include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
-#include <sys/stat.h>
-#include <vector>
 
-#include <rw/rw.hpp>
+#include <rw/math/Random.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rwlibs/task.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 
-USE_ROBWORK_NAMESPACE
 using namespace std;
-using namespace robwork;
-using namespace boost::numeric::ublas;
+using rw::common::ownedPtr;
+using namespace rw::math;
+using namespace rwlibs::task;
 
 const double SOFT_LAYER_SIZE = 0.0005;
 
@@ -56,7 +51,7 @@ void loadPoses(std::string filename, std::vector<Transform3D<> >& initialPoses, 
 #include <boost/lexical_cast.hpp>
 int main(int argc, char** argv)
 {
-    Math::seed(time(NULL));
+    Random::seed(time(NULL));
     srand ( time(NULL) );
 
     if( argc < 3 ){

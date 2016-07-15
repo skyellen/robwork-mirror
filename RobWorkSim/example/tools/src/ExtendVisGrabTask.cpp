@@ -9,25 +9,37 @@
  */
 
 
-#include <iostream>
+#include <sstream>
 #include <vector>
+#include <stack>
 #include <string>
 #include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
+//#include <csignal>
 #include <sys/stat.h>
 
-#include <rw/rw.hpp>
+#include <rw/kinematics/Kinematics.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
 #include <rw/loaders/GeometryFactory.hpp>
-#include <rwlibs/task.hpp>
+#include <rw/loaders/WorkCellLoader.hpp>
+#include <rw/models/WorkCell.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
+#include <rwlibs/task/Task.hpp>
+#include <rwlibs/task/loader/XMLTaskLoader.hpp>
+#include <rwlibs/task/loader/XMLTaskSaver.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 
 #include <boost/foreach.hpp>
 
-USE_ROBWORK_NAMESPACE
 using namespace std;
-using namespace robwork;
-using namespace rwlibs::proximitystrategies;
+using namespace rw::common;
+using rw::geometry::Geometry;
+using namespace rw::kinematics;
+using namespace rw::loaders;
+using namespace rw::math;
+using namespace rw::models;
+using namespace rw::proximity;
+using namespace rwlibs::task;
+using rwlibs::proximitystrategies::ProximityStrategyFactory;
 
 std::vector<std::string> generateFileList(std::string,std::string,std::string, bool checkExistance);
 std::vector<std::string> mergeTaskFileList(std::string root, std::string preName, std::string postName, bool forceMerge);

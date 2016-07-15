@@ -12,7 +12,7 @@
 #include <rw/math/Vector3D.hpp>
 
 using namespace rw::math;
-using namespace rw::graspplanning;
+using rw::graspplanning::GraspTable;
 
 const int linesize = 8*256;
 char tmpStr[linesize];

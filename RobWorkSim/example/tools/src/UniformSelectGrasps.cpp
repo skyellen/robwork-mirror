@@ -1,21 +1,21 @@
 
-#include <iostream>
 #include <vector>
 #include <string>
 
 #include "util.hpp"
 
-#include <rw/rw.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 
+#include <boost/program_options/parsers.hpp>
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
-USE_ROBWORK_NAMESPACE
 using namespace std;
-using namespace robwork;
+using namespace rw::math;
+using namespace rwlibs::algorithms;
+using namespace rwlibs::task;
 using namespace boost::filesystem;
 using namespace boost::program_options;
 

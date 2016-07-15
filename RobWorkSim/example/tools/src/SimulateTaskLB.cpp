@@ -1,28 +1,32 @@
 
-#include <iostream>
+#include <sstream>
 #include <vector>
 #include <string>
 
-#include <rw/rw.hpp>
 #include <rw/common/LogFileWriter.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 #include <rwsim/simulator/GraspTaskSimulator.hpp>
 
+#include <boost/program_options/parsers.hpp>
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
-USE_ROBWORK_NAMESPACE
 using namespace std;
-using namespace robwork;
-using namespace rw::loaders;
+using namespace rw::common;
+using rw::geometry::Geometry;
+using rw::kinematics::State;
+using rw::loaders::PathLoader;
+using namespace rw::math;
+using rw::models::WorkCell;
+using rw::trajectory::TimedStatePath;
 using namespace rwlibs::task;
 using namespace rwsim::dynamics;
-using namespace rwsim::loaders;
-using namespace rwsim::simulator;
+using rwsim::loaders::DynamicWorkCellLoader;
+using rwsim::simulator::GraspTaskSimulator;
 using namespace boost::program_options;
 
 GraspTask::Ptr generateTasks(int nrTasks, DynamicWorkCell::Ptr dwc, string objectName, string type);

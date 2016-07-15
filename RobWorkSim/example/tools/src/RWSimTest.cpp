@@ -2,11 +2,11 @@
 //#include "OBB.hpp"
 #include <stdio.h>
 // ifstream::is_open
-#include <iostream>
 #include <fstream>
 #include <rwsim/dynamics/OBRManifold.hpp>
 #include <vector>
 
+#include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rwsim/dynamics/ContactPoint.hpp>
 #include <rwsim/dynamics/ContactCluster.hpp>

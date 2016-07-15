@@ -1,10 +1,8 @@
 #include "CutActionParam.hpp"
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
-using namespace boost::program_options;
-using namespace std;
-using namespace rwlibs::proximitystrategies;
+#include <fstream>
+
+using rw::math::Q;
 
 void CutActionParam::save(const std::vector<CutActionParam>& params, const std::string& file){
     std::ofstream ostr;

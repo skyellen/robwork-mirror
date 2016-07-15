@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
+#include <rw/kinematics/Kinematics.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 #include <rwlibs/algorithms/kdtree/KDTree.hpp>
 #include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>

@@ -1,16 +1,8 @@
 
-#include <iostream>
+#include <sstream>
 #include <vector>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
-#include <sys/stat.h>
-#include <vector>
 
-#include <rw/rw.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rwlibs/task.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 
 #include <boost/program_options/options_description.hpp>
@@ -20,9 +12,9 @@
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
-USE_ROBWORK_NAMESPACE
 using namespace std;
-using namespace robwork;
+using namespace rw::common;
+using namespace rwlibs::task;
 using namespace boost::program_options;
 
 int main(int argc, char** argv)

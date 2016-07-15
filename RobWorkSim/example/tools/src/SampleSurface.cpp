@@ -1,23 +1,19 @@
-#include <iostream>
 #include <vector>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
-#include <sys/stat.h>
-#include <vector>
 
-#include <rw/rw.hpp>
+#include <rw/math/Math.hpp>
 #include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
 #include <rw/loaders/GeometryFactory.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rwlibs/task.hpp>
+#include <rwlibs/task/Task.hpp>
+#include <rwlibs/task/loader/XMLTaskSaver.hpp>
 
-USE_ROBWORK_NAMESPACE
 using namespace std;
-using namespace robwork;
-using namespace boost::numeric::ublas;
+using namespace rw::common;
+using namespace rw::geometry;
+using rw::loaders::GeometryFactory;
+using namespace rw::math;
+using namespace rwlibs::task;
 
 int binSearchRec(const double value, std::vector<double>& surfaceArea, size_t start, size_t end){
     if(start==end)

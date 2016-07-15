@@ -1,6 +1,4 @@
 
-#include <rw/rw.hpp>
-
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/option.hpp>
@@ -10,22 +8,37 @@
 
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/lexical_cast.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
-#include <rw/loaders/WorkCellFactory.hpp>
-#include <rw/geometry/IntersectUtil.hpp>
-#include <rw/proximity/ProximityData.hpp>
 
-#include <iostream>
+#include <rw/kinematics/Kinematics.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
+#include <rw/loaders/WorkCellFactory.hpp>
+#include <rw/loaders/model3d/STLFile.hpp>
+#include <rw/loaders/path/PathLoader.hpp>
+#include <rw/geometry/IndexedTriMesh.hpp>
+#include <rw/geometry/IntersectUtil.hpp>
+#include <rw/geometry/TriangleUtil.hpp>
+#include <rw/geometry/TriMesh.hpp>
+#include <rw/proximity/ProximityData.hpp>
+#include <rw/trajectory/Path.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
+
+#include <sstream>
 #include <fstream>
 #include <string>
 
 #include "CutActionParam.hpp"
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
 using namespace boost::program_options;
 using namespace std;
-using namespace rwlibs::proximitystrategies;
+using namespace rw::common;
+using namespace rw::geometry;
+using namespace rw::kinematics;
+using namespace rw::loaders;
+using namespace rw::math;
+using namespace rw::models;
+using namespace rw::proximity;
+using namespace rw::trajectory;
+using rwlibs::proximitystrategies::ProximityStrategyPQP;
 
 rw::common::Ptr<TriMesh> offsetSurface(const TriMesh& triMesh, double dist);
 bool isDebugEnabled = false;

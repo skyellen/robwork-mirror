@@ -2,27 +2,23 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
 
-#include <sys/stat.h>
-
-#include <rw/rw.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rw/loaders/rwxml/XML.hpp>
-#include <rwlibs/task.hpp>
+#include <rw/math/Quaternion.hpp>
+//#include <rw/loaders/rwxml/XML.hpp>
+#include <rwlibs/task/loader/XMLTaskLoader.hpp>
+#include <rwlibs/task/loader/XMLTaskSaver.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-#include <boost/optional.hpp>
+//#include <boost/optional.hpp>
 #include <boost/foreach.hpp>
 
-USE_ROBWORK_NAMESPACE
 using namespace std;
-using namespace robwork;
+using namespace rw::common;
+using namespace rw::math;
 using namespace rwlibs::task;
-using namespace boost::numeric;
 using namespace boost::property_tree;
 
 namespace {

@@ -1,14 +1,9 @@
 
-#include <iostream>
+#include <sstream>
 #include <vector>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
-#include <sys/stat.h>
-#include <vector>
 
-#include <rw/rw.hpp>
+#include <rw/math/EAA.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rwlibs/task.hpp>
 #include <rwlibs/task/GraspTask.hpp>
@@ -21,9 +16,10 @@
 #include <boost/filesystem.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 
-USE_ROBWORK_NAMESPACE
 using namespace std;
-using namespace robwork;
+using namespace rw::common;
+using namespace rw::math;
+using namespace rwlibs::task;
 using namespace boost::program_options;
 
 std::vector<std::pair<GraspSubTask*,GraspTarget*> > getTargets(GraspTask::Ptr gtask);

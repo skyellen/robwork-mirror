@@ -19,13 +19,10 @@
 #include <rw/math/LinearAlgebra.hpp>
 
 #include <boost/foreach.hpp>
-#include <boost/tuple/tuple.hpp>
 
 using namespace rw::geometry;
 using namespace rw::loaders;
 using namespace rw::math;
-using namespace boost::numeric;
-using namespace boost::numeric::ublas;
 
 int main(int argc, char** argv)
 {
@@ -72,7 +69,7 @@ int main(int argc, char** argv)
 	QHull3D hull;
     hull.rebuild( idxMesh->getVertices() );
 
-    PlainTriMesh<TriangleN1<> > *fmesh = hull.toTriMesh();
+    PlainTriMesh<TriangleN1<> >::Ptr fmesh = hull.toTriMesh();
     //std::cout << "SIZE of mesh: " << fmesh->size() << std::endl;
     // now project the center of mass onto all triangles in the trimesh
     // If it is inside a triangle then the triangle is a stable pose

@@ -1,20 +1,30 @@
-#include <iostream>
+#include <sstream>
 #include <vector>
 #include <string>
 
 #include "util.hpp"
 
-#include <rw/rw.hpp>
+#include <rw/geometry/GeometryUtil.hpp>
+#include <rw/geometry/TriMesh.hpp>
+#include <rw/models/Device.hpp>
+#include <rw/models/TreeDevice.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 
 #include <boost/program_options/options_description.hpp>
+#include <boost/program_options/parsers.hpp>
 #include <boost/program_options/variables_map.hpp>
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
-USE_ROBWORK_NAMESPACE
 using namespace std;
-using namespace robwork;
+using namespace rw::common;
+using namespace rw::geometry;
+using namespace rw::kinematics;
+using namespace rw::math;
+using namespace rw::models;
+using namespace rw::proximity;
+using namespace rwlibs::task;
 using namespace boost::program_options;
 using namespace boost::filesystem;
 
@@ -134,7 +144,7 @@ int main(int argc, char** argv)
 
     // create nodes for all successes
     //std::vector<KDTree<Pose6D<>, 6 >::KDNode> nodes;
-	typedef std::pair<GraspSubTask*, GraspTarget*> Value;
+	//typedef std::pair<GraspSubTask*, GraspTarget*> Value;
     std::vector<GTaskNNSearch::KDNode> nodes;
     GTaskNNSearch *nntree = buildKDTree_pos_zaxis(gtask, nodes);
 

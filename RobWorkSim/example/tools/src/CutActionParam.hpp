@@ -1,27 +1,12 @@
 #ifndef CUTACTIONPARAM_HPP
 #define CUTACTIONPARAM_HPP
 
-#include <rw/rw.hpp>
+#include <rw/math/Vector3D.hpp>
+#include <rw/math/Rotation3D.hpp>
+#include <rw/math/RPY.hpp>
+#include <rw/math/Q.hpp>
 
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/variables_map.hpp>
-#include <boost/program_options/option.hpp>
-#include <boost/program_options/parsers.hpp>
-#define BOOST_FILESYSTEM_VERSION 3
-#include <boost/filesystem.hpp>
-
-#include <boost/math/special_functions/fpclassify.hpp>
-#include <boost/lexical_cast.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
-#include <rw/loaders/WorkCellFactory.hpp>
-#include <rw/geometry/IntersectUtil.hpp>
-#include <rw/proximity/ProximityData.hpp>
-
-#include <iostream>
-#include <fstream>
 #include <string>
-
-
 
 struct CutActionParam {
     // position and orientation of object in world coordinates

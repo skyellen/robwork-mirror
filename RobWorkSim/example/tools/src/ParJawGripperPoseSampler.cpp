@@ -1,23 +1,24 @@
-#include <iostream>
 #include <vector>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
-#include <sys/stat.h>
-#include <vector>
 
-#include <rw/rw.hpp>
+#include <rw/common/TimerUtil.hpp>
+#include <rw/geometry/GeometryUtil.hpp>
 #include <rw/geometry/PlainTriMesh.hpp>
 #include <rw/geometry/Triangle.hpp>
 #include <rw/geometry/TriMeshSurfaceSampler.hpp>
+#include <rw/kinematics/Kinematics.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
 #include <rw/loaders/GeometryFactory.hpp>
+#include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
+#include <rw/models/RigidObject.hpp>
+#include <rw/models/TreeDevice.hpp>
+#include <rw/models/WorkCell.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
 #include <rwlibs/algorithms/kdtree/KDTree.hpp>
 #include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
-#include <rwlibs/task.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 
 #include <boost/program_options/options_description.hpp>
@@ -26,14 +27,20 @@
 #include <boost/program_options/parsers.hpp>
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
 
-USE_ROBWORK_NAMESPACE
 using namespace std;
-using namespace robwork;
+using namespace rw::common;
+using namespace rw::geometry;
+using namespace rw::kinematics;
+using namespace rw::loaders;
+using namespace rw::math;
+using namespace rw::models;
+using namespace rw::proximity;
+using namespace rwlibs::algorithms;
+using rwlibs::proximitystrategies::ProximityStrategyFactory;
+using namespace rwlibs::task;
 
 using namespace boost::program_options;
-using namespace boost::numeric::ublas;
 using namespace boost::filesystem;
 
 
@@ -145,7 +152,7 @@ int main(int argc, char** argv)
         object_geo = GeometryFactory::getGeometry(file_object.string());
     }
 
-    Frame *objectFrame = NULL;
+    //Frame *objectFrame = NULL;
     RigidObject::Ptr obj;
     if( object_geo==NULL ){
         // load it from workcell
@@ -365,7 +372,7 @@ int main(int argc, char** argv)
         }
         Q step =  (closeQ - openQ)/10;
         std::vector<Q> openSamples(10,oq);
-        for(int j=1;j<openSamples.size();j++){
+        for(std::size_t j=1;j<openSamples.size();j++){
             openSamples[j] =openQ + step*j;
         }
 
@@ -391,7 +398,7 @@ int main(int argc, char** argv)
             // we have success, before continueing try to
             // find a gripper configuration that is closer to the object than the original
             // if we don't find any in collision then the hand will never touch the object so its a bad grasp
-            int j;
+            std::size_t j;
             for(j=1;j<openSamples.size();j++){
                 gripper->setQ( openSamples[j], state);
                 if(cdetect.inCollision(state, &result, true)){
