@@ -19,7 +19,7 @@ class QTimer;
 /**
  * @brief A plugin
  */
-class BootstrapPlugin: public rws::RobWorkStudioPlugin, private Ui::SimTemplatePlugin
+class BootstrapPlugin: public rws::RobWorkStudioPlugin, private Ui::BootstrapPlugin
 {
 Q_OBJECT
 Q_INTERFACES( rws::RobWorkStudioPlugin )
