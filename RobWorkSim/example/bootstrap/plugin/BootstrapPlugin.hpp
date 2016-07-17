@@ -4,7 +4,7 @@
 #include <RobWorkStudioConfig.hpp> // For RWS_USE_QT5 definition
 
 #include <rws/RobWorkStudioPlugin.hpp>
-#include "ui_SimTemplatePlugin.h"
+#include "ui_BootstrapPlugin.h"
 
 #include <QObject>
 //#include <rw/common/Timer.hpp>
