@@ -1,17 +1,12 @@
 #include "SamplePlugin.hpp"
 
-#include <QPushButton>
-
 #include <RobWorkStudio.hpp>
 
-using namespace rw::math;
-using namespace rw::common;
-using namespace rw::kinematics;
-using namespace rw::models;
+#include <boost/bind.hpp>
 
-using namespace rws;
-
-
+using rw::kinematics::State;
+using rw::models::WorkCell;
+using rws::RobWorkStudioPlugin;
 
 SamplePlugin::SamplePlugin():
     RobWorkStudioPlugin("SamplePluginUI", QIcon(":/pa_icon.png"))
@@ -57,8 +52,7 @@ void SamplePlugin::stateChangedListener(const State& state) {
 
 }
 
-#if RWS_USE_QT5
-Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1")
-#else
+#if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(SamplePlugin);
 #endif

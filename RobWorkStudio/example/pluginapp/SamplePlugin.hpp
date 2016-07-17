@@ -1,12 +1,11 @@
 #ifndef SAMPLEPLUGIN_HPP
 #define SAMPLEPLUGIN_HPP
 
-#include <QPushButton>
+#include <RobWorkStudioConfig.hpp> // For RWS_USE_QT5 definition
 
 #include <rws/RobWorkStudioPlugin.hpp>
 
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/State.hpp>
+class QPushButton;
 
 class SamplePlugin: public rws::RobWorkStudioPlugin
 {

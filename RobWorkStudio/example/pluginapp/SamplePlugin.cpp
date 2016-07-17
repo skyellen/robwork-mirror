@@ -3,25 +3,18 @@
 #include <QPushButton>
 #include <QGridLayout>
 
-#include <rw/rw.hpp>
-
 #include <rw/geometry/QHullND.hpp>
+#include <rw/math/Random.hpp>
 #include <RobWorkStudio.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
+#include <boost/bind.hpp>
 
-
-
+using rw::geometry::QHullND;
+using rw::kinematics::State;
 using namespace rw::math;
-using namespace rw::common;
-using namespace rw::geometry;
-using namespace rw::kinematics;
-using namespace rw::models;
+using rw::models::WorkCell;
 
-using namespace rws;
-
-
+using rws::RobWorkStudioPlugin;
 
 SamplePlugin::SamplePlugin():
     RobWorkStudioPlugin("Sample", QIcon(":/pa_icon.png"))
@@ -72,8 +65,8 @@ void SamplePlugin::clickEvent() {
         vertices.resize(100);
 
         for(size_t i=0;i<vertices.size();i++){
-            vertices[i][0] = Math::ran(-10,10);
-            vertices[i][1] = Math::ran(-10,10);
+            vertices[i][0] = Random::ran(-10,10);
+            vertices[i][1] = Random::ran(-10,10);
         }
 
         QHullND<2> qhull;
@@ -100,8 +93,7 @@ void SamplePlugin::stateChangedListener(const State& state) {
     log().info() << "State changed!";
 }
 
-#if RWS_USE_QT5
-Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1")
-#else
+#if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(SamplePlugin);
 #endif

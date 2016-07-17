@@ -1,7 +1,11 @@
 #include "SamplePlugin.hpp"
 
-#include <QPushButton>
 #include <RobWorkStudio.hpp>
+
+#include <QPushButton>
+#include <QGridLayout>
+
+#include <boost/bind.hpp>
 
 USE_ROBWORK_NAMESPACE
 using namespace robwork;
@@ -51,4 +55,7 @@ void SamplePlugin::clickEvent() {
     }
 }
 
-Q_EXPORT_PLUGIN2(SamplePlugin, SamplePlugin);
+#if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
+Q_EXPORT_PLUGIN(SamplePlugin);
+#endif

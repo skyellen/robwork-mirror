@@ -1,51 +1,51 @@
 #include "SamplePlugin.hpp"
 
-#include <QPushButton>
+#include <rwlibs/opengl/RenderFrame.hpp>
 
 #include <RobWorkStudio.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
+#include <QTimer>
 
+#include <boost/bind.hpp>
+
+#include <sstream>
 #include <iostream>
-#include <iosfwd>
-
-
 
 using namespace boost::asio;
 
-using namespace rw::math;
-using namespace rw::common;
+using rw::common::ownedPtr;
 using namespace rw::kinematics;
+using namespace rw::math;
 using namespace rw::models;
+using rwlibs::opengl::RenderFrame;
+using rws::RobWorkStudioPlugin;
 using boost::asio::ip::udp;
-using namespace rws;
 
 
-const int HEAD_IDX = 0;
-const int NECK_IDX = 1;
+//const int HEAD_IDX = 0;
+//const int NECK_IDX = 1;
 const int TORSO_IDX = 2;
 const int LEFT_SHOULDER_IDX = 3;
 const int LEFT_ELBOW_IDX = 4;
-const int LEFT_HAND_IDX = 5;
+//const int LEFT_HAND_IDX = 5;
 const int RIGHT_SHOULDER_IDX = 6;
 const int RIGHT_ELBOW_IDX = 7;
-const int RIGHT_HAND_IDX = 8;
-const int LEFT_HIP_IDX = 9;
-const int LEFT_KNEE_IDX = 10;
-const int LEFT_FOOT_IDX = 11;
-const int RIGHT_HIP_IDX = 12;
-const int RIGHT_KNEE_IDX = 13;
-const int RIGHT_FOOT_IDX = 14;
+//const int RIGHT_HAND_IDX = 8;
+//const int LEFT_HIP_IDX = 9;
+//const int LEFT_KNEE_IDX = 10;
+//const int LEFT_FOOT_IDX = 11;
+//const int RIGHT_HIP_IDX = 12;
+//const int RIGHT_KNEE_IDX = 13;
+//const int RIGHT_FOOT_IDX = 14;
 
 SamplePlugin::SamplePlugin():
     RobWorkStudioPlugin("SamplePluginUI", QIcon(":/pa_icon.png")),
-    _transforms(15),
     io_service(NULL),
     endpoint(NULL),
     socket(NULL),
     resolver(NULL),
-    _rightArm(NULL),
+    _transforms(15),
+    _rightArm(NULL)	,
     _leftArm(NULL)
 {
     setupUi(this);
@@ -164,7 +164,8 @@ void SamplePlugin::readUpdateFromUDP(){
 
         udp::endpoint sender_endpoint;
         for(int j=0;j<1;j++){
-            size_t len = socket->receive_from( boost::asio::buffer(recv_buf), sender_endpoint);
+            //size_t len = socket->receive_from( boost::asio::buffer(recv_buf), sender_endpoint);
+        	socket->receive_from( boost::asio::buffer(recv_buf), sender_endpoint);
 
             for(size_t i=0;i<15;i++){
                 Vector3D<> pos(recv_buf.data()[12*i+0],
@@ -306,5 +307,7 @@ void SamplePlugin::stateChangedListener(const State& state) {
 
 }
 
-
+#if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(SamplePlugin);
+#endif

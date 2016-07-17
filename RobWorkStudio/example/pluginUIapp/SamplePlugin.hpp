@@ -1,10 +1,9 @@
 #ifndef SAMPLEPLUGIN_HPP
 #define SAMPLEPLUGIN_HPP
 
-#include <rws/RobWorkStudioPlugin.hpp>
+#include <RobWorkStudioConfig.hpp> // For RWS_USE_QT5 definition
 
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/State.hpp>
+#include <rws/RobWorkStudioPlugin.hpp>
 
 #include "ui_SamplePlugin.h"
 
@@ -29,8 +28,6 @@ private slots:
     void btnPressed();
 
     void stateChangedListener(const rw::kinematics::State& state);
-
-private:
 };
 
 #endif /*RINGONHOOKPLUGIN_HPP_*/

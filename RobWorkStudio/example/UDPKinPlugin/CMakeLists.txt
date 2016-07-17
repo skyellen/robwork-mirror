@@ -24,22 +24,22 @@ SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 SET(RW_ROOT "${ROOT}/../../../RobWork")
 SET(RWSTUDIO_ROOT "${ROOT}/../../../RobWorkStudio")
-
+SET(RobWork_DIR "${RW_ROOT}/cmake") 
+SET(RobWorkStudio_DIR "${RWSTUDIO_ROOT}/cmake") 
 
 # We use the settings that robwork studio uses
 IF( NOT CMAKE_BUILD_TYPE)
 SET(CMAKE_BUILD_TYPE Release)
 endif()
 
-#Include default settings for constructing a robwork dependent project
-INCLUDE(${RW_ROOT}/build/FindRobWork.cmake)
+FIND_PACKAGE(RobWork REQUIRED)
+FIND_PACKAGE(RobWorkStudio REQUIRED)
 
-INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
+INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
 
 #Include default settings for constructing a robworkstudio dependent project
-INCLUDE(${RWSTUDIO_ROOT}/build/FindRobWorkStudio.cmake)
-INCLUDE_DIRECTORIES( ${ROBWORKSTUDIO_INCLUDE_DIR} )
+INCLUDE_DIRECTORIES( ${ROBWORKSTUDIO_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${ROBWORKSTUDIO_LIBRARY_DIRS} )
 
 # Set the output dir for generated libraries and binaries
@@ -64,17 +64,20 @@ ENDIF()
 # if we want to use ui files add them here
 SET(UIS_FILES SamplePlugin.ui )
 
-QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
 #Need to add the current binary dir to the include directory because the generated source files are placed here
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-QT4_WRAP_CPP(MocSrcFiles SamplePlugin.hpp)
-# Rcc the files:
+IF(RWS_USE_QT5)
+	QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+	QT5_WRAP_CPP(MocSrcFiles SamplePlugin.hpp)
+	QT5_ADD_RESOURCES(RccSrcFiles resources.qrc)
+ELSE()
+	QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+	QT4_WRAP_CPP(MocSrcFiles SamplePlugin.hpp)
+	QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+ENDIF()
 
-QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 SET(SrcFiles SamplePlugin.cpp ${UIS_OUT_H})
-
-
 
 # The shared library to build:
 ADD_LIBRARY(SamplePlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
