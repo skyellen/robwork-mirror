@@ -10,7 +10,7 @@ SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 SET(RobWorkSim_DIR "${ROOT}/../../../RobWorkSim/cmake")
 
 #Include default settings for constructing a robwork dependent project
-FIND_PACKAGE(RobWorkSim)
+FIND_PACKAGE(RobWorkSim REQUIRED)
 
 # if you have additional libraries or include dirs then add them here
 INCLUDE_DIRECTORIES(${ROBWORKSIM_INCLUDE_DIRS})

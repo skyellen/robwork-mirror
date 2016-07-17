@@ -17,25 +17,16 @@
 
 #include "Brain.hpp"
 
-#include <QtGui>
-#include <QMessageBox>
+#include <rwsim/dynamics/Body.hpp>
 
-#include <rwsim/dynamics/KinematicBody.hpp>
-#include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/control/PDController.hpp>
-#include <rwsim/control/PoseController.hpp>
-#include <rw/rw.hpp>
+#include <boost/foreach.hpp>
 
 #include "Abstraction.hpp"
 #include "Memory.hpp"
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
-
-using namespace rw::common;
-using namespace rwsim::dynamics;
-using namespace rwsim::simulator;
-using namespace rwsim::control;
+using rw::common::PropertyMap;
+using rw::math::Transform3D;
+using rwsim::dynamics::Body;
 
 void Brain::run()
 {
@@ -84,5 +75,5 @@ BrainState Brain::computeSensorState(){
     objMap.set("transform", t3d);
 
     state.getMap().set("obj"+b->getName(), objMap);
-
+    return state;
 }

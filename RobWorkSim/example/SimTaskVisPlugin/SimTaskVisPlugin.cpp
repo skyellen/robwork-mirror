@@ -1,25 +1,35 @@
 #include "SimTaskVisPlugin.hpp"
 
-#include <QPushButton>
 #include <RobWorkStudio.hpp>
-#include <rwlibs/simulation/SimulatedController.hpp>
-#include <rwsim/drawable/SimulatorDebugRender.hpp>
-#include <rwlibs/opengl/Drawable.hpp>
-#include <rw/graspplanning/Grasp3D.hpp>
-#include <fstream>
-#include <iostream>
-#include <boost/lexical_cast.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
-#include <rw/graspplanning/GWSMeasure3D.hpp>
+#include <rw/geometry/Box.hpp>
+#include <rw/geometry/Triangle.hpp>
+#include <rw/geometry/TriMesh.hpp>
+#include <rw/loaders/xml/XMLPropertyLoader.hpp>
+#include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/math/Random.hpp>
 #include <rwlibs/opengl/DrawableUtil.hpp>
+#include <rwlibs/task/loader/XMLTaskLoader.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
+#include <rwsim/dynamics/KinematicBody.hpp>
+#include <rwsim/dynamics/RigidBody.hpp>
 
-USE_ROBWORK_NAMESPACE
-USE_ROBWORKSIM_NAMESPACE
-using namespace robwork;
-using namespace robworksim;
-using namespace rws;
-using namespace rwlibs::simulation;
+#include <QFileDialog>
+#include <QMessageBox>
 
+#include <boost/bind.hpp>
+
+#include <stack>
+
+using namespace rw::common;
+using namespace rw::geometry;
+using namespace rw::graphics;
+using namespace rw::kinematics;
+using namespace rw::loaders;
+using namespace rw::math;
+using namespace rw::models;
+using namespace rwlibs::task;
+using rws::RobWorkStudioPlugin;
+using namespace rwsim::dynamics;
 
 namespace {
 
@@ -105,12 +115,6 @@ SimTaskVisPlugin::SimTaskVisPlugin():
     connect(_updateBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     _updateBtn->setEnabled(false);
 
-    //_propertyView = new PropertyViewEditor(this);
-    //_propertyView->setPropertyMap(&_config);
-
-    //QVBoxLayout *vbox = new QVBoxLayout;
-    //vbox->addWidget(_propertyView);
-
     QPalette plt;
     plt.setColor(QPalette::Text, Qt::red);
     plt.setColor(QPalette::WindowText, Qt::red);
@@ -182,10 +186,10 @@ void SimTaskVisPlugin::btnPressed() {
         // generate target list and add it to the render
 
             int idx = i;
-            if(nrToShow<_ymtargets.size()){
-                idx = Math::ranI(0, _ymtargets.size());
+            if(static_cast<std::size_t>(nrToShow)<_ymtargets.size()){
+                idx = Random::ranI(0, _ymtargets.size());
             } else {
-                if(idx>=_ymtargets.size())
+                if(static_cast<std::size_t>(idx)>=_ymtargets.size())
                     break;
             }
 
@@ -193,7 +197,7 @@ void SimTaskVisPlugin::btnPressed() {
             CartesianTarget::Ptr target = _ymtargets[idx].second;
 
             Transform3D<> wTe_n = task->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
-            Transform3D<> wTe_home = task->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
+            //Transform3D<> wTe_home = task->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
 
 
             RenderTargets::Target rt;
@@ -344,9 +348,6 @@ void SimTaskVisPlugin::loadConfig(bool automatic){
         }
     }
     updateConfig();
-
-    // for some reason this crashes sometimes...
-    //_propertyView->setPropertyMap( &_config );
 }
 
 void SimTaskVisPlugin::updateConfig(){
@@ -362,7 +363,6 @@ void SimTaskVisPlugin::updateConfig(){
     }
     devName = _config.get<std::string>("DeviceName");
     _hand =_wc->findDevice<Device>(devName).get();
-    _dhand = _dwc->findDevice(devName);
 
     std::string baseName;
     if( !_config.has("MovableBase") || _config.get<std::string>("MovableBase")==""){
@@ -370,7 +370,7 @@ void SimTaskVisPlugin::updateConfig(){
         if(_hand != NULL ){
             std::vector<Frame*> frames = Kinematics::childToParentChain(_hand->getBase(), _wc->getWorldFrame(), state);
             BOOST_FOREACH(Frame *tmpKinFrame, frames){
-                if( KinematicBody *kbody = _dwc->findBody<KinematicBody>(tmpKinFrame->getName()) ){
+                if( KinematicBody::Ptr kbody = _dwc->findBody<KinematicBody>(tmpKinFrame->getName()) ){
                     baseName = kbody->getName();
                 }
             }
@@ -389,13 +389,13 @@ void SimTaskVisPlugin::updateConfig(){
     std::string objName;
     if( !_config.has("ObjectName") || _config.get<std::string>("ObjectName")=="" ){
         // find the first rigid body if no ObjectName specified in the config file
-        std::vector<RigidBody*> rbodies = _dwc->findBodies<RigidBody>();
+        std::vector<RigidBody::Ptr> rbodies = _dwc->findBodies<RigidBody>();
         if(rbodies.size()>0)
             objName = rbodies[0]->getName();
         _config.add<std::string>("ObjectName","Name of the object that is to be grasped", objName);
     }
     objName = _config.get<std::string>("ObjectName");
-    RigidBody *object = _dwc->findBody<RigidBody>(objName);
+    RigidBody::Ptr object = _dwc->findBody<RigidBody>(objName);
     if(object!=NULL)
         _objects.push_back(object);
 
@@ -408,46 +408,19 @@ void SimTaskVisPlugin::updateConfig(){
           _objects.push_back(object);
     }
 
-    if( !_config.has("CalculateWrenchQuality") ){
-        _config.add<bool>("CalculateWrenchQuality","Set true if the quality of the grasp should be calculated", true);
-    }
-    _calcWrenchQuality = _config.get<bool>("CalculateWrenchQuality");
-
-    if( !_config.has("MaxObjectGripperDistance") ){
-        _config.add<double>("MaxObjectGripperDistance","The maximum allowed distance between gripper and object", 50.0);
-    }
-    _maxObjectGripperDistance = _config.get<double>("MaxObjectGripperDistance", 50);
-
-
-    if(_hand!=NULL ){
-        _openQ = _config.get<Q>("DefOpenQ", _hand->getQ(state));
-        _closeQ = _config.get<Q>("DefCloseQ", _hand->getQ(state));
-    }
-
-
-
-    if(_mbase!=NULL && _tcp!=NULL)
-        _bTe = Kinematics::frameTframe(_mbase, _tcp, state);
-
-    _homeState = state;
-    _restObjState = state;
-
     _config.add<bool>("ShowDebug","If enabled, all contacts and simulation geometry is visualized", false);
 
     log().info()
             << (_hand!=NULL) <<"&&"
             << (_tcp!=NULL) <<"&&"
             << (_objects.size()>0) <<"&&"
-            << (_mbase!=NULL) <<"&&"
-            << (_dhand!=NULL) <<"&&"<< "\n";
+            << (_mbase!=NULL) <<"&&" << "\n";
     // TODO: body sensor, wrench space analysis, if choosen
-    if(_hand!=NULL && _tcp!=NULL && _objects.size()>0 && _mbase!=NULL && _dhand!=NULL){
+    if(_hand!=NULL && _tcp!=NULL && _objects.size()>0 && _mbase!=NULL){
         _loadTaskBtn->setEnabled(true);
-        _configured = true;
     } else {
         //std::cout << (_hand!=NULL) <<" && " << (_tcp!=NULL) <<" && " << (_objects.size()>0) <<" && " << (_mbase!=NULL) <<" && " << (_dhand!=NULL) << std::endl;
         _loadTaskBtn->setEnabled(false);
-        _configured = false;
     }
 }
 
@@ -572,16 +545,6 @@ void SimTaskVisPlugin::setTask(int i){
     _currenttask = _taskQueue[i];
     _targets = &_currenttask->getTargets();
     _nextTargetIndex = 0;
-
-    _wTe_n = _currenttask->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
-    _wTe_home = _currenttask->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
-    Vector3D<> approach = _currenttask->getPropertyMap().get<Vector3D<> >("Approach", Vector3D<>(0,0,0));
-    _approachDef = Transform3D<>( approach, Rotation3D<>::identity());
-    _openQ = _currenttask->getPropertyMap().get<Q>("OpenQ", _openQ);
-    _closeQ = _currenttask->getPropertyMap().get<Q>("CloseQ", _closeQ);
-
-    //log().info() << "openQ" << _openQ << "\n";
-    //log().info() << "closeQ" << _closeQ << "\n";
 }
 
 rwlibs::task::CartesianTarget::Ptr SimTaskVisPlugin::getNextTarget(){
@@ -623,4 +586,7 @@ void SimTaskVisPlugin::genericEventListener(const std::string& event){
     }
 }
 
+#if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(SimTaskVisPlugin);
+#endif

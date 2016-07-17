@@ -22,19 +22,17 @@ SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(CMAKE_VERBOSE_MAKEFILE false)
 
-# Now set the RW/RWS root (edit this if necessary)
-SET(RW_ROOT "${ROOT}/../../../RobWork")
-SET(RWS_ROOT "${ROOT}/../../../RobWorkStudio")
+# Now set the RobWorkSim directories (edit this if necessary)
 SET(RWSIM_ROOT "${ROOT}/../../../RobWorkSim")
+SET(RobWorkSim_DIR "${RWSIM_ROOT}/cmake")
 
 # We use the settings that robwork studio uses
 IF( NOT DEFINED CMAKE_BUILD_TYPE )
     SET(CMAKE_BUILD_TYPE Release)
 ENDIF()
 
-SET(CMAKE_MODULE_PATH ${RWSIM_ROOT}/build ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(RobWorkSim REQUIRED)
-INCLUDE_DIRECTORIES( ${ROBWORKSIM_INCLUDE_DIR} ${ROOT}/src)
+INCLUDE_DIRECTORIES( ${ROBWORKSIM_INCLUDE_DIRS} ${ROBWORKSTUDIO_INCLUDE_DIRS} ${ROOT}/src)
 LINK_DIRECTORIES( ${ROBWORKSIM_LIBRARY_DIRS} )
 
 # Set the output dir for generated libraries and binaries

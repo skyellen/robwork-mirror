@@ -1,11 +1,16 @@
-#include <rwsim/rwsim.hpp>
+#include <rwsim/control/SerialDeviceController.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
+#include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 #include <rwsimlibs/ode/ODESimulator.hpp>
 
-USE_ROBWORK_NAMESPACE
-USE_ROBWORKSIM_NAMESPACE
-using namespace robwork;
-using namespace robworksim;
-
+using rw::common::ownedPtr;
+using rw::kinematics::State;
+using rw::math::Q;
+using rw::models::Device;
+using rwsim::dynamics::DynamicWorkCell;
+using rwsim::control::SerialDeviceController;
+using rwsim::loaders::DynamicWorkCellLoader;
+using rwsim::simulator::ODESimulator;
 
 int main(int argc, char** argv) {
 	// lets assume path to test is correct

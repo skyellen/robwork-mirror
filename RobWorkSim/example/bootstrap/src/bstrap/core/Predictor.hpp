@@ -18,15 +18,6 @@
 #ifndef SCHEMA_HPP_
 #define SCHEMA_HPP_
 
-#include <QMainWindow>
-#include <QModelIndex>
-
-#include <rw/common/Log.hpp>
-#include <rw/common/PropertyMap.hpp>
-#include <rws/RobWorkStudio.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/simulator/ThreadSimulator.hpp>
-
 #include "BrainState.hpp"
 
 class Predictor {

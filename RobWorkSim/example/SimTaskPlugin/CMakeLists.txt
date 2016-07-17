@@ -22,31 +22,15 @@ SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(CMAKE_VERBOSE_MAKEFILE false)
 
-# Now set the RW/RWS root (edit this if necessary)
-
-    SET(RW_ROOT "${ROOT}/../../../RobWork")
-    SET(RWS_ROOT "${ROOT}/../../../RobWorkStudio")
-    SET(RWSIM_ROOT "${ROOT}/../../../RobWorkSim")
-
-# We use the settings that robwork studio uses
-#SET(CMAKE_BUILD_TYPE Release)
-
-#Include default settings for constructing a robwork dependent project
-#INCLUDE(${RW_ROOT}/build/FindRobWork.cmake)
-#INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
-#LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
-
-#Include default settings for constructing a robworkstudio dependent project
-#INCLUDE(${RWSTUDIO_ROOT}/build/FindRobWorkStudio.cmake)
-#INCLUDE_DIRECTORIES( ${ROBWORKSTUDIO_INCLUDE_DIR} )
-#LINK_DIRECTORIES( ${ROBWORKSTUDIO_LIBRARY_DIRS} )
+# Now set the RobWorkSim directories (edit this if necessary)
+SET(RWSIM_ROOT "${ROOT}/../../../RobWorkSim")
+SET(RobWorkSim_DIR "${RWSIM_ROOT}/cmake")
 
 #Include RobWorkSim settings
 
-MESSAGE(" ${RWSIM_ROOT} --")
-SET(CMAKE_MODULE_PATH ${RWSIM_ROOT}/build ${CMAKE_MODULE_PATH})
+MESSAGE(" RobWorkSim directory: ${RWSIM_ROOT} --")
 FIND_PACKAGE(RobWorkSim REQUIRED)
-INCLUDE_DIRECTORIES( ${ROBWORKSIM_INCLUDE_DIR} )
+INCLUDE_DIRECTORIES( ${ROBWORKSIM_INCLUDE_DIRS} ${ROBWORKSTUDIO_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${ROBWORKSIM_LIBRARY_DIRS} )
 
 
@@ -64,13 +48,21 @@ ENDIF()
 # if we want to use ui files add them here
 SET(UIS_FILES SimTaskPlugin.ui )
 
-RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+# to be able to include the generated ui header files
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}) 
 
-QT4_WRAP_CPP(MocSrcFiles SimTaskPlugin.hpp)
-# Rcc the files:
+IF(RWS_USE_QT5)
+	QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+	QT5_WRAP_CPP(MocSrcFiles SimTaskPlugin.hpp)
+	QT5_ADD_RESOURCES(RccSrcFiles resources.qrc)
+ELSE()
+	QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+	QT4_WRAP_CPP(MocSrcFiles SimTaskPlugin.hpp)
+	QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+ENDIF()
 
-QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 SET(SrcFiles SimTaskPlugin.cpp ${UIS_OUT_H})
+SET_SOURCE_FILES_PROPERTIES(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 
 # The shared library to build:
 ADD_LIBRARY(SimTaskPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})

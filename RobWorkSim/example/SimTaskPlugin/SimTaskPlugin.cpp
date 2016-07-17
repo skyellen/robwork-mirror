@@ -1,33 +1,63 @@
 #include "SimTaskPlugin.hpp"
 
-#include <QPushButton>
-
-#include <RobWorkStudio.hpp>
-
-#include <rwlibs/simulation/SimulatedController.hpp>
-#include <rwsim/drawable/SimulatorDebugRender.hpp>
-#include <rwlibs/opengl/Drawable.hpp>
+#include <rw/graspplanning/CMDistCCPMeasure3D.hpp>
 #include <rw/graspplanning/Grasp3D.hpp>
-#include <fstream>
-#include <iostream>
+#include <rw/graspplanning/GWSMeasure3D.hpp>
+#include <rw/loaders/xml/XMLPropertyLoader.hpp>
+#include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/math/MetricUtil.hpp>
+#include <rwlibs/control/JointController.hpp>
+#include <rwlibs/opengl/Drawable.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <rwlibs/simulation/SimulatedController.hpp>
+#include <rwlibs/task/loader/XMLTaskLoader.hpp>
+#include <rwlibs/task/loader/XMLTaskSaver.hpp>
+
+#include <rws/RobWorkStudio.hpp>
+#include <rws/propertyview/PropertyViewEditor.hpp>
+
+#include <rwsim/drawable/SimulatorDebugRender.hpp>
+#include <rwsim/dynamics/DynamicDevice.hpp>
+#include <rwsim/dynamics/DynamicUtil.hpp>
+#include <rwsim/dynamics/KinematicBody.hpp>
+#include <rwsim/dynamics/RigidBody.hpp>
+#include <rwsim/dynamics/RigidDevice.hpp>
+#include <rwsim/sensor/BodyContactSensor.hpp>
+#include <rwsim/simulator/DynamicSimulator.hpp>
+#include <rwsim/simulator/ThreadSimulator.hpp>
+#include <rwsimlibs/ode/ODESimulator.hpp>
+
+#include <QFileDialog>
+#include <QPushButton>
+#include <QMessageBox>
+#include <QTimer>
+
+#include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include <stack>
 
-
-#include <rw/graspplanning/GWSMeasure3D.hpp>
+using namespace rw::common;
+using rw::geometry::GeometryUtil;
+using namespace rw::graspplanning;
+using namespace rw::kinematics;
+using namespace rw::loaders;
+using namespace rw::math;
+using namespace rw::models;
+using namespace rw::proximity;
+using rw::sensor::Contact3D;
+using rwlibs::proximitystrategies::ProximityStrategyFactory;
+using rwlibs::simulation::SimulatedController;
+using namespace rwlibs::task;
+using rws::RobWorkStudioPlugin;
+using namespace rwsim::dynamics;
+using rwsim::sensor::BodyContactSensor;
+using namespace rwsim::simulator;
 
 const int NR_OF_QUALITY_MEASURES = 3;
-
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
-
-USE_ROBWORKSIM_NAMESPACE
-using namespace robworksim;
-
-using namespace rws;
-
-using namespace rwlibs::simulation;
 
 SimTaskPlugin::SimTaskPlugin():
     RobWorkStudioPlugin("SimTaskPluginUI", QIcon(":/pa_icon.png"))
@@ -131,10 +161,9 @@ void SimTaskPlugin::startSimulation() {
     SimulatedController* scontroller = _dwc->findController("GraspController").get();
     if(scontroller==NULL)
         RW_THROW("No controller!");
-    _controller = dynamic_cast<rwlibs::control::JointController*>( scontroller->getController() );
+    _controller = scontroller->getControllerHandle(_sim).cast<rwlibs::control::JointController>();
     _progressBar->setRange( 0 , _totalNrOfExperiments);
     _progressBar->setValue( 0 );
-    _tsim->setPeriodMs(0);
     _currentState = NEW_GRASP;
     _wallTimer.resetAndResume();
     _wallTotalTimer.resetAndResume();
@@ -194,7 +223,6 @@ void SimTaskPlugin::close() {
     _currenttask = NULL;
     _tsim = NULL;
     _sim = NULL;
-    _engine = NULL;
     _hand = NULL;
     _dhand = NULL;
     _mbase = NULL;
@@ -262,7 +290,7 @@ void SimTaskPlugin::btnPressed() {
         CartesianTarget::Ptr target = _alltargets[idxTmp].second;
 
         Transform3D<> wTe_n = task->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
-        Transform3D<> wTe_home = task->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
+        //Transform3D<> wTe_home = task->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
         //Vector3D<> approach = _currenttask->getPropertyMap().get<Vector3D<> >("Approach", Vector3D<>(0,0,0));
         //Transform3D<> approachDef = Transform3D<>( approach, Rotation3D<>::identity());
         Q openQ = task->getPropertyMap().get<Q>("OpenQ", _openQ);
@@ -276,7 +304,7 @@ void SimTaskPlugin::btnPressed() {
         // and calculate the home lifting position
         //_home = wTe_home * target->get() * inverse(_bTe);
         _hand->setQ(openQ, state);
-        BOOST_FOREACH(RigidBody *object, _objects){
+        BOOST_FOREACH(RigidBody::Ptr object, _objects){
             Transform3D<> objHome = object->getMovableFrame()->getTransform( _homeState );
             object->getMovableFrame()->setTransform(objHome, state );
         }
@@ -367,7 +395,7 @@ void SimTaskPlugin::updateConfig(){
     devName = _config.get<std::string>("DeviceName");
     _hand =_wc->findDevice<Device>(devName).get();
     _dhand = _dwc->findDevice(devName);
-    _rhand = dynamic_cast<RigidDevice*>(_dhand);
+    _rhand = _dhand.cast<RigidDevice>();
 
     std::string baseName;
     if( !_config.has("MovableBase") || _config.get<std::string>("MovableBase")==""){
@@ -375,7 +403,7 @@ void SimTaskPlugin::updateConfig(){
         if(_hand != NULL ){
             std::vector<Frame*> frames = Kinematics::childToParentChain(_hand->getBase(), _wc->getWorldFrame(), state);
             BOOST_FOREACH(Frame *tmpKinFrame, frames){
-                if( KinematicBody *kbody = _dwc->findBody<KinematicBody>(tmpKinFrame->getName()) ){
+                if( KinematicBody::Ptr kbody = _dwc->findBody<KinematicBody>(tmpKinFrame->getName()) ){
                     baseName = kbody->getName();
                 }
             }
@@ -417,8 +445,8 @@ void SimTaskPlugin::updateConfig(){
     }
 */
     _objects.clear();
-    std::vector<RigidBody*> rbodies = _dwc->findBodies<RigidBody>();
-    BOOST_FOREACH(RigidBody* object, rbodies){
+    std::vector<RigidBody::Ptr> rbodies = _dwc->findBodies<RigidBody>();
+    BOOST_FOREACH(RigidBody::Ptr object, rbodies){
     	if(object->getBodyFrame()->getName()=="EndFrame")
     		continue;
     	std::map<std::string, Frame*> fmap = Kinematics::buildFrameMap(_hand->getBase(), state);
@@ -428,7 +456,7 @@ void SimTaskPlugin::updateConfig(){
     if( !_config.has("CalculateWrenchQuality") ){
         _config.add<bool>("CalculateWrenchQuality","Set true if the quality of the grasp should be calculated", true);
     }
-    _calcWrenchQuality = _config.get<bool>("CalculateWrenchQuality");
+    //_calcWrenchQuality = _config.get<bool>("CalculateWrenchQuality");
 
     if( !_config.has("MaxObjectGripperDistance") ){
         _config.add<double>("MaxObjectGripperDistance","The maximum allowed distance between gripper and object", 50.0);
@@ -588,9 +616,9 @@ void SimTaskPlugin::stateChangedListener(const State& state) {
 
 }
 
-std::vector<rw::sensor::Contact3D> SimTaskPlugin::getObjectContacts(const rw::kinematics::State& state, RigidBody *object, BodyContactSensor::Ptr sensor, std::vector<Body*>& gripperbodies ){
-    const std::vector<rw::sensor::Contact3D>& contacts = sensor->getContacts();
-    const std::vector<Body*>& bodies = sensor->getBodies();
+std::vector<rw::sensor::Contact3D> SimTaskPlugin::getObjectContacts(const rw::kinematics::State& state, RigidBody::Ptr object, BodyContactSensor::Ptr sensor, std::vector<Body::Ptr>& gripperbodies ){
+    const std::vector<rw::sensor::Contact3D>& contacts = sensor->getContacts(state);
+    const std::vector<Body::Ptr>& bodies = sensor->getBodies(state);
 
     RW_ASSERT(bodies.size() == contacts.size() );
     //std::cout << "nr contacts: " << contacts.size() << " body: " << object->getName() << std::endl;
@@ -641,7 +669,7 @@ SimTaskPlugin::GraspedObject SimTaskPlugin::getObjectContacts(const rw::kinemati
 rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
     GraspedObject gobj = getObjectContacts(state);
     std::vector<Contact3D> contacts = gobj.contacts;
-    RigidBody *object = gobj.object;
+    RigidBody::Ptr object = gobj.object;
     // calculate grasp quality
     rw::math::Q qualities( Q::zero(NR_OF_QUALITY_MEASURES) );
     if(gobj.object==NULL || gobj.contacts.size()==0)
@@ -672,7 +700,7 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
     */
 
     Vector3D<> cm = object->getInfo().masscenter;
-    double r = GeometryUtil::calcMaxDist( object->getGeometry(), cm);
+    double r = GeometryUtil::calcMaxDist( object->getGeometry(), cm, object->getBodyFrame(), state);
     //std::cout << "cm    : " << cm << std::endl;
     //std::cout << "Radius: " << r<< std::endl;
 
@@ -796,9 +824,9 @@ rwlibs::task::CartesianTarget::Ptr SimTaskPlugin::getTarget(){
 }
 
 namespace {
-    double getMaxObjectDistance(std::vector<RigidBody*> objects, const State& s1, const State& s2){
+    double getMaxObjectDistance(std::vector<RigidBody::Ptr> objects, const State& s1, const State& s2){
         double max = 0;
-        BOOST_FOREACH(RigidBody *object, objects){
+        BOOST_FOREACH(RigidBody::Ptr object, objects){
             Transform3D<> t1 = object->getTransformW(s1);
             Transform3D<> t2 = object->getTransformW(s2);
             if(MetricUtil::dist2(t1.P(),t2.P())>max)
@@ -962,12 +990,12 @@ void SimTaskPlugin::step(ThreadSimulator* sim, const rw::kinematics::State& stat
                 Q qualities = calcGraspQuality(state);
                 getTarget()->getPropertyMap().set<Q>("QualityAfterLifting", qualities);
 
-                Transform3D<> t3d = Kinematics::frameTframe(_mbase, gobj.object->getBodyFrame(), state);
+                //Transform3D<> t3d = Kinematics::frameTframe(_mbase, gobj.object->getBodyFrame(), state);
 
                 // Test the success of lifting the object.
                 // We need to look at the objects that are actually touching
-                Body* object = gobj.object;
-                Body* gripperBody = gobj.bodies[0];
+                Body::Ptr object = gobj.object;
+                Body::Ptr gripperBody = gobj.bodies[0];
                 /*
                 Transform3D<> wTp = Kinematics::worldTframe(_mbase->getParent(state), state);
 
@@ -1086,10 +1114,10 @@ void SimTaskPlugin::step(ThreadSimulator* sim, const rw::kinematics::State& stat
                 _objects[i]->getMovableFrame()->setTransform(tobj, nstate);
             }
             // set max force
-            if(_rhand ){
+            if(!_rhand.isNull()){
                 Q forceLim = getTask()->getPropertyMap().get<Q>("TauMax",Q());
                 if(forceLim.size()>0)
-                    _rhand->setForceLimit(forceLim);
+                    _rhand->setMotorForceLimits(forceLim);
             }
 
             colFreeSetup = !_collisionDetector->inCollision(nstate, NULL, true);
@@ -1140,9 +1168,9 @@ void SimTaskPlugin::makeSimulator(){
     _mbase->setTransform(Transform3D<>(Vector3D<>(100,100,100)), state);
     getRobWorkStudio()->setState(state);
     log().debug() << "Making physics engine";
-    ODESimulator::Ptr _engine = ownedPtr( new ODESimulator(_dwc));
+    ODESimulator::Ptr engine = ownedPtr( new ODESimulator(_dwc));
     log().debug() << "Making simulator";
-    _sim = ownedPtr( new DynamicSimulator(_dwc, _engine ));
+    _sim = ownedPtr( new DynamicSimulator(_dwc, engine ));
     log().debug() << "Initializing simulator";
     try {
         _sim->init(state);
@@ -1161,7 +1189,6 @@ void SimTaskPlugin::makeSimulator(){
     ThreadSimulator::StepCallback cb( boost::bind(&SimTaskPlugin::step, this, _1, _2) );
 
     _tsim->setStepCallBack( cb );
-    _tsim->setPeriodMs(-1);
     _tsim->setTimeStep(0.01);
 
 
@@ -1307,4 +1334,7 @@ void SimTaskPlugin::genericEventListener(const std::string& event){
     }
 }
 
+#if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(SimTaskPlugin);
+#endif

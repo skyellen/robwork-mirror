@@ -1,39 +1,32 @@
-#include "SimTemplatePlugin.hpp"
+#include "BootstrapPlugin.hpp"
 
-#include <QPushButton>
+#include <bstrap/core/Brain.hpp>
+#include <bstrap/abstractions/VisionSensor.hpp>
 
 #include <RobWorkStudio.hpp>
-#include <rwlibs/simulation/SimulatedController.hpp>
+#include <rwlibs/opengl/Drawable.hpp>
+#include <rwsim/control/PoseController.hpp>
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/dynamics/RigidBody.hpp>
-#include <rwlibs/control/JointController.hpp>
-#include <rwlibs/opengl/Drawable.hpp>
-#include <rwsim/control/SyncPDController.hpp>
-#include <rwsim/control/PoseController.hpp>
-#include <rw/graspplanning/Grasp3D.hpp>
-#include <fstream>
-#include <iostream>
-#include <boost/lexical_cast.hpp>
+#include <rwsim/simulator/DynamicSimulator.hpp>
+#include <rwsim/simulator/ThreadSimulator.hpp>
+#include <rwsimlibs/ode/ODESimulator.hpp>
 
-
-
-const int NR_OF_QUALITY_MEASURES = 3;
+#include <QTimer>
 
 USE_ROBWORK_NAMESPACE
 using namespace robwork;
-
-USE_ROBWORKSIM_NAMESPACE
-using namespace robworksim;
 
 using namespace rws;
 
 using namespace rwsim::control;
 using namespace rwlibs::control;
 using namespace rwlibs::simulation;
+using namespace rwsim::dynamics;
+using namespace rwsim::simulator;
 
-SimTemplatePlugin::SimTemplatePlugin():
-    RobWorkStudioPlugin("SimTemplatePluginUI", QIcon(":/pa_icon.png"))
+BootstrapPlugin::BootstrapPlugin():
+    RobWorkStudioPlugin("BootstrapPlugin", QIcon(":/pa_icon.png"))
 {
     setupUi(this);
 
@@ -52,30 +45,30 @@ SimTemplatePlugin::SimTemplatePlugin():
     _stopBtn->setEnabled(false);
 }
 
-SimTemplatePlugin::~SimTemplatePlugin()
+BootstrapPlugin::~BootstrapPlugin()
 {
 }
 
-void SimTemplatePlugin::initialize() {
+void BootstrapPlugin::initialize() {
     getRobWorkStudio()->stateChangedEvent().add(
-            boost::bind(&SimTemplatePlugin::stateChangedListener, this, _1), this);
+            boost::bind(&BootstrapPlugin::stateChangedListener, this, _1), this);
 
     getRobWorkStudio()->genericEvent().add(
-          boost::bind(&SimTemplatePlugin::genericEventListener, this, _1), this);
+          boost::bind(&BootstrapPlugin::genericEventListener, this, _1), this);
 
     Log::setLog( _log );
 }
 
-void SimTemplatePlugin::startSimulation() {
+void BootstrapPlugin::startSimulation() {
 
     // create simulator and stuff here
     log().info() << "Making simulation!";
     State state = getRobWorkStudio()->getState();
     if(_sim==NULL){
         log().debug() << "Making physics engine";
-        ODESimulator::Ptr _engine = ownedPtr( new ODESimulator(_dwc));
+        ODESimulator::Ptr engine = ownedPtr( new ODESimulator(_dwc));
         log().debug() << "Making simulator";
-        _sim = ownedPtr( new DynamicSimulator(_dwc, _engine ));
+        _sim = ownedPtr( new DynamicSimulator(_dwc, engine ));
         log().debug() << "Initializing simulator";
         try {
             _sim->init(state);
@@ -84,9 +77,9 @@ void SimTemplatePlugin::startSimulation() {
         }
         log().debug() << "Creating Thread simulator";
         _tsim = ownedPtr( new ThreadSimulator(_sim, state) );
-        ThreadSimulator::StepCallback cb( boost::bind(&SimTemplatePlugin::step, this, _1, _2) );
+        ThreadSimulator::StepCallback cb( boost::bind(&BootstrapPlugin::step, this, _1, _2) );
         _tsim->setStepCallBack( cb );
-        _tsim->setPeriodMs(100);
+        //_tsim->setPeriodMs(100);
         _tsim->setTimeStep(0.01);
 
         // if we want some debug information visualized then we add a render
@@ -103,12 +96,14 @@ void SimTemplatePlugin::startSimulation() {
 
         // find the head/vision frame
         Frame *vision = _wc->findFrame("VisionFrame");
-        PoseController::Ptr leftCtrl = _dwc->findController("LeftArmPoseController");
-        PoseController::Ptr rightCtrl = _dwc->findController("RightArmPoseController");
+        PoseController::Ptr leftCtrl = _dwc->findController<PoseController>("LeftArmPoseController");
+        PoseController::Ptr rightCtrl = _dwc->findController<PoseController>("RightArmPoseController");
 
-        _brain = new Brain("TheBrain", _tsim, _sim, _dwc, this);
+        //_brain = new Brain("TheBrain", _tsim, _sim, _dwc, this);
+        _brain = new Brain("TheBrain", this);
         // add some Abstractions, schemas and motor programs to the brain
-        _brain->add( ownedPtr( new VisionSensor( vision, _tsim, _sim, _dwc )) );
+        //_brain->add( ownedPtr( new VisionSensor( vision, _tsim, _sim, _dwc )) );
+        _brain->add( ownedPtr( new VisionSensor( vision, _dwc )) );
 
         // add some grasp schemas
 
@@ -126,9 +121,9 @@ void SimTemplatePlugin::startSimulation() {
     }
 
     _delaySpin->setValue(100);
-    _tsim->setPeriodMs(100);
-    _wallTimer.resetAndResume();
-    _wallTotalTimer.resetAndResume();
+    //_tsim->setPeriodMs(100);
+    //_wallTimer.resetAndResume();
+    //_wallTotalTimer.resetAndResume();
 
     // start poll timer
     _timer->start();
@@ -137,7 +132,7 @@ void SimTemplatePlugin::startSimulation() {
     log().info() << "Simulation Started\n";
 }
 
-void SimTemplatePlugin::open(WorkCell* workcell)
+void BootstrapPlugin::open(WorkCell* workcell)
 {
     if(workcell==NULL || _dwc==NULL)
         return;
@@ -145,12 +140,12 @@ void SimTemplatePlugin::open(WorkCell* workcell)
     _wc = workcell;
 }
 
-void SimTemplatePlugin::close() {
+void BootstrapPlugin::close() {
     // destroy simulation and stuff
     _wc = NULL;
 }
 
-void SimTemplatePlugin::btnPressed() {
+void BootstrapPlugin::btnPressed() {
     QObject *obj = sender();
     if(obj==_startBtn){
         startSimulation();
@@ -162,9 +157,10 @@ void SimTemplatePlugin::btnPressed() {
         _tsim->stop();
         _timer->stop();
     } else if(obj==_delaySpin){
-        int val = _delaySpin->value();
-        if(_tsim!=NULL)
-            _tsim->setPeriodMs(val);
+    	RW_THROW("Delay is not currently implemented.");
+        //int val = _delaySpin->value();
+        //if(_tsim!=NULL)
+            //_tsim->setPeriodMs(val);
     } else if(obj==_timer){
         // update the RobWorkStudio state
         // we poll the simulator state and updates the visualization state
@@ -172,11 +168,11 @@ void SimTemplatePlugin::btnPressed() {
     }
 }
 
-void SimTemplatePlugin::stateChangedListener(const State& state) {
+void BootstrapPlugin::stateChangedListener(const State& state) {
 
 }
 
-void SimTemplatePlugin::step(ThreadSimulator* sim, const rw::kinematics::State& state){
+void BootstrapPlugin::step(ThreadSimulator* sim, const rw::kinematics::State& state){
     /*
     State tmpState = state;
     // in here we are able to perform stuff on the simulation control
@@ -213,7 +209,7 @@ void SimTemplatePlugin::step(ThreadSimulator* sim, const rw::kinematics::State& 
     */
 }
 
-void SimTemplatePlugin::genericEventListener(const std::string& event){
+void BootstrapPlugin::genericEventListener(const std::string& event){
     if( event=="DynamicWorkcellLoadet" ){
         // get the dynamic workcell from the propertymap
         RW_DEBUG("Getting dynamic workcell from propertymap!");
@@ -228,4 +224,7 @@ void SimTemplatePlugin::genericEventListener(const std::string& event){
     }
 }
 
-Q_EXPORT_PLUGIN(SimTemplatePlugin);
+#if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
+Q_EXPORT_PLUGIN(BootstrapPlugin);
+#endif

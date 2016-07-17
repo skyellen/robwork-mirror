@@ -18,10 +18,6 @@
 #ifndef BRAINSTATE_HPP_
 #define BRAINSTATE_HPP_
 
-#include <QMainWindow>
-#include <QModelIndex>
-
-#include <rw/common/Log.hpp>
 #include <rw/common/PropertyMap.hpp>
 
 class BrainState {

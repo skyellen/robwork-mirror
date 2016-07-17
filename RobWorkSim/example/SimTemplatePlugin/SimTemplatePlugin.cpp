@@ -1,34 +1,22 @@
 #include "SimTemplatePlugin.hpp"
 
-#include <QPushButton>
-
 #include <RobWorkStudio.hpp>
-#include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/dynamics/RigidBody.hpp>
-#include <rwlibs/control/JointController.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
-#include <rwsim/control/SyncPDController.hpp>
-#include <rwsim/control/PoseController.hpp>
-#include <rw/graspplanning/Grasp3D.hpp>
-#include <fstream>
-#include <iostream>
-#include <boost/lexical_cast.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
+#include <rwsim/simulator/DynamicSimulator.hpp>
+#include <rwsim/simulator/ThreadSimulator.hpp>
+#include <rwsimlibs/ode/ODESimulator.hpp>
 
-const int NR_OF_QUALITY_MEASURES = 3;
+#include <QTimer>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
-
-USE_ROBWORKSIM_NAMESPACE
-using namespace robworksim;
-
-using namespace rws;
-
-using namespace rwsim::control;
-using namespace rwlibs::control;
-using namespace rwlibs::simulation;
+using namespace rw::common;
+using rw::kinematics::State;
+using rw::models::WorkCell;
+using rws::RobWorkStudioPlugin;
+using namespace rwsim::dynamics;
+using namespace rwsim::simulator;
 
 SimTemplatePlugin::SimTemplatePlugin():
     RobWorkStudioPlugin("SimTemplatePluginUI", QIcon(":/pa_icon.png"))
@@ -71,9 +59,9 @@ void SimTemplatePlugin::startSimulation() {
     State state = getRobWorkStudio()->getState();
     if(_sim==NULL){
         log().debug() << "Making physics engine";
-        ODESimulator::Ptr _engine = ownedPtr( new ODESimulator(_dwc));
+        ODESimulator::Ptr engine = ownedPtr( new ODESimulator(_dwc));
         log().debug() << "Making simulator";
-        _sim = ownedPtr( new DynamicSimulator(_dwc, _engine ));
+        _sim = ownedPtr( new DynamicSimulator(_dwc, engine ));
         log().debug() << "Initializing simulator";
         try {
             _sim->init(state);
@@ -176,4 +164,7 @@ void SimTemplatePlugin::genericEventListener(const std::string& event){
     }
 }
 
+#if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(SimTemplatePlugin);
+#endif

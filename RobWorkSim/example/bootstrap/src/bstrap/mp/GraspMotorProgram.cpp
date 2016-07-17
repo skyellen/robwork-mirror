@@ -1,13 +1,11 @@
 #include "GraspMotorProgram.hpp"
 
+#include <bstrap/core/BrainState.hpp>
 
-#include <rw/common/macros.hpp>
+#include <rwsim/control/PoseController.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
-using namespace rwsim::dynamics;
-
-
+using rw::common::PropertyMap;
+using rw::math::Transform3D;
 
 GraspMotorProgram::GraspMotorProgram(const std::string& name,
                                      rwsim::control::PoseController::Ptr graspController):
@@ -30,7 +28,7 @@ void GraspMotorProgram::update(const BrainState& bstate){
 
 }
 
-void GraspMotorProgram::setParameters(rw::common::PropertyMap::Ptr parameters, const BrainState& bstate){
+void GraspMotorProgram::setParameters(rw::common::Ptr<rw::common::PropertyMap> parameters, const BrainState& bstate){
     // PropertyMap input;
     // input.set<std::string>("objectName","object");
     // input.set<Transform3D<> >("objectTransform", Transform3D<>() );

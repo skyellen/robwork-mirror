@@ -44,12 +44,19 @@ ENDIF()
 # if we want to use ui files add them here
 SET(UIS_FILES SimTemplatePlugin.ui )
 
-RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+# to be able to include the generated ui header files
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}) 
 
-QT4_WRAP_CPP(MocSrcFiles SimTemplatePlugin.hpp)
-# Rcc the files:
+IF(RWS_USE_QT5)
+	QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+	QT5_WRAP_CPP(MocSrcFiles SimTemplatePlugin.hpp)
+	QT5_ADD_RESOURCES(RccSrcFiles resources.qrc)
+ELSE()
+	QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+	QT4_WRAP_CPP(MocSrcFiles SimTemplatePlugin.hpp)
+	QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+ENDIF()
 
-QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 SET(SrcFiles SimTemplatePlugin.cpp ${UIS_OUT_H})
 
 # The shared library to build:

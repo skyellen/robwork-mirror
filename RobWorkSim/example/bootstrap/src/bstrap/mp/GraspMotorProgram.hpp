@@ -19,24 +19,25 @@
 #define GRASPMOTORPROGRAM_HPP_
 
 #include <bstrap/core/MotorProgram.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <bstrap/core/BrainState.hpp>
-#include <bstrap/core/MotorProgram.hpp>
-#include <rwsim/control/PoseController.hpp>
 
+#include <rw/math/Transform3D.hpp>
+
+namespace rwsim { namespace control { class PoseController; } }
+
+class BrainState;
 
 class GraspMotorProgram: public MotorProgram {
 public:
 
-    GraspMotorProgram(const std::string& name,
-                      rwsim::control::PoseController::Ptr graspController);
-    void setParameters(rw::common::PropertyMap::Ptr parameters, const BrainState& bstate);
-    void executionloop();
-    void update(const BrainState& state);
+	GraspMotorProgram(const std::string& name,
+			rw::common::Ptr<rwsim::control::PoseController> graspController);
+	void setParameters(rw::common::Ptr<rw::common::PropertyMap> parameters, const BrainState& bstate);
+	void executionloop();
+	void update(const BrainState& state);
 private:
-    std::string _objName;
+	std::string _objName;
     rw::math::Transform3D<> _target;
-    rwsim::control::PoseController::Ptr _graspController;
+    rw::common::Ptr<rwsim::control::PoseController> _graspController;
 
 };
 

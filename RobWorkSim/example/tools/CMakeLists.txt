@@ -62,7 +62,7 @@ target_link_libraries(ModelPropertyTest ${ROBWORK_LIBRARIES})
 
 add_executable(RWSimTest src/RWSimTest.cpp)
 target_link_libraries(RWSimTest rwsim ${ROBWORK_LIBRARIES})
-MESSAGE("LIBS AVAIL: ${ROBWORKSIM_LIBRARIES}")
+
 add_executable(UniformSelectGrasps src/UniformSelectGrasps.cpp)
 target_link_libraries(UniformSelectGrasps ${ROBWORK_LIBRARIES})
 
@@ -132,9 +132,6 @@ target_link_libraries(ToComma ${ROBWORK_LIBRARIES})
 
 add_executable(danniToGtable src/danniToGtable.cpp)
 target_link_libraries(danniToGtable ${ROBWORK_LIBRARIES})
-
-add_executable(GraspGenerationSDHSolver src/GraspGenerationSDHSolver.cpp src/SDHInvKinSolver.cpp src/IKSoftCSolver.cpp)
-target_link_libraries(GraspGenerationSDHSolver rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 
 add_executable(cut src/cut.cpp src/CutActionParam.cpp)
 target_link_libraries(cut rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})

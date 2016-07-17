@@ -1,20 +1,19 @@
 #include "VisionSensor.hpp"
 
+#include <bstrap/core/BrainState.hpp>
+
 #include <rw/kinematics/Kinematics.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 
-using namespace rw::math;
-using namespace rw::common;
-using namespace rw::kinematics;
-
-using namespace rwsim::dynamics;
+using rw::math::Transform3D;
+using rw::common::PropertyMap;
+using rw::kinematics::Kinematics;
+using rwsim::dynamics::Body;
 
 VisionSensor::VisionSensor(rw::kinematics::Frame *visionFrame,
-                 rwsim::simulator::ThreadSimulator::Ptr sim,
-                 rwsim::simulator::DynamicSimulator::Ptr dsim,
-                 rwsim::dynamics::DynamicWorkCell::Ptr dwc):
-                 _visionFrame(visionFrame),_sim(sim),_dsim(dsim),_dwc(dwc)
+		rwsim::dynamics::DynamicWorkCell::Ptr dwc):
+	_dwc(dwc),_visionFrame(visionFrame)
 {
-
 }
 
 
@@ -23,7 +22,7 @@ void VisionSensor::update(BrainState& cstate, Memory& mem){
     // for now we see all objects that are in front of the visionFrame (z-axis) ;). this can be improved later on
 
     // we use a VisualObjects property
-    PropertyMap &objectsMap = cstate.getMap().add("VisualObjects", "A list of visual objects", PropertyMap())->getValue();
+    //PropertyMap &objectsMap = cstate.getMap().add("VisualObjects", "A list of visual objects", PropertyMap())->getValue();
 
     Transform3D<> wTvision = Kinematics::worldTframe(_visionFrame, cstate.getRobWorkState() );
     BOOST_FOREACH(Body::Ptr b, _dwc->getBodies() ){

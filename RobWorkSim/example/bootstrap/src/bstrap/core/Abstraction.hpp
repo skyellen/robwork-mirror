@@ -5,8 +5,8 @@
 
 #include <rw/common/Ptr.hpp>
 
-#include "Memory.hpp"
-#include "BrainState.hpp"
+class BrainState;
+class Memory;
 
 /**
  * @brief something that computes abstract knowledge and puts this into the state

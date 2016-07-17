@@ -2,7 +2,9 @@
 #ifndef CONDITION_HPP_
 #define CONDITION_HPP_
 
-#include "BrainState.hpp"
+#include <rw/common/Ptr.hpp>
+
+class BrainState;
 
 class Condition {
 public:

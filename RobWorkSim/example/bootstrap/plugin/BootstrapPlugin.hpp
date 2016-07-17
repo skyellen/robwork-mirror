@@ -1,39 +1,40 @@
-#ifndef SimTemplatePlugin_HPP
-#define SimTemplatePlugin_HPP
+#ifndef BootstrapPlugin_HPP
+#define BootstrapPlugin_HPP
 
 #include <RobWorkStudioConfig.hpp> // For RWS_USE_QT5 definition
 
-#include <rw/common/Timer.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
 #include "ui_SimTemplatePlugin.h"
 
 #include <QObject>
+//#include <rw/common/Timer.hpp>
 
 namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
 namespace rwsim { namespace simulator { class DynamicSimulator; } }
 namespace rwsim { namespace simulator { class ThreadSimulator; } }
 
+class Brain;
 class QTimer;
 
 /**
  * @brief A plugin
  */
-class SimTemplatePlugin: public rws::RobWorkStudioPlugin, private Ui::SimTemplatePlugin
+class BootstrapPlugin: public rws::RobWorkStudioPlugin, private Ui::SimTemplatePlugin
 {
 Q_OBJECT
 Q_INTERFACES( rws::RobWorkStudioPlugin )
 #if RWS_USE_QT5
-	Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1" FILE "SimTemplatePlugin.json")
+	Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1" FILE "BootstrapPlugin.json")
 #endif
 public:
 
     /**
      * @brief constructor
      */
-    SimTemplatePlugin();
+	BootstrapPlugin();
 
     //! destructor
-    virtual ~SimTemplatePlugin();
+    virtual ~BootstrapPlugin();
 
     virtual void open(rw::models::WorkCell* workcell);
 
@@ -61,8 +62,10 @@ private:
     rw::common::Ptr<rwsim::simulator::ThreadSimulator> _tsim;
     rw::common::Ptr<rwsim::simulator::DynamicSimulator> _sim;
 
+    rw::common::Ptr<Brain> _brain;
+
     QTimer *_timer;
-    rw::common::Timer _wallTimer, _wallTotalTimer;
+    //rw::common::Timer _wallTimer, _wallTotalTimer;
 };
 
-#endif
+#endif /*BootstrapPlugin_HPP*/

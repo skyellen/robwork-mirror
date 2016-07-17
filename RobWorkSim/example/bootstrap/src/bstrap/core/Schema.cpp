@@ -1,6 +1,6 @@
 #include "Schema.hpp"
 
-void Schema::executeMotorProgram( rw::common::PropertyMap::Ptr parameters, const BrainState& bstate  ){
+void Schema::executeMotorProgram( rw::common::Ptr<rw::common::PropertyMap> parameters, const BrainState& bstate  ){
     _mp->execute( parameters, bstate);
 }
 

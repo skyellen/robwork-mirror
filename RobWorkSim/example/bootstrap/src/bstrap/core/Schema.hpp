@@ -2,11 +2,12 @@
 #ifndef SCHEMA_HPP_
 #define SCHEMA_HPP_
 
-#include <rw/common/Log.hpp>
-#include <rw/common/PropertyMap.hpp>
+#include <rw/common/Ptr.hpp>
 
 #include "BrainState.hpp"
 #include "MotorProgram.hpp"
+
+namespace rw { namespace common { class PropertyMap; } }
 
 class Predictor {
 public:
@@ -69,7 +70,7 @@ public:
 
     MotorProgram::Ptr getMotorProgram();
     void setMotorProgram( MotorProgram::Ptr mp);
-    void executeMotorProgram( rw::common::PropertyMap::Ptr parameters, const BrainState& bstate  );
+    void executeMotorProgram( rw::common::Ptr<rw::common::PropertyMap> parameters, const BrainState& bstate  );
 
 
 

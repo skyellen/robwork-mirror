@@ -18,18 +18,20 @@
 #ifndef BRAIN_HPP_
 #define BRAIN_HPP_
 
-#include <rw/common/Log.hpp>
-#include <rw/common/PropertyMap.hpp>
-#include <rws/RobWorkStudio.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/simulator/ThreadSimulator.hpp>
 #include <QThread>
+#include <QWidget>
 
 #include "Schema.hpp"
 #include "ActionTree.hpp"
 #include "ActionGoal.hpp"
 #include "BrainState.hpp"
-#include "Abstraction.hpp"
+#include "Memory.hpp"
+
+//namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
+//namespace rwsim { namespace simulator { class DynamicSimulator; } }
+//namespace rwsim { namespace simulator { class ThreadSimulator; } }
+
+class Abstraction;
 
 /**
  * @brief this class handles the execution of lua commands such that they
@@ -42,11 +44,12 @@ public:
     typedef rw::common::Ptr<Brain> Ptr;
 
     Brain(const std::string& name,
-           rwsim::simulator::ThreadSimulator::Ptr sim,
-           rwsim::simulator::DynamicSimulator::Ptr dsim,
-           rwsim::dynamics::DynamicWorkCell::Ptr dwc,
+           //rw::common::Ptr<rwsim::simulator::ThreadSimulator> sim,
+		   //rw::common::Ptr<rwsim::simulator::DynamicSimulator> dsim,
+		   //rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc,
            QWidget *parent=NULL) :
-            QThread(parent), _name(name), _stopped(true), _dsim(dsim), _sim(sim), _dwc(dwc)
+            QThread(parent), _name(name), _stopped(true)
+			//_dsim(dsim), _sim(sim), _dwc(dwc)
     {
     }
 
@@ -71,7 +74,7 @@ public:
 
     std::vector<ActionGoal::Ptr> getActionGoals();
 
-    void add(Abstraction::Ptr abstraciton){ _abstractions.push_back(abstraciton); }
+    void add(rw::common::Ptr<Abstraction> abstraciton){ _abstractions.push_back(abstraciton); }
 
 protected:
     BrainState computeSensorState();
@@ -79,11 +82,11 @@ protected:
 private:
     std::string _name;
     bool _stop, _stopped;
-    rwsim::simulator::DynamicSimulator::Ptr _dsim;
-    rwsim::simulator::ThreadSimulator::Ptr _sim;
-    rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
+    //rw::common::Ptr<rwsim::simulator::DynamicSimulator> _dsim;
+    //rw::common::Ptr<rwsim::simulator::ThreadSimulator> _sim;
+    //rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> _dwc;
     rw::kinematics::State _rwstate;
-    std::vector<Abstraction::Ptr> _abstractions;
+    std::vector<rw::common::Ptr<Abstraction> > _abstractions;
     Memory _memory;
     std::vector<Schema*> _schemas;
 
