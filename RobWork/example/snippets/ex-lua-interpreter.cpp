@@ -1,7 +1,6 @@
 #include <rwlibs/swig/lua/Lua.hpp>
 
 #include <iostream>
-#include <string>
 
 int main(int argc, char** argv)
 {

@@ -5,8 +5,8 @@
 #include <boost/foreach.hpp>
 
 using namespace rw::kinematics;
-using namespace rw::models;
-using namespace rw::math;
+using rw::models::WorkCell;
+using rw::math::Transform3D;
 
 
 void printKinematicTree(

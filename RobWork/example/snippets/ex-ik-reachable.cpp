@@ -1,9 +1,19 @@
-#include <rw/rw.hpp>
+#include <rw/loaders/WorkCellFactory.hpp>
+#include <rw/models/WorkCell.hpp>
+#include <rw/pathplanning/QConstraint.hpp>
+#include <rw/pathplanning/QIKSampler.hpp>
+#include <rw/pathplanning/QSampler.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 #include <boost/foreach.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
+using rw::common::ownedPtr;
+using rw::kinematics::State;
+using rw::loaders::WorkCellLoader;
+using namespace rw::math;
+using namespace rw::models;
+using namespace rw::pathplanning;
+using rw::proximity::CollisionDetector;
 using namespace rwlibs::proximitystrategies;
 
 typedef std::vector<Transform3D<> > TransformPath;
@@ -55,7 +65,7 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-    WorkCell::Ptr workcell = WorkCellFactory::load(argv[1]);
+    WorkCell::Ptr workcell = WorkCellLoader::Factory::load(argv[1]);
     Device::Ptr device = workcell->getDevices().front();
     const State state = workcell->getDefaultState();
 

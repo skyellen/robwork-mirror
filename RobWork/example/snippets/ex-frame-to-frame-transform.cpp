@@ -1,6 +1,6 @@
 #include <rw/kinematics/FKRange.hpp>
 
-using namespace rw::math;
+using rw::math::Transform3D;
 using namespace rw::kinematics;
 
 Transform3D<> frameToFrameTransform(

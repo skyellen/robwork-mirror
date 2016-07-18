@@ -1,5 +1,10 @@
 #include "SimpleGLViewer.hpp"
 
+#include "ArcBall.hpp"
+#include "EventListener.hpp"
+#include "Menu.hpp"
+#include "MenuItem.hpp"
+
 #include <iostream>
 #include <string>
 #include <GL/gl.h>
@@ -8,111 +13,167 @@
 #include <time.h>
 #include <cstdio>
 
-#include <rwlibs/opengl/SceneOpenGL.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
+//#include <rw/proximity/CollisionDetector.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Quaternion.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
-#include <rw/sensor/Camera.hpp>
-#include <rw/sensor/Image.hpp>
-#include <rw/models/SerialDevice.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
+#include <rw/models/WorkCell.hpp>
 #include <rw/graphics/WorkCellScene.hpp>
 
+#include <rwlibs/opengl/SceneOpenGL.hpp>
 #include <rwlibs/simulation/SimulatedCamera.hpp>
-#include <rwlibs/simulation/GLFrameGrabber.hpp>
+//#include <rwlibs/simulation/GLFrameGrabber.hpp>
 
 #include <map>
 
-#include "ArcBall.hpp"
-
-using namespace rwlibs::proximitystrategies;
-using namespace rwlibs::opengl;
-using namespace rwlibs::simulation;
-
-using namespace rw::proximity;
+using namespace rw::common;
 using namespace rw::kinematics;
-using namespace rw::models;
 using namespace rw::math;
-using namespace rw::sensor;
+using rw::models::WorkCell;
 using namespace rw::graphics;
-using namespace rw;
 
-// private prototypes
-void myGlutReshape( int x, int y );
+using namespace rwlibs::opengl;
+using rwlibs::simulation::SimulatedCamera;
 
-/* constants for the right click menu */
-enum{QUIT=0};
+struct SimpleGLViewer::InternalData {
+	InternalData():
+		_x(0), _y(0), _width(640), _height(480),
+		_arcBall(new ArcBall(_width,_height)),
+		_mainWindow(0),
+		_curCameraView(0), _camView(false),
+		_mouseState(NONE),
+		_keyListener(NULL),
+		_viewRotation(Rotation3D<float>::identity()),
+		_viewPos(0,0,-10),
+		_pivotPoint(0,0,0),
+		_lastPos(0,0,0)
+	{
+		for (int i = 0; i < 10; i++)
+			_myFps[i] = 0;
+	}
 
-//void GetFPS();
+	~InternalData() {
+		delete _arcBall;
+	}
 
-/* The window upper left corner and height and width parameters */
-int _x=0, _y=0, _width=640,_height=480;
+    View::Ptr _currentView;
+    rw::graphics::SceneGraph::RenderInfo _renderInfo;
 
-Rotation3D<float> _viewRotation(Rotation3D<float>::identity());
-Vector3D<float> _viewPos(0,0,-10);
-Vector3D<float> _lastViewPos(0,0,0);
-Vector3D<float> _pivotPoint(0,0,0);
-Vector3D<float> _lastPos(0,0,0);
+    int _x, _y, _width, _height;
 
-ArcBall _arcBall(_width,_height);
+    ArcBall* _arcBall;
 
-bool _showPivotPoint = false;
+    int _mainWindow;
 
-// Initialize collision stuff variables
-CollisionDetector *_collisionDetector;
-CollisionStrategy *_cdStrategy;
-bool _collisionCheckEnabled = true;
+    std::vector<rwlibs::simulation::SimulatedCamera*> _cameras;
+    int _curCameraView;
+    bool _camView;
 
-// the workcellModel
-WorkCell::Ptr _workcellModel = NULL;
-State *_state;
-WorkCellScene *_workcellGLDrawer;
-std::vector<SimulatedCamera*> _cameras;
+    char _myFps[10];
 
-// variables for the camera view
-int _curCameraView=0;
-bool _camView = false;
+    enum MouseDragMode {NONE, ZOOM, TRANSLATE, ROTATE};
+    MouseDragMode _mouseState;
 
-/* The main glut display window */
-int main_window;
+    EventListener* _keyListener;
 
-/* This char array is updated with the FPS count */
-char  myFps[10] = {0};
+    /* constants for the right click menu */
+    enum{QUIT=0};
+    std::map<int,MenuItem*> _menuItemMap;
 
-/* Variables for keeping track of dragging of the mouse. */
-enum MouseDragMode {NONE, ZOOM, TRANSLATE, ROTATE};
-MouseDragMode mouseState = NONE;
+    Rotation3D<float> _viewRotation;
+    Vector3D<float> _viewPos;
+    Vector3D<float> _pivotPoint;
+    Vector3D<float> _lastPos;
 
-GLdouble startX;
-GLdouble startY;
+    // Initialize collision stuff variables
+    //CollisionDetector *_collisionDetector;
+    //bool _collisionCheckEnabled = true;
+};
 
-std::map<int,Menu*> _menuMap;
-std::map<int,MenuItem*> _menuItemMap;
+namespace {
 
-EventListener *_keyListener = NULL;
+std::map<int,SimpleGLViewer*> viewers;
 
-WorkCellScene* SimpleGLViewer::getWorkCellGLDrawer(){ return _workcellGLDrawer; };
+class RenderQuad : public Render {
+private:
+	GLfloat _colorTop[4],_colorBottom[4];
+	int _x,_y,_width,_height;
+public:
+	//! @brief smart pointer type to this class
+	typedef rw::common::Ptr<RenderQuad> Ptr;
 
-void SimpleGLViewer::setKeyListener(EventListener *listener){
-    _keyListener = listener;
-}
+	/* Functions inherited from Render */
+	/**
+	 * @copydoc Render::draw
+	 */
+	void draw(const DrawableNode::RenderInfo& info, DrawType type, double alpha) const {
+
+		//glDisable(GL_TEXTURE_2D);
+
+		glPushMatrix();
+		glLoadIdentity();
+
+		//GLenum matRendering = GL_FRONT;
+		//GLfloat specularReflection[]={1.0f,1.0f,1.0f,1.0f};
+		//GLfloat matEmission[]={0.0f,0.0f,0.0f,1.0f};
+		//glMaterialfv(matRendering, GL_SPECULAR, specularReflection);
+		//glMaterialfv(matRendering, GL_EMISSION, matEmission);
+		//glMateriali(matRendering, GL_SHININESS, 128);
+
+		glPolygonMode(GL_FRONT, GL_FILL);
+		glBegin(GL_QUADS);
+		glColor4fv(_colorBottom);
+		glVertex2f(_x, _y);
+		glVertex2f(_width, _y);
+		glColor4fv(_colorTop);
+		glVertex2f(_width, _height);
+		glVertex2f(_x, _height);
+		glEnd();
+
+		glPopMatrix();
+		//glEnable(GL_TEXTURE_2D);
+	}
+
+	void setTopColor(const Vector3D<>& color){
+		_colorTop[0] = color[0];
+		_colorTop[1] = color[1];
+		_colorTop[2] = color[2];
+		_colorTop[3] = 1;
+	}
+
+	void setBottomColor(const Vector3D<>& color){
+		_colorBottom[0] = color[0];
+		_colorBottom[1] = color[1];
+		_colorBottom[2] = color[2];
+		_colorBottom[3] = 1;
+	}
+
+	void setViewPort(int x,int y,int width,int height){
+		_x = x; _y = y; _width = width; _height = height;
+	}
+
+};
 
 /**************************************** myGlutMenu() **********/
 /* The right click mouse menu callback function */
 void myGlutMenu(int value){
     std::cout << "" << std::endl;
+    const int window = glutGetWindow();
+	const SimpleGLViewer::InternalData* const data = viewers[window]->_data;
     switch(value){
-    case(QUIT):
-        glutDestroyWindow(main_window);
-        exit(0);
-        break;
+    case(SimpleGLViewer::InternalData::QUIT):
+        glutDestroyWindow(window);
+    	viewers.erase(window);
+    	if (viewers.size() == 0) {
+    		exit(0);
+    		break;
+    	} else {
+    		return;
+    	}
     }
 
-    std::map<int,MenuItem*>::iterator itemFind = _menuItemMap.find(value);
-    if( itemFind != _menuItemMap.end() ){
+    std::map<int,MenuItem*>::const_iterator itemFind = data->_menuItemMap.find(value);
+    if( itemFind != data->_menuItemMap.end() ){
         std::cout << "menu event" << std::endl;
         itemFind->second->event();
     }
@@ -122,6 +183,8 @@ void myGlutMenu(int value){
 }
 
 void placeCenter(float x, float y){
+    const int window = glutGetWindow();
+	SimpleGLViewer::InternalData* const data = viewers[window]->_data;
     std::cout << x << "  "<< y<< std::endl;
     GLfloat depth;
     int winx = (int)x;
@@ -135,63 +198,62 @@ void placeCenter(float x, float y){
     glGetIntegerv(GL_VIEWPORT, viewport);
     GLdouble objx, objy, objz;
     gluUnProject(winx, winy, depth, modelMatrix, projMatrix, viewport, &objx, &objy, &objz);
-    std::cout << _pivotPoint << std::endl;
+    std::cout << data->_pivotPoint << std::endl;
     if (depth != 1) {
-      _viewPos -= _viewRotation*_pivotPoint;
-      _pivotPoint(0) = objx;
-      _pivotPoint(1) = objy;
-      _pivotPoint(2) = objz;
-      _viewPos += _viewRotation*_pivotPoint;
+      data->_viewPos -= data->_viewRotation*data->_pivotPoint;
+      data->_pivotPoint(0) = objx;
+      data->_pivotPoint(1) = objy;
+      data->_pivotPoint(2) = objz;
+      data->_viewPos += data->_viewRotation*data->_pivotPoint;
     }
     std::cout << objx << "  "<< objy<< " "<< objz << std::endl;
     // update arcball center
-    _arcBall.setCenter( std::pair<float,float>(objx,objy) );
+	data->_arcBall->setCenter( std::pair<float,float>(objx,objy) );
 }
 
 /**************************************** myGlutKeyboard() **********/
 /* This function is called when a key on the keyboard is pressed */
 
-std::map<int,EventListener*> _keyList;
-
-void myGlutKeyboard(unsigned char key, int x, int y)
-{
+void myGlutKeyboard(unsigned char key, int x, int y) {
+    const int window = glutGetWindow();
+	SimpleGLViewer::InternalData* const data = viewers[window]->_data;
     //float step = 0.1;
     switch (key){
         case 27:
         case 'q': exit(0); break;
         case 'c': // Toggle collision check
-            _collisionCheckEnabled = !_collisionCheckEnabled;
-            if(_collisionCheckEnabled)
-                std::cout << " | Collision Check enabled!" << std::endl;
-            else
-                std::cout << " | Collision Check disabled!" << std::endl;
-            break;
+            //_collisionCheckEnabled = !_collisionCheckEnabled;
+            //if(_collisionCheckEnabled)
+            //    std::cout << " | Collision Check enabled!" << std::endl;
+            //else
+            //    std::cout << " | Collision Check disabled!" << std::endl;
+            //break;
         case '1':
-            if(_camView)
-                _curCameraView = 0;
+            if(data->_camView)
+            	data->_curCameraView = 0;
             break;
         case '2':
-            if(_camView)
-                _curCameraView = 1;
+            if(data->_camView)
+            	data->_curCameraView = 1;
             break;
         case '3':
-            if(_camView)
-                _curCameraView = 2;
+            if(data->_camView)
+            	data->_curCameraView = 2;
             break;
         case 'a': // toggle application view versus tool cam view
-            _camView = !_camView;
+        	data->_camView = !data->_camView;
             break;
         case 's': // take snapshot of toolCam
         {
             break;
         }
         case 'p': // perform pick
-            placeCenter(_lastPos(0),_lastPos(1));
+            placeCenter(data->_lastPos(0),data->_lastPos(1));
             break;
     }
-    if(_keyListener != NULL){
+    if(data->_keyListener != NULL){
         std::pair<int,int> pos(x,y);
-        _keyListener->event(EventListener::e_KEY_EVENT,&key);
+        data->_keyListener->event(EventListener::e_KEY_EVENT,&key);
     }
     glutPostRedisplay();
 }
@@ -210,8 +272,8 @@ void myGlutIdle( void )
     /* According to the GLUT specification, the current window is
      undefined during an idle callback.  So we need to explicitly change
      it if necessary */
-    if ( glutGetWindow() != main_window )
-        glutSetWindow(main_window);
+    //if ( glutGetWindow() != _mainWindow )
+    //    glutSetWindow(_mainWindow);
 
     glutPostRedisplay();
 }
@@ -219,32 +281,35 @@ void myGlutIdle( void )
 /***************************************** myGlutMouse() **********/
 void myGlutMouse(int button, int button_state, int x, int y )
 {
-    _lastPos(0) = x;
-    _lastPos(1) = y;
+    const int window = glutGetWindow();
+	SimpleGLViewer::InternalData* const data = viewers[window]->_data;
+
+	data->_lastPos(0) = x;
+	data->_lastPos(1) = y;
 
     // Select the mouse drag mode.
     int mods = glutGetModifiers();
     if(button == GLUT_LEFT_BUTTON){
         if(button_state == GLUT_DOWN){
-            _arcBall.click( _lastPos(0), _lastPos(1) );
+        	data->_arcBall->click( data->_lastPos(0), data->_lastPos(1) );
             if(GLUT_ACTIVE_CTRL & mods){
-                mouseState = ZOOM;
+            	data->_mouseState = SimpleGLViewer::InternalData::ZOOM;
             } else if(GLUT_ACTIVE_SHIFT & mods){
-                mouseState = TRANSLATE;
+            	data->_mouseState = SimpleGLViewer::InternalData::TRANSLATE;
             } else {
-                mouseState = ROTATE;
+            	data->_mouseState = SimpleGLViewer::InternalData::ROTATE;
             }
         } else {
-            mouseState = NONE;
+        	data->_mouseState = SimpleGLViewer::InternalData::NONE;
         }
     } else if(button == GLUT_LEFT_BUTTON){
-        mouseState = TRANSLATE;
+    	data->_mouseState = SimpleGLViewer::InternalData::TRANSLATE;
     } /*else if(button == GLUT_WHEEL_UP){
 
     } else if(button == GLUT_WHEEL_DOWN){
 
     }*/ else {
-        mouseState = NONE;
+    	data->_mouseState = SimpleGLViewer::InternalData::NONE;
     }
     glutPostRedisplay();
 }
@@ -253,40 +318,42 @@ void myGlutMouse(int button, int button_state, int x, int y )
 void myGlutMotion(int x, int y)
 {
     bool redraw = false;
-    switch(mouseState){
-        case(ROTATE):
+    const int window = glutGetWindow();
+	SimpleGLViewer::InternalData* const data = viewers[window]->_data;
+    switch(data->_mouseState){
+        case(SimpleGLViewer::InternalData::ROTATE):
         {
-            math::Quaternion<float> quat(0.0f,0.0f,0.0f,0.0f);
-            _arcBall.drag( std::pair<float,float>(x,y), quat); // Update End Vector And Get Rotation As Quaternion
+            Quaternion<float> quat(0.0f,0.0f,0.0f,0.0f);
+            data->_arcBall->drag( std::pair<float,float>(x,y), quat); // Update End Vector And Get Rotation As Quaternion
 
-            math::Rotation3D<float> thisRot = quat.toRotation3D(); // Convert Quaternion Into Rotation3D
-            _viewRotation = thisRot*_viewRotation; // Accumulate Last Rotation Into This One
-            _arcBall.click(x,y);
+            Rotation3D<float> thisRot = quat.toRotation3D(); // Convert Quaternion Into Rotation3D
+            data->_viewRotation = thisRot*data->_viewRotation; // Accumulate Last Rotation Into This One
+            data->_arcBall->click(x,y);
             redraw = true;
             break;
         }
-        case (ZOOM):
+        case (SimpleGLViewer::InternalData::ZOOM):
         {
-            _viewPos(2) -= (y-_lastPos(1))/_height*10;
+        	data->_viewPos(2) -= (y-data->_lastPos(1))/data->_height*10;
             redraw = true;
             break;
         }
-        case(TRANSLATE):
+        case(SimpleGLViewer::InternalData::TRANSLATE):
         {
-            _viewPos(0) += (x-_lastPos(0))/_width*10;
-            _viewPos(1) -= (y-_lastPos(1))/_height*10;
+        	data->_viewPos(0) += (x-data->_lastPos(0))/data->_width*10;
+            data->_viewPos(1) -= (y-data->_lastPos(1))/data->_height*10;
             redraw = true;
             break;
         }
-        case NONE:
+        case SimpleGLViewer::InternalData::NONE:
         {
             break;
         }
         default:
             break;
     }
-    _lastPos(0) = x;
-    _lastPos(1) = y;
+    data->_lastPos(0) = x;
+    data->_lastPos(1) = y;
     if(redraw)
         glutPostRedisplay();
 }
@@ -300,12 +367,14 @@ void myGlutPassiveMotion(int x, int y)
 /**************************************** myGlutReshape() *************/
 void myGlutReshape( int width, int height )
 {
-    _width = width;
-    _height = height;
+    const int window = glutGetWindow();
+	SimpleGLViewer::InternalData* const data = viewers[window]->_data;
+	data->_width = width;
+	data->_height = height;
 
     glViewport(0, 0, width, height);
     // resize arcball window
-    _arcBall.setBounds(width,height);
+    data->_arcBall->setBounds(width,height);
 
     glMatrixMode(GL_PROJECTION);
     {
@@ -318,29 +387,28 @@ void myGlutReshape( int width, int height )
     glutPostRedisplay();
 }
 
-std::map<int,EventListener*> _specialKeyList;
-
 /**************************************** myGlutSpecial() *************/
 /* Special keyboard input (function keys, arrow keys, and more). */
-void myGlutSpecial(int key, int x, int y)
-{
+void myGlutSpecial(int key, int x, int y) {
+    const int window = glutGetWindow();
+	SimpleGLViewer::InternalData* const data = viewers[window]->_data;
     // Arrow keys are used for moving the camera.
     if (GLUT_ACTIVE_CTRL & glutGetModifiers()) {
         switch (key) {
-            case GLUT_KEY_UP: _viewPos(2)   -= 0.15; break;
-            case GLUT_KEY_DOWN: _viewPos(2) += 0.15; break;
+            case GLUT_KEY_UP: data->_viewPos(2)   -= 0.15; break;
+            case GLUT_KEY_DOWN: data->_viewPos(2) += 0.15; break;
         }
     } else if (GLUT_ACTIVE_SHIFT & glutGetModifiers()) {
         switch (key) {
-            case GLUT_KEY_LEFT:  _viewPos(0) -= 0.05; break;
-            case GLUT_KEY_RIGHT: _viewPos(0) += 0.05; break;
-            case GLUT_KEY_UP:    _viewPos(1) += 0.05; break;
-            case GLUT_KEY_DOWN:  _viewPos(1) -= 0.05; break;
+            case GLUT_KEY_LEFT:  data->_viewPos(0) -= 0.05; break;
+            case GLUT_KEY_RIGHT: data->_viewPos(0) += 0.05; break;
+            case GLUT_KEY_UP:    data->_viewPos(1) += 0.05; break;
+            case GLUT_KEY_DOWN:  data->_viewPos(1) -= 0.05; break;
         }
     }
-    if(_keyListener != NULL){
+    if(data->_keyListener != NULL){
         std::pair<int,int> pos(x,y);
-        _keyListener->event(EventListener::e_KEY_EVENT,&key);
+        data->_keyListener->event(EventListener::e_KEY_EVENT,&key);
     }
 
     glutPostRedisplay();
@@ -350,7 +418,7 @@ void myGlutSpecial(int key, int x, int y)
 * This function calculates and prints Frames Per Second. Should
 * be called each time a frame is displayed.
 ***************************************************************/
-void calcFPS()
+void calcFPS(char myFps[10])
 {
     static int FPS = 0;
     // This is the last second that occured.
@@ -364,35 +432,24 @@ void calcFPS()
     }
 }
 
-void convertRotAndPosToArray(const math::Rotation3D<float>& orien,
-                             const math::Vector3D<float>& pos, GLfloat* data) {
-    for (int j = 0; j<3; j++) {
-        for (int k = 0; k<3; k++)
-              data[j+4*k] = orien(j,k);
-    }
-    data[3] = 0;
-    data[7] = 0;
-    data[11] = 0;
-    data[12] = pos(0);
-    data[13] = pos(1);
-    data[14] = pos(2);
-    data[15] = 1;
-}
-
 /***************************************** myGlutDisplay() *****************/
 void myGlutDisplay( void )
 {
+	const int window = glutGetWindow();
+	SimpleGLViewer* const viewer = viewers[window];
+	SimpleGLViewer::InternalData* const data = viewer->_data;
     glClearColor( .9f, .9f, .9f, 1.0f );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if( _camView ){
-        if(_curCameraView>=0 && _curCameraView < (int)_cameras.size()){
+    if( data->_camView ){
+        if(data->_curCameraView>=0 && data->_curCameraView < (int)data->_cameras.size()){
             std::cout << ".";
-            _cameras[_curCameraView]->acquire();
+            data->_cameras[data->_curCameraView]->acquire();
         }
         //_toolCam.acquire();
     } else {
-
+        Transform3D<> viewTransform(cast<double>(data->_viewPos),cast<double>(data->_viewRotation));
+        viewer->getCurrentView()->_viewCamera->setTransform(viewTransform);
         //if( _cameraCtrl ){
             // for now we scale the pivot such that its not unrealistically large/small
             //getViewCamera()->setTransform(_cameraCtrl->getTransform());
@@ -402,14 +459,14 @@ void myGlutDisplay( void )
         //}
 
         //std::cout << _currentView->_name << std::endl;
-        _renderInfo._drawType = _currentView->_drawType;
-        _renderInfo._mask = _currentView->_drawMask;
-        _renderInfo.cams = _currentView->_camGroup;
-        _scene->draw( _renderInfo );
+        data->_renderInfo._drawType = data->_currentView->_drawType;
+        data->_renderInfo._mask = data->_currentView->_drawMask;
+        data->_renderInfo.cams = data->_currentView->_camGroup;
+        viewer->getScene()->draw( data->_renderInfo );
 
         GLenum res = glGetError();
         if(res!=GL_NO_ERROR){
-            //std::cout << "AN OPENGL ERROR: " << res << "\n";
+            std::cout << "AN OPENGL ERROR: " << res << "\n";
         }
     }
     /* Disable lighting and set up ortho projection to render text */
@@ -417,35 +474,139 @@ void myGlutDisplay( void )
 
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-    gluOrtho2D( 0.0, _width, _height , 0.0  );
+    gluOrtho2D( 0.0, data->_width, data->_height , 0.0  );
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
 
     glColor3ub( 0, 0, 0 );
 
     // Display the FrameRate
-    calcFPS();
+    calcFPS(data->_myFps);
     glColor3f(0,0,0);
-    glRasterPos2i( _width-50, 20 );
-    for(int i=0; i<(int)strlen( myFps ); i++ )
-        glutBitmapCharacter( GLUT_BITMAP_HELVETICA_10, myFps[i] );
+    glRasterPos2i( data->_width-50, 20 );
+    for(int i=0; i<(int)strlen( data->_myFps ); i++ )
+        glutBitmapCharacter( GLUT_BITMAP_HELVETICA_10, data->_myFps[i] );
     glEnable( GL_LIGHTING );
 
     glutSwapBuffers();
 }
 
-void SimpleGLViewer::setWorkcellModel(WorkCell::Ptr workcellModel){
+} // end anonymous namespace
+
+void SimpleGLViewer::setKeyListener(EventListener *listener){
+    _data->_keyListener = listener;
+}
+
+SimpleGLViewer::SimpleGLViewer():
+	_data(new InternalData()),
+	_scene(ownedPtr(new SceneOpenGL()))
+{
+}
+
+SimpleGLViewer::~SimpleGLViewer() {
+	delete _data;
+}
+
+SceneGraph::Ptr SimpleGLViewer::getScene() {
+	return _scene;
+}
+
+const std::string& SimpleGLViewer::getLogo() const {
+	static const std::string logo;
+	return logo;
+}
+
+void SimpleGLViewer::setLogo(const std::string& string) {
+}
+
+PropertyMap& SimpleGLViewer::getPropertyMap() {
+	static PropertyMap map;
+	return map;
+}
+
+void SimpleGLViewer::updateView() {
+}
+
+void SimpleGLViewer::updateState(const State& state) {
+	if(_state==NULL)
+		_state = ownedPtr(new State());
+	*_state = state;
+	_data->_renderInfo._state = _state.get();
+}
+
+void SimpleGLViewer::setWorldNode(GroupNode::Ptr wnode) {
+    if(wnode == NULL){
+    	_data->_currentView->_viewCamera->setEnabled(false);
+    } else {
+    	_data->_currentView->_viewCamera->setEnabled(true);
+    }
+    _scene->getRoot()->removeChild(_worldNode);
+    _worldNode = wnode;
+    _scene->addChild(_worldNode, _scene->getRoot());
+    _data->_currentView->_viewCamera->setRefNode(_worldNode);
+}
+
+GroupNode::Ptr SimpleGLViewer::getWorldNode() {
+	return _worldNode;
+}
+
+void SimpleGLViewer::saveBufferToFile(const std::string& stdfilename, const int fillR, const int fillG, const int fillB) {
+}
+
+SceneCamera::Ptr SimpleGLViewer::getViewCamera() {
+	return _data->_currentView->_viewCamera;
+}
+
+Vector3D<> SimpleGLViewer::getViewCenter() {
+	return cast<double>(_data->_viewPos);
+}
+
+DrawableNode::Ptr SimpleGLViewer::pickDrawable(int x, int y) {
+    return _scene->pickDrawable(_data->_renderInfo, x, y);
+}
+
+DrawableNode::Ptr SimpleGLViewer::pickDrawable(SceneGraph::RenderInfo& info, int x, int y) {
+    return _scene->pickDrawable(info, x, y);
+}
+
+SceneViewer::View::Ptr SimpleGLViewer::createView(const std::string& name, bool enableBackground) {
+	return NULL;
+}
+
+SceneViewer::View::Ptr SimpleGLViewer::getMainView() {
+	return _data->_currentView;
+}
+
+void SimpleGLViewer::destroyView(View::Ptr view) {
+}
+
+void SimpleGLViewer::selectView(View::Ptr view) {
+}
+
+SceneViewer::View::Ptr SimpleGLViewer::getCurrentView() {
+	return _data->_currentView;
+}
+
+std::vector<SceneViewer::View::Ptr> SimpleGLViewer::getViews() {
+	std::vector<SceneViewer::View::Ptr> views(1,_data->_currentView);
+	return views;
+}
+
+void SimpleGLViewer::renderView(View::Ptr) {
+}
+
+void SimpleGLViewer::setWorkcell(WorkCell::Ptr workcell){
     // TODO: wait to obtain lock in a better way ;(
     std::cout << "Setting Workcell model" << std::endl;
     idlelock_b = true;
     while(idlelock_a);
 
 
-    _workcellModel = workcellModel;
-    _state = new State( _workcellModel->getDefaultState() );
-    std::vector<kinematics::Frame*> cameraViews;// = _workcellModel->getCameraViews();
+    _wc = workcell;
+    _state = new State( _wc->getDefaultState() );
+    std::vector<Frame*> cameraViews;// = _wc->getCameraViews();
     //for(unsigned int i=0; i<cameraViews.size();i++){
-    //    GLFrameGrabber *grapper = new GLFrameGrabber(640,480,(50.0/180.0)*3.14,&_workcellGLDrawer,*_state);
+    //    GLFrameGrabber *grapper = new GLFrameGrabber(640,480,(50.0/180.0)*3.14,&_wcscene,*_state);
     //    VirtualCamera *cam = new VirtualCamera("VCam",*grapper,cameraViews[i]);
     //    cam->start();
     //    if( cam->isInitialized() && cam->isStarted() )
@@ -457,77 +618,92 @@ void SimpleGLViewer::setWorkcellModel(WorkCell::Ptr workcellModel){
 
     std::cout << "Creating collision detector!!" << std::endl;
     // create a collision detector
-    //_collisionDetector = new collision::CollisionDetector(_workcellModel, &_pqpStrategy );
+    //_collisionDetector = new collision::CollisionDetector(_wc, &_pqpStrategy );
     //_pqpStrategy.setFirstContact(false);
 
     // TODO: release lock
     idlelock_b = false;
 }
 
-void initGlut(int,int,int,int);
-void initLights();
-void initMenu();
-
-
 bool SimpleGLViewer::start(){
     // TODO: start
     std::cout << "Init Glut" << std::endl;
-    initGlut(_x,_y,_width,_height);
+    initGlut(_data->_x,_data->_y,_data->_width,_data->_height);
      std::cout << "Init lights" << std::endl;
     initLights();
     std::cout << "Init Menu" << std::endl;
     initMenu();
-    std::cout << "Glut main loop" << std::endl;
-    glutMainLoop();
     std::cout << "Initializing WorkCellScene" << std::endl;
-    _workcellGLDrawer = new WorkCellScene( new SceneOpenGL() );
+    _wcscene = new WorkCellScene( _scene );
 
     // initialize cameras
     // add the default/main cameraview group
-    _mainCamGroup = _scene->makeCameraGroup("MainView");
-    _scene->addCameraGroup(_mainCamGroup);
-    _mainCamGroup->setEnabled(true);
+    const rw::common::Ptr<rw::graphics::CameraGroup> mainCamGroup = _scene->makeCameraGroup("MainView");
+    _scene->addCameraGroup(mainCamGroup);
+    mainCamGroup->setEnabled(true);
 
     // add a node to render background
     rw::common::Ptr<RenderQuad> backgroundRender = ownedPtr(new RenderQuad());
+    backgroundRender->setTopColor( Vector3D<>(1.0,1.0,1.0) );
+    backgroundRender->setBottomColor( Vector3D<>(0.2,0.2,1.0) );
+    backgroundRender->setViewPort(0,0,640,480);
 
-    _backgroundRender = backgroundRender;
-    _backgroundnode = _scene->makeDrawable("BackgroundRender", _backgroundRender, DrawableNode::ALL);
-    _scene->addChild(_backgroundnode, _scene->getRoot());
+    const rw::common::Ptr<DrawableNode> backgroundnode = _scene->makeDrawable("BackgroundRender", backgroundRender, DrawableNode::ALL);
+    _scene->addChild(backgroundnode, _scene->getRoot());
+    backgroundnode->setVisible(true);
 
-    _worldNode = _scene->makeGroupNode("World");
+    if (!_wc.isNull()) {
+    	_wcscene->setWorkCell(_wc);
+    	_wcscene->setState(_wc->getDefaultState());
+    	_worldNode = _wcscene->getWorldNode();
+    } else {
+    	_worldNode = _scene->makeGroupNode("World");
+    }
+
     _scene->addChild(_worldNode, _scene->getRoot());
 
+    int dmask = 0;
+    dmask |= DrawableNode::Virtual;
+    dmask |= DrawableNode::Physical;
+    dmask |= DrawableNode::DrawableObject;
+    dmask |= DrawableNode::ALL;
 
-
-    _mainView = ownedPtr( new SceneViewer::View("MainView") );
-    _currentView = _mainView;
+    const SceneViewer::View::Ptr mainView = ownedPtr( new SceneViewer::View("MainView") );
+    mainView->_drawMask = dmask;
+    _data->_currentView = mainView;
     // add background camera
-    _backCam = scene->makeCamera("BackgroundCam");
-    _backCam->setEnabled(true);
-    _backCam->setRefNode(_backgroundnode);
-    _backCam->setProjectionMatrix( ProjectionMatrix::makeOrtho(0,640,0,480, -1, 1) );
-    _backCam->setClearBufferEnabled(true);
-    _backCam->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    _backCam->setDepthTestEnabled( false );
-    _backCam->setLightningEnabled( false );
-    _mainCamGroup->insertCamera(_backCam, 0);
+    rw::graphics::SceneCamera::Ptr backCam;
+    backCam = _scene->makeCamera("BackgroundCam");
+    backCam->setEnabled(true);
+    backCam->setRefNode(backgroundnode);
+    backCam->setProjectionMatrix( ProjectionMatrix::makeOrtho(0,640,0,480, -1, 1) );
+    backCam->setClearBufferEnabled(true);
+    backCam->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    backCam->setDepthTestEnabled( false );
+    backCam->setLightningEnabled( false );
+    mainCamGroup->insertCamera(backCam, 0);
 
     // main camera
-    _mainCam = _scene->makeCamera("MainCam");
-    _mainCam->setDrawMask( dmask );
-    _mainCam->setEnabled(false);
-    _mainCam->setPerspective(45, 640, 480, 0.1, 30);
-    _mainCam->setClearBufferEnabled(false);
-    _mainCam->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    _mainCam->setDepthTestEnabled( true );
-    _mainCam->setLightningEnabled( true );
-    _mainCam->setRefNode(_scene->getRoot());
-    _mainCamGroup->insertCamera(_mainCam, 1);
+    rw::graphics::SceneCamera::Ptr mainCam;
+    mainCam = _scene->makeCamera("MainCam");
+    mainCam->setDrawMask( dmask );
+    mainCam->setEnabled(true);
+    mainCam->setPerspective(45, 640, 480, 0.1, 30);
+    mainCam->setClearBufferEnabled(false);
+    mainCam->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    mainCam->setDepthTestEnabled( true );
+    mainCam->setLightningEnabled( true );
+    mainCam->setRefNode(_scene->getRoot());
+    mainCamGroup->insertCamera(mainCam, 1);
     // TODO: foreground camera
-    _mainView->_viewCamera = _mainCam;
-    _mainView->_camGroup = _mainCamGroup;
+    mainView->_viewCamera = mainCam;
+    mainView->_camGroup = mainCamGroup;
 
+    const Transform3D<float> viewTransform = Transform3D<float>::makeLookAt(Vector3D<float>(5,5,5),Vector3D<float>::zero(),Vector3D<float>::z());
+    _data->_viewPos = viewTransform.P();
+    _data->_viewRotation = viewTransform.R();
+
+    glutMainLoop();
 
     return true;
 }
@@ -536,7 +712,7 @@ bool SimpleGLViewer::stop(){
     return true;
 }
 
-void initMenu(){
+void SimpleGLViewer::initMenu(){
     glutCreateMenu(myGlutMenu);
 
     std::map<int,Menu*>::iterator menuIter = _menuMap.begin();
@@ -548,12 +724,12 @@ void initMenu(){
     }
 
 
-    glutAddMenuEntry("Quit", QUIT);
+    glutAddMenuEntry("Quit", SimpleGLViewer::InternalData::QUIT);
     // Let the menu respond on the right mouse button
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
-void addSubMenus(Menu *menu){
+void SimpleGLViewer::addSubMenus(Menu *menu){
     std::vector<Menu*> menus = menu->getMenus();
     for(unsigned int i=0 ; i<menus.size(); i++){
         //addMenu( menus[i] );
@@ -562,7 +738,7 @@ void addSubMenus(Menu *menu){
         std::vector<MenuItem*> items = menu->getMenuItems();
         for(unsigned int j=0 ; j<items.size(); j++){
             // add all items
-            _menuItemMap[items[i]->getId()] = items[i];
+            _data->_menuItemMap[items[i]->getId()] = items[i];
             glutAddMenuEntry( items[i]->getName().c_str(),items[i]->getId() );
         }
 
@@ -579,17 +755,13 @@ void SimpleGLViewer::addMenu(Menu *menu){
     std::vector<MenuItem*> items = menu->getMenuItems();
     for(unsigned int i=0 ; i<items.size(); i++){
         // add all items
-        _menuItemMap[items[i]->getId()] = items[i];
+    	_data->_menuItemMap[items[i]->getId()] = items[i];
         glutAddMenuEntry(items[i]->getName().c_str(),items[i]->getId() );
     }
     addSubMenus(menu);
 }
 
-void SimpleGLViewer::setState(const rw::kinematics::State& state){
-    *_state = state;
-}
-
-const rw::kinematics::State& SimpleGLViewer::getState(){
+const State& SimpleGLViewer::getState(){
     return *_state;
 }
 
@@ -597,26 +769,18 @@ void SimpleGLViewer::init(int argc, char** argv){
     glutInit(&argc, argv);
 }
 
-void SimpleGLViewer::draw(){
-
-}
-
-
-void initGlut(int x, int y, int width, int height){
+void SimpleGLViewer::initGlut(int x, int y, int width, int height){
     /****************************************/
     /*   Initialize GLUT and create window  */
     /****************************************/
     std::cout << " | Initializing Glut display functions..." << std::endl;
-    /*
-    std::string test("SimpleGLViewer");
-    int argc=1; char *argv = (char*)test.c_str();
-    glutInit(&argc, &argv); // &
-    */
+
     glutInitDisplayMode (GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowPosition (x, y);
     glutInitWindowSize (width, height);
 
-    main_window = glutCreateWindow ("Simple GL viewer for RobWork");
+    _data->_mainWindow = glutCreateWindow ("Simple GL viewer for RobWork");
+    viewers[_data->_mainWindow] = this;
     // Register callback functions.
     glutDisplayFunc( myGlutDisplay );
     glutIdleFunc( myGlutIdle );
@@ -628,7 +792,7 @@ void initGlut(int x, int y, int width, int height){
     glutPassiveMotionFunc( myGlutPassiveMotion );
 }
 
-void initLights(){
+void SimpleGLViewer::initLights(){
     /****************************************/
     /* Set up OpenGL lights etc.            */
     /****************************************/

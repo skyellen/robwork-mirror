@@ -1,10 +1,8 @@
-#include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/kinematics/FKRange.hpp>
 #include <rw/math/Transform3D.hpp>
 
-using namespace rw::math;
+using rw::math::Transform3D;
 using namespace rw::kinematics;
 
 void gripMovableFrame(

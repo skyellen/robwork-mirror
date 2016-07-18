@@ -1,10 +1,11 @@
-#include <rw/rw.hpp>
+#include <rw/pathplanning/PlannerConstraint.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
+#include <rwlibs/pathplanners/sbl/SBLSetup.hpp>
 #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
 #include <rwlibs/pathplanners/arw/ARWPlanner.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
+using rw::models::Device;
+using namespace rw::pathplanning;
 using namespace rwlibs::pathplanners;
 
 QToQPlanner::Ptr getQToQPlanner(
@@ -13,8 +14,8 @@ QToQPlanner::Ptr getQToQPlanner(
     const std::string& type)
 {
     if (type == "SBL") {
-        //return SBLPlanner::makeQToQPlanner(
-        //    SBLSetup::make(constraint, device));
+    	QConstraint::Ptr qconstraint = constraint.getQConstraintPtr();
+        return SBLPlanner::makeQToQPlanner(SBLSetup::make(qconstraint, QEdgeConstraintIncremental::makeDefault(qconstraint,device), device));
     } else if (type == "RRT") {
         return RRTPlanner::makeQToQPlanner(constraint, device);
     } else if (type == "ARW") {

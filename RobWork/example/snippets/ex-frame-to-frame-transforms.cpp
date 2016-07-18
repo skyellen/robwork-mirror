@@ -1,9 +1,10 @@
 #include <rw/kinematics/FKRange.hpp>
+#include <rw/kinematics/State.hpp>
 
 #include <boost/foreach.hpp>
 #include <vector>
 
-using namespace rw::math;
+using rw::math::Transform3D;
 using namespace rw::kinematics;
 
 std::vector<Transform3D<> > frameToFrameTransforms(

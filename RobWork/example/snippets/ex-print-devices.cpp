@@ -1,9 +1,9 @@
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
 
-using namespace rw::models;
-
 #include <boost/foreach.hpp>
+
+using namespace rw::models;
 
 void printDeviceNames(const WorkCell& workcell)
 {

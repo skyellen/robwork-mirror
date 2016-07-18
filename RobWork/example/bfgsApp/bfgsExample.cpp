@@ -1,5 +1,4 @@
-#include <iostream>
-#include <sandbox/calibration/BFGS.hpp>
+#include <rwlibs/algorithms/BFGS.hpp>
 
 using namespace rwlibs::algorithms;
 

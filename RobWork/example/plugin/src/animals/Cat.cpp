@@ -4,7 +4,7 @@
 
 
 
-using namespace animals;
+using animals::Cat;
 
 using namespace std;
 

@@ -1,9 +1,15 @@
-#include <rw/rw.hpp>
+#include <rw/models/Device.hpp>
+#include <rw/models/WorkCell.hpp>
+#include <rw/pathplanning/PlannerConstraint.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
-using namespace rwlibs::proximitystrategies;
+using rw::common::ownedPtr;
+using rw::math::Q;
+using namespace rw::models;
+using rw::pathplanning::PlannerConstraint;
+using rw::proximity::CollisionDetector;
+using rwlibs::proximitystrategies::ProximityStrategyYaobi;
 
 void constraintExample(WorkCell& workcell)
 {

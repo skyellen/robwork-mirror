@@ -1,6 +1,8 @@
+#include "path.hpp"
+
 #include <iostream>
 #include <rw/RobWork.hpp>
-#include <rw/rw.hpp>
+#include <rw/common/Plugin.hpp>
 
 #include <animals.hpp>
 
@@ -8,8 +10,8 @@
 
 using namespace std;
 using namespace animals;
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
+using rw::RobWork;
+using namespace rw::common;
 
 
 
@@ -17,7 +19,7 @@ int main(int argc, char* argv[]) {
 	/*
 	 * Initialize RobWork and let it search for plugins.
 	 */
-	RobWork::getInstance()->initialize();
+	RobWork::getInstance()->initialize(std::vector<std::string>(1,DOG_PLUGIN_PATH));
 	
 	/*
 	 * List all the plugins used.
@@ -41,6 +43,8 @@ int main(int argc, char* argv[]) {
 	 * Look up RobWork .cfg.xml file to see where to put the dog plugin .so.
 	 */
 	Animal::Ptr dog = AnimalFactory::getAnimal("dog");
+	if (dog.isNull())
+		RW_THROW("Plugin was not found!");
 	dog->makeSound();
 	
 	return 0;

@@ -2,7 +2,6 @@
 #define __ANIMAL_FACTORY_HPP
 
 #include <string>
-#include <vector>
 #include <rw/common/ExtensionPoint.hpp>
 
 #include "Animal.hpp"

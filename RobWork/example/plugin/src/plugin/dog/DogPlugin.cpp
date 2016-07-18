@@ -5,9 +5,8 @@
 
 
 using namespace std;
-using namespace animals;
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
+using animals::Dog;
+using namespace rw::common;
 
 
 RW_ADD_PLUGIN(DogPlugin)

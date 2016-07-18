@@ -1,7 +1,12 @@
-#include <rw/rw.hpp>
+#include <rw/common/Log.hpp>
+#include <rw/math/EAA.hpp>
+#include <rw/math/RPY.hpp>
+#include <rw/math/Rotation3D.hpp>
+#include <rw/math/Quaternion.hpp>
+#include <rw/math/Transform3D.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
+using rw::common::Log;
+using namespace rw::math;
 
 int main(int argc, char** argv) {
     RPY<> rpy(0, 0, 90*Deg2Rad); // 90 degree rotation around x-axis

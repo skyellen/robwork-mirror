@@ -6,12 +6,12 @@
 #include <rw/math/Q.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 
-using namespace rw::math;
+using rw::common::ownedPtr;
+using rw::math::Q;
 using namespace rw::models;
-using namespace rw::common;
-using namespace rw::proximity;
+using rw::proximity::CollisionDetector;
 using namespace rw::pathplanning;
-using namespace rwlibs::proximitystrategies;
+using rwlibs::proximitystrategies::ProximityStrategyYaobi;
 
 void samplerExample(WorkCell& workcell)
 {

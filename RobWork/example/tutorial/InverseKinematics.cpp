@@ -1,30 +1,41 @@
-#include <rw/rw.hpp>
+#include <rw/invkin/JacobianIKSolver.hpp>
+#include <rw/kinematics/FixedFrame.hpp>
+#include <rw/kinematics/Kinematics.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
+#include <rw/loaders/WorkCellLoader.hpp>
+#include <rw/models/SerialDevice.hpp>
+#include <rw/models/WorkCell.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
+using rw::common::Log;
+using rw::invkin::JacobianIKSolver;
+using namespace rw::kinematics;
+using rw::loaders::WorkCellLoader;
+using namespace rw::math;
+using namespace rw::models;
 
 int main(int argc, char** argv) {
+    WorkCell::Ptr wc = WorkCellLoader::Factory::load("SimpleWorkCell.wc.xml");
+    if (wc.isNull())
+    	RW_THROW("Could not load workcell!");
 
-    WorkCell::Ptr wc = WorkCellLoader::load("SimpleWorkCell.wc.xml");
-
-    // Simple JacobianIKSolver
+    // Get default state
     State state = wc->getDefaultState();
 
+    // find a device by name
+    Device::Ptr device = wc->findDevice("SerialDeviceName");
+    SerialDevice::Ptr sdevice = wc->findDevice<SerialDevice>("SerialDeviceName");
+
+    // Simple JacobianIKSolver
     JacobianIKSolver *sol = new JacobianIKSolver(device,state);
 
 
     Log::infoLog() << "Name of workcell: " << wc->getName() << std::endl;
-    // get the default state
-    State state = wc->getDefaultState();
     Frame* worldFrame = wc->getWorldFrame();
     // find a frame by name, remember NULL is a valid return
     Frame* frame = wc->findFrame("FixedFrameName");
     // find a frame by name, but with a specific frame type
     FixedFrame* fframe = wc->findFrame<FixedFrame>("FixedFrameName");
     MovableFrame* mframe = wc->findFrame<MovableFrame>("MovableFrameName");
-    // find a device by name
-    Device::Ptr device = wc->findDevice("SerialDeviceName");
-    SerialDevice::Ptr sdevice = wc->findDevice<SerialDevice>("SerialDeviceName");
 
 
 
@@ -35,9 +46,9 @@ int main(int argc, char** argv) {
     // we can find the world to frame transform by a little jogling
     Transform3D<> wTf = wTmf * inverse(fTmf);
     // test if frame is a dynamic attachable frame
-    if( Kinematics::isDAF( *mframe ) ){
+    if( Kinematics::isDAF( mframe ) ){
         // attach mframe to end of serial device
-        Kinematics::gripFrame(state, *mframe, *sdevice->getEnd() );
+        Kinematics::gripFrame(mframe, sdevice->getEnd(), state);
     }
 
 

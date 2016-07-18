@@ -2,8 +2,8 @@
 #include <rw/loaders/ImageLoader.hpp>
 
 using namespace rw::common;
-using namespace rw::loaders;
-using namespace rw::sensor;
+using rw::loaders::ImageLoader;
+using rw::sensor::Image;
 
 static boost::mutex outMutex;
 static boost::mutex imageMutex;

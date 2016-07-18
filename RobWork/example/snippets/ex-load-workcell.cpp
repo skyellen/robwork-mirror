@@ -1,7 +1,8 @@
-#include <rw/rw.hpp>
+#include <rw/loaders/WorkCellLoader.hpp>
+#include <rw/models/WorkCell.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
+using rw::loaders::WorkCellFactory;
+using rw::models::WorkCell;
 
 int main(int argc, char** argv)
 {

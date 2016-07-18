@@ -5,7 +5,7 @@
 
 
 using namespace std;
-using namespace animals;
+using animals::Dog;
 
 
 

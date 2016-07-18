@@ -1,7 +1,8 @@
-#include <rw/rw.hpp>
+#include <rw/math/Metric.hpp>
+#include <rw/math/MetricFactory.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
+using rw::common::Ptr;
+using namespace rw::math;
 
 void metricExample()
 {

@@ -9,7 +9,6 @@ using namespace rw::math;
 using namespace rw::models;
 using namespace rw::kinematics;
 
-
 std::vector<State> getStatePath(
     const Device& device,
     const std::vector<Q>& path,

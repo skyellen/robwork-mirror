@@ -1,11 +1,8 @@
 #include "AnimalFactory.hpp"
 
-#include <iostream>
 #include "Cat.hpp"
 
-
-
-using namespace std;
+using std::vector;
 using namespace animals;
 using rw::common::ownedPtr;
 using rw::common::ExtensionPoint;

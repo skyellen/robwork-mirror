@@ -1,11 +1,14 @@
-#include <SimpleGLViewer.h>
+#include <SimpleGLViewer.hpp>
 
 #include <EventListener.hpp>
+#include <Menu.hpp>
+#include <MenuItem.hpp>
 
-#include <rw/models/WorkCell.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 
 #include <iostream>
+
+using rw::common::ownedPtr;
 
 class MyListener: public EventListener {
     public:
@@ -42,20 +45,21 @@ int main(int argc, char** argv){
     testMenu2.addMenuItem(new MenuItem("Testname c",5,&listener));
     testMenu2.addMenuItem(new MenuItem("Testname d",6,&listener));
 
+    const SimpleGLViewer::Ptr viewer = ownedPtr(new SimpleGLViewer());
     if(argc==2){
         std::string xmlfile(argv[1]);
         std::cout << " | Load Workcell: " << xmlfile << std::endl;
-        _workcell = rw::loaders::WorkCellLoader::load(xmlfile);
+        _workcell = rw::loaders::WorkCellLoader::Factory::load(xmlfile);
         std::cout << " | set workcell" << std::endl;
-        SimpleGLViewer::setWorkcellModel( _workcell );
+        viewer->setWorkcell( _workcell );
     }
     std::cout << " | Init" << std::endl;
-    SimpleGLViewer::init(argc, argv);
+    viewer->init(argc, argv);
     std::cout << " | Listener" << std::endl;
-    SimpleGLViewer::setKeyListener(&listener);
-    SimpleGLViewer::addMenu(&testMenu1);
-    SimpleGLViewer::addMenu(&testMenu2);
+    viewer->setKeyListener(&listener);
+    viewer->addMenu(&testMenu1);
+    viewer->addMenu(&testMenu2);
     std::cout << " | Start" << std::endl;
-    SimpleGLViewer::start();
+    viewer->start();
     return 1;
 }

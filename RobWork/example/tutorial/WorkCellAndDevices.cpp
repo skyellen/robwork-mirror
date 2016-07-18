@@ -1,11 +1,21 @@
-#include <rw/rw.hpp>
+#include <rw/kinematics/FixedFrame.hpp>
+#include <rw/kinematics/Kinematics.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
+#include <rw/loaders/WorkCellLoader.hpp>
+#include <rw/models/SerialDevice.hpp>
+#include <rw/models/WorkCell.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
+using rw::common::Log;
+using namespace rw::kinematics;
+using rw::loaders::WorkCellLoader;
+using namespace rw::math;
+using namespace rw::models;
 
 int main(int argc, char** argv) {
 
-    WorkCell::Ptr wc = WorkCellFactory::load("SimpleWorkCell.wc.xml");
+    WorkCell::Ptr wc = WorkCellLoader::Factory::load("SimpleWorkCell.wc.xml");
+    if (wc.isNull())
+    	RW_THROW("Could not load workcell!");
 
     Log::infoLog() << "Name of workcell: " << wc->getName() << std::endl;
     // get the default state

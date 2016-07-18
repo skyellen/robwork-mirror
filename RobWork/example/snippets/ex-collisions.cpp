@@ -1,3 +1,4 @@
+#include <rw/models/WorkCell.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 

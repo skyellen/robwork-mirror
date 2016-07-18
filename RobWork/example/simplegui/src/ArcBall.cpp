@@ -3,7 +3,6 @@
 
 #include <math.h>                                               // Needed for sqrtf
 #include "ArcBall.hpp"                                            // ArcBall header
-#include <rw/math/Transform3D.hpp>
 
 using namespace rw;
 using namespace rw::math;

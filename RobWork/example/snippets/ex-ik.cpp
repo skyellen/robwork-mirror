@@ -1,9 +1,11 @@
-#include <rw/rw.hpp>
+#include <rw/invkin/JacobianIKSolver.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
+using rw::invkin::JacobianIKSolver;
+using rw::kinematics::State;
+using namespace rw::math;
+using rw::models::Device;
 
-void inverseKinematics(Device::Ptr device, const State& state, const Transform3D<>& target)
+void inverseKinematics(rw::common::Ptr<Device> device, const State& state, const Transform3D<>& target)
 {
     JacobianIKSolver solver(device, state);
 	std::vector<Q> solutions = solver.solve(target, state);

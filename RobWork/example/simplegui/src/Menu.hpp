@@ -3,7 +3,8 @@
 
 #include <string>
 #include <vector>
-#include "MenuItem.hpp"
+
+class MenuItem;
 
 class Menu
 {

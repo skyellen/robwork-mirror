@@ -1,19 +1,19 @@
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Models.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
-#include <rw/pathplanning/PlannerConstraint.hpp>
 #include <rw/pathplanning/QSampler.hpp>
 #include <rw/pathplanning/QToQPlanner.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
 
-using namespace rw::math;
+using rw::math::Q;
 using namespace rw::models;
-using namespace rw::kinematics;
+using rw::kinematics::State;
 using namespace rw::pathplanning;
-using namespace rw::proximity;
-using namespace rw::loaders;
-using namespace rwlibs::proximitystrategies;
+using rw::proximity::CollisionDetector;
+using rw::loaders::PathLoader;
+using rwlibs::proximitystrategies::ProximityStrategyYaobi;
 using namespace rwlibs::pathplanners;
 
 void plannerExample(WorkCell& workcell)
