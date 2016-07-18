@@ -96,6 +96,9 @@ namespace rw { namespace loaders {
 		//! @copydoc load
 		static rw::geometry::Geometry::Ptr getGeometry(const std::string& str, bool useCache=true);
 
+		//! @brief Clear the geometry cache.
+		static void clearGeometryCache();
+
     private:
         typedef rw::common::Cache<std::string, rw::geometry::GeometryData> Cache;
         static Cache& getCache();

@@ -280,3 +280,7 @@ GeometryFactory::Cache& GeometryFactory::getCache(){
     static Cache cache;
     return cache;
 }
+
+void GeometryFactory::clearGeometryCache(){
+	getCache().clear();
+}
