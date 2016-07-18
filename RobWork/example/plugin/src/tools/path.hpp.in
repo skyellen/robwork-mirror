@@ -1,0 +1,1 @@
+#define DOG_PLUGIN_PATH "$<TARGET_FILE:dog.rwplugin>"
