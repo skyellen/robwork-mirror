@@ -647,6 +647,8 @@ SET(ROBWORK_LIBRARY_DIRS
 # 
 SET(ROBWORK_LIBRARIES_TMP
   ${SANDBOX_LIB}
+  ${RW_LUA_LIBS}
+  ${LUA_LIBRARIES}
   rw_algorithms
   rw_pathplanners
   rw_pathoptimization
@@ -657,8 +659,6 @@ SET(ROBWORK_LIBRARIES_TMP
   rw_calibration
   rw_csg
   ${RW_MATHEMATICA_LIB}
-  ${RW_LUA_LIBS}
-  ${LUA_LIBRARIES}
   rw_proximitystrategies
   ${YAOBI_LIBRARIES}
   ${PQP_LIBRARIES}  
