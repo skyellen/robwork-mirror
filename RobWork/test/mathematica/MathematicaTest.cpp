@@ -19,6 +19,7 @@
 
 #include <rw/common/Exception.hpp>
 #include <rw/common/PropertyMap.hpp>
+#include <rw/common/TimerUtil.hpp>
 #include <rw/sensor/Image.hpp>
 #include <rwlibs/mathematica.hpp>
 
