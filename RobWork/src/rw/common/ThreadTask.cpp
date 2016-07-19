@@ -30,9 +30,10 @@ ThreadTask::ThreadTask(ThreadTask::Ptr parent):
 	_pool(new ThreadSafeVariable<ThreadPool::Ptr>(parent != NULL ? parent->getThreadPool() : NULL)),
 	_state(new ThreadSafeVariable<TaskState>(INITIALIZATION)),
 	_keepAlive(new ThreadSafeVariable<bool>(false)),
+	_blockFinalize(new ThreadSafeVariable<bool>(false)),
 	_children(new ThreadSafeVariable<std::vector<ThreadTask::Ptr> >(std::vector<ThreadTask::Ptr>())),
 	_childrenMissing(new ThreadSafeVariable<unsigned int>(0)),
-	_parentCallback(new ThreadSafeVariable<ParentCallback>(boost::bind(&ThreadTask::parentCallbackDefault,this,_1))),
+	_parentCallback(new ThreadSafeVariable<ParentCallback>(ParentCallback())),
 	_exceptions(new ThreadSafeVariable<std::list<Exception> >(std::list<Exception>()))
 {
 }
@@ -41,9 +42,10 @@ ThreadTask::ThreadTask(ThreadPool::Ptr pool):
 	_pool(new ThreadSafeVariable<ThreadPool::Ptr>(pool)),
 	_state(new ThreadSafeVariable<TaskState>(INITIALIZATION)),
 	_keepAlive(new ThreadSafeVariable<bool>(false)),
+	_blockFinalize(new ThreadSafeVariable<bool>(false)),
 	_children(new ThreadSafeVariable<std::vector<ThreadTask::Ptr> >(std::vector<ThreadTask::Ptr>())),
 	_childrenMissing(new ThreadSafeVariable<unsigned int>(0)),
-	_parentCallback(new ThreadSafeVariable<ParentCallback>(boost::bind(&ThreadTask::parentCallbackDefault,this,_1))),
+	_parentCallback(new ThreadSafeVariable<ParentCallback>(ParentCallback())),
 	_exceptions(new ThreadSafeVariable<std::list<Exception> >(std::list<Exception>()))
 {
 }
@@ -52,6 +54,7 @@ ThreadTask::~ThreadTask() {
 	delete _pool;
 	delete _state;
 	delete _keepAlive;
+	delete _blockFinalize;
 	delete _children;
 	delete _childrenMissing;
 	delete _parentCallback;
@@ -194,8 +197,10 @@ void ThreadTask::setKeepAlive(bool keepAlive) {
 		// If keepAlive is switched off and the task is IDLE, we finish it.
 		if (_keepAlive->getVariable() && !keepAlive) {
 			if (_state->getVariable() == IDLE) {
-				_state->setVariable(POSTWORK); // addSubTasks() can not be used any longer
-				doFinish = true;
+				if (!_blockFinalize->getVariable()) { // only finish task if no subtasks are currently invoking idle
+					_state->setVariable(POSTWORK); // addSubTasks() can not be used any longer
+					doFinish = true;
+				}
 			}
 		}
 		_keepAlive->setVariable(keepAlive);
@@ -266,6 +271,7 @@ void ThreadTask::tryIdle() {
 			if (_state->getVariable() == CHILDREN) {
 				_state->setVariable(IDLE);
 				doIdle = true;
+				_blockFinalize->setVariable(true); // to make sure that setKeepAlive(false) will not finish task to early
 			}
 		}
 	}
@@ -285,6 +291,7 @@ void ThreadTask::tryIdle() {
 					}
 				}
 			}
+			_blockFinalize->setVariable(false);
 		}
 	}
 	if (doFinish) {
@@ -304,9 +311,10 @@ void ThreadTask::finish() {
 		boost::mutex::scoped_lock lock(_mutex);
 		parentCallback = _parentCallback->getVariable();
 	}
-	parentCallback(this);
 	{
 		boost::mutex::scoped_lock lock(_mutex);
 		_state->setVariable(DONE);
 	}
+	if (!parentCallback.empty())
+		parentCallback(this);
 }

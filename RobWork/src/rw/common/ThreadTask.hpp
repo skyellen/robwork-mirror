@@ -249,7 +249,6 @@ private:
 
     void runWrap(ThreadPool* pool);
     void doneWrap(ThreadPool* pool);
-    void parentCallbackDefault(ThreadTask* task) {};
     void callbackParent(ThreadTask* task);
     void tryIdle();
     void finish();
@@ -258,6 +257,7 @@ private:
     ThreadSafeVariable<rw::common::Ptr<ThreadPool> >* _pool;
 	ThreadSafeVariable<TaskState>* _state;
 	ThreadSafeVariable<bool>* _keepAlive;
+	ThreadSafeVariable<bool>* _blockFinalize;
     ThreadSafeVariable<std::vector<rw::common::Ptr<ThreadTask> > >* _children;
     ThreadSafeVariable<unsigned int>* _childrenMissing;
     ThreadSafeVariable<ParentCallback>* _parentCallback;
