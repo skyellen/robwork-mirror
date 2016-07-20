@@ -24,13 +24,11 @@
 #include <QSplashScreen>
 #include <QMessageBox>
 #include "RobWorkStudio.hpp"
+#include <rw/RobWork.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/common/ProgramOptions.hpp>
 #include <RobWorkStudioConfig.hpp>
 #include <RobWorkConfig.hpp>
-
-#include <rw/loaders/xml/XMLPropertyFormat.hpp>
-#include <rw/loaders/xml/XMLPathFormat.hpp>
 
 #ifdef _WIN32
 #include <omp.h> //Needed because otherwise Visual Studio results in run-time linking problems.
@@ -55,7 +53,6 @@
 
 using namespace rw;
 using namespace rw::common;
-using namespace rw::loaders;
 using namespace rws;
 
 class MyQApplication: public QApplication {
@@ -143,9 +140,6 @@ int main(int argc, char** argv)
                     splash->showMessage("Loading static plugins");
 
                 rwstudio.loadSettingsSetupPlugins( inifile );
-
-				std::cout<<XMLPathFormat::QPathId<<std::endl;
-				std::cout<<XMLPropertyFormat::PropertyMapId<<std::endl;
 
                 if(!inputfile.empty()){
                     if(showSplash)

@@ -22,6 +22,7 @@
 #include <QMessageBox>
 
 #include <rw/common/ProgramOptions.hpp>
+#include <RobWorkConfig.hpp>
 #include <RobWorkStudioConfig.hpp>
 #ifdef RWS_USE_STATIC_LINK_PLUGINS
     #include <rwslibs/log/ShowLog.hpp>
