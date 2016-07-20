@@ -142,26 +142,26 @@ public:
 
     %extend {
 
-        rw::common::Ptr<Path<rw::math::Q> > query(rw::math::Q from, Transform3d to, rw::common::Ptr<StopCriteria> stop){
+        rw::common::Ptr<Path<rw::math::Q> > query(rw::math::Q from, rw::math::Transform3D<double> to, rw::common::Ptr<StopCriteria> stop){
             rw::common::Ptr<Path<rw::math::Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<rw::math::Q,const Transform3d>::query(from,to,*path,*stop);
+            $self->rw::pathplanning::PathPlanner<rw::math::Q,const rw::math::Transform3D<double> >::query(from,to,*path,*stop);
             return path;
         }
 
-        rw::common::Ptr<Path<rw::math::Q> > query(rw::math::Q from, Transform3d to, double time){
+        rw::common::Ptr<Path<rw::math::Q> > query(rw::math::Q from, rw::math::Transform3D<double> to, double time){
             rw::common::Ptr<Path<rw::math::Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<rw::math::Q,const Transform3d>::query(from,to,*path,time);
+            $self->rw::pathplanning::PathPlanner<rw::math::Q,const rw::math::Transform3D<double> >::query(from,to,*path,time);
             return path;
         }
 
-        rw::common::Ptr<Path<rw::math::Q> > query(rw::math::Q from, Transform3d to){
+        rw::common::Ptr<Path<rw::math::Q> > query(rw::math::Q from, rw::math::Transform3D<double> to){
             rw::common::Ptr<Path<rw::math::Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<rw::math::Q,const Transform3d>::query(from,to,*path);
+            $self->rw::pathplanning::PathPlanner<rw::math::Q,const rw::math::Transform3D<double> >::query(from,to,*path);
             return path;
         }
 
         PropertyMap& getProperties(){
-            return $self->rw::pathplanning::PathPlanner<rw::math::Q,const Transform3d>::getProperties();
+            return $self->rw::pathplanning::PathPlanner<rw::math::Q,const rw::math::Transform3D<double> >::getProperties();
         }
 	}	
 };

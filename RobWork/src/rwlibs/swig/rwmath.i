@@ -11,25 +11,22 @@ public:
 #if !defined(SWIGJAVA)
     double& operator()(size_t row, size_t column);
     const double& operator()(size_t row, size_t column) const;
+#endif
 
     const Matrix operator+(const Matrix& wrench) const;    
     const Matrix operator-(const Matrix& wrench) const;
     const Matrix operator*(const Matrix& wrench) const;
-#endif
-
-#if defined(SWIGJAVA)
-	%rename(subtract) operator-(const Matrix&) const;
-	%rename(add) operator+(const Matrix&) const;
-#endif
 	
 	%extend {
 		Matrix pseudoinverse() {
 			 return rw::math::LinearAlgebra::pseudoInverse( (*$self) );
 		}
 		
+#if !defined(SWIGJAVA)
 		double& elem(int x, int y){
 			return (*$self)(x,y);
 		}
+#endif
 		
 		/* These accesors are neccesary because Python does not allow
 		lvalues consisting of access operators calls (cannot assign to a function call).
@@ -102,11 +99,6 @@ public:
 #if !defined(SWIGJAVA)
     %rename(elem) operator[];
     double& operator[](unsigned int i) ;
-#endif
-
-#if defined(SWIGJAVA)
-	%rename(subtract) operator-(const Q&) const;
-	%rename(add) operator+(const Q&) const;
 #endif
 
     const Q operator-() const;
@@ -186,10 +178,6 @@ public:
     Vector3D(T x, T y, T z);
     size_t size() const;
     Vector3D operator*(T scale) const;
-#if defined(SWIGJAVA)
-	%rename(subtract) operator-(const Vector3D&) const;
-	%rename(add) operator+(const Vector3D&) const;
-#endif
     Vector3D operator+(const Vector3D& other) const;
     Vector3D operator-(const Vector3D& other) const;
     bool operator==(const Vector3D& q);
@@ -247,8 +235,8 @@ public:
     bool operator==(const Rotation3D<T> &rhs) const;
     
     %extend {
-    	EAA<T> toEAA(){ return EAA<T>(*$self); }
-    	RPY<T> toRPY(){ return RPY<T>(*$self); }
+    	rw::math::EAA<T> toEAA(){ return rw::math::EAA<T>(*$self); }
+    	rw::math::RPY<T> toRPY(){ return rw::math::RPY<T>(*$self); }
     	rw::math::Quaternion<T> toQuaternion(){ return rw::math::Quaternion<T>(*$self); }
     	
     	const rw::math::EAA<T> operator*(const rw::math::EAA<T>& bTKc){
@@ -265,6 +253,12 @@ public:
         void set(std::size_t row, std::size_t column, double d){ (*$self)(row, column) = d; }
 #endif
     };
+
+#if defined(SWIGJAVA)    
+    %extend {
+    	rw::math::InertiaMatrix<T> multiply(const rw::math::InertiaMatrix<T>& bRc) { return (*$self)*bRc; }
+    };
+#endif
 };
 }}
 
@@ -462,10 +456,6 @@ public:
     // lua functions
     VelocityScrew6D<T> operator*(T scale) const;
     
-#if defined(SWIGJAVA)
-	%rename(subtract) operator-(const VelocityScrew6D<T>&) const;
-	%rename(add) operator+(const VelocityScrew6D<T>&) const;
-#endif
     VelocityScrew6D<T> operator+(const VelocityScrew6D<T>& other) const;
     VelocityScrew6D<T> operator-(const VelocityScrew6D<T>& other) const;
     //bool operator==(const VelocityScrew6D<T>& q);
@@ -527,10 +517,6 @@ public:
 
     friend const Wrench6D operator*(const rw::math::Rotation3D<T>& aRb, const Wrench6D<T>& bV);
 
-#if defined(SWIGJAVA)
-	%rename(subtract) operator-(const Wrench6D<T>&) const;
-	%rename(add) operator+(const Wrench6D<T>&) const;
-#endif
     const Wrench6D<T> operator+(const Wrench6D<T>& wrench) const;    
     const Wrench6D<T> operator-(const Wrench6D<T>& wrench) const;
 
@@ -577,12 +563,22 @@ public:
     //const Base& m() const;
     //Base& m();
 
+#if !defined(SWIGJAVA)
     friend InertiaMatrix<T> operator*(const rw::math::Rotation3D<T>& aRb, const InertiaMatrix<T>& bRc);
     friend InertiaMatrix<T> operator*(const InertiaMatrix<T>& aRb, const Rotation3D<T>& bRc);
     friend InertiaMatrix<T> operator+(const InertiaMatrix<T>& I1, const InertiaMatrix<T>& I2);
     friend Vector3D<T> operator*(const InertiaMatrix<T>& aRb, const Vector3D<T>& bVc);
     //friend InertiaMatrix<T> inverse(const InertiaMatrix<T>& aRb);
     //friend std::ostream& operator<<(std::ostream &os, const InertiaMatrix<T>& r);
+#endif
+
+#if defined(SWIGJAVA)    
+    %extend {
+    	InertiaMatrix<T> multiply(const Rotation3D<T>& bRc) { return (*$self)*bRc; }
+    	InertiaMatrix<T> add(const InertiaMatrix<T>& I2) { return (*$self)+I2; }
+    	Vector3D<T> multiply(const Vector3D<T>& bVc) { return (*$self)*bVc; }
+    };
+#endif
 
     static InertiaMatrix<T> makeSolidSphereInertia(double mass, double radi);
     static InertiaMatrix<T> makeHollowSphereInertia(double mass, double radi);

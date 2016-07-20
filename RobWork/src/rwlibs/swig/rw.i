@@ -41,6 +41,8 @@ using rwlibs::task::Task;
 	%rename(divide) operator/;
 	%rename(equals) operator==;
 	%rename(negate) operator-() const;
+	%rename(subtract) operator-;
+	%rename(add) operator+;
 #endif
 
 %include <stl.i>
@@ -181,9 +183,9 @@ public:
 		void setQ(const std::string& id, rw::math::Q q){ $self->set<rw::math::Q>(id, q); }
 		void set(const std::string& id, rw::math::Q q){ $self->set<rw::math::Q>(id, q); }
 
-		Pose6d& getPose(const std::string& id){ return $self->get<Pose6d>(id); }
-		void setPose6D(const std::string& id, Pose6d p){  $self->set<Pose6d>(id, p); }
-		void set(const std::string& id, Pose6d p){  $self->set<Pose6d>(id, p); }
+		rw::math::Pose6D<double>& getPose(const std::string& id){ return $self->get<rw::math::Pose6D<double> >(id); }
+		void setPose6D(const std::string& id, rw::math::Pose6D<double> p){  $self->set<rw::math::Pose6D<double> >(id, p); }
+		void set(const std::string& id, rw::math::Pose6D<double> p){  $self->set<rw::math::Pose6D<double> >(id, p); }
 		
 		rw::math::Vector3D<double>& getVector3(const std::string& id){ return $self->get<rw::math::Vector3D<double> >(id); }
 		void setVector3(const std::string& id, rw::math::Vector3D<double> p){  $self->set<rw::math::Vector3D<double> >(id, p); }
@@ -269,11 +271,19 @@ public:
 %template (PluginPtr) rw::common::Ptr<Plugin>;
 %template (PluginPtrVector) std::vector<rw::common::Ptr<Plugin> >;
 
+struct ExtensionDescriptor {
+	ExtensionDescriptor();
+	ExtensionDescriptor(const std::string& id_, const std::string& point_);
+
+    std::string id,name,point;
+    rw::common::PropertyMap props;
+
+    //rw::common::PropertyMap& getProperties();
+    const rw::common::PropertyMap& getProperties() const;
+};
+
 class Extension {
 public:
-	//struct Descriptor {
-	//};
-	
 	Extension(ExtensionDescriptor desc, Plugin* plugin);
 	
 	const std::string& getId();
@@ -442,8 +452,11 @@ public:
 
     rw::math::Vector3D<double>& normal();
     //const rw::math::Vector3D<double>& normal() const;
+#if defined(SWIGJAVA)
+	double d() const;
+#else
     double& d();
-    //double d() const;
+#endif
     double distance(const rw::math::Vector3D<double>& point);
     double refit( std::vector<rw::math::Vector3D<double> >& data );
     rw::common::Ptr<TriMesh> createMesh(int resolution) const ;
@@ -501,6 +514,7 @@ public:
 };
 
 %template (GeometryPtr) rw::common::Ptr<Geometry>;
+%template (GeometryPtrVector) std::vector<rw::common::Ptr<Geometry> >;
 
 class STLFile {
 public:
@@ -609,6 +623,42 @@ public:
     virtual unsigned int getMask() const = 0;
 };
 
+class Model3D {
+public:
+    Model3D(const std::string& name);
+    virtual ~Model3D();
+    //struct Material;
+    //struct MaterialFaces;
+    //struct MaterialPolys;
+    //struct Object3D;
+    //typedef enum{
+    //    AVERAGED_NORMALS //! vertex normal is determine as an avarage of all adjacent face normals
+    //    ,WEIGHTED_NORMALS //! vertex normal is determined as AVARAGED_NORMALS, but with the face normals scaled by the face area
+    //    } SmoothMethod;
+    //void optimize(double smooth_angle, SmoothMethod method=WEIGHTED_NORMALS);
+    //int addObject(Object3D::Ptr obj);
+    //void addGeometry(const Material& mat, rw::common::Ptr<Geometry> geom);
+    //void addTriMesh(const Material& mat, const rw::geometry::TriMesh& mesh);
+    //int addMaterial(const Material& mat);
+    //Material* getMaterial(const std::string& matid);
+    bool hasMaterial(const std::string& matid);
+    void removeObject(const std::string& name);
+    //std::vector<Material>& getMaterials();
+    //std::vector<Object3D::Ptr>& getObjects();
+    const rw::math::Transform3D<double>& getTransform();
+    void setTransform(const rw::math::Transform3D<double>& t3d);
+    const std::string& getName();
+    void setName(const std::string& name);
+    int getMask();
+    void setMask(int mask);
+    rw::common::Ptr<GeometryData> toGeometryData();
+    bool isDynamic() const;
+    void setDynamic(bool dynamic);
+};
+
+%template (Model3DPtr) rw::common::Ptr<Model3D>;
+%template (Model3DPtrVector) std::vector<rw::common::Ptr<Model3D> >;
+
 class WorkCellScene {
  public:
 
@@ -617,7 +667,7 @@ class WorkCellScene {
      void setState(const State& state);
 
      //rw::graphics::GroupNode::Ptr getWorldNode();
-     void updateSceneGraph(rw::kinematics::State& state);
+     void updateSceneGraph(State& state);
      //void clearCache();
 
      void setVisible(bool visible, Frame* f);
@@ -635,14 +685,14 @@ class WorkCellScene {
      unsigned int getDrawMask( Frame* f );
      void setTransparency(double alpha, Frame* f);
 
-     //DrawableGeometryNode::Ptr addLines( const std::string& name, const std::vector<rw::geometry::Line >& lines, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
-     //DrawableGeometryNode::Ptr addGeometry(const std::string& name, rw::geometry::Geometry::Ptr geom, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
-     DrawableNode::Ptr addFrameAxis(const std::string& name, double size, rw::kinematics::Frame* frame, int dmask=DrawableNode::Virtual);
-     //DrawableNode::Ptr addModel3D(const std::string& name, Model3D::Ptr model, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
-     //DrawableNode::Ptr addImage(const std::string& name, const rw::sensor::Image& img, rw::kinematics::Frame* frame, int dmask=DrawableNode::Virtual);
-     //DrawableNode::Ptr addScan(const std::string& name, const rw::sensor::Scan2D& scan, rw::kinematics::Frame* frame, int dmask=DrawableNode::Virtual);
-     //DrawableNode::Ptr addScan(const std::string& name, const rw::sensor::Image25D& scan, rw::kinematics::Frame* frame, int dmask=DrawableNode::Virtual);
-     //DrawableNode::Ptr addRender(const std::string& name, rw::graphics::Render::Ptr render, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
+     //DrawableGeometryNode::Ptr addLines( const std::string& name, const std::vector<rw::geometry::Line >& lines, Frame* frame, int dmask=DrawableNode::Physical);
+     //DrawableGeometryNode::Ptr addGeometry(const std::string& name, rw::common::Ptr<Geometry> geom, Frame* frame, int dmask=DrawableNode::Physical);
+     rw::common::Ptr<DrawableNode> addFrameAxis(const std::string& name, double size, Frame* frame, int dmask=DrawableNode::Virtual);
+     //rw::common::Ptr<DrawableNode> addModel3D(const std::string& name, rw::common::Ptr<Model3D> model, Frame* frame, int dmask=DrawableNode::Physical);
+     //rw::common::Ptr<DrawableNode> addImage(const std::string& name, const rw::sensor::Image& img, Frame* frame, int dmask=DrawableNode::Virtual);
+     //rw::common::Ptr<DrawableNode> addScan(const std::string& name, const rw::sensor::Scan2D& scan, Frame* frame, int dmask=DrawableNode::Virtual);
+     //rw::common::Ptr<DrawableNode> addScan(const std::string& name, const rw::sensor::Image25D& scan, Frame* frame, int dmask=DrawableNode::Virtual);
+     //rw::common::Ptr<DrawableNode> addRender(const std::string& name, rw::graphics::Render::Ptr render, Frame* frame, int dmask=DrawableNode::Physical);
 
      rw::common::Ptr<DrawableNode> addDrawable(const std::string& filename, Frame* frame, int dmask);
      void addDrawable(rw::common::Ptr<DrawableNode> drawable, Frame*);
@@ -650,7 +700,7 @@ class WorkCellScene {
      //std::vector<rw::common::Ptr<DrawableNode> > getDrawables();
      //std::vector<rw::common::Ptr<DrawableNode> > getDrawables(Frame* f);
 
-     //std::vector<DrawableNode::Ptr> getDrawablesRec(rw::kinematics::Frame* f, rw::kinematics::State& state);
+     //std::vector<rw::common::Ptr<DrawableNode> > getDrawablesRec(Frame* f, State& state);
      rw::common::Ptr<DrawableNode> findDrawable(const std::string& name);
 
      rw::common::Ptr<DrawableNode> findDrawable(const std::string& name, Frame* frame);
@@ -669,7 +719,7 @@ class WorkCellScene {
      bool removeDrawable(const std::string& name, Frame* f);
      Frame* getFrame(rw::common::Ptr<DrawableNode>  d);
 
-     //rw::graphics::GroupNode::Ptr getNode(rw::kinematics::Frame* frame);
+     //rw::graphics::GroupNode::Ptr getNode(Frame* frame);
  };
  
  %nodefaultctor SceneViewer;
@@ -814,7 +864,9 @@ protected:
 public:
     const std::string& getName();
     int size() const;
+#if !defined(SWIGJAVA)
     double* getData(State& state);
+#endif
 #if defined(SWIGJAVA)
 %apply double[] {double *};
 #endif
@@ -938,13 +990,13 @@ class Joint: public Frame
 class WorkCellLoader {
 public:
 	virtual ~WorkCellLoader();
-	virtual rw::models::WorkCell::Ptr loadWorkCell(const std::string& filename) = 0;
-	virtual void setScene( rw::graphics::WorkCellScene::Ptr scene );
-	virtual rw::graphics::WorkCellScene::Ptr getScene();
+	virtual rw::common::Ptr<WorkCell> loadWorkCell(const std::string& filename) = 0;
+	virtual void setScene(rw::common::Ptr<WorkCellScene> scene );
+	virtual rw::common::Ptr<WorkCellScene> getScene();
 
 protected:
 	WorkCellLoader();
-	WorkCellLoader(rw::graphics::WorkCellScene::Ptr scene);
+	WorkCellLoader(rw::common::Ptr<WorkCellScene> scene);
 };
 
 %template (WorkCellLoaderPtr) rw::common::Ptr<WorkCellLoader>;
@@ -959,7 +1011,7 @@ public:
 class ImageLoader {
 public:
 	virtual ~ImageLoader();
-	virtual rw::sensor::Image::Ptr loadImage(const std::string& filename) = 0;
+	virtual rw::common::Ptr<Image> loadImage(const std::string& filename) = 0;
 	virtual std::vector<std::string> getImageFormats() = 0;
 	virtual bool isImageSupported(const std::string& format);
 };
@@ -1030,9 +1082,9 @@ namespace rw { namespace math {
         static rw::math::Q clampQ(const rw::math::Q& q,
                                   const std::pair<rw::math::Q, rw::math::Q>& bounds);
 
-        static rw::math::Vector3D<> clamp(const rw::math::Vector3D<>& q,
-                                          const rw::math::Vector3D<>& min,
-                                          const rw::math::Vector3D<>& max);
+        static rw::math::Vector3D<double> clamp(const rw::math::Vector3D<double>& q,
+                                          const rw::math::Vector3D<double>& min,
+                                          const rw::math::Vector3D<double>& max);
 
         static double ran();
 
@@ -1153,36 +1205,35 @@ public:
      const std::vector<rw::common::Ptr<Geometry> >& getGeometry(const State& state) const;
     const std::vector<rw::common::Ptr<Model3D> >& getModels(const State& state) const;
     virtual double getMass(State& state) const = 0;
-    virtual rw::math::Vector3D<> getCOM(State& state) const = 0;
+    virtual rw::math::Vector3D<double> getCOM(State& state) const = 0;
     virtual rw::math::InertiaMatrix<double> getInertia(State& state) const = 0;
 };
 %template (ObjectPtr) rw::common::Ptr<Object>;
 
 class RigidObject : public Object {
 public:
-	RigidObject(rw::kinematics::Frame* baseframe);
-	RigidObject(rw::kinematics::Frame* baseframe, rw::geometry::Geometry::Ptr geom);
-	RigidObject(rw::kinematics::Frame* baseframe, std::vector<rw::geometry::Geometry::Ptr> geom);
-	RigidObject(std::vector<rw::kinematics::Frame*> frames);
-	RigidObject(std::vector<rw::kinematics::Frame*> frames, rw::geometry::Geometry::Ptr geom);
-	RigidObject(std::vector<rw::kinematics::Frame*> frames, std::vector<rw::geometry::Geometry::Ptr> geom);
-	void addGeometry(rw::geometry::Geometry::Ptr geom);
-	void removeGeometry(rw::geometry::Geometry::Ptr geom);
-	void addModel(rw::graphics::Model3D::Ptr model);
-	void removeModel(rw::graphics::Model3D::Ptr model);
+	RigidObject(Frame* baseframe);
+	RigidObject(Frame* baseframe, rw::common::Ptr<Geometry> geom);
+	RigidObject(Frame* baseframe, std::vector<rw::common::Ptr<Geometry> > geom);
+	RigidObject(std::vector<Frame*> frames);
+	RigidObject(std::vector<Frame*> frames, rw::common::Ptr<Geometry> geom);
+	RigidObject(std::vector<Frame*> frames, std::vector<rw::common::Ptr<Geometry> > geom);
+	void addGeometry(rw::common::Ptr<Geometry> geom);
+	void removeGeometry(rw::common::Ptr<Geometry> geom);
+	void addModel(rw::common::Ptr<Model3D> model);
+	void removeModel(rw::common::Ptr<Model3D> model);
     double getMass() const;
     void setMass(double mass);
     rw::math::InertiaMatrix<double> getInertia() const;
     void setInertia(const rw::math::InertiaMatrix<double>& inertia);
-    rw::math::Vector3D<> getCOM() const;
-    void setCOM(const rw::math::Vector3D<>& com);
+    void setCOM(const rw::math::Vector3D<double>& com);
     void approximateInertia();
     void approximateInertiaCOM();
     const std::vector<rw::common::Ptr<Geometry> >& getGeometry() const ;
     const std::vector<rw::common::Ptr<Model3D> >& getModels() const;
-    double getMass(rw::kinematics::State& state) const;
-    rw::math::InertiaMatrix<double> getInertia(rw::kinematics::State& state) const;
-    rw::math::Vector3D<> getCOM(rw::kinematics::State& state) const;
+    double getMass(State& state) const;
+    rw::math::InertiaMatrix<double> getInertia(State& state) const;
+    rw::math::Vector3D<double> getCOM(State& state) const;
 };
 %template (RigidObjectPtr) rw::common::Ptr<RigidObject>;
 
@@ -1206,15 +1257,15 @@ public:
     
     //const std::vector<rw::geometry::IndexedTriangle<> >& getFaces() const;
     void addFace(unsigned int node1, unsigned int node2, unsigned int node3);
-    //rw::geometry::IndexedTriMesh<float>::Ptr getMesh(rw::kinematics::State& cstate);
+    //rw::geometry::IndexedTriMesh<float>::Ptr getMesh(State& cstate);
     const std::vector<rw::common::Ptr<Geometry> >& getGeometry(const State& state) const;
     const std::vector<rw::common::Ptr<Model3D> >& getModels() const;
     const std::vector<rw::common::Ptr<Model3D> >& getModels(const State& state) const;
     
     double getMass(State& state) const;
-    rw::math::Vector3D<double> getCOM(rw::kinematics::State& state) const;
+    rw::math::Vector3D<double> getCOM(State& state) const;
     rw::math::InertiaMatrix<double> getInertia(State& state) const;
-    void update(rw::graphics::Model3D::Ptr model, const State& state);
+    void update(rw::common::Ptr<Model3D> model, const State& state);
 };
 %template (DeformableObjectPtr) rw::common::Ptr<DeformableObject>;
 
@@ -1246,9 +1297,9 @@ public:
     virtual rw::math::Jacobian baseJend(const State& state) const = 0;
     virtual rw::math::Jacobian baseJframe(const Frame* frame,const State& state) const;
     virtual rw::math::Jacobian baseJframes(const std::vector<Frame*>& frames,const State& state) const;
-    //virtual rw::common::Ptr<JacobianCalculator> baseJCend(const kinematics::State& state) const;
-    //virtual JacobianCalculatorPtr baseJCframe(const kinematics::Frame* frame, const kinematics::State& state) const;
-    //virtual JacobianCalculatorPtr baseJCframes(const std::vector<kinematics::Frame*>& frames, const kinematics::State& state) const = 0;
+    //virtual rw::common::Ptr<JacobianCalculator> baseJCend(const State& state) const;
+    //virtual JacobianCalculatorPtr baseJCframe(const kinematics::Frame* frame, const State& state) const;
+    //virtual JacobianCalculatorPtr baseJCframes(const std::vector<kinematics::Frame*>& frames, const State& state) const = 0;
 private:
     Device(const Device&);
     Device& operator=(const Device&);
@@ -1273,7 +1324,7 @@ public:
     rw::math::Jacobian baseJend(const State& state) const;
 
     //JacobianCalculatorPtr baseJCframes(const std::vector<kinematics::Frame*>& frames,
-    //                                   const kinematics::State& state) const;
+    //                                   const State& state) const;
 
     Frame* getBase();
     virtual Frame* getEnd();
@@ -1320,10 +1371,10 @@ class TreeDevice: public JointDevice
 {
 public:
 	TreeDevice(
-		rw::kinematics::Frame* base,
-		const std::vector<rw::kinematics::Frame*>& ends,
+		Frame* base,
+		const std::vector<Frame*>& ends,
 		const std::string& name,
-		const rw::kinematics::State& state);
+		const State& state);
 };
 %template (TreeDevicePtr) rw::common::Ptr<TreeDevice>;
 
@@ -1354,24 +1405,24 @@ public:
 /*
     virtual bool inCollision(
         const kinematics::Frame* a,
-        const math::Transform3D<>& wTa,
+        const math::Transform3D<double>& wTa,
         const kinematics::Frame *b,
-        const math::Transform3D<>& wTb,
+        const math::Transform3D<double>& wTb,
         CollisionQueryType type = FirstContact);
 
     virtual bool inCollision(
         const kinematics::Frame* a,
-        const math::Transform3D<>& wTa,
+        const math::Transform3D<double>& wTa,
         const kinematics::Frame *b,
-        const math::Transform3D<>& wTb,
+        const math::Transform3D<double>& wTb,
         ProximityStrategyData& data,
         CollisionQueryType type = FirstContact);
 
     virtual bool inCollision(
         ProximityModel::Ptr a,
-        const math::Transform3D<>& wTa,
+        const math::Transform3D<double>& wTa,
         ProximityModel::Ptr b,
-        const math::Transform3D<>& wTb,
+        const math::Transform3D<double>& wTb,
         ProximityStrategyData& data) = 0;
 */
     /*
@@ -1389,6 +1440,9 @@ public:
 class CollisionDetector
 {
 public:
+	CollisionDetector(rw::common::Ptr<WorkCell> workcell);
+	CollisionDetector(rw::common::Ptr<WorkCell> workcell, rw::common::Ptr<CollisionStrategy> strategy);
+
     %extend {
         static rw::common::Ptr<CollisionDetector> make(rw::common::Ptr<WorkCell> workcell){
             return rw::common::ownedPtr( new CollisionDetector(workcell, rwlibs::proximitystrategies::ProximityStrategyFactory::makeDefaultCollisionStrategy()) );
@@ -1558,14 +1612,14 @@ public:
 };
 
 %template (BlendR1) Blend<double>;
-%template (BlendR2) Blend<Vector2d>;
+%template (BlendR2) Blend<rw::math::Vector2D<double> >;
 %template (BlendR3) Blend<rw::math::Vector3D<double> >;
 %template (BlendSO3) Blend<rw::math::Rotation3D<double> >;
 %template (BlendSE3) Blend<rw::math::Transform3D<double> >;
 %template (BlendQ) Blend<rw::math::Q>;
 
 %template (BlendR1Ptr) rw::common::Ptr<Blend<double> >;
-%template (BlendR2Ptr) rw::common::Ptr<Blend<Vector2d> >;
+%template (BlendR2Ptr) rw::common::Ptr<Blend<rw::math::Vector2D<double> > >;
 %template (BlendR3Ptr) rw::common::Ptr<Blend<rw::math::Vector3D<double> > >;
 %template (BlendSO3Ptr) rw::common::Ptr<Blend<rw::math::Rotation3D<double> > >;
 %template (BlendSE3Ptr) rw::common::Ptr<Blend<rw::math::Transform3D<double> > >;
@@ -1582,14 +1636,14 @@ public:
 };
 
 %template (InterpolatorR1) Interpolator<double>;
-%template (InterpolatorR2) Interpolator<Vector2d>;
+%template (InterpolatorR2) Interpolator<rw::math::Vector2D<double> >;
 %template (InterpolatorR3) Interpolator<rw::math::Vector3D<double> >;
 %template (InterpolatorSO3) Interpolator<rw::math::Rotation3D<double> >;
 %template (InterpolatorSE3) Interpolator<rw::math::Transform3D<double> >;
 %template (InterpolatorQ) Interpolator<rw::math::Q>;
 
 %template (InterpolatorR1Ptr) rw::common::Ptr<Interpolator<double> >;
-%template (InterpolatorR2Ptr) rw::common::Ptr<Interpolator<Vector2d> >;
+%template (InterpolatorR2Ptr) rw::common::Ptr<Interpolator<rw::math::Vector2D<double> > >;
 %template (InterpolatorR3Ptr) rw::common::Ptr<Interpolator<rw::math::Vector3D<double> > >;
 %template (InterpolatorSO3Ptr) rw::common::Ptr<Interpolator<rw::math::Rotation3D<double> > >;
 %template (InterpolatorSE3Ptr) rw::common::Ptr<Interpolator<rw::math::Transform3D<double> > >;
@@ -1747,7 +1801,7 @@ protected:
 
 %template (TrajectoryState) Trajectory<State>;
 %template (TrajectoryR1) Trajectory<double>;
-%template (TrajectoryR2) Trajectory<Vector2d>;
+%template (TrajectoryR2) Trajectory<rw::math::Vector2D<double> >;
 %template (TrajectoryR3) Trajectory<rw::math::Vector3D<double> >;
 %template (TrajectorySO3) Trajectory<rw::math::Rotation3D<double> >;
 %template (TrajectorySE3) Trajectory<rw::math::Transform3D<double> >;
@@ -1755,7 +1809,7 @@ protected:
 
 %template (TrajectoryStatePtr) rw::common::Ptr<Trajectory<State> >;
 %template (TrajectoryR1Ptr) rw::common::Ptr<Trajectory<double> >;
-%template (TrajectoryR2Ptr) rw::common::Ptr<Trajectory<Vector2d> >;
+%template (TrajectoryR2Ptr) rw::common::Ptr<Trajectory<rw::math::Vector2D<double> > >;
 %template (TrajectoryR3Ptr) rw::common::Ptr<Trajectory<rw::math::Vector3D<double> > >;
 %template (TrajectorySO3Ptr) rw::common::Ptr<Trajectory<rw::math::Rotation3D<double> > >;
 %template (TrajectorySE3Ptr) rw::common::Ptr<Trajectory<rw::math::Transform3D<double> > >;
@@ -1777,7 +1831,7 @@ public:
 };
 
 %template (InterpolatorTrajectoryR1) InterpolatorTrajectory<double>;
-%template (InterpolatorTrajectoryR2) InterpolatorTrajectory<Vector2d>;
+%template (InterpolatorTrajectoryR2) InterpolatorTrajectory<rw::math::Vector2D<double> >;
 %template (InterpolatorTrajectoryR3) InterpolatorTrajectory<rw::math::Vector3D<double> >;
 %template (InterpolatorTrajectorySO3) InterpolatorTrajectory<rw::math::Rotation3D<double> >;
 %template (InterpolatorTrajectorySE3) InterpolatorTrajectory<rw::math::Transform3D<double> >;
@@ -1788,7 +1842,7 @@ public:
 class TrajectoryFactory
 {
 public:
-    static rw::common::Ptr<StateTrajectory> makeFixedTrajectory(const rw::kinematics::State& state, double duration);
+    static rw::common::Ptr<StateTrajectory> makeFixedTrajectory(const State& state, double duration);
     static rw::common::Ptr<QTrajectory> makeFixedTrajectory(const rw::math::Q& q, double duration);
     static rw::common::Ptr<StateTrajectory> makeLinearTrajectory(const TimedStatePath& path);
     static rw::common::Ptr<StateTrajectory> makeLinearTrajectory(const StatePath& path,
@@ -1835,7 +1889,7 @@ public:
 	rw::math::VelocityScrew6D<double>  femaleTmaleVelocityTarget;
 	rw::math::Rotation3D<double>  offset;
 	//VectorND<6,bool> selection;
-	Wrench6d force_torque;
+	rw::math::Wrench6D<double> force_torque;
 	bool done;
 	bool success;
 };
@@ -1938,8 +1992,8 @@ public:
 	rw::math::Transform3D<double>  femaleOffset;
 	rw::math::Transform3D<double>  maleOffset;
 	rw::math::Transform3D<double>  femaleTmale;
-	Wrench6d ftSensorMale;
-	Wrench6d ftSensorFemale;
+	rw::math::Wrench6D<double> ftSensorMale;
+	rw::math::Wrench6D<double> ftSensorFemale;
 	bool contact;
 	Path<rw::math::Transform3D<double> > maleflexT;
 	Path<rw::math::Transform3D<double> > femaleflexT;
