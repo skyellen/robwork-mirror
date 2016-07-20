@@ -15,31 +15,18 @@
  * limitations under the License.
  ********************************************************************************/
 
-
-
 #include "../TestSuiteConfig.hpp"
 
-#include <rw/loaders.hpp>
-#include <rw/geometry.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Rotation3D.hpp>
-#include <rw/common/macros.hpp>
-#include <rw/common/Timer.hpp>
-#include <string>
-#include <fstream>
-
 #include <rw/geometry/Covariance.hpp>
-
+#include <rw/geometry/IndexedTriMesh.hpp>
+#include <rw/geometry/TriangleUtil.hpp>
+#include <rw/loaders/GeometryFactory.hpp>
+#include <rw/loaders/model3d/STLFile.hpp>
 
 using namespace boost::unit_test;
 
-using namespace rw::math;
-using namespace rw::common;
-using namespace rw::kinematics;
 using namespace rw::geometry;
 using namespace rw::loaders;
-
-const int TRI_MESH_SIZE=10000;
 
 BOOST_AUTO_TEST_CASE( CovarianceTest ){
 
