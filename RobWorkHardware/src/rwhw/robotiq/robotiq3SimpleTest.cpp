@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <rw/rw.hpp>
+#include <rw/common/TimerUtil.hpp>
 #include <boost/program_options.hpp>
 
 #include "Robotiq3.hpp"

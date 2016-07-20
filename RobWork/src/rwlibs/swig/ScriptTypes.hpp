@@ -26,7 +26,6 @@
 //#include <rw/graspplanning.hpp>
 #include <rw/invkin.hpp>
 #include <rw/kinematics.hpp>
-#include <rw/loaders.hpp>
 #include <rw/math.hpp>
 #include <rw/models.hpp>
 #include <rw/pathplanning.hpp>
@@ -35,12 +34,11 @@
 #include <rw/sensor.hpp>
 #include <rw/trajectory.hpp>
 
-#include <rw/math/LinearAlgebra.hpp>
-
-#include <rw/trajectory/LinearInterpolator.hpp>
-#include <rw/trajectory/RampInterpolator.hpp>
-#include <rw/trajectory/InterpolatorTrajectory.hpp>
-#include <rw/trajectory/TimedUtil.hpp>
+#include <rw/loaders/ImageLoader.hpp>
+#include <rw/loaders/WorkCellLoader.hpp>
+#include <rw/loaders/model3d/STLFile.hpp>
+#include <rw/loaders/xml/XMLTrajectoryLoader.hpp>
+#include <rw/loaders/xml/XMLTrajectorySaver.hpp>
 
 #include <rwlibs/assembly/AssemblyControlResponse.hpp>
 #include <rwlibs/assembly/AssemblyControlStrategy.hpp>
@@ -63,7 +61,6 @@
 #include <rwlibs/task/GraspTarget.hpp>
 #include <rwlibs/task/GraspResult.hpp>
 #include <rwlibs/task/GraspSubTask.hpp>
-#include <rw/graphics/SceneViewer.hpp>
 
 #include <iostream>
 #include <sstream>
