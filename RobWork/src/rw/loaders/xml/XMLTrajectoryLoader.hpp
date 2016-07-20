@@ -26,9 +26,10 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
 
+#include <xercesc/util/XercesDefs.hpp>
+
 //#include "XercesErrorHandler.hpp"
 
-#include <xercesc/dom/DOMElement.hpp>
 /*
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/dom/DOMDocument.hpp>
@@ -44,6 +45,10 @@
 #include <xercesc/util/XMLUni.hpp>
 */
 #include <string>
+
+XERCES_CPP_NAMESPACE_BEGIN
+class DOMElement;
+XERCES_CPP_NAMESPACE_END
 
 namespace rw {
 namespace loaders {

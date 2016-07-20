@@ -15,8 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RW_LOADERS_PATHLOADER_HPP
-#define RW_LOADERS_PATHLOADER_HPP
+#ifndef RW_LOADERS_XMLPATHLOADER_HPP
+#define RW_LOADERS_XMLPATHLOADER_HPP
 
 
 #include <rw/trajectory/Path.hpp>
@@ -25,10 +25,15 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
 
-#include <xercesc/dom/DOMElement.hpp>
+#include <xercesc/util/XercesDefs.hpp>
+
 #include <string>
 
 namespace rw { namespace models { class WorkCell; } }
+
+XERCES_CPP_NAMESPACE_BEGIN
+class DOMElement;
+XERCES_CPP_NAMESPACE_END
 
 namespace rw {
 namespace loaders {

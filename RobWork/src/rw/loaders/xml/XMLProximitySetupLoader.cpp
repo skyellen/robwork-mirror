@@ -38,8 +38,8 @@
 #include <xercesc/sax/SAXParseException.hpp>
 #include <xercesc/sax/SAXException.hpp>
 
-
 #include "XercesErrorHandler.hpp"
+#include "XercesUtils.hpp"
 #include "XMLBasisTypes.hpp"
 #include "XMLPathFormat.hpp"
 

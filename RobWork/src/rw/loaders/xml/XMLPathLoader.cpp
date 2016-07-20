@@ -49,6 +49,7 @@
 #include <rw/trajectory/LloydHaywardBlend.hpp>
 
 #include "XercesErrorHandler.hpp"
+#include "XercesUtils.hpp"
 #include "XMLBasisTypes.hpp"
 #include "XMLPathFormat.hpp"
 

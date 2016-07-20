@@ -21,10 +21,12 @@
 #include <rw/common/PropertyMap.hpp>
 #include <rw/common/PropertyBase.hpp>
 
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/dom/DOMElement.hpp>
-#include <xercesc/util/OutOfMemoryException.hpp>
-#include <xercesc/dom/DOMImplementationLS.hpp>
+#include <xercesc/util/XercesDefs.hpp>
+
+XERCES_CPP_NAMESPACE_BEGIN
+class DOMDocument;
+class DOMElement;
+XERCES_CPP_NAMESPACE_END
 
 namespace rw {
 namespace loaders {

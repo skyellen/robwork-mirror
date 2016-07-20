@@ -16,7 +16,6 @@
  ********************************************************************************/
 
 #include "XMLPathSaver.hpp"
-#include "XMLPathLoader.hpp"
 
 #include "XMLBasisTypes.hpp"
 

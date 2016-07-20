@@ -31,9 +31,14 @@
 
 #include <rw/kinematics/State.hpp>
 
-#include <xercesc/dom/DOMElement.hpp>
+#include <xercesc/util/XercesDefs.hpp>
 
 #include <string>
+
+XERCES_CPP_NAMESPACE_BEGIN
+class DOMDocument;
+class DOMElement;
+XERCES_CPP_NAMESPACE_END
 
 namespace rw { namespace models { class WorkCell; } }
 

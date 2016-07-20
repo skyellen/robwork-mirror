@@ -17,6 +17,7 @@
 
 #include "XMLPropertyLoader.hpp"
 
+#include "XercesUtils.hpp"
 #include "XMLPropertyFormat.hpp"
 
 #include <rw/loaders/xml/XercesErrorHandler.hpp>

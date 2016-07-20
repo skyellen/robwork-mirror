@@ -17,6 +17,8 @@
 
 #include "XMLPathFormat.hpp"
 
+#include "XercesUtils.hpp"
+
 using namespace rw::loaders;
 using namespace xercesc;
 

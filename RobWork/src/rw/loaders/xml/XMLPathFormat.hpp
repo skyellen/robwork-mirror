@@ -18,12 +18,11 @@
 #ifndef RW_LOADERS_XMLPATHFORMAT_HPP
 #define RW_LOADERS_XMLPATHFORMAT_HPP
 
-#include "XercesUtils.hpp"
+#include <xercesc/util/XercesDefs.hpp>
 
 namespace rw {
-
 namespace loaders {
-
+class XercesInitializer;
 
 /** @addtogroup loaders */
 /*@{*/

@@ -22,7 +22,11 @@
 #include <rw/common/PropertyMap.hpp>
 #include <rw/common/PropertyBase.hpp>
 
-#include <xercesc/dom/DOMElement.hpp>
+#include <xercesc/util/XercesDefs.hpp>
+
+XERCES_CPP_NAMESPACE_BEGIN
+class DOMElement;
+XERCES_CPP_NAMESPACE_END
 
 namespace rw {
 namespace loaders {

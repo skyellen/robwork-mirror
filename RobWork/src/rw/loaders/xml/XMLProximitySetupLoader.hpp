@@ -21,12 +21,17 @@
 
 #include <rw/proximity/ProximitySetup.hpp>
 
-#include <rw/loaders/xml/XercesUtils.hpp>
-#include <xercesc/dom/DOMElement.hpp>
+#include <xercesc/util/XercesDefs.hpp>
+
 #include <string>
+
+XERCES_CPP_NAMESPACE_BEGIN
+class DOMElement;
+XERCES_CPP_NAMESPACE_END
 
 namespace rw {
 namespace loaders {
+class XercesInitializer;
 
 /** @addtogroup loaders */
 /*@{*/
