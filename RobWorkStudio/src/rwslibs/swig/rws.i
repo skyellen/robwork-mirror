@@ -46,16 +46,16 @@ MovableFrame* findMovableFrame(const std::string& name);
 
  FixedFrame* findFixedFrame(const std::string& name);
 
- void moveTo(MovableFrame* mframe, Transform3d wTframe );
+ void moveTo(MovableFrame* mframe, rw::math::Transform3D<double> wTframe );
 
- void moveTo(Frame* frame, MovableFrame* mframe, Transform3d wTtcp );
+ void moveTo(Frame* frame, MovableFrame* mframe, rw::math::Transform3D<double> wTtcp );
 
- void moveTo(const std::string& fname, const std::string& mname, Transform3d wTframe );
+ void moveTo(const std::string& fname, const std::string& mname, rw::math::Transform3D<double> wTframe );
 
- Q getQ(rw::common::Ptr<Device> dev);
- void setQ(rw::common::Ptr<Device> dev, Q);
+ rw::math::Q getQ(rw::common::Ptr<Device> dev);
+ void setQ(rw::common::Ptr<Device> dev, rw::math::Q);
 
- void setTransform(Frame* mframe, rwlibs::swig::Transform3d wTframe );
+ void setTransform(Frame* mframe, rw::math::Transform3D<double> wTframe );
 
 rw::math::Transform3D<double> wTf(Frame* frame);
 rw::math::Transform3D<double> fTf(Frame* frame,Frame* frame);
@@ -161,11 +161,11 @@ public:
             $self->postSaveViewGL( filename );
         }
 
-        Transform3d getViewTransform(){
+        rw::math::Transform3D<double> getViewTransform(){
             return $self->getView()->getSceneViewer()->getTransform();
         }
 
-        void setViewTransform(Transform3d t3d){
+        void setViewTransform(rw::math::Transform3D<double> t3d){
             $self->getView()->getSceneViewer()->setTransform(t3d);
             $self->postUpdateAndRepaint();
         }
@@ -193,7 +193,7 @@ public:
             $self->postGenericAnyEvent(id, val);
         }
 
-        void send(const std::string& id, Q val){
+        void send(const std::string& id, rw::math::Q val){
             $self->postGenericAnyEvent(id, val);
         }
 
@@ -218,7 +218,7 @@ public:
             return 1;
         }
 
-        int wait(const std::string& id, Q& result, double timeout=-1.0){
+        int wait(const std::string& id, rw::math::Q& result, double timeout=-1.0){
             try {
                 boost::any data = $self->waitForAnyEvent(id, timeout);
                 Q* q = boost::any_cast<Q>(&data);
