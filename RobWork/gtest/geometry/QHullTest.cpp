@@ -21,6 +21,8 @@
 #include <rw/math/VectorND.hpp>
 
 #include <vector>
+#include <cmath>
+#include <limits>
 
 using rw::geometry::QHullND;
 using rw::math::VectorND;
@@ -36,6 +38,6 @@ TEST(QHullND, build2D) {
 	vertices[2][1] = -1;
 	qhull.rebuild(vertices);
 	const VectorND<2> center = qhull.getCentroid();
-	EXPECT_EQ(center[0], 0);
-	EXPECT_EQ(center[1], 0);
+	EXPECT_NEAR(std::sqrt(10./144.)-1./3., center[0], std::numeric_limits<double>::epsilon());
+	EXPECT_NEAR(std::sqrt(10./144.)-1./3., center[1], std::numeric_limits<double>::epsilon());
 }
