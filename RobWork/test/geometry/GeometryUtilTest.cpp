@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE( EstimateVolumeTest ){
 			const TriMesh::Ptr stl = STLFile::load(file);
 #endif
 			const double volEst = GeometryUtil::estimateVolume(*stl);
-			BOOST_CHECK_CLOSE(volEst,volTot,2e-5);
+			BOOST_CHECK_CLOSE(volEst,volTot,3e-5);
 		}
 
 		{
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE( EstimateVolumeTest ){
 			const TriMesh::Ptr stl = STLFile::load(file);
 #endif
 			const double volEst = GeometryUtil::estimateVolume(*stl);
-			BOOST_CHECK_CLOSE(volEst,volTot,2e-5);
+			BOOST_CHECK_CLOSE(volEst,volTot,3e-5);
 		}
 
 		// Multiple geometry test (the table again)

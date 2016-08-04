@@ -23,8 +23,13 @@
 #include <rw/math/MetricFactory.hpp>
 #include <rw/math/Wrench6D.hpp>
 
+#include <boost/version.hpp>
 
 using namespace rw::math;
+
+#ifndef BOOST_VERSION
+#error "BOOST_VERSION does not seem to be defined!"
+#endif
 
 BOOST_AUTO_TEST_CASE(UtilTest)
 {
