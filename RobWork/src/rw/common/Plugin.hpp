@@ -70,12 +70,19 @@ public:
 
     static rw::common::Ptr<Plugin> load(const std::string& filename);
 
+    struct OSHandle;
+    const OSHandle* getHandle();
+
+protected:
+    static void close(const OSHandle* handle);
+
 private:
     static rw::common::Ptr<Plugin> loadDirect(const std::string& filename);
     static rw::common::Ptr<Plugin> loadLazy(const std::string& filename);
 
     std::vector<Extension::Descriptor> _descriptors;
     std::string _id, _name, _version;
+    OSHandle* _handle;
 };
 
 }

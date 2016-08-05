@@ -70,5 +70,27 @@ void ExtensionRegistry::registerExtensions(rw::common::Ptr<Plugin> plugin){
 		}
 		_descMap[desc.point].push_back( std::make_pair( desc , plugin ) );
 	}
-	_plugins.push_back( plugin );
+	_plugins.insert( plugin );
+}
+
+void ExtensionRegistry::unregisterExtensions(rw::common::Ptr<Plugin> plugin) {
+	BOOST_FOREACH(Extension::Descriptor desc, plugin->getExtensionDescriptors()){
+		if(_descMap.find(desc.point) != _descMap.end()) {
+			std::vector< std::pair<Extension::Descriptor, rw::common::Ptr<Plugin> > >& res = _descMap[desc.point];
+			std::vector< std::pair<Extension::Descriptor, rw::common::Ptr<Plugin> > >::iterator it = res.begin();
+			while (it != res.end()) {
+				if(it->first.id == desc.id && it->second->getId() == plugin->getId()) {
+					it = res.erase(it);
+				} else {
+					it++;
+				}
+			}
+		}
+	}
+	_plugins.erase(plugin);
+}
+
+void ExtensionRegistry::clearExtensions() {
+	_descMap.clear();
+	_plugins.clear();
 }

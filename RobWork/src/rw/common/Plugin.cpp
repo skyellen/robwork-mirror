@@ -6,12 +6,58 @@
 
 #include <rw/common/StringUtil.hpp>
 
+#ifdef RW_WIN32
+#include <windows.h>
+#include <winbase.h>
+#else
+#include <dlfcn.h>
+#endif
+
 using namespace rw::common;
+
+struct Plugin::OSHandle {
+#ifdef RW_WIN32
+	OSHandle(HINSTANCE handle): handle(handle) {}
+	HINSTANCE handle;
+#else
+	OSHandle(void* handle): handle(handle) {}
+	void* handle;
+#endif
+};
+
+namespace {
+class AutoClosePlugin: public Plugin {
+public:
+	AutoClosePlugin(Plugin* plugin):
+        Plugin(plugin->getId(),plugin->getName(),plugin->getVersion()),
+		_plugin(plugin)
+    {
+    }
+
+	~AutoClosePlugin() {
+		const OSHandle* const handle = _plugin->getHandle();
+		delete _plugin;
+		Plugin::close(handle);
+	}
+
+    std::vector<Extension::Descriptor> getExtensionDescriptors() {
+    	return _plugin->getExtensionDescriptors();
+    }
+
+    rw::common::Ptr<Extension> makeExtension(const std::string& id){
+    	return _plugin->makeExtension(id);
+    }
+
+private:
+    Plugin* _plugin;
+};
+}
 
 Plugin::Plugin(const std::string& id,
                const std::string& name,
                const std::string& version):
-                       _id(id),_name(name),_version(version)
+                       _id(id),_name(name),_version(version),
+					   _handle(NULL)
 {
 
 }
@@ -41,11 +87,33 @@ rw::common::Ptr<Plugin> Plugin::load(const std::string& filename){
     return loadDirect(filename);
 }
 
+const Plugin::OSHandle* Plugin::getHandle() {
+	return _handle;
+}
 
 #ifdef RW_WIN32
 
-#include <windows.h>
-#include <winbase.h>
+void Plugin::close(const OSHandle* handle) {
+	if (handle != NULL) {
+		if (!FreeLibrary(handle->handle)) {
+	        LPTSTR buffer = NULL;
+	        if(FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+	                      FORMAT_MESSAGE_FROM_SYSTEM,
+	                      NULL,             // Instance
+	                      GetLastError(),   // Message Number
+	                      0,                // Language
+	                      buffer,              // Buffer
+	                      0,                // Min/Max Buffer size
+	                      NULL))            // Arguments
+	        {
+		        RW_THROW("Error: Plugin could not be unloaded: " << buffer << "!");
+	        } else {
+		        RW_THROW("Unknown Error: Plugin could not be unloaded!");
+	        }
+		}
+		delete handle;
+	}
+}
 
 rw::common::Ptr<Plugin> Plugin::loadDirect(const std::string& filename){
 	HINSTANCE h = LoadLibraryA((filename).c_str());
@@ -96,18 +164,25 @@ rw::common::Ptr<Plugin> Plugin::loadDirect(const std::string& filename){
 
 	// call factory function and create plugin
     Plugin *lplugin = (Plugin*)factory_func();
-    // TODO set a handle on Plugin so that it is able to close the dll
-    //FreeLibrary(h);
-
-
-
-    return rw::common::ownedPtr(lplugin);
+    lplugin->_handle = new OSHandle(h);
+    return rw::common::ownedPtr(new AutoClosePlugin(lplugin));
 }
 
 
 #else //#ifdef RW_WIN32
 
-#include <dlfcn.h>
+void Plugin::close(const OSHandle* handle) {
+	if (handle != NULL) {
+		const int close = dlclose(handle->handle);
+		if (close != 0) {
+			char *err = dlerror();
+			if (err != NULL)
+				RW_THROW("Error: Could not close library: " << err);
+			RW_THROW("Error: Plugin could not be unloaded!");
+		}
+		delete handle;
+	}
+}
 
 rw::common::Ptr<Plugin> Plugin::loadDirect(const std::string& filename){
     void *handle = dlopen(filename.c_str(), RTLD_NOW /* RTLD_GLOBAL*/);
@@ -128,9 +203,8 @@ rw::common::Ptr<Plugin> Plugin::loadDirect(const std::string& filename){
     err = dlerror();
     if( err == 0 ){
         Plugin *lplugin = (Plugin*)factory_func();
-        // TODO set a handle on Plugin so that it is able to close the dll
-        // dlclose(_handle);
-        return rw::common::ownedPtr(lplugin);
+        lplugin->_handle = new OSHandle(handle);
+        return rw::common::ownedPtr(new AutoClosePlugin(lplugin));
     } else {
         RW_THROW("Error: Plugin is not valid! Unable to identify factory function in dynamic library: " << err);
     }
@@ -139,6 +213,7 @@ rw::common::Ptr<Plugin> Plugin::loadDirect(const std::string& filename){
 
 #endif //#else
 
+namespace {
 class LazyPlugin: public Plugin {
 public:
     LazyPlugin(const std::string& id, const std::string& name, const std::string& version):
@@ -180,6 +255,7 @@ private:
     rw::common::Ptr<Plugin> _srcPlugin;
     std::string _libfile;
 };
+}
 
 rw::common::Ptr<Plugin> Plugin::loadLazy(const std::string& filename){
     // parse xml file
@@ -220,9 +296,8 @@ rw::common::Ptr<Plugin> Plugin::loadLazy(const std::string& filename){
         }
     }
 
-    rw::common::Ptr<LazyPlugin> lplugin =
-            rw::common::ownedPtr( new LazyPlugin(id,name,version) );
+    LazyPlugin* lplugin = new LazyPlugin(id,name,version);
     lplugin->setLibFile(libfile.string());
     lplugin->setExtensionDescriptors( ext_descriptors );
-    return lplugin;
+    return rw::common::ownedPtr(new AutoClosePlugin(lplugin));
 }

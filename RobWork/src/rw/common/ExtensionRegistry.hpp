@@ -46,6 +46,15 @@ public:
      * @param plugin [in] the plugin that is to be registered
      */
     void registerExtensions(rw::common::Ptr<Plugin> plugin);
+
+    /**
+     * @brief Unregister extensions and extension points of a plugin.
+     * @param plugin [in] the plugin that is to be removed.
+     */
+    void unregisterExtensions(rw::common::Ptr<Plugin> plugin);
+
+    //! @brief Unregister all extensions.
+    void clearExtensions();
     
     /**
      * @brief get a list of registered plugins
@@ -58,7 +67,7 @@ private:
     // maps extension point id's into description-plugin pair
     std::map<std::string, std::vector< std::pair<Extension::Descriptor, rw::common::Ptr<Plugin> > > > _descMap;
 
-    std::vector<rw::common::Ptr<Plugin> > _plugins;
+    std::set<rw::common::Ptr<Plugin> > _plugins;
 };
 
 }
