@@ -32,7 +32,7 @@ namespace geometry {
     /**
 	 * @brief calculates the convex hull of a set of 3d points.
 	 *
-	 * The GirftWrap convex hull algorithm is used, hence the
+	 * The GiftWrap convex hull algorithm is used, hence the
 	 * class name.
 	 *
 	 * @note It is important that there are not multiple vertices at the same coordinates.
@@ -94,7 +94,6 @@ namespace geometry {
         std::vector<rw::math::Vector3D<> > _hullVertices, _faceNormals;
         std::vector<double> _faceOffsets;
         std::vector<int> _vertiIdxs, _faceIdxs;
-        std::vector<double> _faceNormalsTmp;
 
 	};
 	//! @}

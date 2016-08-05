@@ -24,7 +24,6 @@
 using namespace std;
 using namespace rw::geometry;
 using namespace boost::numeric;
-// Contact pos, normal, hastighed, depth, idA, idB
 
 void QHull3D::rebuild(const std::vector<rw::math::Vector3D<> >& vertices){
     using namespace rw::math;
@@ -37,8 +36,9 @@ void QHull3D::rebuild(const std::vector<rw::math::Vector3D<> >& vertices){
         vertArray[i*3+1] = vnd[1];
         vertArray[i*3+2] = vnd[2];
     }
+    std::vector<double> faceNormalsTmp;
     // build the hull
-    qhull::build(3, vertArray, vertices.size(), _vertiIdxs, _faceIdxs, _faceNormalsTmp, _faceOffsets);
+    qhull::build(3, vertArray, vertices.size(), _vertiIdxs, _faceIdxs, faceNormalsTmp, _faceOffsets);
     delete[] vertArray;
     std::vector<int> vertIdxMap(vertices.size());
     _hullVertices.resize(_vertiIdxs.size());
@@ -54,9 +54,9 @@ void QHull3D::rebuild(const std::vector<rw::math::Vector3D<> >& vertices){
     _faceOffsets.resize(_faceIdxs.size()/3);
     _faceNormals.resize(_faceIdxs.size()/3);
     for(size_t i=0;i<_faceIdxs.size()/3; i++){
-        _faceNormals[i][0] = _faceNormalsTmp[i*3+0];
-        _faceNormals[i][1] = _faceNormalsTmp[i*3+1];
-        _faceNormals[i][2] = _faceNormalsTmp[i*3+2];
+        _faceNormals[i][0] = faceNormalsTmp[i*3+0];
+        _faceNormals[i][1] = faceNormalsTmp[i*3+1];
+        _faceNormals[i][2] = faceNormalsTmp[i*3+2];
     }
 }
 
@@ -117,7 +117,14 @@ rw::geometry::PlainTriMesh<rw::geometry::TriangleN1<double> >::Ptr QHull3D::toTr
         Vector3D<> v1 = _hullVertices[ _faceIdxs[i*3+0] ];
         Vector3D<> v2 = _hullVertices[ _faceIdxs[i*3+1] ];
         Vector3D<> v3 = _hullVertices[ _faceIdxs[i*3+2] ];
-        mesh->add(rw::geometry::TriangleN1<double>(v1,v2,v3));
+        rw::geometry::TriangleN1<double> tempTri(v1,v2,v3);
+
+        // Make sure the vertices order is correct according to right-hand rule. Otherwise flip v2 and v3.
+        if (dot(tempTri.getFaceNormal(),_faceNormals[ i]) < 0.0 ) {
+            mesh->add(rw::geometry::TriangleN1<double>(v1,v3,v2));
+        } else {
+        	mesh->add(tempTri);
+        }
     }
     return mesh;
 }
