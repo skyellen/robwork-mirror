@@ -16,6 +16,7 @@ IF( build )
     SET(SRC_HPP Robotiq.hpp Robotiq3.hpp Robotiq2.hpp)
 
     RW_ADD_LIBRARY(rwhw_robotiq robotiq ${SRC_CPP} ${SRC_HPP})
+    TARGET_LINK_LIBRARIES(rwhw_robotiq ${ROBWORK_LIBRARIES})
     RW_ADD_INCLUDES(robotiq "rwhw/robotiq" ${SRC_HPP})
     SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_robotiq;")
 

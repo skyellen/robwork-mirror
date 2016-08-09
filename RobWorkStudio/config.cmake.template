@@ -11,7 +11,7 @@ SET(RWS_BUILD_SANDBOX ON)
 # Enable static linkage of built-in RWS plugins
 # NOTE: Setting this to OFF on 64 bit Linux will cause linker errors unless you 
 #       have compiled Boost yourself with the -fPIC compiler flag
-SET(RWS_USE_STATIC_LINK_PLUGINS ON)
+OPTION(RWS_USE_STATIC_LINK_PLUGINS "Enable static linkage of built-in RWS plugins." ON)
 
 # Disable the embedded lua utilities Lua
 # SET(RWS_DISABLE_LUA ON)

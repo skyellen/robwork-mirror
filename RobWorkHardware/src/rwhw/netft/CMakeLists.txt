@@ -29,6 +29,7 @@ IF( build )
     SET(SRC_HPP NetFTCommon.hpp NetFTLogging.hpp FTCompensation.hpp)
     
     RW_ADD_LIBRARY(rwhw_netft netft ${SRC_CPP} ${SRC_HPP})
+    TARGET_LINK_LIBRARIES(rwhw_netft ${ROBWORK_LIBRARIES})
     RW_ADD_INCLUDES(netft "rwhw/netft" ${SRC_HPP})
 
     SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_netft;${Boost_LIBRARIES};")

@@ -19,7 +19,7 @@ MACRO(RWS_ADD_PLUGIN _name _component _lib_type)
     elseif(__COMPILER_PATHSCALE)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
     else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed,--no-undefined)
     endif()
     
     
@@ -89,7 +89,7 @@ MACRO(RWS_ADD_COMPONENT _name _component)
     elseif(__COMPILER_PATHSCALE)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
     else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed,--no-undefined)
     endif()
     #
     STRING( REGEX MATCHALL "[0-9]+" VERSIONS ${ROBWORKSTUDIO_VERSION} )

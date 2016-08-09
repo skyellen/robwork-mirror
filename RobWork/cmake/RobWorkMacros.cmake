@@ -291,7 +291,7 @@ MACRO(RW_ADD_LIBRARY _name _component)
     elseif(__COMPILER_PATHSCALE)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
     else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed,--no-undefined)
     endif()
     #
     set_target_properties(${_name} PROPERTIES

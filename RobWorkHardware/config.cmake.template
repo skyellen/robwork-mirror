@@ -28,7 +28,7 @@
 #SET(BUILD_robotiq ON)
 
 # set to ON to build shared libraries
-SET(PROJECT_SHARED_LIBS ON CACHE BOOL "" FORCE)
+OPTION(PROJECT_SHARED_LIBS "Set to ON to build shared libraries." ON)
 
 # we need the location of RobWork
 SET(RW_ROOT ${ROOT}/../RobWork/)

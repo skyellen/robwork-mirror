@@ -268,6 +268,6 @@ SET(FILES_HPP
 )
 
 RW_ADD_LIBRARY(rwsim rwsim ${FILES_CPP} ${FILES_HPP})
-
+TARGET_LINK_LIBRARIES(rwsim ${ROBWORK_LIBRARIES})
 #add_subdirectory(lua)
 #add_subdirectory(plugin)

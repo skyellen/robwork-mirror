@@ -40,7 +40,7 @@ IF(build)
     	QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
     ENDIF()
             
-    RWS_ADD_COMPONENT(${SUBSYS_NAME} components STATIC ${SrcFiles} ${MocSrcFiles} ${UIS_OUT_H})
+    RWS_ADD_COMPONENT(${SUBSYS_NAME} components ${SrcFiles} ${MocSrcFiles} ${UIS_OUT_H})
     RW_ADD_INCLUDES(components "rwslibs/luaeditor" ${SRC_FILES_HPP}) 
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
 

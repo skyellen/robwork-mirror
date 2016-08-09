@@ -32,6 +32,7 @@ IF( build )
       #  MESSAGE("${header}${FILEVAR21}${end}")
 
     RW_ADD_LIBRARY(rwhw_universalrobots universalrobots ${SRC_CPP} ${SRC_HPP})
+    TARGET_LINK_LIBRARIES(rwhw_universalrobots ${ROBWORK_LIBRARIES})
     RW_ADD_INCLUDES(universalrobots "rwhw/universalrobots" ${SRC_HPP} urscript.hpp)
 
     SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_universalrobots;")

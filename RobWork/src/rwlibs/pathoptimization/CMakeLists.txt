@@ -1,6 +1,6 @@
 SET(SUBSYS_NAME rw_pathoptimization)
 set(SUBSYS_DESC "Path optimization algorithms")
-SET(SUBSYS_DEPS rw)
+SET(SUBSYS_DEPS rw_proximitystrategies rw)
 
 SET(build TRUE)
 set(DEFAULT TRUE)

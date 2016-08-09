@@ -84,7 +84,7 @@ IF(build)
 
     RW_ADD_LIBRARY(${SUBSYS_NAME} rwsim_bullet ${SRC_FILES} ${SRC_FILES_HPP})
     RW_ADD_INCLUDES(rwsim_bullet "rwsimlibs/bullet" ${SRC_FILES_HPP}) 
-    TARGET_LINK_LIBRARIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
+    TARGET_LINK_LIBRARIES(${SUBSYS_NAME} ${SUBSYS_DEPS} ${BULLET_LIBRARIES})
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
     
     ADD_LIBRARY(bt_plugin.rwplugin MODULE BtPlugin.cpp BtPlugin.hpp)

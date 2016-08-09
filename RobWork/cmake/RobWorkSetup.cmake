@@ -658,6 +658,7 @@ SET(ROBWORK_LIBRARIES_TMP
   rw_task
   rw_calibration
   rw_csg
+  rw_control
   ${RW_MATHEMATICA_LIB}
   rw_proximitystrategies
   ${YAOBI_LIBRARIES}

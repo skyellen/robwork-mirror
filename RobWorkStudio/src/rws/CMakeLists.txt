@@ -88,6 +88,7 @@ ADD_LIBRARY(rws
             ${MocSrcFiles}
             ${ResourceFiles}
 )
+TARGET_LINK_LIBRARIES(rws qtpropertybrowser ${QT_LIBRARIES} ${ROBWORK_LIBRARIES})
 
 # Install stuff
 INSTALL(TARGETS rws DESTINATION ${LIB_INSTALL_DIR})

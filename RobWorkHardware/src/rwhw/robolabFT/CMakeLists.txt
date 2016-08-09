@@ -1,6 +1,6 @@
 SET(SUBSYS_NAME robolabFT )
 SET(SUBSYS_DESC "Driver for robolab force torque device" )
-SET(SUBSYS_DEPS rw )
+SET(SUBSYS_DEPS rwhw_serialport rw )
 
 SET(build TRUE)
 set(DEFAULT TRUE)
@@ -16,6 +16,7 @@ IF( build )
     SET(SRC_FILES_HPP RobolabFTDriver.hpp)
     
     RW_ADD_LIBRARY(rwhw_robolabFT robolabFT ${SRC_FILES} ${SRC_FILES_HPP})
+    TARGET_LINK_LIBRARIES(rwhw_robolabFT rwhw_serialport ${ROBWORK_LIBRARIES})
     RW_ADD_INCLUDES(robolabFT "rwhw/robolabFT" ${SRC_FILES_HPP})
     
     SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_robolabFT;")
