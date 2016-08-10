@@ -503,7 +503,7 @@ namespace rwlibs { namespace algorithms {
         // create all tree nodes in a list
         std::vector<TreeNode*> *tNodes = new std::vector<TreeNode*>( nodes.size() );
         // copy the KDNodes into the tree nodes
-        for(int i=0;i<tNodes->size();i++){
+        for(unsigned int i=0;i<tNodes->size();i++){
             (*tNodes)[i] = new TreeNode();
             (*tNodes)[i]->_kdnode = new KDTreeQ<T>::KDNode( nodes[i] );
         }
