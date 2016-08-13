@@ -22,8 +22,6 @@
 
 namespace rw {
 namespace loaders {
-class XercesInitializer;
-
 /** @addtogroup loaders */
 /*@{*/
 
@@ -32,28 +30,61 @@ class XercesInitializer;
  */
 class XMLPropertyFormat
 {
-private:
-    static const XercesInitializer initializer;
 public:
-    /** @brief Identifier for rw::common::PropertyMap in the XML format  */
-    static const XMLCh* PropertyMapId;
+    /**
+     * @brief Identifier for rw::common::PropertyMap in the XML format.
+     * @return the identifier.
+     */
+    static const XMLCh* idPropertyMap();
 
-    /** @brief Identifier for rw::common::Property in the XML format  */
-    static const XMLCh* PropertyId;
+    /**
+     * @brief Identifier for rw::common::Property in the XML format.
+     * @return the identifier.
+     */
+    static const XMLCh* idProperty();
 
-    /** @brief Identifier for the name of a rw::common::Property */
-    static const XMLCh* PropertyNameId;
+    /**
+     * @brief Identifier for the name of a rw::common::Property.
+     * @return the identifier.
+     */
+    static const XMLCh* idPropertyName();
 
-    /** @brief Identifier for the description of a rw::common::Property */
-    static const XMLCh* PropertyDescriptionId;
+    /**
+     * @brief Identifier for the description of a rw::common::Property.
+     * @return the identifier.
+     */
+    static const XMLCh* idPropertyDescription();
 
-    /** @brief Identifier for the type of a rw::common::Property */
-    static const XMLCh* PropertyTypeId;
+    /**
+     * @brief Identifier for the type of a rw::common::Property.
+     * @return the identifier.
+     */
+    static const XMLCh* idPropertyType();
 
-    /** @brief Identifier for the value of a rw::common::Property */
-    static const XMLCh* PropertyValueId;
+    /**
+     * @brief Identifier for the value of a rw::common::Property.
+     * @return the identifier.
+     */
+    static const XMLCh* idPropertyValue();
 
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the XMLPropertyFormat is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if XMLPropertyFormat is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
+	public:
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
 
+private:
+	static const Initializer initializer;
 };
 
 /** @} */

@@ -72,9 +72,9 @@ namespace loaders {
 
          template<> xercesc::DOMElement* ElementCreator<rw::trajectory::TimedQ>::createElement(const rw::trajectory::TimedQ& timedQ, xercesc::DOMDocument* doc) {
 
-             xercesc::DOMElement* element = doc->createElement(XMLPathFormat::TimedQId);
+             xercesc::DOMElement* element = doc->createElement(XMLPathFormat::idTimedQ());
 
-             xercesc::DOMElement* timeElement = doc->createElement(XMLPathFormat::TimeId);
+             xercesc::DOMElement* timeElement = doc->createElement(XMLPathFormat::idTime());
              timeElement->appendChild(doc->createTextNode(XMLStr(timedQ.getTime()).uni()));
              element->appendChild(timeElement);
              element->appendChild(XMLBasisTypes::createQ(timedQ.getValue(), doc));
@@ -83,8 +83,8 @@ namespace loaders {
          }
 
          template<> xercesc::DOMElement* ElementCreator<rw::trajectory::TimedState>::createElement(const rw::trajectory::TimedState& timedState, xercesc::DOMDocument* doc) {
-             xercesc::DOMElement* element = doc->createElement(XMLPathFormat::TimedStateId);
-             xercesc::DOMElement* timeElement = doc->createElement(XMLPathFormat::TimeId);
+             xercesc::DOMElement* element = doc->createElement(XMLPathFormat::idTimedState());
+             xercesc::DOMElement* timeElement = doc->createElement(XMLPathFormat::idTime());
              timeElement->appendChild(doc->createTextNode(XMLStr(timedState.getTime()).uni()));
              element->appendChild(timeElement);
              element->appendChild(XMLBasisTypes::createState(timedState.getValue(), doc));
@@ -265,10 +265,25 @@ public:
         return pathElement;
     }
 
-
-
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the XMLPathSaver is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if XMLPathSaver is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
+	public:
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
 
 private:
+	static const Initializer initializer;
+
     XMLPathSaver() {};
 
     template <class T, class PATH>
@@ -375,7 +390,6 @@ private:
             element->appendChild(ElementCreator<T>::createElement(*it, doc));
         }
     }
-
 };
 
 /** @} */

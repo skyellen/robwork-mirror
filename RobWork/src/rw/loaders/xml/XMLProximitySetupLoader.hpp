@@ -31,8 +31,6 @@ XERCES_CPP_NAMESPACE_END
 
 namespace rw {
 namespace loaders {
-class XercesInitializer;
-
 /** @addtogroup loaders */
 /*@{*/
 
@@ -40,33 +38,68 @@ class XercesInitializer;
  * @brief Format specification for the XML PropertySetup format 
  */
 class XMLProximitySetupFormat {
-	private:
-		//Needed to make sure Xerces is initialized
-		static const XercesInitializer initializer;
+public:
+	/**
+	 * @brief Identifier for rw::proximity::ProximitySetup in the XML format.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idProximitySetup();
+
+	/**
+	 * @brief Identifier for exclude rule in the XML format.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idExcludeRule();
+
+	/**
+	 * @brief Identifier for include rule in the XML format.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idIncludeRule();
+
+	/**
+	 * @brief Identifier for the attribute specifying whether to include all frame pairs.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idIncludeAllAttribute();
+
+	/**
+	 * @brief Identifier for the attribute specifying whether to exclude frame pairs with static transformation.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idExcludeStaticAttributePairs();
+
+	/**
+	 * @brief Identifier for the attributed specifying the first pattern in rule.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idPatternAAttribute();
+
+	/**
+	 * @brief Identifier for the attributed specifying the second pattern in rule.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idPatternBAttribute();
+
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the XMLProximitySetupFormat is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if XMLProximitySetupFormat is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
 	public:
-
-    /** @brief Identifier for rw::proximity::ProximitySetup in the XML format  */
-    static const XMLCh* ProximitySetupId;
-
-    /** @brief Identifier for exclude rule in the XML format  */
-    static const XMLCh* ExcludeRuleId;
-
-    /** @brief Identifier for include rule in the XML format  */
-    static const XMLCh* IncludeRuleId;
-
-	/** @brief Identifier for the attribute specifying whether to include all frame pairs */
-	static const XMLCh* IncludeAllAttributeId;
-
-	/** @brief Identifier for the attribute specifying whether to exclude frame pairs with static transformation*/
-	static const XMLCh* ExcludeStaticAttributePairsId;
-
-	/** @brief Identifier for the attributed specifying the first pattern in rule */
-	static const XMLCh* PatternAAttributeId;
-
-	/** @brief Identifier for the attributed specifying the second pattern in rule */
-	static const XMLCh* PatternBAttributeId;
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
 
 private:
+	static const Initializer initializer;
+
     XMLProximitySetupFormat() {};
 };
 
@@ -111,10 +144,26 @@ public:
 	 */
 	static rw::proximity::ProximitySetup readProximitySetup(xercesc::DOMElement* element);
 
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the XMLProximitySetupLoader is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if XMLProximitySetupLoader is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
+	public:
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
 
 private:
-	static std::pair<std::string, std::string> readFramePatternAttributes(xercesc::DOMElement* element);
+	static const Initializer initializer;
 
+	static std::pair<std::string, std::string> readFramePatternAttributes(xercesc::DOMElement* element);
 };
 
 /** @} */

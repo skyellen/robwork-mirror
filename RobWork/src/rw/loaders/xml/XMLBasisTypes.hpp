@@ -54,92 +54,142 @@ namespace loaders {
  */
 class XMLBasisTypes
 {
-private:
-    /* Static variable used to make sure Xerces is initialized
-     * This variable need to be placed BEFORE the XMLCh* identifiers in order to Xerces to be initialized*/
-    static const bool _initialized;
 public:
-    /** @brief Identifier for rw::math::Q in the XML format  */
-    static const XMLCh* QId;
-
-    /** @brief Identifier for rw::math::Vector3D<> in the XML format  */
-    static const XMLCh* Vector3DId;
-
-    /** @brief Identifier for rw::math::Vector2D<> in the XML format  */
-    static const XMLCh* Vector2DId;
-
-    /** @brief Identifier for rw::math::Rotation3D<> in the XML format  */
-    static const XMLCh* Rotation3DId;
-
-    /** @brief Identifier for rw::math::RPY<> in the XML format  */
-    static const XMLCh* RPYId;
-
-    /** @brief Identifier for rw::math::EAA<> in the XML format  */
-    static const XMLCh* EAAId;
-
-    /** @brief Identifier for rw::math::Quaternion<> in the XML format  */
-    static const XMLCh* QuaternionId;
-
-    /** @brief Identifier for rw::math::Rotation2D<> in the XML format  */
-    static const XMLCh* Rotation2DId;
-
-    /** @brief Identifier for rw::math::Transform3D<> in the XML format  */
-    static const XMLCh* Transform3DId;
-
-    /** @brief Identifier for rw::math::VelocityScrew6D<> in the XML format  */
-    static const XMLCh* VelocityScrew6DId;
-
-    /** @brief Identifier for the position specification used in Transform3D  */
-    static const XMLCh* PosId;
-
-    /** @brief Identifier for matrix specification used in Transform3D  */
-    static const XMLCh* MatrixId;
-
-    /** @brief Identifier for specifying the linear part in a VelocityScrew6D  */
-    static const XMLCh* LinearId;
-
-    /** @brief Identifier for specifying the angular part in a VelocityScrew6D  */
-    static const XMLCh* AngularId;
-
-    /** @brief Identifier for specifying a State */
-    static const XMLCh* StateId;
-
-    /** @brief Identifier for specifying a State */
-    static const XMLCh* QStateId;
-
-    /** @brief Identifier for specifying a State */
-    static const XMLCh* TreeStateId;
-
-    /** @brief Identifier for specifying a boolean*/
-    static const XMLCh* BooleanId;
-
-    /** @brief Identifier for specifying a double */
-    static const XMLCh* DoubleId;
-
-    /** @brief Identifier for specifying a float */
-    static const XMLCh* FloatId;
-
-    /** @brief Identifier for specifying an integer */
-    static const XMLCh* IntegerId;
-
-    /** @brief Identifier for specifying a string */
-    static const XMLCh* StringId;
-
-    /** @brief Identifier for specifying a list of strings */
-    static const XMLCh* StringListId;
-
-    /** @brief Identifier for specifying a list of integers */
-    static const XMLCh* IntListId;
-
-    /** @brief Identifier for specifying a list of doubles */
-    static const XMLCh* DoubleListId;
-
-    /** @brief Identifier for specifying a pair of strings*/
-    static const XMLCh* StringPairId;
-
-    /** @brief Identifier for the unit attribute */
-    static const XMLCh* UnitAttributeId;
-
+	/**
+	 * @brief Identifier for rw::math::Q in the XML format.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idQ();
+	/**
+	 * @brief Identifier for rw::math::Vector3D<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idVector3D();
+	/**
+	 * @brief Identifier for rw::math::Vector2D<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idVector2D();
+	/**
+	 * @brief Identifier for rw::math::Rotation3D<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idRotation3D();
+	/**
+	 * @brief Identifier for rw::math::RPY<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idRPY();
+	/**
+	 * @brief Identifier for rw::math::EAA<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idEAA();
+	/**
+	 * @brief Identifier for rw::math::Quaternion<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idQuaternion();
+	/**
+	 * @brief Identifier for rw::math::Rotation2D<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idRotation2D();
+	/**
+	 * @brief Identifier for rw::math::Transform3D<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idTransform3D();
+	/**
+	 * @brief Identifier for rw::math::VelocityScrew6D<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idVelocityScrew6D();
+	/**
+	 * @brief Identifier for the position specification used in Transform3D.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idPos();
+	/**
+	 * @brief Identifier for matrix specification used in Transform3D.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idMatrix();
+	/**
+	 * @brief Identifier for specifying the linear part in a VelocityScrew6D.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idLinear();
+	/**
+	 * @brief Identifier for specifying the angular part in a VelocityScrew6D.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idAngular();
+	/**
+	 * @brief Identifier for specifying a State.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idState();
+	/**
+	 * @brief Identifier for specifying a State.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idQState();
+	/**
+	 * @brief Identifier for specifying a State.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idTreeState();
+	/**
+	 * @brief Identifier for specifying a boolean.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idBoolean();
+	/**
+	 * @brief Identifier for specifying a double.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idDouble();
+	/**
+	 * @brief Identifier for specifying a float.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idFloat();
+	/**
+	 * @brief Identifier for specifying a integer.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idInteger();
+	/**
+	 * @brief Identifier for specifying a string.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idString();
+	/**
+	 * @brief Identifier for specifying a list of strings.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idStringList();
+	/**
+	 * @brief Identifier for specifying a list of integers.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idIntList();
+	/**
+	 * @brief Identifier for specifying a list of doubles.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idDoubleList();
+	/**
+	 * @brief Identifier for specifying a pair of strings.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idStringPair();
+	/**
+	 * @brief Identifier for the unit attribute.
+	 * @return the identifier.
+	 */
+    static const XMLCh* idUnitAttribute();
 
 
     /**
@@ -782,18 +832,26 @@ public:
      */
     static xercesc::DOMElement* createStringPair(const std::string& first, const std::string& second, xercesc::DOMDocument* doc);
 
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the XMLBasisTypes is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if XMLBasisTypes is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
+	public:
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
 
 private:
+	static const Initializer initializer;
+
     XMLBasisTypes() {};
-
-    /*
-     * Map used for mapping unit identifiers o their corresponding values
-     */
-
-
-	
-
-    //static const UnitMap _Units;
 };
 
 /** @} */

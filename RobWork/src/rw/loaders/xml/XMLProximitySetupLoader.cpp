@@ -40,28 +40,74 @@
 
 #include "XercesErrorHandler.hpp"
 #include "XercesUtils.hpp"
-#include "XMLBasisTypes.hpp"
-#include "XMLPathFormat.hpp"
 
 using namespace xercesc;
 using namespace rw::common;
 using namespace rw::loaders;
 using namespace rw::proximity;
 
+XMLProximitySetupFormat::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		//Small trick to make sure Xerces is initialized before we start using XMLString::transcode
+		static XercesInitializer initializer;
+		idProximitySetup();
+		idExcludeRule();
+		idIncludeRule();
+		idIncludeAllAttribute();
+		idExcludeStaticAttributePairs();
+		idPatternAAttribute();
+		idPatternBAttribute();
+		done = true;
+	}
+}
 
-//Small trick to make sure Xerces is initialized before we start using XMLString::transcode
-const XercesInitializer XMLProximitySetupFormat::initializer;
+const XMLProximitySetupFormat::Initializer XMLProximitySetupFormat::initializer;
 
-const XMLCh* XMLProximitySetupFormat::ProximitySetupId = XMLString::transcode("ProximitySetup");
-const XMLCh* XMLProximitySetupFormat::ExcludeRuleId = XMLString::transcode("Exclude");
-const XMLCh* XMLProximitySetupFormat::IncludeRuleId = XMLString::transcode("Include");
-const XMLCh* XMLProximitySetupFormat::PatternAAttributeId = XMLString::transcode("PatternA");
-const XMLCh* XMLProximitySetupFormat::PatternBAttributeId = XMLString::transcode("PatternB");
+const XMLCh* XMLProximitySetupFormat::idProximitySetup() {
+	static const XMLStr id("ProximitySetup");
+	return id.uni();
+}
 
-const XMLCh* XMLProximitySetupFormat::IncludeAllAttributeId = XMLString::transcode("UseIncludeAll");
-const XMLCh* XMLProximitySetupFormat::ExcludeStaticAttributePairsId = XMLString::transcode("UseExcludeStaticPairs");
+const XMLCh* XMLProximitySetupFormat::idExcludeRule() {
+	static const XMLStr id("Exclude");
+	return id.uni();
+}
 
+const XMLCh* XMLProximitySetupFormat::idIncludeRule() {
+	static const XMLStr id("Include");
+	return id.uni();
+}
 
+const XMLCh* XMLProximitySetupFormat::idIncludeAllAttribute() {
+	static const XMLStr id("UseIncludeAll");
+	return id.uni();
+}
+
+const XMLCh* XMLProximitySetupFormat::idExcludeStaticAttributePairs() {
+	static const XMLStr id("UseExcludeStaticPairs");
+	return id.uni();
+}
+
+const XMLCh* XMLProximitySetupFormat::idPatternAAttribute() {
+	static const XMLStr id("PatternA");
+	return id.uni();
+}
+
+const XMLCh* XMLProximitySetupFormat::idPatternBAttribute() {
+	static const XMLStr id("PatternB");
+	return id.uni();
+}
+
+XMLProximitySetupLoader::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		XMLProximitySetupFormat::Initializer init1;
+		done = true;
+	}
+}
+
+const XMLProximitySetupLoader::Initializer XMLProximitySetupLoader::initializer;
 
 ProximitySetup XMLProximitySetupLoader::load(const std::string& filename, const std::string& schemaFileName)
 {
@@ -81,30 +127,30 @@ ProximitySetup XMLProximitySetupLoader::load(std::istream& instream, const std::
 
 
 ProximitySetup XMLProximitySetupLoader::readProximitySetup(xercesc::DOMElement* element) {
-    if (XMLString::equals(XMLProximitySetupFormat::ProximitySetupId, element->getNodeName())) {
+    if (XMLString::equals(XMLProximitySetupFormat::idProximitySetup(), element->getNodeName())) {
         ProximitySetup setup;
 
 		if (element->hasAttributes()) {
-			if (element->hasAttribute(XMLProximitySetupFormat::IncludeAllAttributeId)) {
-		        const XMLCh* attr = element->getAttribute(XMLProximitySetupFormat::IncludeAllAttributeId);				
+			if (element->hasAttribute(XMLProximitySetupFormat::idIncludeAllAttribute())) {
+		        const XMLCh* attr = element->getAttribute(XMLProximitySetupFormat::idIncludeAllAttribute());
 				if (XMLStr(attr).str() == "true") {
 					setup.setUseIncludeAll(true);
 				} else if (XMLStr(attr).str() == "false"){
 					setup.setUseIncludeAll(false);
 				} else {
-					RW_THROW("Unknown value for "<<XMLStr(XMLProximitySetupFormat::IncludeAllAttributeId).str()<<" attribute. Please specify \"true\" or \"false\"");
+					RW_THROW("Unknown value for "<<XMLStr(XMLProximitySetupFormat::idIncludeAllAttribute()).str()<<" attribute. Please specify \"true\" or \"false\"");
 				}
-			} else if (element->hasAttribute(XMLProximitySetupFormat::ExcludeStaticAttributePairsId)) {
-		        const XMLCh* attr = element->getAttribute(XMLProximitySetupFormat::ExcludeStaticAttributePairsId);
+			} else if (element->hasAttribute(XMLProximitySetupFormat::idExcludeStaticAttributePairs())) {
+		        const XMLCh* attr = element->getAttribute(XMLProximitySetupFormat::idExcludeStaticAttributePairs());
 				if (XMLStr(attr).str() == "true") {
 					setup.setUseExcludeStaticPairs(true);
 				} else if (XMLStr(attr).str() == "false"){
 					setup.setUseExcludeStaticPairs(false);
 				} else {
-					RW_THROW("Unknown value for "<<XMLStr(XMLProximitySetupFormat::ExcludeStaticAttributePairsId).str()<<" attribute. Please specify \"true\" or \"false\"");
+					RW_THROW("Unknown value for "<<XMLStr(XMLProximitySetupFormat::idExcludeStaticAttributePairs()).str()<<" attribute. Please specify \"true\" or \"false\"");
 				}
 			} else {
-				RW_THROW("Unknown attribute on "<<XMLStr(XMLProximitySetupFormat::ProximitySetupId).str());
+				RW_THROW("Unknown attribute on "<<XMLStr(XMLProximitySetupFormat::idProximitySetup()).str());
 			}
         } 
 
@@ -113,9 +159,9 @@ ProximitySetup XMLProximitySetupLoader::readProximitySetup(xercesc::DOMElement* 
         for(XMLSize_t i = 0; i < nodeCount; ++i ) {
             xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
             if (child != NULL) {
-				if (XMLString::equals(child->getNodeName(), XMLProximitySetupFormat::ExcludeRuleId)) {		
+				if (XMLString::equals(child->getNodeName(), XMLProximitySetupFormat::idExcludeRule())) {
 					setup.addProximitySetupRule(ProximitySetupRule::makeExclude(readFramePatternAttributes(child)));					
-				} else if (XMLString::equals(child->getNodeName(), XMLProximitySetupFormat::IncludeRuleId)) {
+				} else if (XMLString::equals(child->getNodeName(), XMLProximitySetupFormat::idIncludeRule())) {
 					setup.addProximitySetupRule(ProximitySetupRule::makeInclude(readFramePatternAttributes(child)));					
 				}
 			}
@@ -126,11 +172,11 @@ ProximitySetup XMLProximitySetupLoader::readProximitySetup(xercesc::DOMElement* 
 }
 
 std::pair<std::string, std::string> XMLProximitySetupLoader::readFramePatternAttributes(xercesc::DOMElement* element) {
-	if (element->hasAttribute(XMLProximitySetupFormat::PatternAAttributeId) &&
-		element->hasAttribute(XMLProximitySetupFormat::PatternBAttributeId)) 
+	if (element->hasAttribute(XMLProximitySetupFormat::idPatternAAttribute()) &&
+		element->hasAttribute(XMLProximitySetupFormat::idPatternBAttribute()))
 	{
-		const XMLCh* attr1 = element->getAttribute(XMLProximitySetupFormat::PatternAAttributeId);
-		const XMLCh* attr2 = element->getAttribute(XMLProximitySetupFormat::PatternBAttributeId);
+		const XMLCh* attr1 = element->getAttribute(XMLProximitySetupFormat::idPatternAAttribute());
+		const XMLCh* attr2 = element->getAttribute(XMLProximitySetupFormat::idPatternBAttribute());
 		return std::make_pair(XMLStr(attr1).str(), XMLStr(attr2).str());
 	}
 	RW_THROW("Element does not have the expected attributes");

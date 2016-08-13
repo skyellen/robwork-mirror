@@ -32,16 +32,54 @@ namespace loaders {
 class DOMPropertyMapFormat
 {
 public:
-    /** @brief Identifier for rw::common::PropertyMap */
-    static const std::string PropertyMapId;
-    /** @brief Identifier for rw::common::Property */
-    static const std::string PropertyId;
-    /** @brief Identifier for the name of a rw::common::Property */
-    static const std::string PropertyNameId;
-    /** @brief Identifier for the description of a rw::common::Property */
-    static const std::string PropertyDescriptionId;
-    /** @brief Identifier for the value of a rw::common::Property */
-    static const std::string PropertyValueId;
+    /**
+     * @brief Get identifier for rw::common::PropertyMap.
+     * @return the identifier.
+     */
+    static const std::string& idPropertyMap();
+
+    /**
+     * @brief Get identifier for rw::common::Property.
+     * @return the identifier.
+     */
+    static const std::string& idProperty();
+
+    /**
+     * @brief Get identifier for the name of a rw::common::Property.
+     * @return the identifier.
+     */
+    static const std::string& idPropertyName();
+
+    /**
+     * @brief Get identifier for the description of a rw::common::Property.
+     * @return the identifier.
+     */
+    static const std::string& idPropertyDescription();
+
+    /**
+     * @brief Get identifier for the value of a rw::common::Property.
+     * @return the identifier.
+     */
+    static const std::string& idPropertyValue();
+
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the DOMPropertyMapFormat is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if DOMPropertyMapFormat is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
+	public:
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
+
+private:
+	static const Initializer initializer;
 };
 
 /** @} */

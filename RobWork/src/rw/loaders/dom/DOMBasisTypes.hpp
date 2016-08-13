@@ -51,95 +51,166 @@ namespace loaders {
 class DOMBasisTypes
 {
 public:
-    /** @brief Identifier for rw::math::Q in the XML format  */
-    static const std::string QId;
+	/**
+	 * @brief Identifier for rw::math::Q in the XML format.
+	 * @return the identifier.
+	 */
+    static const std::string& idQ();
+	/**
+	 * @brief Identifier for rw::math::Vector3D<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const std::string& idVector3D();
+	/**
+	 * @brief Identifier for rw::math::Vector2D<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const std::string& idVector2D();
+	/**
+	 * @brief Identifier for rw::math::Rotation3D<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const std::string& idRotation3D();
+	/**
+	 * @brief Identifier for rw::math::RPY<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const std::string& idRPY();
+	/**
+	 * @brief Identifier for rw::math::EAA<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const std::string& idEAA();
+	/**
+	 * @brief Identifier for rw::math::Quaternion<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const std::string& idQuaternion();
+	/**
+	 * @brief Identifier for rw::math::Rotation2D<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const std::string& idRotation2D();
+	/**
+	 * @brief Identifier for single angle used to specify rw::math::Rotation2D<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const std::string& idRotation2DAngle();
+	/**
+	 * @brief Identifier for rw::math::Transform2D<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const std::string& idTransform2D();
+	/**
+	 * @brief Identifier for rw::math::Transform3D<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const std::string& idTransform3D();
+	/**
+	 * @brief Identifier for rw::math::MatrixXd<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const std::string& idMatrix();
+	/**
+	 * @brief Identifier for rw::math::VelocityScrew6D<> in the XML format.
+	 * @return the identifier.
+	 */
+    static const std::string& idVelocityScrew6D();
+	/**
+	 * @brief Identifier for the position specification used in Transform3D.
+	 * @return the identifier.
+	 */
+    static const std::string& idPos();
 
-    /** @brief Identifier for rw::math::Vector3D<> in the XML format  */
-    static const std::string Vector3DId;
+	/**
+	 * @brief Identifier for specifying the linear part in a VelocityScrew6D.
+	 * @return the identifier.
+	 */
+    static const std::string& idLinear();
 
-    /** @brief Identifier for rw::math::Vector2D<> in the XML format  */
-    static const std::string Vector2DId;
+	/**
+	 * @brief Identifier for specifying the angular part in a VelocityScrew6D.
+	 * @return the identifier.
+	 */
+    static const std::string& idAngular();
 
-    /** @brief Identifier for rw::math::Rotation3D<> in the XML format  */
-    static const std::string Rotation3DId;
+	/**
+	 * @brief Identifier for specifying a State.
+	 * @return the identifier.
+	 */
+    static const std::string& idState();
 
-    /** @brief Identifier for rw::math::RPY<> in the XML format  */
-    static const std::string RPYId;
+	/**
+	 * @brief Identifier for specifying a State.
+	 * @return the identifier.
+	 */
+    static const std::string& idQState();
 
-    /** @brief Identifier for rw::math::EAA<> in the XML format  */
-    static const std::string EAAId;
+	/**
+	 * @brief Identifier for specifying a State.
+	 * @return the identifier.
+	 */
+    static const std::string& idTreeState();
 
-    /** @brief Identifier for rw::math::Quaternion<> in the XML format  */
-    static const std::string QuaternionId;
+	/**
+	 * @brief Identifier for specifying a boolean.
+	 * @return the identifier.
+	 */
+    static const std::string& idBoolean();
 
-    /** @brief Identifier for rw::math::Rotation2D<> in the XML format  */
-    static const std::string Rotation2DId;
+	/**
+	 * @brief Identifier for specifying a double.
+	 * @return the identifier.
+	 */
+    static const std::string& idDouble();
 
-    /** @brief Identifier for single angle used to specify rw::math::Rotation2D<> in the XML format  */
-    static const std::string Rotation2DAngleId;
+	/**
+	 * @brief Identifier for specifying a float.
+	 * @return the identifier.
+	 */
+    static const std::string& idFloat();
 
-    /** @brief Identifier for rw::math::Transform2D<> in the XML format  */
-    static const std::string Transform2DId;
+	/**
+	 * @brief Identifier for specifying an integer.
+	 * @return the identifier.
+	 */
+    static const std::string& idInteger();
 
-    /** @brief Identifier for rw::math::Transform3D<> in the XML format  */
-    static const std::string Transform3DId;
+	/**
+	 * @brief Identifier for specifying a string.
+	 * @return the identifier.
+	 */
+    static const std::string& idString();
 
-    /** @brief Identifier for Eigen::MatrixXd<> in the XML format  */
-    static const std::string MatrixId;
+	/**
+	 * @brief Identifier for specifying a list of strings.
+	 * @return the identifier.
+	 */
+    static const std::string& idStringList();
 
-    /** @brief Identifier for rw::math::VelocityScrew6D<> in the XML format  */
-    static const std::string VelocityScrew6DId;
+	/**
+	 * @brief Identifier for specifying a list of integers.
+	 * @return the identifier.
+	 */
+    static const std::string& idIntList();
 
-    /** @brief Identifier for the position specification used in Transform3D  */
-    static const std::string PosId;
+	/**
+	 * @brief Identifier for specifying a list of doubles.
+	 * @return the identifier.
+	 */
+    static const std::string& idDoubleList();
 
-    // /** @brief Identifier for matrix specification used in Transform3D  */
-    //static const std::string MatrixId;
+	/**
+	 * @brief Identifier for specifying a pair of strings.
+	 * @return the identifier.
+	 */
+    static const std::string& idStringPair();
 
-    /** @brief Identifier for specifying the linear part in a VelocityScrew6D  */
-    static const std::string LinearId;
-
-    /** @brief Identifier for specifying the angular part in a VelocityScrew6D  */
-    static const std::string AngularId;
-
-    /** @brief Identifier for specifying a State */
-    static const std::string StateId;
-
-    /** @brief Identifier for specifying a State */
-    static const std::string QStateId;
-
-    /** @brief Identifier for specifying a State */
-    static const std::string TreeStateId;
-
-    /** @brief Identifier for specifying a boolean*/
-    static const std::string BooleanId;
-
-    /** @brief Identifier for specifying a double */
-    static const std::string DoubleId;
-
-    /** @brief Identifier for specifying a float */
-    static const std::string FloatId;
-
-    /** @brief Identifier for specifying an integer */
-    static const std::string IntegerId;
-
-    /** @brief Identifier for specifying a string */
-    static const std::string StringId;
-
-    /** @brief Identifier for specifying a list of strings */
-    static const std::string StringListId;
-
-    /** @brief Identifier for specifying a list of integers */
-    static const std::string IntListId;
-
-    /** @brief Identifier for specifying a list of doubles */
-    static const std::string DoubleListId;
-
-    /** @brief Identifier for specifying a pair of strings */
-    static const std::string StringPairId;
-
-    /** @brief Identifier for the unit attribute */
-    static const std::string UnitAttributeId;
+	/**
+	 * @brief Identifier for the unit attribute.
+	 * @return the identifier.
+	 */
+    static const std::string& idUnitAttribute();
 
 
 
@@ -888,8 +959,25 @@ public:
      */
     static rw::common::DOMElem::Ptr createStringPair(const std::string& first, const std::string& second, rw::common::DOMElem::Ptr doc);
 
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the DOMBasisTypes is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if DOMBasisTypes is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
+	public:
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
 
 private:
+	static const Initializer initializer;
+
     DOMBasisTypes() {};
 
     /*

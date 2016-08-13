@@ -166,11 +166,18 @@ public:
     XercesInitializer() {
         try
         {
+        	std::cout << "init" << std::endl;
            xercesc::XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
         }
         catch(xercesc::XMLException& e) {
            RW_THROW("Unable to initialize Xerces used for parsing XML-files. Error Msg: "<<XMLStr(e.getMessage()).str());
         }
+    }
+
+    //! @brief Terminate Xerces when destructed.
+    ~XercesInitializer() {
+    	std::cout << "term" << std::endl;
+    	xercesc::XMLPlatformUtils::Terminate();
     }
 };
 

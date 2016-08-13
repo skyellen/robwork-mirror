@@ -36,43 +36,189 @@ using namespace rw::models;
 using namespace rw::loaders;
 using namespace rw;
 
+DOMBasisTypes::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		idQ();
+		idVector3D();
+		idVector2D();
+		idRotation3D();
+		idRPY();
+		idEAA();
+		idQuaternion();
+		idRotation2D();
+		idRotation2DAngle();
+		idTransform2D();
+		idTransform3D();
+		idMatrix();
+		idVelocityScrew6D();
+		idPos();
+		idLinear();
+		idAngular();
+		idState();
+		idQState();
+		idTreeState();
+		idBoolean();
+		idDouble();
+		idFloat();
+		idInteger();
+		idString();
+		idStringList();
+		idIntList();
+		idDoubleList();
+		idStringPair();
+		idUnitAttribute();
+		done = true;
+	}
+}
+
+const DOMBasisTypes::Initializer DOMBasisTypes::initializer;
+
 //Definition of Identifiers used in the XML format
-const std::string DOMBasisTypes::QId("Q");
-const std::string DOMBasisTypes::Vector3DId("Vector3D");
-const std::string DOMBasisTypes::Vector2DId("Vector2D");
+const std::string& DOMBasisTypes::idQ() {
+	static const std::string id("Q");
+	return id;
+}
 
-const std::string DOMBasisTypes::Rotation3DId("Rotation3D");
-const std::string DOMBasisTypes::RPYId("RPY");
-const std::string DOMBasisTypes::EAAId("EAA");
-const std::string DOMBasisTypes::QuaternionId("Quaternion");
+const std::string& DOMBasisTypes::idVector3D() {
+	static const std::string id("Vector3D");
+	return id;
+}
 
-const std::string DOMBasisTypes::Rotation2DId("Rotation2D");
-const std::string DOMBasisTypes::Rotation2DAngleId("Rotation2DAngle");
-const std::string DOMBasisTypes::Transform3DId("Transform3D");
-const std::string DOMBasisTypes::Transform2DId("Transform2D");
-const std::string DOMBasisTypes::VelocityScrew6DId("VelocityScrew6D");
+const std::string& DOMBasisTypes::idVector2D() {
+	static const std::string id("Vector2D");
+	return id;
+}
 
-const std::string DOMBasisTypes::PosId("Pos");
-const std::string DOMBasisTypes::MatrixId("Matrix");
+const std::string& DOMBasisTypes::idRotation3D() {
+	static const std::string id("Rotation3D");
+	return id;
+}
 
-const std::string DOMBasisTypes::LinearId("Linear");
-const std::string DOMBasisTypes::AngularId("Angular");
+const std::string& DOMBasisTypes::idRPY() {
+	static const std::string id("RPY");
+	return id;
+}
 
-const std::string DOMBasisTypes::StateId("State");
-const std::string DOMBasisTypes::QStateId("QState");
-const std::string DOMBasisTypes::TreeStateId("TreeState");
+const std::string& DOMBasisTypes::idEAA() {
+	static const std::string id("EAA");
+	return id;
+}
 
-const std::string DOMBasisTypes::BooleanId("Boolean");
-const std::string DOMBasisTypes::DoubleId("Double");
-const std::string DOMBasisTypes::FloatId("Float");
-const std::string DOMBasisTypes::IntegerId("Integer");
-const std::string DOMBasisTypes::StringId("String");
-const std::string DOMBasisTypes::StringListId("StringList");
-const std::string DOMBasisTypes::StringPairId("StringPair");
-const std::string DOMBasisTypes::IntListId("IntList");
-const std::string DOMBasisTypes::DoubleListId("DoubleList");
+const std::string& DOMBasisTypes::idQuaternion() {
+	static const std::string id("Quaternion");
+	return id;
+}
 
-const std::string DOMBasisTypes::UnitAttributeId("unit");
+const std::string& DOMBasisTypes::idRotation2D() {
+	static const std::string id("Rotation2D");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idRotation2DAngle() {
+	static const std::string id("Rotation2DAngle");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idTransform2D() {
+	static const std::string id("Transform2D");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idTransform3D() {
+	static const std::string id("Transform3D");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idMatrix() {
+	static const std::string id("Matrix");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idVelocityScrew6D() {
+	static const std::string id("VelocityScrew6D");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idPos() {
+	static const std::string id("Pos");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idLinear() {
+	static const std::string id("Linear");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idAngular() {
+	static const std::string id("Angular");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idState() {
+	static const std::string id("State");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idQState() {
+	static const std::string id("QState");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idTreeState() {
+	static const std::string id("TreeState");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idBoolean() {
+	static const std::string id("Boolean");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idDouble() {
+	static const std::string id("Double");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idFloat() {
+	static const std::string id("Float");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idInteger() {
+	static const std::string id("Integer");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idString() {
+	static const std::string id("String");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idStringList() {
+	static const std::string id("StringList");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idIntList() {
+	static const std::string id("IntList");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idDoubleList() {
+	static const std::string id("DoubleList");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idStringPair() {
+	static const std::string id("StringPair");
+	return id;
+}
+
+const std::string& DOMBasisTypes::idUnitAttribute() {
+	static const std::string id("unit");
+	return id;
+}
 
 namespace {
 struct UnitMap {
@@ -129,7 +275,7 @@ double DOMBasisTypes::getUnit(const std::string key) {
 
 namespace {
     double readUnit(DOMElem::Ptr element) {
-    	std::string attrval = element->getAttributeValue(DOMBasisTypes::UnitAttributeId, "");
+    	std::string attrval = element->getAttributeValue(DOMBasisTypes::idUnitAttribute(), "");
     	if(!attrval.empty())
     		return DOMBasisTypes::getUnit(attrval);
     	return 1;
@@ -165,7 +311,7 @@ namespace {
 
 Q DOMBasisTypes::readQ(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, QId);
+        checkHeader(element, idQ());
 
     std::vector<double> values = element->getValueAsDoubleList();
     Q q(values.size());
@@ -176,31 +322,31 @@ Q DOMBasisTypes::readQ(DOMElem::Ptr element, bool doCheckHeader) {
 }
 
 Vector3D<> DOMBasisTypes::readVector3D(DOMElem::Ptr element, bool doCheckHeader) {
-    return readVectorStructure<Vector3D<> >(element, doCheckHeader, Vector3DId);
+    return readVectorStructure<Vector3D<> >(element, doCheckHeader, idVector3D());
 }
 
 
 Vector2D<> DOMBasisTypes::readVector2D(DOMElem::Ptr element, bool doCheckHeader) {
-    return readVectorStructure<Vector2D<> >(element, doCheckHeader, Vector2DId);
+    return readVectorStructure<Vector2D<> >(element, doCheckHeader, idVector2D());
 }
 
 
 RPY<> DOMBasisTypes::readRPY(DOMElem::Ptr element, bool doCheckHeader) {
-    return readVectorStructure<RPY<> >(element, doCheckHeader, RPYId);
+    return readVectorStructure<RPY<> >(element, doCheckHeader, idRPY());
 }
 
 EAA<> DOMBasisTypes::readEAA(DOMElem::Ptr element, bool doCheckHeader) {
-    return readVectorStructure<EAA<> >(element, doCheckHeader, EAAId);}
+    return readVectorStructure<EAA<> >(element, doCheckHeader, idEAA());}
 
 Quaternion<> DOMBasisTypes::readQuaternion(DOMElem::Ptr element, bool doCheckHeader) {
-    Quaternion<> qua = readVectorStructure<Quaternion<> >(element, doCheckHeader, QuaternionId);
+    Quaternion<> qua = readVectorStructure<Quaternion<> >(element, doCheckHeader, idQuaternion());
     qua.normalize();
     return qua;
 }
 
 Rotation3D<> DOMBasisTypes::readRotation3D(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, Rotation3DId);
+        checkHeader(element, idRotation3D());
 
     std::vector<double> values = element->getValueAsDoubleList();
     // we are switching to quaternions instead... rotation3d are simply to error prone to precision errors
@@ -256,7 +402,7 @@ Rotation3D<> DOMBasisTypes::readRotation3D(DOMElem::Ptr element, bool doCheckHea
 
 Rotation2D<> DOMBasisTypes::readRotation2D(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, Rotation2DId);
+        checkHeader(element, idRotation2D());
 
     std::vector<double> values = element->getValueAsDoubleList();
     if (values.size() != 4)
@@ -266,13 +412,13 @@ Rotation2D<> DOMBasisTypes::readRotation2D(DOMElem::Ptr element, bool doCheckHea
 }
 
 Rotation3D<> DOMBasisTypes::readRotation3DStructure(DOMElem::Ptr element) {
-    if (element->isName(Rotation3DId))
+    if (element->isName(idRotation3D()))
         return readRotation3D(element, false);
-    if (element->isName(RPYId))
+    if (element->isName(idRPY()))
         return readRPY(element, false).toRotation3D();
-    if (element->isName(EAAId))
+    if (element->isName(idEAA()))
         return readEAA(element, false).toRotation3D();
-    if (element->isName(QuaternionId))
+    if (element->isName(idQuaternion()))
         return readQuaternion(element, false).toRotation3D();
 
     RW_THROW("Unable to find match \""<<element->getName()<<"\" with (Rotation3D|RPY|EAA|Quaternion)");
@@ -280,9 +426,9 @@ Rotation3D<> DOMBasisTypes::readRotation3DStructure(DOMElem::Ptr element) {
 }
 
 Rotation2D<> DOMBasisTypes::readRotation2DStructure(DOMElem::Ptr element) {
-    if (element->isName(Rotation2DId))
+    if (element->isName(idRotation2D()))
         return readRotation2D(element, false);
-    if (element->isName(Rotation2DAngleId)) {
+    if (element->isName(idRotation2DAngle())) {
         double angle = readDouble(element, false);
         return Rotation2D<>(angle);
     }
@@ -294,7 +440,7 @@ Rotation2D<> DOMBasisTypes::readRotation2DStructure(DOMElem::Ptr element) {
 
 Transform3D<> DOMBasisTypes::readTransform3D(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, Transform3DId);
+        checkHeader(element, idTransform3D());
 
     Vector3D<> position(0,0,0);
     Rotation3D<> rotation(Rotation3D<>::identity());
@@ -319,7 +465,7 @@ Transform3D<> DOMBasisTypes::readTransform3D(DOMElem::Ptr element, bool doCheckH
     }
 
     BOOST_FOREACH(DOMElem::Ptr child, element->getChildren() ){
-		if (child->isName( MatrixId)) {
+		if (child->isName( idMatrix())) {
 			std::vector<double> values = child->getValueAsDoubleList();
 			if (values.size() != 12)
 				RW_THROW("Expected   <Matrix> with 12 doubles when parsing Transform3D. Found "<<values.size()<<" values");
@@ -336,7 +482,7 @@ Transform3D<> DOMBasisTypes::readTransform3D(DOMElem::Ptr element, bool doCheckH
 			position(0) = values[3];
 			position(1) = values[7];
 			position(2) = values[11];
-		} else if (child->isName( PosId)) {
+		} else if (child->isName( idPos())) {
 			position = readVector3D(child, false);
 		} else {
 			rotation = readRotation3DStructure(child);
@@ -349,7 +495,7 @@ Transform3D<> DOMBasisTypes::readTransform3D(DOMElem::Ptr element, bool doCheckH
 
 Transform2D<> DOMBasisTypes::readTransform2D(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, Transform3DId);
+        checkHeader(element, idTransform3D());
 
     Vector2D<> position(0,0);
     Rotation2D<> rotation(Rotation2D<>::identity());
@@ -368,7 +514,7 @@ Transform2D<> DOMBasisTypes::readTransform2D(DOMElem::Ptr element, bool doCheckH
     }
 
     BOOST_FOREACH(DOMElem::Ptr child, element->getChildren() ){
-		if (child->isName(MatrixId)) {
+		if (child->isName(idMatrix())) {
 			std::vector<double> values = child->getValueAsDoubleList();
 			if (values.size() != 6)
 				RW_THROW("Expected <Matrix> with 6 doubles when parsing Transform2D. Found "<<values.size()<<" values");
@@ -379,7 +525,7 @@ Transform2D<> DOMBasisTypes::readTransform2D(DOMElem::Ptr element, bool doCheckH
 
 			position(0) = values[4];
 			position(1) = values[5];			
-		} else if (child->isName( PosId)) {
+		} else if (child->isName( idPos())) {
 			position = readVector2D(child, false);
 		} else {
 			rotation = readRotation2D(child);
@@ -392,14 +538,14 @@ Transform2D<> DOMBasisTypes::readTransform2D(DOMElem::Ptr element, bool doCheckH
 
 VelocityScrew6D<> DOMBasisTypes::readVelocityScrew6D(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, VelocityScrew6DId);
+        checkHeader(element, idVelocityScrew6D());
 
     Vector3D<> linear(0, 0, 0);
     EAA<> angular(0, 0, 0);
     BOOST_FOREACH(DOMElem::Ptr child, element->getChildren() ){
-		if (child->isName( PosId)) {
+		if (child->isName( idPos())) {
 			linear = readVector3D(child, false);
-		} else if (child->isName( EAAId)) {
+		} else if (child->isName( idEAA())) {
 			angular = readEAA(child, false);
 		} else {
 			RW_THROW("Unknown element \""<<child->getName()<<"\" specified in VelocityScrew6D");
@@ -435,20 +581,20 @@ std::vector<int> DOMBasisTypes::readIntList(DOMElem::Ptr element, bool doCheckHe
  */
 rw::kinematics::State DOMBasisTypes::readState(DOMElem::Ptr element, WorkCell::Ptr workcell, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, StateId);
+        checkHeader(element, idState());
 
     State result = workcell->getDefaultState();
 
     BOOST_FOREACH(DOMElem::Ptr child, element->getChildren() ){
 
-		if (child->isName( QStateId)) {
+		if (child->isName( idQState())) {
 			Q q = readQ(child, false);
 			if (result.size() != q.size())
 				RW_THROW("Length of State loaded does not match workcell");
 			for (size_t i = 0; i<q.size(); i++)
 				result(i) = q(i);
 
-		} else if (child->isName( TreeStateId)) {
+		} else if (child->isName( idTreeState())) {
 			std::vector<StringPair> dafs = readStringPairs(element);
 			for (std::vector<StringPair>::iterator it = dafs.begin(); it != dafs.end(); ++it) {
 				Frame* daf = workcell->findFrame((*it).first);
@@ -469,7 +615,7 @@ rw::kinematics::State DOMBasisTypes::readState(DOMElem::Ptr element, WorkCell::P
 
 std::string DOMBasisTypes::readString(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, StringId);
+        checkHeader(element, idString());
 
     return element->getValue();
 }
@@ -482,7 +628,7 @@ std::vector<std::string> DOMBasisTypes::readStringList(DOMElem::Ptr element) {
 
 StringPair DOMBasisTypes::readStringPair(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, StringPairId);
+        checkHeader(element, idStringPair());
 
     const std::vector<std::string> result = readStringList(element);
 
@@ -496,7 +642,7 @@ StringPair DOMBasisTypes::readStringPair(DOMElem::Ptr element, bool doCheckHeade
 std::vector<StringPair> DOMBasisTypes::readStringPairs(DOMElem::Ptr element) {
     std::vector<StringPair> result;
     BOOST_FOREACH(DOMElem::Ptr child, element->getChildren() ){
-    	if (child->isName( StringPairId)) {
+    	if (child->isName( idStringPair())) {
 			std::string str = readString(child);
 			std::vector<std::string> strings = StringUtil::words(str);
 			if (strings.size() != 2)
@@ -509,26 +655,26 @@ std::vector<StringPair> DOMBasisTypes::readStringPairs(DOMElem::Ptr element) {
 
 double DOMBasisTypes::readDouble(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, DoubleId);
+        checkHeader(element, idDouble());
     return element->getValueAsDouble();
 }
 
 float DOMBasisTypes::readFloat(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, FloatId);
+        checkHeader(element, idFloat());
     return (float)element->getValueAsDouble();
 }
 
 int DOMBasisTypes::readInt(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, IntegerId);
+        checkHeader(element, idInteger());
 
     return element->getValueAsInt();
 }
 
 bool DOMBasisTypes::readBool(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, BooleanId);
+        checkHeader(element, idBoolean());
 
     std::string str = element->getValue();
     bool res = false;
@@ -587,7 +733,7 @@ namespace {
 
 DOMElem::Ptr DOMBasisTypes::write(int val, DOMElem::Ptr elem, bool addHeader) {
 	if(addHeader)
-		elem->setName(IntegerId);
+		elem->setName(idInteger());
 
 	std::stringstream sstr;
 	sstr<<val;
@@ -599,7 +745,7 @@ DOMElem::Ptr DOMBasisTypes::write(int val, DOMElem::Ptr elem, bool addHeader) {
 
 DOMElem::Ptr DOMBasisTypes::write(double val, DOMElem::Ptr elem, bool addHeader) {
 	if(addHeader)
-		elem->setName(DoubleId);
+		elem->setName(idDouble());
 
 	std::stringstream sstr;
 	sstr<<val;
@@ -612,7 +758,7 @@ DOMElem::Ptr DOMBasisTypes::write(double val, DOMElem::Ptr elem, bool addHeader)
 
 DOMElem::Ptr DOMBasisTypes::write(const std::string& str, DOMElem::Ptr elem, bool addHeader) {
 	if(addHeader)
-		elem->setName(StringId);
+		elem->setName(idString());
 
 	elem->setValue( str );
 	return elem;
@@ -621,7 +767,7 @@ DOMElem::Ptr DOMBasisTypes::write(const std::string& str, DOMElem::Ptr elem, boo
 
 DOMElem::Ptr DOMBasisTypes::write(const Q& val, DOMElem::Ptr elem, bool addHeader){
 	if(addHeader)
-		elem->setName(QId);
+		elem->setName(idQ());
 
 	elem->setValue( createStringFromArray(val) );
 	return elem;
@@ -630,7 +776,7 @@ DOMElem::Ptr DOMBasisTypes::write(const Q& val, DOMElem::Ptr elem, bool addHeade
 
 DOMElem::Ptr DOMBasisTypes::write(const Vector3D<>& val, DOMElem::Ptr elem, bool addHeader) {
 	if(addHeader)
-		elem->setName(Vector3DId);
+		elem->setName(idVector3D());
 
 	elem->setValue( createStringFromArray(val) );
 	return elem;
@@ -639,7 +785,7 @@ DOMElem::Ptr DOMBasisTypes::write(const Vector3D<>& val, DOMElem::Ptr elem, bool
 
 DOMElem::Ptr DOMBasisTypes::write(const Vector2D<>& val, DOMElem::Ptr elem, bool addHeader) {
 	if(addHeader)
-		elem->setName(Vector2DId);
+		elem->setName(idVector2D());
 
 	elem->setValue( createStringFromArray(val) );
 	return elem;
@@ -650,7 +796,7 @@ DOMElem::Ptr DOMBasisTypes::write(const Vector2D<>& val, DOMElem::Ptr elem, bool
 
 DOMElem::Ptr DOMBasisTypes::write(const Transform2D<>& val, DOMElem::Ptr elem, bool addHeader){
 	if(addHeader)
-		elem->setName(Transform2DId);
+		elem->setName(idTransform2D());
 
 	const Rotation2D<> r = val.R();
 	const Vector2D<> p = val.P();
@@ -666,7 +812,7 @@ DOMElem::Ptr DOMBasisTypes::write(const Transform2D<>& val, DOMElem::Ptr elem, b
 
 DOMElem::Ptr DOMBasisTypes::write(const Transform3D<>& val, DOMElem::Ptr elem, bool addHeader){
 	if(addHeader)
-		elem->setName(Transform3DId);
+		elem->setName(idTransform3D());
 
 	const Rotation3D<> r = val.R();
 	const Vector3D<> p = val.P();
@@ -683,7 +829,7 @@ DOMElem::Ptr DOMBasisTypes::write(const Transform3D<>& val, DOMElem::Ptr elem, b
 
 DOMElem::Ptr DOMBasisTypes::write(const Eigen::MatrixXd& val, DOMElem::Ptr elem, bool addHeader){
 	if(addHeader)
-		elem->setName(MatrixId);
+		elem->setName(idMatrix());
 
 	// we save dimension in the first 2 values
     std::ostringstream str;
@@ -719,35 +865,35 @@ DOMElem::Ptr DOMBasisTypes::createElement(const std::string& id, const std::stri
  }
 
 DOMElem::Ptr DOMBasisTypes::createQ(const Q& q, DOMElem::Ptr doc) {
-    return createElement(QId, createStringFromArray(q), doc);
+    return createElement(idQ(), createStringFromArray(q), doc);
 }
 
 DOMElem::Ptr DOMBasisTypes::createVector3D(const Vector3D<>& v, DOMElem::Ptr doc) {
-    return createElement(Vector3DId, createStringFromArray(v), doc);
+    return createElement(idVector3D(), createStringFromArray(v), doc);
 }
 
 DOMElem::Ptr DOMBasisTypes::createVector2D(const Vector2D<>& v, DOMElem::Ptr doc) {
-    DOMElem::Ptr element = doc->addChild(Vector2DId);
+    DOMElem::Ptr element = doc->addChild(idVector2D());
     element->setValue(createStringFromArray(v) );
     return element;
 }
 
 DOMElem::Ptr DOMBasisTypes::createRPY(const RPY<>& v, DOMElem::Ptr doc) {
-    DOMElem::Ptr element = doc->addChild(RPYId);
+    DOMElem::Ptr element = doc->addChild(idRPY());
     element->setValue(createStringFromArray(v, 3));
 
     return element;
 }
 
 DOMElem::Ptr DOMBasisTypes::createEAA(const EAA<>& v, DOMElem::Ptr doc) {
-    DOMElem::Ptr element = doc->addChild(EAAId);
+    DOMElem::Ptr element = doc->addChild(idEAA());
     element->setValue(createStringFromArray(v, 3));
 
     return element;
 }
 
 DOMElem::Ptr DOMBasisTypes::createQuaternion(const Quaternion<>& q, DOMElem::Ptr doc) {
-    DOMElem::Ptr element = doc->addChild(QuaternionId);
+    DOMElem::Ptr element = doc->addChild(idQuaternion());
     element->setValue(createStringFromArray(q, 4));
 
     return element;
@@ -774,7 +920,7 @@ DOMElem::Ptr DOMBasisTypes::createRotation3D(const Rotation3D<>& r, DOMElem::Ptr
     str<<r(0,0)<<" "<<r(0,1)<<" "<<r(0,2)<<" ";
     str<<r(1,0)<<" "<<r(1,1)<<" "<<r(1,2)<<" ";
     str<<r(2,0)<<" "<<r(2,1)<<" "<<r(2,2);
-    return createElement(Rotation3DId, std::string(str.str()), doc);
+    return createElement(idRotation3D(), std::string(str.str()), doc);
 }
 
 DOMElem::Ptr DOMBasisTypes::createRotation2D(const Rotation2D<>& r, DOMElem::Ptr doc) {
@@ -782,68 +928,68 @@ DOMElem::Ptr DOMBasisTypes::createRotation2D(const Rotation2D<>& r, DOMElem::Ptr
     str.unsetf(std::ios::floatfield);            // floatfield not set
     str.precision(17);
     str<<r(0,0)<<" "<<r(0,1)<<" "<<r(1,0)<<" "<<r(1,1);
-    return createElement(Rotation2DId, std::string(str.str()), doc);
+    return createElement(idRotation2D(), std::string(str.str()), doc);
 }
 
 DOMElem::Ptr DOMBasisTypes::createTransform3D(const Transform3D<>& t, DOMElem::Ptr doc) {
-    DOMElem::Ptr element = doc->addChild(Transform3DId);
-    createElement(PosId, createStringFromArray(t.P()), element);
+    DOMElem::Ptr element = doc->addChild(idTransform3D());
+    createElement(idPos(), createStringFromArray(t.P()), element);
     createRotation3D(t.R(), element);
     return element;
 }
 
 DOMElem::Ptr DOMBasisTypes::createTransform2D(const rw::math::Transform2D<>& t, rw::common::DOMElem::Ptr doc) {
-    DOMElem::Ptr element = doc->addChild(Transform2DId);
-    createElement(PosId, createStringFromArray(t.P()), element);
+    DOMElem::Ptr element = doc->addChild(idTransform2D());
+    createElement(idPos(), createStringFromArray(t.P()), element);
     createRotation2D(t.R(), element);
     return element;
 }
 
 DOMElem::Ptr DOMBasisTypes::createVelocityScrew6D(const VelocityScrew6D<>& v, DOMElem::Ptr doc) {
-    DOMElem::Ptr element = doc->addChild(VelocityScrew6DId);
-    createElement(PosId, createStringFromArray(v.linear()), element);
+    DOMElem::Ptr element = doc->addChild(idVelocityScrew6D());
+    createElement(idPos(), createStringFromArray(v.linear()), element);
     createEAA(v.angular(), element);
 	return element;
 	//return createElement(VelocityScrew6DId, createStringFromArray(v, 6), doc);
 }
 
 DOMElem::Ptr DOMBasisTypes::createIntList(const std::vector<int>& ints, DOMElem::Ptr doc){
-    return createElement(IntListId, createStringFromVector(ints), doc);
+    return createElement(idIntList(), createStringFromVector(ints), doc);
 }
 
 DOMElem::Ptr DOMBasisTypes::createDoubleList(const std::vector<double>& doubles, DOMElem::Ptr doc){
-    return createElement(DoubleListId, createStringFromVector(doubles), doc);
+    return createElement(idDoubleList(), createStringFromVector(doubles), doc);
 }
 
 DOMElem::Ptr DOMBasisTypes::createQState(const rw::kinematics::State& state, DOMElem::Ptr doc) {
-    return createElement(QStateId, createStringFromArray<State>(state, state.size()), doc);
+    return createElement(idQState(), createStringFromArray<State>(state, state.size()), doc);
 }
 
 DOMElem::Ptr DOMBasisTypes::createBoolean(bool value, DOMElem::Ptr doc) {
-    return createElement(BooleanId, boost::lexical_cast<std::string>(value), doc);
+    return createElement(idBoolean(), boost::lexical_cast<std::string>(value), doc);
 }
 
 DOMElem::Ptr DOMBasisTypes::createDouble(double value, DOMElem::Ptr doc) {
-    return createElement(DoubleId, boost::lexical_cast<std::string>(value), doc);
+    return createElement(idDouble(), boost::lexical_cast<std::string>(value), doc);
 }
 
 DOMElem::Ptr DOMBasisTypes::createFloat(float value, DOMElem::Ptr doc) {
-    return createElement(FloatId, boost::lexical_cast<std::string>(value), doc);
+    return createElement(idFloat(), boost::lexical_cast<std::string>(value), doc);
 }
 
 
 DOMElem::Ptr DOMBasisTypes::createInteger(int value, DOMElem::Ptr doc) {
-    return createElement(IntegerId, boost::lexical_cast<std::string>(value), doc);
+    return createElement(idInteger(), boost::lexical_cast<std::string>(value), doc);
 }
 
 
 
 DOMElem::Ptr DOMBasisTypes::createString(const std::string& str, DOMElem::Ptr doc) {
-    return createElement(StringId, str, doc);
+    return createElement(idString(), str, doc);
 }
 
 DOMElem::Ptr DOMBasisTypes::createStringList(const std::vector<std::string>& strings, DOMElem::Ptr doc){
-    DOMElem::Ptr element = doc->addChild(StringListId);
+    DOMElem::Ptr element = doc->addChild(idStringList());
     std::stringstream sstr;
     sstr << strings[0];
     for(size_t i=1; i<strings.size();i++){
@@ -856,7 +1002,7 @@ DOMElem::Ptr DOMBasisTypes::createStringList(const std::vector<std::string>& str
 
 
 DOMElem::Ptr DOMBasisTypes::createStringPair(const std::string& first, const std::string& second, DOMElem::Ptr doc) {
-    DOMElem::Ptr element = doc->addChild(StringPairId);
+    DOMElem::Ptr element = doc->addChild(idStringPair());
     std::stringstream sstr;
     sstr << first << ";" << second;
     element->setValue(sstr.str());
@@ -864,7 +1010,7 @@ DOMElem::Ptr DOMBasisTypes::createStringPair(const std::string& first, const std
 }
 
 DOMElem::Ptr DOMBasisTypes::createTreeState(const rw::kinematics::State& state, DOMElem::Ptr doc) {
-    DOMElem::Ptr element = doc->addChild(TreeStateId);
+    DOMElem::Ptr element = doc->addChild(idTreeState());
 
     const std::vector<Frame*>& dafs = state.getStateStructure()->getDAFs();
 
@@ -878,7 +1024,7 @@ DOMElem::Ptr DOMBasisTypes::createTreeState(const rw::kinematics::State& state, 
 }
 
 DOMElem::Ptr DOMBasisTypes::createState(const rw::kinematics::State& state, DOMElem::Ptr doc) {
-    DOMElem::Ptr element = doc->addChild(StateId);
+    DOMElem::Ptr element = doc->addChild(idState());
     createQState(state, element);
     createTreeState(state, element);
     return element;

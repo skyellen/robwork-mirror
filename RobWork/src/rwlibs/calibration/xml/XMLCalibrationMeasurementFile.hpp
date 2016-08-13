@@ -97,10 +97,10 @@ void XMLCalibrationMeasurementFile<INFOSERIALIZER>::addMeasurementToDomElement(c
 	DOMElem::Ptr elmMeasurement = parent->addChild(CALIBRATION_MEASUREMENT_ID);
 
 	rw::math::Q q = measurement->getQ();
-	DOMElem::Ptr elmState = DOMBasisTypes::write(q, elmMeasurement->addChild( DOMBasisTypes::QId ) );
+	DOMElem::Ptr elmState = DOMBasisTypes::write(q, elmMeasurement->addChild( DOMBasisTypes::idQ() ) );
 
 	rw::math::Transform3D<> transform = measurement->getTransform();
-	DOMElem::Ptr elmTransform = DOMBasisTypes::write(transform, elmMeasurement->addChild( DOMBasisTypes::Transform3DId ));
+	DOMElem::Ptr elmTransform = DOMBasisTypes::write(transform, elmMeasurement->addChild( DOMBasisTypes::idTransform3D() ));
 
 	
 	std::string deviceName = measurement->getDeviceName();
@@ -156,20 +156,20 @@ CalibrationMeasurement::Ptr XMLCalibrationMeasurementFile<INFOSERIALIZER>::conve
 	if ( !element->isName(CALIBRATION_MEASUREMENT_ID) && !element->isName("SerialDevicePoseMeasurement"))
 		RW_THROW("Element not parsed correctly.");
 
-	DOMElem::Ptr elmState = element->getChild( DOMBasisTypes::QId );
+	DOMElem::Ptr elmState = element->getChild( DOMBasisTypes::idQ() );
 	rw::math::Q q = DOMBasisTypes::readQ(elmState, false);
 
 	rw::math::Transform3D<> transform;
-	if( element->hasChild(DOMBasisTypes::Transform3DId) ){
-		DOMElem::Ptr elmTransform = element->getChild( DOMBasisTypes::Transform3DId );
+	if( element->hasChild(DOMBasisTypes::idTransform3D()) ){
+		DOMElem::Ptr elmTransform = element->getChild( DOMBasisTypes::idTransform3D() );
 		transform = DOMBasisTypes::readTransform3D(elmTransform, false);
 	}
-	if( element->hasChild(DOMBasisTypes::QuaternionId) ){
-		DOMElem::Ptr elmTransform = element->getChild( DOMBasisTypes::QuaternionId );
+	if( element->hasChild(DOMBasisTypes::idQuaternion()) ){
+		DOMElem::Ptr elmTransform = element->getChild( DOMBasisTypes::idQuaternion() );
 		transform.R() = DOMBasisTypes::readQuaternion(elmTransform, false).toRotation3D();
 	}
-	if( element->hasChild(DOMBasisTypes::Vector3DId) ){
-		DOMElem::Ptr elmTransform = element->getChild( DOMBasisTypes::Vector3DId );
+	if( element->hasChild(DOMBasisTypes::idVector3D()) ){
+		DOMElem::Ptr elmTransform = element->getChild( DOMBasisTypes::idVector3D() );
 		transform.P() = DOMBasisTypes::readVector3D(elmTransform, false);
 	}
 

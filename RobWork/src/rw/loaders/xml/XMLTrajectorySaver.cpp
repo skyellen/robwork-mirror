@@ -53,6 +53,17 @@ using namespace rw::math;
 using namespace rw::loaders;
 using namespace rw::trajectory;
 
+XMLTrajectorySaver::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		XMLBasisTypes::Initializer init1;
+		XMLTrajectoryFormat::Initializer init2;
+		done = true;
+	}
+}
+
+const XMLTrajectorySaver::Initializer XMLTrajectorySaver::initializer;
+
 namespace {
 
     template <class T>
@@ -89,12 +100,12 @@ namespace {
      };
 
     template<> const XMLCh* Identifiers<Q>::linearInterpolatorId() {
-        return XMLTrajectoryFormat::QLinearInterpolatorId;
+        return XMLTrajectoryFormat::idQLinearInterpolator();
     }
 
 
     template<> const XMLCh* Identifiers<Q>::cubicSplineInterpolatorId() {
-        return XMLTrajectoryFormat::QCubicSplineInterpolatorId;
+        return XMLTrajectoryFormat::idQCubicSplineInterpolator();
     }
 
     template<> const XMLCh* Identifiers<Q>::circularInterpolatorId() {
@@ -104,25 +115,25 @@ namespace {
 
 
     template<> const XMLCh* Identifiers<Vector3D<> >::linearInterpolatorId() {
-        return XMLTrajectoryFormat::V3DLinearInterpolatorId;
+        return XMLTrajectoryFormat::idV3DLinearInterpolator();
     }
 
     template<> const XMLCh* Identifiers<Vector3D<> >::cubicSplineInterpolatorId() {
-        return XMLTrajectoryFormat::V3DCubicSplineInterpolatorId;
+        return XMLTrajectoryFormat::idV3DCubicSplineInterpolator();
     }
 
     template<> const XMLCh* Identifiers<Vector3D<> >::circularInterpolatorId() {
-        return XMLTrajectoryFormat::V3DCircularInterpolatorId;
+        return XMLTrajectoryFormat::idV3DCircularInterpolator();
     }
 
 
     template<> const XMLCh* Identifiers<Rotation3D<> >::linearInterpolatorId() {
-        return XMLTrajectoryFormat::R3DLinearInterpolatorId;
+        return XMLTrajectoryFormat::idR3DLinearInterpolator();
     }
 
 
     template<> const XMLCh* Identifiers<Rotation3D<> >::cubicSplineInterpolatorId() {
-        return XMLTrajectoryFormat::R3DCubicSplineInterpolatorId;
+        return XMLTrajectoryFormat::idR3DCubicSplineInterpolator();
     }
 
     template<> const XMLCh* Identifiers<Rotation3D<> >::circularInterpolatorId() {
@@ -132,12 +143,12 @@ namespace {
 
 
     template<> const XMLCh* Identifiers<Transform3D<> >::linearInterpolatorId() {
-        return XMLTrajectoryFormat::T3DLinearInterpolatorId;
+        return XMLTrajectoryFormat::idT3DLinearInterpolator();
     }
 
 
     template<> const XMLCh* Identifiers<Transform3D<> >::cubicSplineInterpolatorId() {
-        return XMLTrajectoryFormat::T3DCubicSplineInterpolatorId;
+        return XMLTrajectoryFormat::idT3DCubicSplineInterpolator();
     }
 
     template<> const XMLCh* Identifiers<Transform3D<> >::circularInterpolatorId() {
@@ -155,7 +166,7 @@ namespace {
             double duration = linear->duration();
 
             xercesc::DOMElement* element = doc->createElement(Identifiers<T>::linearInterpolatorId());
-            DOMAttr* durationAttr = doc->createAttribute(XMLTrajectoryFormat::DurationAttributeId);
+            DOMAttr* durationAttr = doc->createAttribute(XMLTrajectoryFormat::idDurationAttribute());
             durationAttr->setValue(XMLStr(duration).uni());
             element->setAttributeNode(durationAttr);
             xercesc::DOMElement* startElement = ElementCreator<T>::createElement(start, doc);
@@ -179,7 +190,7 @@ namespace {
              double duration = circular->duration();
 
              xercesc::DOMElement* element = doc->createElement(Identifiers<T>::circularInterpolatorId());
-             DOMAttr* durationAttr = doc->createAttribute(XMLTrajectoryFormat::DurationAttributeId);
+             DOMAttr* durationAttr = doc->createAttribute(XMLTrajectoryFormat::idDurationAttribute());
              durationAttr->setValue(XMLStr(duration).uni());
              element->setAttributeNode(durationAttr);
 
@@ -201,8 +212,8 @@ namespace {
         const ParabolicBlend<T>* parabolic = dynamic_cast<const ParabolicBlend<T>*>(blend.get());
         if (parabolic != NULL) {
             double tau = parabolic->tau1();
-            xercesc::DOMElement* element = doc->createElement(XMLTrajectoryFormat::ParabolicBlendId);
-            DOMAttr* tauAttr = doc->createAttribute(XMLTrajectoryFormat::TauAttributeId);
+            xercesc::DOMElement* element = doc->createElement(XMLTrajectoryFormat::idParabolicBlend());
+            DOMAttr* tauAttr = doc->createAttribute(XMLTrajectoryFormat::idTauAttribute());
             tauAttr->setValue(XMLStr(tau).uni());
             element->setAttributeNode(tauAttr);
             return element;
@@ -212,11 +223,11 @@ namespace {
         if (lloydHayward != NULL) {
             double tau = lloydHayward->tau1();
             double kappa = lloydHayward->kappa();
-            xercesc::DOMElement* element = doc->createElement(XMLTrajectoryFormat::LloydHaywardBlendId);
-            DOMAttr* tauAttr = doc->createAttribute(XMLTrajectoryFormat::TauAttributeId);
+            xercesc::DOMElement* element = doc->createElement(XMLTrajectoryFormat::idLloydHaywardBlend());
+            DOMAttr* tauAttr = doc->createAttribute(XMLTrajectoryFormat::idTauAttribute());
             tauAttr->setValue(XMLStr(tau).uni());
             element->setAttributeNode(tauAttr);
-            DOMAttr* kappaAttr = doc->createAttribute(XMLTrajectoryFormat::KappaAttributeId);
+            DOMAttr* kappaAttr = doc->createAttribute(XMLTrajectoryFormat::idKappaAttribute());
             kappaAttr->setValue(XMLStr(kappa).uni());
             element->setAttributeNode(kappaAttr);
             return element;
@@ -313,36 +324,36 @@ namespace {
 
 
 bool XMLTrajectorySaver::save(const rw::trajectory::QTrajectory& trajectory, const std::string& filename) {
-    return saveTrajectoryImpl<Q, const QTrajectory>(trajectory, XMLTrajectoryFormat::QTrajectoryId, filename);
+    return saveTrajectoryImpl<Q, const QTrajectory>(trajectory, XMLTrajectoryFormat::idQTrajectory(), filename);
 }
 
 
 bool XMLTrajectorySaver::save(const rw::trajectory::Vector3DTrajectory& trajectory, const std::string& filename) {
-    return saveTrajectoryImpl<Vector3D<>, const Vector3DTrajectory>(trajectory, XMLTrajectoryFormat::V3DTrajectoryId, filename);
+    return saveTrajectoryImpl<Vector3D<>, const Vector3DTrajectory>(trajectory, XMLTrajectoryFormat::idV3DTrajectory(), filename);
 }
 
 bool XMLTrajectorySaver::save(const rw::trajectory::Rotation3DTrajectory& trajectory, const std::string& filename) {
-    return saveTrajectoryImpl<Rotation3D<>, const Rotation3DTrajectory>(trajectory, XMLTrajectoryFormat::R3DTrajectoryId, filename);
+    return saveTrajectoryImpl<Rotation3D<>, const Rotation3DTrajectory>(trajectory, XMLTrajectoryFormat::idR3DTrajectory(), filename);
 }
 
 bool XMLTrajectorySaver::save(const rw::trajectory::Transform3DTrajectory& trajectory, const std::string& filename) {
-    return saveTrajectoryImpl<Transform3D<>, const Transform3DTrajectory>(trajectory, XMLTrajectoryFormat::T3DTrajectoryId, filename);
+    return saveTrajectoryImpl<Transform3D<>, const Transform3DTrajectory>(trajectory, XMLTrajectoryFormat::idT3DTrajectory(), filename);
 }
 
 
 
 bool XMLTrajectorySaver::write(const rw::trajectory::QTrajectory& trajectory, std::ostream& outstream) {
-    return saveTrajectoryImpl<Q, const QTrajectory>(trajectory, XMLTrajectoryFormat::QTrajectoryId, outstream);
+    return saveTrajectoryImpl<Q, const QTrajectory>(trajectory, XMLTrajectoryFormat::idQTrajectory(), outstream);
 }
 
 bool XMLTrajectorySaver::write(const rw::trajectory::Vector3DTrajectory& trajectory, std::ostream& outstream) {
-    return saveTrajectoryImpl<Vector3D<>, const Vector3DTrajectory>(trajectory, XMLTrajectoryFormat::V3DTrajectoryId, outstream);
+    return saveTrajectoryImpl<Vector3D<>, const Vector3DTrajectory>(trajectory, XMLTrajectoryFormat::idV3DTrajectory(), outstream);
 }
 
 bool XMLTrajectorySaver::write(const rw::trajectory::Rotation3DTrajectory& trajectory, std::ostream& outstream) {
-    return saveTrajectoryImpl<Rotation3D<>, const Rotation3DTrajectory>(trajectory, XMLTrajectoryFormat::R3DTrajectoryId, outstream);
+    return saveTrajectoryImpl<Rotation3D<>, const Rotation3DTrajectory>(trajectory, XMLTrajectoryFormat::idR3DTrajectory(), outstream);
 }
 
 bool XMLTrajectorySaver::write(const rw::trajectory::Transform3DTrajectory& trajectory, std::ostream& outstream) {
-    return saveTrajectoryImpl<Transform3D<>, const Transform3DTrajectory>(trajectory, XMLTrajectoryFormat::T3DTrajectoryId, outstream);
+    return saveTrajectoryImpl<Transform3D<>, const Transform3DTrajectory>(trajectory, XMLTrajectoryFormat::idT3DTrajectory(), outstream);
 }

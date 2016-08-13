@@ -24,10 +24,13 @@
 #include "../Task.hpp"
 #include "../Entity.hpp"
 
-#include <xercesc/dom/DOMElement.hpp>
+#include <xercesc/util/XercesDefs.hpp>
 
 #include <string>
 
+XERCES_CPP_NAMESPACE_BEGIN
+class DOMElement;
+XERCES_CPP_NAMESPACE_END
 
 namespace rwlibs {
 namespace task {
@@ -83,7 +86,25 @@ public:
 
 	rwlibs::task::TaskBase::Ptr getTask();
 
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the XMLTaskLoader is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if XMLTaskLoader is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
+	public:
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
+
 private:
+	static const Initializer initializer;
+
 	typedef std::map<std::string, rwlibs::task::TargetBase::Ptr> TargetMap;
 	TargetMap _targetMap;
 

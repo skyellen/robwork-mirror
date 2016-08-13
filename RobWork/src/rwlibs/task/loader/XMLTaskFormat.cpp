@@ -18,50 +18,139 @@
 
 #include "XMLTaskFormat.hpp"
 
+#include <rw/loaders/xml/XercesUtils.hpp>
+
 using namespace rwlibs::task;
 using namespace rw::loaders;
 using namespace xercesc;
 
-//Small trick to make sure Xerces is initialized before we start using XMLString::transcode
-const XercesInitializer XMLTaskFormat::initializer;
+XMLTaskFormat::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		//Small trick to make sure Xerces is initialized before we start using XMLString::transcode
+		static XercesInitializer initializer;
+		idQTask();
+		idCartesianTask();
+		idTargets();
+		idEntities();
+		idAugmentations();
+		idQTarget();
+		idCartesianTarget();
+		idMotion();
+		idAction();
+		idEntityIndex();
+		idEntityId();
+		idTargetIdAttr();
+		idMotionTypeAttr();
+		idMotionStart();
+		idMotionMid();
+		idMotionEnd();
+		idLinearMotion();
+		idP2PMotion();
+		idCircularMotion();
+		idActionTypeAttr();
+		done = true;
+	}
+}
 
-const XMLCh* XMLTaskFormat::QTaskId = XMLString::transcode("QTask");
+const XMLTaskFormat::Initializer XMLTaskFormat::initializer;
 
-const XMLCh* XMLTaskFormat::CartesianTaskId = XMLString::transcode("CartesianTask");
+const XMLCh* XMLTaskFormat::idQTask() {
+	static const XMLStr id("QTask");
+	return id.uni();
+}
 
-const XMLCh* XMLTaskFormat::TargetsId = XMLString::transcode("Targets");
+const XMLCh* XMLTaskFormat::idCartesianTask() {
+	static const XMLStr id("CartesianTask");
+	return id.uni();
+}
 
-const XMLCh* XMLTaskFormat::EntitiesId  = XMLString::transcode("Entities");
+const XMLCh* XMLTaskFormat::idTargets() {
+	static const XMLStr id("Targets");
+	return id.uni();
+}
 
-const XMLCh* XMLTaskFormat::AugmentationsId  = XMLString::transcode("Augmentations");
+const XMLCh* XMLTaskFormat::idEntities() {
+	static const XMLStr id("Entities");
+	return id.uni();
+}
 
+const XMLCh* XMLTaskFormat::idAugmentations() {
+	static const XMLStr id("Augmentations");
+	return id.uni();
+}
 
-const XMLCh* XMLTaskFormat::QTargetId = XMLString::transcode("QTarget");
+const XMLCh* XMLTaskFormat::idQTarget() {
+	static const XMLStr id("QTarget");
+	return id.uni();
+}
 
-const XMLCh* XMLTaskFormat::CartesianTargetId = XMLString::transcode("CartesianTarget");
+const XMLCh* XMLTaskFormat::idCartesianTarget() {
+	static const XMLStr id("CartesianTarget");
+	return id.uni();
+}
 
+const XMLCh* XMLTaskFormat::idMotion() {
+	static const XMLStr id("Motion");
+	return id.uni();
+}
 
-const XMLCh* XMLTaskFormat::MotionId = XMLString::transcode("Motion");
-const XMLCh* XMLTaskFormat::ActionId = XMLString::transcode("Action");
+const XMLCh* XMLTaskFormat::idAction() {
+	static const XMLStr id("Action");
+	return id.uni();
+}
 
+const XMLCh* XMLTaskFormat::idEntityIndex() {
+	static const XMLStr id("Index");
+	return id.uni();
+}
 
-const XMLCh* XMLTaskFormat::EntityIndexId = XMLString::transcode("Index");
-const XMLCh* XMLTaskFormat::EntityIdId = XMLString::transcode("Id");
-const XMLCh* XMLTaskFormat::TargetIdAttrId = XMLString::transcode("id");
-const XMLCh* XMLTaskFormat::ActionTypeAttrId = XMLString::transcode("type");
+const XMLCh* XMLTaskFormat::idEntityId() {
+	static const XMLStr id("Id");
+	return id.uni();
+}
 
-const XMLCh* XMLTaskFormat::MotionTypeAttrId = XMLString::transcode("type");
+const XMLCh* XMLTaskFormat::idTargetIdAttr() {
+	static const XMLStr id("id");
+	return id.uni();
+}
 
+const XMLCh* XMLTaskFormat::idMotionTypeAttr() {
+	static const XMLStr id("type");
+	return id.uni();
+}
 
+const XMLCh* XMLTaskFormat::idMotionStart() {
+	static const XMLStr id("Start");
+	return id.uni();
+}
 
-const XMLCh* XMLTaskFormat::MotionStartId = XMLString::transcode("Start");
-const XMLCh* XMLTaskFormat::MotionMidId = XMLString::transcode("Mid");
-const XMLCh* XMLTaskFormat::MotionEndId = XMLString::transcode("End");
+const XMLCh* XMLTaskFormat::idMotionMid() {
+	static const XMLStr id("Mid");
+	return id.uni();
+}
 
-const XMLCh* XMLTaskFormat::LinearMotionId = XMLString::transcode("Linear");
-const XMLCh* XMLTaskFormat::P2PMotionId = XMLString::transcode("P2P");
-const XMLCh* XMLTaskFormat::CircularMotionId = XMLString::transcode("Circular");
+const XMLCh* XMLTaskFormat::idMotionEnd() {
+	static const XMLStr id("End");
+	return id.uni();
+}
 
+const XMLCh* XMLTaskFormat::idLinearMotion() {
+	static const XMLStr id("Linear");
+	return id.uni();
+}
 
+const XMLCh* XMLTaskFormat::idP2PMotion() {
+	static const XMLStr id("P2P");
+	return id.uni();
+}
 
+const XMLCh* XMLTaskFormat::idCircularMotion() {
+	static const XMLStr id("Circular");
+	return id.uni();
+}
 
+const XMLCh* XMLTaskFormat::idActionTypeAttr() {
+	static const XMLStr id("type");
+	return id.uni();
+}

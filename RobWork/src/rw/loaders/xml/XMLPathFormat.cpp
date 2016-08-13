@@ -22,37 +22,73 @@
 using namespace rw::loaders;
 using namespace xercesc;
 
-//Small trick to make sure Xerces is initialized before we start using XMLString::transcode
-const XercesInitializer XMLPathFormat::initializer;
-
-const XMLCh* XMLPathFormat::QPathId = XMLString::transcode("QPath");
-const XMLCh* XMLPathFormat::V3DPathId = XMLString::transcode("V3DPath");
-
-const XMLCh* XMLPathFormat::R3DPathId = XMLString::transcode("R3DPath");
-const XMLCh* XMLPathFormat::T3DPathId = XMLString::transcode("T3DPath");
-
-const XMLCh* XMLPathFormat::StatePathId = XMLString::transcode("StatePath");
-
-/** @brief Identifier for rw::trajectory::TimedQPath in the XML format  */
-const XMLCh* XMLPathFormat::TimedQPathId = XMLString::transcode("TimedQPath");
-
-/** @brief Identifier for rw::trajectory::TimedStatePath in the XML format  */
-const XMLCh* XMLPathFormat::TimedStatePathId = XMLString::transcode("TimedStatePath");
-
-/** @brief Identifier for rw::trajectory::TimedState in the XML format  */
-const XMLCh* XMLPathFormat::TimedStateId = XMLString::transcode("TimedState");
-
-/** @brief Identifier for rw::trajectory::TimedQ in the XML format  */
-const XMLCh* XMLPathFormat::TimedQId = XMLString::transcode("TimedQ");
-
-/** @brief Identifier for time attribute used for rw::trajectory::TimedQPath and rw::trajectory::TimedStatePath in the XML format  */
-const XMLCh* XMLPathFormat::TimeId = XMLString::transcode("Time"); 
-
-const int* XMLPathFormat::myTestVar = NULL;
-
-namespace {
-	void test() {
-		std::cout<<XMLPathFormat::TimedQId<<std::endl;
+XMLPathFormat::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		//Small trick to make sure Xerces is initialized before we start using XMLString::transcode
+		static XercesInitializer initializer;
+		idQPath();
+		idV3DPath();
+		idR3DPath();
+		idT3DPath();
+		idStatePath();
+		idTimedQPath();
+		idTimedState();
+		idTimedQ();
+		idTimedStatePath();
+		idTime();
+		done = true;
 	}
+}
 
+const XMLPathFormat::Initializer XMLPathFormat::initializer;
+
+const XMLCh* XMLPathFormat::idQPath() {
+	static const XMLStr id("QPath");
+	return id.uni();
+}
+
+const XMLCh* XMLPathFormat::idV3DPath() {
+	static const XMLStr id("V3DPath");
+	return id.uni();
+}
+
+const XMLCh* XMLPathFormat::idR3DPath() {
+	static const XMLStr id("R3DPath");
+	return id.uni();
+}
+
+const XMLCh* XMLPathFormat::idT3DPath() {
+	static const XMLStr id("T3DPath");
+	return id.uni();
+}
+
+const XMLCh* XMLPathFormat::idStatePath() {
+	static const XMLStr id("StatePath");
+	return id.uni();
+}
+
+const XMLCh* XMLPathFormat::idTimedQPath() {
+	static const XMLStr id("TimedQPath");
+	return id.uni();
+}
+
+const XMLCh* XMLPathFormat::idTimedState() {
+	static const XMLStr id("TimedState");
+	return id.uni();
+}
+
+const XMLCh* XMLPathFormat::idTimedQ() {
+	static const XMLStr id("TimedQ");
+	return id.uni();
+}
+
+const XMLCh* XMLPathFormat::idTimedStatePath() {
+	static const XMLStr id("TimedStatePath");
+	return id.uni();
+}
+
+const XMLCh* XMLPathFormat::idTime() {
+	static const XMLStr id("Time");
+	return id.uni();
 }

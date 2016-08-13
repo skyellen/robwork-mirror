@@ -42,6 +42,17 @@ using namespace rw::math;
 using namespace rw::trajectory;
 using namespace rw::loaders;
 
+XMLTrajectoryLoader::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		XMLBasisTypes::Initializer init1;
+		XMLTrajectoryFormat::Initializer init2;
+		done = true;
+	}
+}
+
+const XMLTrajectoryLoader::Initializer XMLTrajectoryLoader::initializer;
+
 XMLTrajectoryLoader::XMLTrajectoryLoader(const std::string& filename, const std::string& schemaFileName)
 {
     XercesDOMParser parser;
@@ -70,8 +81,8 @@ XMLTrajectoryLoader::~XMLTrajectoryLoader()
 namespace {
 
     double readDuration(xercesc::DOMElement* element) {
-        if (element->hasAttribute(XMLTrajectoryFormat::DurationAttributeId)) {
-            const XMLCh* attr = element->getAttribute(XMLTrajectoryFormat::DurationAttributeId);
+        if (element->hasAttribute(XMLTrajectoryFormat::idDurationAttribute())) {
+            const XMLCh* attr = element->getAttribute(XMLTrajectoryFormat::idDurationAttribute());
             XMLDouble xmlfloat(attr);
             return xmlfloat.getValue();
         }
@@ -79,8 +90,8 @@ namespace {
     }
 
     double readStartTime(xercesc::DOMElement* element) {
-        if (element->hasAttribute(XMLTrajectoryFormat::StartTimeAttributeId)) {
-            const XMLCh* attr = element->getAttribute(XMLTrajectoryFormat::StartTimeAttributeId);
+        if (element->hasAttribute(XMLTrajectoryFormat::idStartTimeAttribute())) {
+            const XMLCh* attr = element->getAttribute(XMLTrajectoryFormat::idStartTimeAttribute());
             XMLDouble xmlfloat(attr);
             return xmlfloat.getValue();
         }
@@ -185,7 +196,7 @@ namespace {
     class ParabolicBlendParser {
     public:
         static ParabolicBlend<T>* read(xercesc::DOMElement* element, LinearInterpolator<T>* int1, LinearInterpolator<T>* int2) {
-            double tau = readAttribute(element, XMLTrajectoryFormat::TauAttributeId);
+            double tau = readAttribute(element, XMLTrajectoryFormat::idTauAttribute());
             return new ParabolicBlend<T>(int1, int2, tau);
         }
     };
@@ -199,8 +210,8 @@ namespace {
 
 
     template<class T> LloydHaywardBlend<T>* LloydHaywardBlendParser<T>::read(xercesc::DOMElement* element, Interpolator<T>* int1, Interpolator<T>* int2) {
-        double tau = readAttribute(element, XMLTrajectoryFormat::TauAttributeId);
-        double kappa = readAttribute(element, XMLTrajectoryFormat::KappaAttributeId);
+        double tau = readAttribute(element, XMLTrajectoryFormat::idTauAttribute());
+        double kappa = readAttribute(element, XMLTrajectoryFormat::idKappaAttribute());
         return new LloydHaywardBlend<T>(int1, int2, tau, kappa);
     }
 
@@ -223,11 +234,11 @@ namespace {
 
     class QIdentifiers: public Identifiers {
         virtual const XMLCh* linearInterpolatorId() {
-            return XMLTrajectoryFormat::QLinearInterpolatorId;
+            return XMLTrajectoryFormat::idQLinearInterpolator();
         }
 
         virtual const XMLCh* cubicSplineInterpolatorId() {
-            return XMLTrajectoryFormat::QCubicSplineInterpolatorId;
+            return XMLTrajectoryFormat::idQCubicSplineInterpolator();
         }
 
         virtual const XMLCh* circularInterpolatorId() {
@@ -237,24 +248,24 @@ namespace {
 
     class V3DIdentifiers: public Identifiers {
         virtual const XMLCh* linearInterpolatorId() {
-            return XMLTrajectoryFormat::V3DLinearInterpolatorId;
+            return XMLTrajectoryFormat::idV3DLinearInterpolator();
         }
 
         virtual const XMLCh* cubicSplineInterpolatorId() {
-            return XMLTrajectoryFormat::V3DCubicSplineInterpolatorId;
+            return XMLTrajectoryFormat::idV3DCubicSplineInterpolator();
         }
         virtual const XMLCh* circularInterpolatorId() {
-            return XMLTrajectoryFormat::V3DCircularInterpolatorId;
+            return XMLTrajectoryFormat::idV3DCircularInterpolator();
         }
     };
 
     class R3DIdentifiers: public Identifiers {
         virtual const XMLCh* linearInterpolatorId() {
-            return XMLTrajectoryFormat::R3DLinearInterpolatorId;
+            return XMLTrajectoryFormat::idR3DLinearInterpolator();
         }
 
         virtual const XMLCh* cubicSplineInterpolatorId() {
-            return XMLTrajectoryFormat::R3DCubicSplineInterpolatorId;
+            return XMLTrajectoryFormat::idR3DCubicSplineInterpolator();
         }
 
         virtual const XMLCh* circularInterpolatorId() {
@@ -264,11 +275,11 @@ namespace {
 
     class T3DIdentifiers: public Identifiers {
         virtual const XMLCh* linearInterpolatorId() {
-            return XMLTrajectoryFormat::T3DLinearInterpolatorId;
+            return XMLTrajectoryFormat::idT3DLinearInterpolator();
         }
 
         virtual const XMLCh* cubicSplineInterpolatorId() {
-            return XMLTrajectoryFormat::T3DCubicSplineInterpolatorId;
+            return XMLTrajectoryFormat::idT3DCubicSplineInterpolator();
         }
 
         virtual const XMLCh* circularInterpolatorId() {
@@ -320,7 +331,7 @@ namespace {
                         blend = NULL;
                     }
                     interpolatorIndex++;
-                } else if (XMLString::equals(XMLTrajectoryFormat::ParabolicBlendId, element->getNodeName())) {
+                } else if (XMLString::equals(XMLTrajectoryFormat::idParabolicBlend(), element->getNodeName())) {
                     LinearInterpolator<T>* linear1 = dynamic_cast<LinearInterpolator<T>*>(interpolators[interpolatorIndex-1]);
                     LinearInterpolator<T>* linear2 = dynamic_cast<LinearInterpolator<T>*>(interpolators[interpolatorIndex]);
 
@@ -328,7 +339,7 @@ namespace {
                         RW_THROW("ParabolicBlends can only be constructed between LinearInterpolator's");
 
                     blend = ParabolicBlendParser<T>::read(element, linear1, linear2);
-                } else if (XMLString::equals(XMLTrajectoryFormat::LloydHaywardBlendId, element->getNodeName())) {
+                } else if (XMLString::equals(XMLTrajectoryFormat::idLloydHaywardBlend(), element->getNodeName())) {
                     Interpolator<T>* int1 = interpolators[interpolatorIndex-1];
                     Interpolator<T>* int2 = interpolators[interpolatorIndex];
                     blend = LloydHaywardBlendParser<T>::read(element, int1, int2);
@@ -376,19 +387,19 @@ Transform3DTrajectory::Ptr XMLTrajectoryLoader::getTransform3DTrajectory() {
 
 void XMLTrajectoryLoader::readTrajectory(xercesc::DOMElement* element) {
     //Determine which type of trajectory we are using
-    if (XMLString::equals(XMLTrajectoryFormat::QTrajectoryId, element->getNodeName())) {
+    if (XMLString::equals(XMLTrajectoryFormat::idQTrajectory(), element->getNodeName())) {
         QIdentifiers ids;
         _qTrajectory = read<Q>(element, &ids);
         _type = QType;
-    } else if (XMLString::equals(XMLTrajectoryFormat::V3DTrajectoryId, element->getNodeName())) {
+    } else if (XMLString::equals(XMLTrajectoryFormat::idV3DTrajectory(), element->getNodeName())) {
         V3DIdentifiers ids;
         _v3dTrajectory = read<Vector3D<> >(element, &ids);
         _type = Vector3DType;
-    } else if (XMLString::equals(XMLTrajectoryFormat::R3DTrajectoryId, element->getNodeName())) {
+    } else if (XMLString::equals(XMLTrajectoryFormat::idR3DTrajectory(), element->getNodeName())) {
         R3DIdentifiers ids;
         _r3dTrajectory = read<Rotation3D<> >(element, &ids);
         _type = Rotation3DType;
-    } else if (XMLString::equals(XMLTrajectoryFormat::T3DTrajectoryId, element->getNodeName())) {
+    } else if (XMLString::equals(XMLTrajectoryFormat::idT3DTrajectory(), element->getNodeName())) {
         T3DIdentifiers ids;
         _t3dTrajectory = read<Transform3D<> >(element, &ids);
         _type = Transform3DType;

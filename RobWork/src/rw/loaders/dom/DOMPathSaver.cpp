@@ -28,6 +28,16 @@ using namespace rw::math;
 using namespace rw::common;
 using namespace rw::kinematics;
 
+DOMPathSaver::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		DOMBasisTypes::Initializer init1;
+		DOMPathLoader::Initializer init2;
+		done = true;
+	}
+}
+
+const DOMPathSaver::Initializer DOMPathSaver::initializer;
 
 namespace {
      template <class T>
@@ -58,16 +68,16 @@ namespace {
 
 
      template<> DOMElem::Ptr ElementCreator<TimedQ>::createElement(const TimedQ& timedQ, DOMElem::Ptr parent) {
-         DOMElem::Ptr element = parent->addChild(DOMPathLoader::TimedQId);
-         element->addChild(DOMPathLoader::TimeId)->setValue(timedQ.getTime());
+         DOMElem::Ptr element = parent->addChild(DOMPathLoader::idTimedQ());
+         element->addChild(DOMPathLoader::idTime())->setValue(timedQ.getTime());
          DOMBasisTypes::createQ(timedQ.getValue(), element);
          return element;
      }
 
      template<> DOMElem::Ptr ElementCreator<TimedState>::createElement(
     		 const TimedState& timedState, DOMElem::Ptr parent) {
-    	 DOMElem::Ptr element = parent->addChild(DOMPathLoader::TimedStateId);
-    	 element->addChild(DOMPathLoader::TimeId)->setValue(timedState.getTime());
+    	 DOMElem::Ptr element = parent->addChild(DOMPathLoader::idTimedState());
+    	 element->addChild(DOMPathLoader::idTime())->setValue(timedState.getTime());
          DOMBasisTypes::createState(timedState.getValue(), element);
          return element;
      }
@@ -132,70 +142,70 @@ namespace {
 
 
 void DOMPathSaver::save(const QPath& path, const std::string& filename) {
-    savePath<Q,  QPath>(path, DOMPathLoader::QPathId, filename);
+    savePath<Q,  QPath>(path, DOMPathLoader::idQPath(), filename);
 }
 
 void DOMPathSaver::save(const Vector3DPath& path, const std::string& filename) {
-    savePath<Vector3D<>,  Vector3DPath>(path, DOMPathLoader::V3DPathId, filename);
+    savePath<Vector3D<>,  Vector3DPath>(path, DOMPathLoader::idV3DPath(), filename);
 }
 
 void DOMPathSaver::save(const Rotation3DPath& path, const std::string& filename) {
-    savePath<Rotation3D<>,  Rotation3DPath>(path, DOMPathLoader::R3DPathId, filename);
+    savePath<Rotation3D<>,  Rotation3DPath>(path, DOMPathLoader::idR3DPath(), filename);
 }
 
 void DOMPathSaver::save(const Transform3DPath& path, const std::string& filename) {
-    savePath<Transform3D<>,  Transform3DPath>(path, DOMPathLoader::T3DPathId, filename);
+    savePath<Transform3D<>,  Transform3DPath>(path, DOMPathLoader::idT3DPath(), filename);
 }
 
 void DOMPathSaver::save(const StatePath& path, const std::string& filename) {
-    savePath<State, StatePath>(path, DOMPathLoader::StatePathId, filename);
+    savePath<State, StatePath>(path, DOMPathLoader::idStatePath(), filename);
 }
 
 void DOMPathSaver::save(const TimedQPath& path, const std::string& filename) {
-    savePath<TimedQ, TimedQPath>(path, DOMPathLoader::TimedQPathId, filename);
+    savePath<TimedQ, TimedQPath>(path, DOMPathLoader::idTimedQPath(), filename);
 }
 
 void DOMPathSaver::save(const TimedStatePath& path, const std::string& filename) {
-    savePath<TimedState, TimedStatePath>(path, DOMPathLoader::TimedStatePathId, filename);
+    savePath<TimedState, TimedStatePath>(path, DOMPathLoader::idTimedStatePath(), filename);
 }
 
 //------------------------------------------------------------------------
 
 void DOMPathSaver::write(const QPath& path, std::ostream& outstream) {
-    writePath<Q,  QPath>(path, DOMPathLoader::QPathId, outstream);
+    writePath<Q,  QPath>(path, DOMPathLoader::idQPath(), outstream);
 }
 
 void DOMPathSaver::write(const Vector3DPath& path, std::ostream& outstream) {
-    writePath<Vector3D<>,  Vector3DPath>(path, DOMPathLoader::V3DPathId, outstream);
+    writePath<Vector3D<>,  Vector3DPath>(path, DOMPathLoader::idV3DPath(), outstream);
 }
 
 void DOMPathSaver::write(const Rotation3DPath& path, std::ostream& outstream) {
-    writePath<Rotation3D<>,  Rotation3DPath>(path, DOMPathLoader::R3DPathId, outstream);
+    writePath<Rotation3D<>,  Rotation3DPath>(path, DOMPathLoader::idR3DPath(), outstream);
 }
 
 void DOMPathSaver::write(const Transform3DPath& path, std::ostream& outstream) {
-    writePath<Transform3D<>,  Transform3DPath>(path, DOMPathLoader::T3DPathId, outstream);
+    writePath<Transform3D<>,  Transform3DPath>(path, DOMPathLoader::idT3DPath(), outstream);
 }
 
 
 void DOMPathSaver::write(const StatePath& path, std::ostream& outstream) {
-    writePath<State, StatePath>(path, DOMPathLoader::StatePathId, outstream);
+    writePath<State, StatePath>(path, DOMPathLoader::idStatePath(), outstream);
 }
 
 void DOMPathSaver::write(const TimedQPath& path, std::ostream& outstream) {
-    writePath<TimedQ, TimedQPath>(path, DOMPathLoader::TimedQPathId, outstream);
+    writePath<TimedQ, TimedQPath>(path, DOMPathLoader::idTimedQPath(), outstream);
 }
 
 void DOMPathSaver::write(const TimedStatePath& path, std::ostream& outstream) {
-    writePath<TimedState, TimedStatePath>(path, DOMPathLoader::TimedStatePathId, outstream);
+    writePath<TimedState, TimedStatePath>(path, DOMPathLoader::idTimedStatePath(), outstream);
 }
 
 //------------------------------------------------------------------------
 
 rw::common::DOMElem::Ptr DOMPathSaver::createTransform3DPath(const rw::trajectory::Transform3DPath &path, rw::common::DOMElem::Ptr doc) {
-    return createElement<Transform3D<>, Transform3DPath>(path, DOMPathLoader::T3DPathId, doc);
+    return createElement<Transform3D<>, Transform3DPath>(path, DOMPathLoader::idT3DPath(), doc);
 }
 
 rw::common::DOMElem::Ptr DOMPathSaver::createQPath(const rw::trajectory::QPath &path, rw::common::DOMElem::Ptr doc) {
-    return createElement<Q, QPath>(path, DOMPathLoader::QPathId, doc);
+    return createElement<Q, QPath>(path, DOMPathLoader::idQPath(), doc);
 }

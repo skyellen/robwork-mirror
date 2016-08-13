@@ -22,8 +22,6 @@
 
 using namespace rwlibs::task;
 
-TypeRepository* TypeRepository::_repository = NULL;
-
 TypeRepository::TypeRepository() {
     _typeMap[typeid(rw::math::Q).name()] = Type::Q;
     _typeMap[typeid(rw::math::Transform3D<>).name()] = Type::Transform3D;

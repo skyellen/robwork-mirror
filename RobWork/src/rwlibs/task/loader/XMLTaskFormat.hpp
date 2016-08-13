@@ -19,7 +19,7 @@
 #ifndef RWLIBS_TASK_XMLTASKFORMAT_HPP
 #define RWLIBS_TASK_XMLTASKFORMAT_HPP
 
-#include <rw/loaders/xml/XercesUtils.hpp>
+#include <xercesc/util/XercesDefs.hpp>
 
 namespace rwlibs {
 
@@ -35,54 +35,146 @@ namespace task {
  */
 class XMLTaskFormat
 {
-private:
-    static const rw::loaders::XercesInitializer initializer;
 public:
+    /**
+     * @brief Identifier for rw::task::Task with rw::math::Q as content in the XML format.
+     * @return the identifier.
+     */
+    static const XMLCh* idQTask();
 
-    /** @brief Identifier for rw::task::Task with rw::math::Q as content in the XML format  */
-    static const XMLCh* QTaskId;
+    /**
+     * @brief Identifier for CartesianTask.
+     * @return the identifier.
+     */
+    static const XMLCh* idCartesianTask();
 
-    static const XMLCh* CartesianTaskId;
+    /**
+     * @brief Identifier for Targets.
+     * @return the identifier.
+     */
+    static const XMLCh* idTargets();
 
-    static const XMLCh* TargetsId;
+    /**
+     * @brief Identifier for Entities.
+     * @return the identifier.
+     */
+    static const XMLCh* idEntities();
 
-    static const XMLCh* EntitiesId;
+    /**
+     * @brief Identifier for Augmentations.
+     * @return the identifier.
+     */
+    static const XMLCh* idAugmentations();
 
-    static const XMLCh* AugmentationsId;
+    /**
+     * @brief Identifier for QTarget.
+     * @return the identifier.
+     */
+    static const XMLCh* idQTarget();
 
+    /**
+     * @brief Identifier for CartesianTarget.
+     * @return the identifier.
+     */
+    static const XMLCh* idCartesianTarget();
 
-    static const XMLCh* QTargetId;
+    /**
+     * @brief Identifier for Motion.
+     * @return the identifier.
+     */
+    static const XMLCh* idMotion();
 
-    static const XMLCh* CartesianTargetId;
+    /**
+     * @brief Identifier for Action.
+     * @return the identifier.
+     */
+    static const XMLCh* idAction();
 
+    /**
+     * @brief Identifier for EntityIndex.
+     * @return the identifier.
+     */
+    static const XMLCh* idEntityIndex();
 
-    static const XMLCh* MotionId;
-    static const XMLCh* ActionId;
+    /**
+     * @brief Identifier for EntityId.
+     * @return the identifier.
+     */
+    static const XMLCh* idEntityId();
 
+    /**
+     * @brief Identifier for TargetIdAttr.
+     * @return the identifier.
+     */
+    static const XMLCh* idTargetIdAttr();
 
+    /**
+     * @brief Identifier for MotionTypeAttr.
+     * @return the identifier.
+     */
+    static const XMLCh* idMotionTypeAttr();
 
+    /**
+     * @brief Identifier for MotionStart.
+     * @return the identifier.
+     */
+    static const XMLCh* idMotionStart();
 
-    static const XMLCh* EntityIndexId;
-    static const XMLCh* EntityIdId;
+    /**
+     * @brief Identifier for MotionMid.
+     * @return the identifier.
+     */
+    static const XMLCh* idMotionMid();
 
-    static const XMLCh* TargetIdAttrId;
+    /**
+     * @brief Identifier for MotionEnd.
+     * @return the identifier.
+     */
+    static const XMLCh* idMotionEnd();
 
-    static const XMLCh* MotionTypeAttrId;
+    /**
+     * @brief Identifier for LinearMotion.
+     * @return the identifier.
+     */
+    static const XMLCh* idLinearMotion();
 
+    /**
+     * @brief Identifier for P2PMotion.
+     * @return the identifier.
+     */
+    static const XMLCh* idP2PMotion();
 
+    /**
+     * @brief Identifier for CircularMotion.
+     * @return the identifier.
+     */
+    static const XMLCh* idCircularMotion();
 
-    static const XMLCh* MotionStartId;
-    static const XMLCh* MotionMidId;
-    static const XMLCh* MotionEndId;
+    /**
+     * @brief Identifier for ActionTypeAttr.
+     * @return the identifier.
+     */
+    static const XMLCh* idActionTypeAttr();
 
-    static const XMLCh* LinearMotionId;
-    static const XMLCh* P2PMotionId;
-    static const XMLCh* CircularMotionId;
-
-
-    static const XMLCh* ActionTypeAttrId;
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the XMLTaskFormat is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if XMLTaskFormat is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
+	public:
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
 
 private:
+	static const Initializer initializer;
+
 	XMLTaskFormat() {};
 };
 

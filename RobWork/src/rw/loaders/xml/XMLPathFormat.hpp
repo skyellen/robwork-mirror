@@ -22,8 +22,6 @@
 
 namespace rw {
 namespace loaders {
-class XercesInitializer;
-
 /** @addtogroup loaders */
 /*@{*/
 
@@ -33,43 +31,86 @@ class XercesInitializer;
  */
 class XMLPathFormat
 {
-private:
-    static const XercesInitializer initializer;
 public:
+	/**
+	 * @brief Identifier for rw::trajectory::QPath in the XML format.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idQPath();
 
-    /** @brief Identifier for rw::trajectory::QPath in the XML format  */
-    static const XMLCh* QPathId;
+	/**
+	 * @brief Identifier for rw::trajectory::Vector3DPath in the XML format.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idV3DPath();
 
-    /** @brief Identifier for rw::trajectory::Vector3DPath in the XML format  */
-    static const XMLCh* V3DPathId;
+	/**
+	 * @brief Identifier for rw::trajectory::Rotation3DPath in the XML format.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idR3DPath();
 
-    /** @brief Identifier for rw::trajectory::Rotation3DPath in the XML format  */
-    static const XMLCh* R3DPathId;
+	/**
+	 * @brief Identifier for rw::trajectory::Transform3DPath in the XML format.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idT3DPath();
 
-    /** @brief Identifier for rw::trajectory::Transform3DPath in the XML format  */
-    static const XMLCh* T3DPathId;
+	/**
+	 * @brief Identifier for rw::trajectory::StatePath in the XML format.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idStatePath();
 
-    /** @brief Identifier for rw::trajectory::StatePath in the XML format  */
-    static const XMLCh* StatePathId;
+	/**
+	 * @brief Identifier for rw::trajectory::TimedQPath in the XML format.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idTimedQPath();
 
-    /** @brief Identifier for rw::trajectory::TimedQPath in the XML format  */
-    static const XMLCh* TimedQPathId;
+	/**
+	 * @brief Identifier for rw::trajectory::TimedState in the XML format.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idTimedState();
 
-    /** @brief Identifier for rw::trajectory::TimedState in the XML format  */
-    static const XMLCh* TimedStateId;
+	/**
+	 * @brief Identifier for rw::trajectory::TimedQ in the XML format.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idTimedQ();
 
-    /** @brief Identifier for rw::trajectory::TimedQ in the XML format  */
-    static const XMLCh* TimedQId;
+	/**
+	 * @brief Identifier for rw::trajectory::TimedStatePath in the XML format.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idTimedStatePath();
 
-    /** @brief Identifier for rw::trajectory::TimedStatePath in the XML format  */
-    static const XMLCh* TimedStatePathId;
+	/**
+	 * @brief Identifier for time attribute used for rw::trajectory::TimedQPath and rw::trajectory::TimedStatePath in the XML format.
+	 * @return the identifier.
+	 */
+	static const XMLCh* idTime();
 
-    /** @brief Identifier for time attribute used for rw::trajectory::TimedQPath and rw::trajectory::TimedStatePath in the XML format  */
-    static const XMLCh* TimeId;
-
-	static const int* myTestVar;
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the XMLPathFormat is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if XMLPathFormat is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
+	public:
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
 
 private:
+	static const Initializer initializer;
+
     XMLPathFormat() {};
 };
 

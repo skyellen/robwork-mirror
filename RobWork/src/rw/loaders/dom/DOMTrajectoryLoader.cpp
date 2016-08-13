@@ -34,34 +34,129 @@ using namespace rw::math;
 using namespace rw::trajectory;
 using namespace rw::loaders;
 
-const std::string DOMTrajectoryLoader::QTrajectoryId("QTrajectory");
-const std::string DOMTrajectoryLoader::V3DTrajectoryId("V3DTrajectory");
+DOMTrajectoryLoader::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		DOMBasisTypes::Initializer init;
+		idQTrajectory();
+		idV3DTrajectory();
+		idR3DTrajectory();
+		idT3DTrajectory();
+		idQLinearInterpolator();
+		idQCubicSplineInterpolator();
+		idV3DLinearInterpolator();
+		idV3DCubicSplineInterpolator();
+		idV3DCircularInterpolator();
+		idR3DLinearInterpolator();
+		idR3DCubicSplineInterpolator();
+		idT3DLinearInterpolator();
+		idT3DCubicSplineInterpolator();
+		idParabolicBlend();
+		idLloydHaywardBlend();
+		idDurationAttribute();
+		idStartTimeAttribute();
+		idTauAttribute();
+		idKappaAttribute();
+		done = true;
+	}
+}
 
-const std::string DOMTrajectoryLoader::R3DTrajectoryId("R3DTrajectory");
-const std::string DOMTrajectoryLoader::T3DTrajectoryId("T3DTrajectory");
+const DOMTrajectoryLoader::Initializer DOMTrajectoryLoader::initializer;
 
-const std::string DOMTrajectoryLoader::QLinearInterpolatorId("QLinearInterpolator");
-const std::string DOMTrajectoryLoader::QCubicSplineInterpolatorId("QCubicSplineInterpolator");
+const std::string& DOMTrajectoryLoader::idQTrajectory() {
+	static const std::string id("QTrajectory");
+	return id;
+}
 
-const std::string DOMTrajectoryLoader::V3DLinearInterpolatorId("V3DLinearInterpolator");
-const std::string DOMTrajectoryLoader::V3DCubicSplineInterpolatorId("V3DCubicSplineInterpolator");
-const std::string DOMTrajectoryLoader::V3DCircularInterpolatorId("V3DCircularInterpolator");
+const std::string& DOMTrajectoryLoader::idV3DTrajectory() {
+	static const std::string id("V3DTrajectory");
+	return id;
+}
 
-const std::string DOMTrajectoryLoader::R3DLinearInterpolatorId("R3DLinearInterpolator");
-const std::string DOMTrajectoryLoader::R3DCubicSplineInterpolatorId("R3DCubicSplineInterpolator");
+const std::string& DOMTrajectoryLoader::idR3DTrajectory() {
+	static const std::string id("R3DTrajectory");
+	return id;
+}
 
-const std::string DOMTrajectoryLoader::T3DLinearInterpolatorId("T3DLinearInterpolator");
-const std::string DOMTrajectoryLoader::T3DCubicSplineInterpolatorId("T3DCubicSplineInterpolator");
+const std::string& DOMTrajectoryLoader::idT3DTrajectory() {
+	static const std::string id("T3DTrajectory");
+	return id;
+}
 
-const std::string DOMTrajectoryLoader::ParabolicBlendId("ParabolicBlend");
-const std::string DOMTrajectoryLoader::LloydHaywardBlendId("LloydHaywardBlend");
+const std::string& DOMTrajectoryLoader::idQLinearInterpolator() {
+	static const std::string id("QLinearInterpolator");
+	return id;
+}
 
-const std::string DOMTrajectoryLoader::DurationAttributeId("duration");
-const std::string DOMTrajectoryLoader::StartTimeAttributeId("starttime");
-const std::string DOMTrajectoryLoader::TauAttributeId("tau");
-const std::string DOMTrajectoryLoader::KappaAttributeId("kappa");
+const std::string& DOMTrajectoryLoader::idQCubicSplineInterpolator() {
+	static const std::string id("QCubicSplineInterpolator");
+	return id;
+}
 
+const std::string& DOMTrajectoryLoader::idV3DLinearInterpolator() {
+	static const std::string id("V3DLinearInterpolator");
+	return id;
+}
 
+const std::string& DOMTrajectoryLoader::idV3DCubicSplineInterpolator() {
+	static const std::string id("V3DCubicSplineInterpolator");
+	return id;
+}
+
+const std::string& DOMTrajectoryLoader::idV3DCircularInterpolator() {
+	static const std::string id("V3DCircularInterpolator");
+	return id;
+}
+
+const std::string& DOMTrajectoryLoader::idR3DLinearInterpolator() {
+	static const std::string id("R3DLinearInterpolator");
+	return id;
+}
+
+const std::string& DOMTrajectoryLoader::idR3DCubicSplineInterpolator() {
+	static const std::string id("R3DCubicSplineInterpolator");
+	return id;
+}
+
+const std::string& DOMTrajectoryLoader::idT3DLinearInterpolator() {
+	static const std::string id("T3DLinearInterpolator");
+	return id;
+}
+
+const std::string& DOMTrajectoryLoader::idT3DCubicSplineInterpolator() {
+	static const std::string id("T3DCubicSplineInterpolator");
+	return id;
+}
+
+const std::string& DOMTrajectoryLoader::idParabolicBlend() {
+	static const std::string id("ParabolicBlend");
+	return id;
+}
+
+const std::string& DOMTrajectoryLoader::idLloydHaywardBlend() {
+	static const std::string id("LloydHaywardBlend");
+	return id;
+}
+
+const std::string& DOMTrajectoryLoader::idDurationAttribute() {
+	static const std::string id("duration");
+	return id;
+}
+
+const std::string& DOMTrajectoryLoader::idStartTimeAttribute() {
+	static const std::string id("starttime");
+	return id;
+}
+
+const std::string& DOMTrajectoryLoader::idTauAttribute() {
+	static const std::string id("tau");
+	return id;
+}
+
+const std::string& DOMTrajectoryLoader::idKappaAttribute() {
+	static const std::string id("kappa");
+	return id;
+}
 
 DOMTrajectoryLoader::DOMTrajectoryLoader(const std::string& filename, const std::string& schemaFileName)
 {
@@ -90,11 +185,11 @@ DOMTrajectoryLoader::~DOMTrajectoryLoader()
 namespace {
 
     double readDuration(DOMElem::Ptr element) {
-        return element->getAttributeValueAsDouble(DOMTrajectoryLoader::DurationAttributeId, 1.0);
+        return element->getAttributeValueAsDouble(DOMTrajectoryLoader::idDurationAttribute(), 1.0);
     }
 
     double readStartTime(DOMElem::Ptr element) {
-    	return element->getAttributeValueAsDouble(DOMTrajectoryLoader::StartTimeAttributeId, 0.0);
+    	return element->getAttributeValueAsDouble(DOMTrajectoryLoader::idStartTimeAttribute(), 0.0);
     }
 
     template <class T>
@@ -170,7 +265,7 @@ namespace {
     class ParabolicBlendParser {
     public:
         static ParabolicBlend<T>* read(DOMElem::Ptr element, LinearInterpolator<T>* int1, LinearInterpolator<T>* int2) {
-        	double tau = element->getAttributeValueAsDouble(DOMTrajectoryLoader::TauAttributeId);
+        	double tau = element->getAttributeValueAsDouble(DOMTrajectoryLoader::idTauAttribute());
             return new ParabolicBlend<T>(int1, int2, tau);
         }
     };
@@ -184,8 +279,8 @@ namespace {
 
 
     template<class T> LloydHaywardBlend<T>* LloydHaywardBlendParser<T>::read(DOMElem::Ptr element, Interpolator<T>* int1, Interpolator<T>* int2) {
-        double tau = element->getAttributeValueAsDouble(DOMTrajectoryLoader::TauAttributeId);
-        double kappa = element->getAttributeValueAsDouble(DOMTrajectoryLoader::KappaAttributeId);
+        double tau = element->getAttributeValueAsDouble(DOMTrajectoryLoader::idTauAttribute());
+        double kappa = element->getAttributeValueAsDouble(DOMTrajectoryLoader::idKappaAttribute());
         return new LloydHaywardBlend<T>(int1, int2, tau, kappa);
     }
 
@@ -208,11 +303,11 @@ namespace {
 
     class QIdentifiers: public Identifiers {
         virtual const std::string& linearInterpolatorId() {
-            return DOMTrajectoryLoader::QLinearInterpolatorId;
+            return DOMTrajectoryLoader::idQLinearInterpolator();
         }
 
         virtual const std::string& cubicSplineInterpolatorId() {
-            return DOMTrajectoryLoader::QCubicSplineInterpolatorId;
+            return DOMTrajectoryLoader::idQCubicSplineInterpolator();
         }
 
         virtual const std::string& circularInterpolatorId() {
@@ -223,24 +318,24 @@ namespace {
 
     class V3DIdentifiers: public Identifiers {
         virtual const std::string& linearInterpolatorId() {
-            return DOMTrajectoryLoader::V3DLinearInterpolatorId;
+            return DOMTrajectoryLoader::idV3DLinearInterpolator();
         }
 
         virtual const std::string& cubicSplineInterpolatorId() {
-            return DOMTrajectoryLoader::V3DCubicSplineInterpolatorId;
+            return DOMTrajectoryLoader::idV3DCubicSplineInterpolator();
         }
         virtual const std::string& circularInterpolatorId() {
-            return DOMTrajectoryLoader::V3DCircularInterpolatorId;
+            return DOMTrajectoryLoader::idV3DCircularInterpolator();
         }
     };
 
     class R3DIdentifiers: public Identifiers {
         virtual const std::string& linearInterpolatorId() {
-            return DOMTrajectoryLoader::R3DLinearInterpolatorId;
+            return DOMTrajectoryLoader::idR3DLinearInterpolator();
         }
 
         virtual const std::string& cubicSplineInterpolatorId() {
-            return DOMTrajectoryLoader::R3DCubicSplineInterpolatorId;
+            return DOMTrajectoryLoader::idR3DCubicSplineInterpolator();
         }
 
         virtual const std::string& circularInterpolatorId() {
@@ -251,11 +346,11 @@ namespace {
 
     class T3DIdentifiers: public Identifiers {
         virtual const std::string& linearInterpolatorId() {
-            return DOMTrajectoryLoader::T3DLinearInterpolatorId;
+            return DOMTrajectoryLoader::idT3DLinearInterpolator();
         }
 
         virtual const std::string& cubicSplineInterpolatorId() {
-            return DOMTrajectoryLoader::T3DCubicSplineInterpolatorId;
+            return DOMTrajectoryLoader::idT3DCubicSplineInterpolator();
         }
 
         virtual const std::string& circularInterpolatorId() {
@@ -301,7 +396,7 @@ namespace {
 					blend = NULL;
 				}
 				interpolatorIndex++;
-			} else if (child->isName(DOMTrajectoryLoader::ParabolicBlendId) ) {
+			} else if (child->isName(DOMTrajectoryLoader::idParabolicBlend()) ) {
 				LinearInterpolator<T>* linear1 = dynamic_cast<LinearInterpolator<T>*>(interpolators[interpolatorIndex-1]);
 				LinearInterpolator<T>* linear2 = dynamic_cast<LinearInterpolator<T>*>(interpolators[interpolatorIndex]);
 
@@ -309,7 +404,7 @@ namespace {
 					RW_THROW("ParabolicBlends can only be constructed between LinearInterpolator's");
 
 				blend = ParabolicBlendParser<T>::read(child, linear1, linear2);
-			} else if (child->isName(DOMTrajectoryLoader::LloydHaywardBlendId) ) {
+			} else if (child->isName(DOMTrajectoryLoader::idLloydHaywardBlend()) ) {
 				Interpolator<T>* int1 = interpolators[interpolatorIndex-1];
 				Interpolator<T>* int2 = interpolators[interpolatorIndex];
 				blend = LloydHaywardBlendParser<T>::read(child, int1, int2);
@@ -355,19 +450,19 @@ Transform3DTrajectory::Ptr DOMTrajectoryLoader::getTransform3DTrajectory() {
 
 void DOMTrajectoryLoader::readTrajectory(DOMElem::Ptr element) {
     //Determine which type of trajectory we are using
-    if (element->isName(DOMTrajectoryLoader::QTrajectoryId ) ) {
+    if (element->isName(DOMTrajectoryLoader::idQTrajectory() ) ) {
         QIdentifiers ids;
         _qTrajectory = read<Q>(element, &ids);
         _type = QType;
-    } else if (element->isName( DOMTrajectoryLoader::V3DTrajectoryId ) ) {
+    } else if (element->isName( DOMTrajectoryLoader::idV3DTrajectory() ) ) {
         V3DIdentifiers ids;
         _v3dTrajectory = read<Vector3D<> >(element, &ids);
         _type = Vector3DType;
-    } else if (element->isName(DOMTrajectoryLoader::R3DTrajectoryId) ) {
+    } else if (element->isName(DOMTrajectoryLoader::idR3DTrajectory()) ) {
         R3DIdentifiers ids;
         _r3dTrajectory = read<Rotation3D<> >(element, &ids);
         _type = Rotation3DType;
-    } else if (element->isName(DOMTrajectoryLoader::T3DTrajectoryId) ) {
+    } else if (element->isName(DOMTrajectoryLoader::idT3DTrajectory()) ) {
         T3DIdentifiers ids;
         _t3dTrajectory = read<Transform3D<> >(element, &ids);
         _type = Transform3DType;

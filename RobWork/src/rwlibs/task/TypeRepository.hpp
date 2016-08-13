@@ -138,9 +138,8 @@ public:
      * @return Reference to the global TypeRepository
      */
     static TypeRepository& instance() {
-        if (_repository == NULL)
-            _repository = new TypeRepository();
-        return *_repository;
+        static TypeRepository repository;
+        return repository;
     }
 
 
@@ -152,10 +151,6 @@ private:
     TypeMap _typeMap;
     int _next;
     TypeRepository();
-
-    static TypeRepository* _repository;
-
-
 };
 
 /** @} */

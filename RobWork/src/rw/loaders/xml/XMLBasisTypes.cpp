@@ -40,61 +40,179 @@ using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rw::loaders;
 
-namespace {
-
-bool initializeXerces() {
-    try
-    {
-       XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
-    }
-    catch( XMLException& e )
-    {
-       RW_THROW("Unable to initialize Xerces: "<<XMLStr(e.getMessage()).str());
-    }
-
-    return true;
+XMLBasisTypes::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		//Small trick to make sure Xerces is initialized before we start using XMLString::transcode
+		static XercesInitializer initializer;
+		idQ();
+		idVector3D();
+		idVector2D();
+		idRotation3D();
+		idRPY();
+		idEAA();
+		idQuaternion();
+		idRotation2D();
+		idTransform3D();
+		idVelocityScrew6D();
+		idPos();
+		idMatrix();
+		idLinear();
+		idAngular();
+		idState();
+		idQState();
+		idTreeState();
+		idBoolean();
+		idDouble();
+		idFloat();
+		idInteger();
+		idString();
+		idStringList();
+		idIntList();
+		idDoubleList();
+		idStringPair();
+		idUnitAttribute();
+		done = true;
+	}
 }
 
-} //end namespace
-
-//Small hack to make sure Xerces is initialized before XMLString::transcode is used
-const bool XMLBasisTypes::_initialized = initializeXerces();
+const XMLBasisTypes::Initializer XMLBasisTypes::initializer;
 
 //Definition of Identifiers used in the XML format
-const XMLCh* XMLBasisTypes::QId = XMLString::transcode("Q");
-const XMLCh* XMLBasisTypes::Vector3DId = XMLString::transcode("Vector3D");
-const XMLCh* XMLBasisTypes::Vector2DId = XMLString::transcode("Vector2D");
+const XMLCh* XMLBasisTypes::idQ() {
+	static const XMLStr id("Q");
+	return id.uni();
+}
 
-const XMLCh* XMLBasisTypes::Rotation3DId = XMLString::transcode("Rotation3D");
-const XMLCh* XMLBasisTypes::RPYId = XMLString::transcode("RPY");
-const XMLCh* XMLBasisTypes::EAAId = XMLString::transcode("EAA");
-const XMLCh* XMLBasisTypes::QuaternionId = XMLString::transcode("Quaternion");
+const XMLCh* XMLBasisTypes::idVector3D() {
+	static const XMLStr id("Vector3D");
+	return id.uni();
+}
 
-const XMLCh* XMLBasisTypes::Rotation2DId = XMLString::transcode("Rotation2D");
-const XMLCh* XMLBasisTypes::Transform3DId = XMLString::transcode("Transform3D");
-const XMLCh* XMLBasisTypes::VelocityScrew6DId = XMLString::transcode("VelocityScrew6D");
+const XMLCh* XMLBasisTypes::idVector2D() {
+	static const XMLStr id("Vector2D");
+	return id.uni();
+}
 
-const XMLCh* XMLBasisTypes::PosId = XMLString::transcode("Pos");
-const XMLCh* XMLBasisTypes::MatrixId = XMLString::transcode("Matrix");
+const XMLCh* XMLBasisTypes::idRotation3D() {
+	static const XMLStr id("Rotation3D");
+	return id.uni();
+}
 
-const XMLCh* XMLBasisTypes::LinearId = XMLString::transcode("Linear");
-const XMLCh* XMLBasisTypes::AngularId = XMLString::transcode("Angular");
+const XMLCh* XMLBasisTypes::idRPY() {
+	static const XMLStr id("RPY");
+	return id.uni();
+}
 
-const XMLCh* XMLBasisTypes::StateId = XMLString::transcode("State");
-const XMLCh* XMLBasisTypes::QStateId = XMLString::transcode("QState");
-const XMLCh* XMLBasisTypes::TreeStateId = XMLString::transcode("TreeState");
+const XMLCh* XMLBasisTypes::idEAA() {
+	static const XMLStr id("EAA");
+	return id.uni();
+}
 
-const XMLCh* XMLBasisTypes::BooleanId = XMLString::transcode("Boolean");
-const XMLCh* XMLBasisTypes::DoubleId = XMLString::transcode("Double");
-const XMLCh* XMLBasisTypes::FloatId = XMLString::transcode("Float");
-const XMLCh* XMLBasisTypes::IntegerId = XMLString::transcode("Integer");
-const XMLCh* XMLBasisTypes::StringId = XMLString::transcode("String");
-const XMLCh* XMLBasisTypes::StringListId = XMLString::transcode("StringList");
-const XMLCh* XMLBasisTypes::StringPairId = XMLString::transcode("StringPair");
-const XMLCh* XMLBasisTypes::IntListId = XMLString::transcode("IntList");
-const XMLCh* XMLBasisTypes::DoubleListId = XMLString::transcode("DoubleList");
+const XMLCh* XMLBasisTypes::idQuaternion() {
+	static const XMLStr id("Quaternion");
+	return id.uni();
+}
 
-const XMLCh* XMLBasisTypes::UnitAttributeId = XMLString::transcode("unit");
+const XMLCh* XMLBasisTypes::idRotation2D() {
+	static const XMLStr id("Rotation2D");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idTransform3D() {
+	static const XMLStr id("Transform3D");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idVelocityScrew6D() {
+	static const XMLStr id("VelocityScrew6D");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idPos() {
+	static const XMLStr id("Pos");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idMatrix() {
+	static const XMLStr id("Matrix");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idLinear() {
+	static const XMLStr id("Linear");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idAngular() {
+	static const XMLStr id("Angular");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idState() {
+	static const XMLStr id("State");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idQState() {
+	static const XMLStr id("QState");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idTreeState() {
+	static const XMLStr id("TreeState");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idBoolean() {
+	static const XMLStr id("Boolean");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idDouble() {
+	static const XMLStr id("Double");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idFloat() {
+	static const XMLStr id("Float");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idInteger() {
+	static const XMLStr id("Integer");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idString() {
+	static const XMLStr id("String");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idStringList() {
+	static const XMLStr id("StringList");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idIntList() {
+	static const XMLStr id("IntList");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idDoubleList() {
+	static const XMLStr id("DoubleList");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idStringPair() {
+	static const XMLStr id("StringPair");
+	return id.uni();
+}
+
+const XMLCh* XMLBasisTypes::idUnitAttribute() {
+	static const XMLStr id("unit");
+	return id.uni();
+}
 
 namespace {
 struct UnitMap {
@@ -152,8 +270,8 @@ double XMLBasisTypes::getUnit(const XMLCh* key) {
 
 namespace {
     double readUnit(DOMElement* element) {
-        if (element->hasAttribute(XMLBasisTypes::UnitAttributeId)) {
-            const XMLCh* attr = element->getAttribute(XMLBasisTypes::UnitAttributeId);
+        if (element->hasAttribute(XMLBasisTypes::idUnitAttribute())) {
+            const XMLCh* attr = element->getAttribute(XMLBasisTypes::idUnitAttribute());
             return XMLBasisTypes::getUnit(attr);
         } else {
             return 1;
@@ -214,7 +332,7 @@ namespace {
 
 Q XMLBasisTypes::readQ(DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, QId);
+        checkHeader(element, idQ());
 
     std::vector<double> values = readNVector(element);
     Q q(values.size());
@@ -225,31 +343,31 @@ Q XMLBasisTypes::readQ(DOMElement* element, bool doCheckHeader) {
 }
 
 Vector3D<> XMLBasisTypes::readVector3D(DOMElement* element, bool doCheckHeader) {
-    return readVectorStructure<Vector3D<> >(element, doCheckHeader, Vector3DId);
+    return readVectorStructure<Vector3D<> >(element, doCheckHeader, idVector3D());
 }
 
 
 Vector2D<> XMLBasisTypes::readVector2D(DOMElement* element, bool doCheckHeader) {
-    return readVectorStructure<Vector2D<> >(element, doCheckHeader, Vector2DId);
+    return readVectorStructure<Vector2D<> >(element, doCheckHeader, idVector2D());
 }
 
 
 RPY<> XMLBasisTypes::readRPY(DOMElement* element, bool doCheckHeader) {
-    return readVectorStructure<RPY<> >(element, doCheckHeader, RPYId);
+    return readVectorStructure<RPY<> >(element, doCheckHeader, idRPY());
 }
 
 EAA<> XMLBasisTypes::readEAA(DOMElement* element, bool doCheckHeader) {
-    return readVectorStructure<EAA<> >(element, doCheckHeader, EAAId);}
+    return readVectorStructure<EAA<> >(element, doCheckHeader, idEAA());}
 
 Quaternion<> XMLBasisTypes::readQuaternion(DOMElement* element, bool doCheckHeader) {
-    Quaternion<> qua = readVectorStructure<Quaternion<> >(element, doCheckHeader, QuaternionId);
+    Quaternion<> qua = readVectorStructure<Quaternion<> >(element, doCheckHeader, idQuaternion());
     qua.normalize();
     return qua;
 }
 
 Rotation3D<> XMLBasisTypes::readRotation3D(DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, Rotation3DId);
+        checkHeader(element, idRotation3D());
 
     std::vector<double> values = readNVector(element);
     if (values.size() != 9)
@@ -297,7 +415,7 @@ Rotation3D<> XMLBasisTypes::readRotation3D(DOMElement* element, bool doCheckHead
 
 Rotation2D<> XMLBasisTypes::readRotation2D(DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, Rotation2DId);
+        checkHeader(element, idRotation2D());
 
     std::vector<double> values = readNVector(element);
     if (values.size() != 4)
@@ -307,13 +425,13 @@ Rotation2D<> XMLBasisTypes::readRotation2D(DOMElement* element, bool doCheckHead
 }
 
 Rotation3D<> XMLBasisTypes::readRotation3DStructure(DOMElement* element) {
-    if (XMLString::equals(element->getNodeName(), Rotation3DId))
+    if (XMLString::equals(element->getNodeName(), idRotation3D()))
         return readRotation3D(element, false);
-    if (XMLString::equals(element->getNodeName(), RPYId))
+    if (XMLString::equals(element->getNodeName(), idRPY()))
         return readRPY(element, false).toRotation3D();
-    if (XMLString::equals(element->getNodeName(), EAAId))
+    if (XMLString::equals(element->getNodeName(), idEAA()))
         return readEAA(element, false).toRotation3D();
-    if (XMLString::equals(element->getNodeName(), QuaternionId))
+    if (XMLString::equals(element->getNodeName(), idQuaternion()))
         return readQuaternion(element, false).toRotation3D();
 
     RW_THROW("Unable to find match \""<<XMLStr(element->getNodeName()).str()<<"\" with (Rotation3D|RPY|EAA|Quaternion)");
@@ -322,7 +440,7 @@ Rotation3D<> XMLBasisTypes::readRotation3DStructure(DOMElement* element) {
 
 Transform3D<> XMLBasisTypes::readTransform3D(DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, Transform3DId);
+        checkHeader(element, idTransform3D());
 
     Vector3D<> position(0,0,0);
     Rotation3D<> rotation(Rotation3D<>::identity());
@@ -331,7 +449,7 @@ Transform3D<> XMLBasisTypes::readTransform3D(DOMElement* element, bool doCheckHe
     for (XMLSize_t i = 0; i<nodeCount; i++) {
         DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
         if (child != NULL) {
-            if (XMLString::equals(child->getNodeName(), MatrixId)) {
+            if (XMLString::equals(child->getNodeName(), idMatrix())) {
                 std::vector<double> values = readNVector(child);
                 if (values.size() != 12)
                     RW_THROW("Expected   <Matrix> with 12 doubles when parsing Transform3D. Found "<<values.size()<<" values");
@@ -348,7 +466,7 @@ Transform3D<> XMLBasisTypes::readTransform3D(DOMElement* element, bool doCheckHe
                 position(0) = values[3];
                 position(1) = values[7];
                 position(2) = values[11];
-            } else if (XMLString::equals(child->getNodeName(), PosId)) {
+            } else if (XMLString::equals(child->getNodeName(), idPos())) {
                 position = readVector3D(child, false);
             } else {
                 rotation = readRotation3DStructure(child);
@@ -362,7 +480,7 @@ Transform3D<> XMLBasisTypes::readTransform3D(DOMElement* element, bool doCheckHe
 
 VelocityScrew6D<> XMLBasisTypes::readVelocityScrew6D(xercesc::DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, VelocityScrew6DId);
+        checkHeader(element, idVelocityScrew6D());
 
     Vector3D<> linear(0, 0, 0);
     EAA<> angular(0, 0, 0);
@@ -372,9 +490,9 @@ VelocityScrew6D<> XMLBasisTypes::readVelocityScrew6D(xercesc::DOMElement* elemen
     for (XMLSize_t i = 0; i < nodeCount; i++) {
         DOMElement* child = dynamic_cast<DOMElement*> (children->item(i));
         if (child != NULL) {
-            if (XMLString::equals(child->getNodeName(), LinearId)) {
+            if (XMLString::equals(child->getNodeName(), idLinear())) {
                 linear = readVector3D(child, false);
-            } else if (XMLString::equals(child->getNodeName(), AngularId)) {
+            } else if (XMLString::equals(child->getNodeName(), idAngular())) {
                 angular = readEAA(element, false);
             } else {
                 RW_THROW("Unknown element \""<<XMLStr(child->getNodeName()).str()<<"\" specified in VelocityScrew6D");
@@ -411,7 +529,7 @@ std::vector<int> XMLBasisTypes::readIntList(xercesc::DOMElement* element, bool d
  */
 rw::kinematics::State XMLBasisTypes::readState(xercesc::DOMElement* element, WorkCell::Ptr workcell, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, StateId);
+        checkHeader(element, idState());
 
     State result = workcell->getDefaultState();
 
@@ -420,14 +538,14 @@ rw::kinematics::State XMLBasisTypes::readState(xercesc::DOMElement* element, Wor
     for (XMLSize_t i = 0; i < nodeCount; i++) {
         DOMElement* child = dynamic_cast<DOMElement*> (children->item(i));
         if (child != NULL) {
-            if (XMLString::equals(child->getNodeName(), QStateId)) {
+            if (XMLString::equals(child->getNodeName(), idQState())) {
                 Q q = readQ(child, false);
                 if (result.size() != q.size())
                     RW_THROW("Length of State loaded does not match workcell");
                 for (size_t i = 0; i<q.size(); i++)
                     result(i) = q(i);
 
-            } else if (XMLString::equals(child->getNodeName(), TreeStateId)) {
+            } else if (XMLString::equals(child->getNodeName(), idTreeState())) {
                 std::vector<StringPair> dafs = readStringPairs(element);
                 for (std::vector<StringPair>::iterator it = dafs.begin(); it != dafs.end(); ++it) {
                     Frame* daf = workcell->findFrame((*it).first);
@@ -449,7 +567,7 @@ rw::kinematics::State XMLBasisTypes::readState(xercesc::DOMElement* element, Wor
 
 std::string XMLBasisTypes::readString(DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, StringId);
+        checkHeader(element, idString());
 
     return readElementText(element, false);
 
@@ -462,7 +580,7 @@ std::vector<std::string> XMLBasisTypes::readStringList(DOMElement* element) {
     for (XMLSize_t i = 0; i < nodeCount; i++) {
         DOMElement* child = dynamic_cast<DOMElement*> (children->item(i));
         if (child != NULL) {
-            if (XMLString::equals(child->getNodeName(), StringId)) {
+            if (XMLString::equals(child->getNodeName(), idString())) {
                 std::string str = readString(child, false);
                 result.push_back(str);
             }
@@ -473,7 +591,7 @@ std::vector<std::string> XMLBasisTypes::readStringList(DOMElement* element) {
 
 XMLBasisTypes::StringPair XMLBasisTypes::readStringPair(DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, StringPairId);
+        checkHeader(element, idStringPair());
 
     DOMNodeList* children = element->getChildNodes();
     const XMLSize_t nodeCount = children->getLength();
@@ -481,7 +599,7 @@ XMLBasisTypes::StringPair XMLBasisTypes::readStringPair(DOMElement* element, boo
     for (XMLSize_t i = 0; i < nodeCount; i++) {
         DOMElement* child = dynamic_cast<DOMElement*> (children->item(i));
         if (child != NULL) {
-            if (XMLString::equals(child->getNodeName(), StringId)) {
+            if (XMLString::equals(child->getNodeName(), idString())) {
                 std::string str = readString(child, false);
                 result.push_back(str);
             }
@@ -502,7 +620,7 @@ std::vector<XMLBasisTypes::StringPair> XMLBasisTypes::readStringPairs(DOMElement
     for (XMLSize_t i = 0; i < nodeCount; i++) {
         DOMElement* child = dynamic_cast<DOMElement*> (children->item(i));
         if (child != NULL) {
-            if (XMLString::equals(child->getNodeName(), StringPairId)) {
+            if (XMLString::equals(child->getNodeName(), idStringPair())) {
                 std::string str = readString(child);
                 std::vector<std::string> strings = StringUtil::words(str);
                 if (strings.size() != 2)
@@ -549,7 +667,7 @@ const XMLCh* XMLBasisTypes::readElementTextXMLCh(xercesc::DOMElement* element, b
 
 double XMLBasisTypes::readDouble(xercesc::DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, DoubleId);
+        checkHeader(element, idDouble());
     double val;
     try {
         val = XMLDouble(readElementTextXMLCh(element)).getValue();
@@ -565,21 +683,21 @@ double XMLBasisTypes::readDouble(xercesc::DOMElement* element, bool doCheckHeade
 
 float XMLBasisTypes::readFloat(xercesc::DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, FloatId);
+        checkHeader(element, idFloat());
     return (float)XMLDouble(readElementTextXMLCh(element)).getValue();
     //return (float)std::atof(readElementText(element).c_str());
 }
 
 int XMLBasisTypes::readInt(xercesc::DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, IntegerId);
+        checkHeader(element, idInteger());
 
     return std::atoi(readElementText(element).c_str());
 }
 
 bool XMLBasisTypes::readBool(xercesc::DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
-        checkHeader(element, BooleanId);
+        checkHeader(element, idBoolean());
 
     std::string str = readElementText(element);
     return str == "true";
@@ -634,7 +752,7 @@ namespace {
 
 
 xercesc::DOMElement* XMLBasisTypes::createQ(const Q& q, xercesc::DOMDocument* doc) {
-    return createElement(QId, createStringFromArray(q).uni(), doc);
+    return createElement(idQ(), createStringFromArray(q).uni(), doc);
     /*DOMElement* element = doc->createElement(QId);
     DOMText* txt = doc->createTextNode(createStringFromArray(q).uni());
     element->appendChild(txt);
@@ -642,7 +760,7 @@ xercesc::DOMElement* XMLBasisTypes::createQ(const Q& q, xercesc::DOMDocument* do
 }
 
 xercesc::DOMElement* XMLBasisTypes::createVector3D(const Vector3D<>& v, xercesc::DOMDocument* doc) {
-    return createElement(Vector3DId, createStringFromArray(v).uni(), doc);
+    return createElement(idVector3D(), createStringFromArray(v).uni(), doc);
     /*DOMElement* element = doc->createElement(Vector3DId);
 
     std::ostringstream str;
@@ -653,28 +771,28 @@ xercesc::DOMElement* XMLBasisTypes::createVector3D(const Vector3D<>& v, xercesc:
 }
 
 xercesc::DOMElement* XMLBasisTypes::createVector2D(const rw::math::Vector2D<>& v, xercesc::DOMDocument* doc) {
-    xercesc::DOMElement* element = doc->createElement(Vector2DId);
+    xercesc::DOMElement* element = doc->createElement(idVector2D());
     DOMText* txt = doc->createTextNode(createStringFromArray(v).uni());
     element->appendChild(txt);
     return element;
 }
 
 xercesc::DOMElement* XMLBasisTypes::createRPY(const rw::math::RPY<>& v, xercesc::DOMDocument* doc) {
-    xercesc::DOMElement* element = doc->createElement(RPYId);
+    xercesc::DOMElement* element = doc->createElement(idRPY());
     DOMText* txt = doc->createTextNode(createStringFromArray(v, 3).uni());
     element->appendChild(txt);
     return element;
 }
 
 xercesc::DOMElement* XMLBasisTypes::createEAA(const rw::math::EAA<>& v, xercesc::DOMDocument* doc) {
-    xercesc::DOMElement* element = doc->createElement(EAAId);
+    xercesc::DOMElement* element = doc->createElement(idEAA());
     DOMText* txt = doc->createTextNode(createStringFromArray(v, 3).uni());
     element->appendChild(txt);
     return element;
 }
 
 xercesc::DOMElement* XMLBasisTypes::createQuaternion(const rw::math::Quaternion<>& q, xercesc::DOMDocument* doc) {
-    xercesc::DOMElement* element = doc->createElement(QuaternionId);
+    xercesc::DOMElement* element = doc->createElement(idQuaternion());
     DOMText* txt = doc->createTextNode(createStringFromArray(q, 4).uni());
     element->appendChild(txt);
     return element;
@@ -689,7 +807,7 @@ DOMElement* XMLBasisTypes::createRotation3D(const rw::math::Rotation3D<>& r, xer
     str<<r(0,0)<<" "<<r(0,1)<<" "<<r(0,2)<<" ";
     str<<r(1,0)<<" "<<r(1,1)<<" "<<r(1,2)<<" ";
     str<<r(2,0)<<" "<<r(2,1)<<" "<<r(2,2);
-    return createElement(Rotation3DId, XMLStr(str.str()).uni(), doc);
+    return createElement(idRotation3D(), XMLStr(str.str()).uni(), doc);
     /*DOMText* txt = doc->createTextNode(XMLStr(str.str()).uni());
     element->appendChild(txt);
     return element;*/
@@ -702,16 +820,16 @@ xercesc::DOMElement* XMLBasisTypes::createRotation2D(const rw::math::Rotation2D<
     str.unsetf(std::ios::floatfield);            // floatfield not set
     str.precision(16);
     str<<r(0,0)<<" "<<r(0,1)<<" "<<r(1,0)<<" "<<r(1,1);
-    return createElement(Rotation2DId, XMLStr(str.str()).uni(), doc);
+    return createElement(idRotation2D(), XMLStr(str.str()).uni(), doc);
     /*DOMText* txt = doc->createTextNode(XMLStr(str.str()).uni());
     element->appendChild(txt);
     return element;*/
 }
 
 xercesc::DOMElement* XMLBasisTypes::createTransform3D(const rw::math::Transform3D<>& t, xercesc::DOMDocument* doc) {
-    xercesc::DOMElement* element = doc->createElement(Transform3DId);
+    xercesc::DOMElement* element = doc->createElement(idTransform3D());
 
-    xercesc::DOMElement* posElem = createElement(PosId, createStringFromArray(t.P()).uni(), doc);
+    xercesc::DOMElement* posElem = createElement(idPos(), createStringFromArray(t.P()).uni(), doc);
     /*DOMElement* posElem = doc->createElement(PosId);
     DOMText* txt = doc->createTextNode(createStringFromArray(t.P()).uni());
     posElem->appendChild(txt);*/
@@ -726,7 +844,7 @@ xercesc::DOMElement* XMLBasisTypes::createTransform3D(const rw::math::Transform3
 }
 
 DOMElement* XMLBasisTypes::createVelocityScrew6D(const rw::math::VelocityScrew6D<>& v, xercesc::DOMDocument* doc) {
-    return createElement(VelocityScrew6DId, createStringFromArray(v, 6).uni(), doc);
+    return createElement(idVelocityScrew6D(), createStringFromArray(v, 6).uni(), doc);
     /*DOMElement* element = doc->createElement(VelocityScrew6DId);
     DOMText* txt = doc->createTextNode(createStringFromArray(v, 6).uni());
     element->appendChild(txt);
@@ -734,15 +852,15 @@ DOMElement* XMLBasisTypes::createVelocityScrew6D(const rw::math::VelocityScrew6D
 }
 
 xercesc::DOMElement* XMLBasisTypes::createIntList(const std::vector<int>& ints, xercesc::DOMDocument* doc){
-    return createElement(IntListId, createStringFromVector(ints).uni(), doc);
+    return createElement(idIntList(), createStringFromVector(ints).uni(), doc);
 }
 
 xercesc::DOMElement* XMLBasisTypes::createDoubleList(const std::vector<double>& doubles, xercesc::DOMDocument* doc){
-    return createElement(DoubleListId, createStringFromVector(doubles).uni(), doc);
+    return createElement(idDoubleList(), createStringFromVector(doubles).uni(), doc);
 }
 
 xercesc::DOMElement* XMLBasisTypes::createQState(const rw::kinematics::State& state, xercesc::DOMDocument* doc) {
-    return createElement(QStateId, createStringFromArray<State>(state, state.size()).uni(), doc);
+    return createElement(idQState(), createStringFromArray<State>(state, state.size()).uni(), doc);
 
     /*DOMElement* element = doc->createElement(QStateId);
     DOMText* txt = doc->createTextNode(createStringFromArray<State>(state, state.size()).uni());
@@ -752,7 +870,7 @@ xercesc::DOMElement* XMLBasisTypes::createQState(const rw::kinematics::State& st
 
 
 xercesc::DOMElement* XMLBasisTypes::createBoolean(bool value, xercesc::DOMDocument* doc) {
-    return createElement(BooleanId, XMLStr(value).uni(), doc);
+    return createElement(idBoolean(), XMLStr(value).uni(), doc);
 }
 
 xercesc::DOMElement* XMLBasisTypes::createDouble(double value, xercesc::DOMDocument* doc) {
@@ -760,22 +878,22 @@ xercesc::DOMElement* XMLBasisTypes::createDouble(double value, xercesc::DOMDocum
 	str.unsetf(std::ios::floatfield);            // floatfield not set
 	str.precision(16);
 	str << value;
-    return createElement(DoubleId, XMLStr(str.str()).uni(), doc);
+    return createElement(idDouble(), XMLStr(str.str()).uni(), doc);
 }
 
 xercesc::DOMElement* XMLBasisTypes::createFloat(float value, xercesc::DOMDocument* doc) {
-    return createElement(FloatId, XMLStr(value).uni(), doc);
+    return createElement(idFloat(), XMLStr(value).uni(), doc);
 }
 
 
 xercesc::DOMElement* XMLBasisTypes::createInteger(int value, xercesc::DOMDocument* doc) {
-    return createElement(IntegerId, XMLStr(value).uni(), doc);
+    return createElement(idInteger(), XMLStr(value).uni(), doc);
 }
 
 
 
 xercesc::DOMElement* XMLBasisTypes::createString(const std::string& str, xercesc::DOMDocument* doc) {
-    return createElement(StringId, XMLStr(str).uni(), doc);
+    return createElement(idString(), XMLStr(str).uni(), doc);
     /*DOMElement* element = doc->createElement(StringId);
     DOMText* txt = doc->createTextNode(XMLStr(str).uni());
     element->appendChild(txt);
@@ -783,7 +901,7 @@ xercesc::DOMElement* XMLBasisTypes::createString(const std::string& str, xercesc
 }
 
 xercesc::DOMElement* XMLBasisTypes::createStringList(const std::vector<std::string>& strings, xercesc::DOMDocument* doc){
-    xercesc::DOMElement* element = doc->createElement(StringListId);
+    xercesc::DOMElement* element = doc->createElement(idStringList());
     BOOST_FOREACH(const std::string& str, strings){
         element->appendChild(createString(str, doc));
     }
@@ -792,14 +910,14 @@ xercesc::DOMElement* XMLBasisTypes::createStringList(const std::vector<std::stri
 
 
 xercesc::DOMElement* XMLBasisTypes::createStringPair(const std::string& first, const std::string& second, xercesc::DOMDocument* doc) {
-    xercesc::DOMElement* element = doc->createElement(StringPairId);
+    xercesc::DOMElement* element = doc->createElement(idStringPair());
     element->appendChild(createString(first, doc));
     element->appendChild(createString(second, doc));
     return element;
 }
 
 xercesc::DOMElement* XMLBasisTypes::createTreeState(const rw::kinematics::State& state, xercesc::DOMDocument* doc) {
-    xercesc::DOMElement* element = doc->createElement(TreeStateId);
+    xercesc::DOMElement* element = doc->createElement(idTreeState());
 
     const std::vector<Frame*>& dafs = state.getStateStructure()->getDAFs();
 
@@ -815,7 +933,7 @@ xercesc::DOMElement* XMLBasisTypes::createTreeState(const rw::kinematics::State&
 }
 
 xercesc::DOMElement* XMLBasisTypes::createState(const rw::kinematics::State& state, xercesc::DOMDocument* doc) {
-    xercesc::DOMElement* element = doc->createElement(StateId);
+    xercesc::DOMElement* element = doc->createElement(idState());
     element->appendChild(createQState(state, doc));
     element->appendChild(createTreeState(state, doc));
     return element;

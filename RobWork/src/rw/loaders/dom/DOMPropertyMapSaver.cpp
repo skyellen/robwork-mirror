@@ -29,19 +29,31 @@ using namespace rw::loaders;
 using namespace rw::math;
 using namespace rw::trajectory;
 
-void DOMPropertyMapSaver::save(const PropertyBase::Ptr property, DOMElem::Ptr parent) {
-    if (property->getType().getId() == PropertyType::Unknown) {
-        RW_THROW("The property type is unknown and therefore not supported!");
-    }
+DOMPropertyMapSaver::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		DOMBasisTypes::Initializer init1;
+		DOMPropertyMapFormat::Initializer init2;
+		DOMPathSaver::Initializer init3;
+		done = true;
+	}
+}
 
-    DOMElem::Ptr root = parent->addChild(DOMPropertyMapFormat::PropertyId);
-    DOMElem::Ptr element = DOMBasisTypes::createElement(DOMPropertyMapFormat::PropertyNameId, property->getIdentifier(), root);
+const DOMPropertyMapSaver::Initializer DOMPropertyMapSaver::initializer;
+
+void DOMPropertyMapSaver::save(const PropertyBase::Ptr property, DOMElem::Ptr parent) {
+	if (property->getType().getId() == PropertyType::Unknown) {
+		RW_THROW("The property type is unknown and therefore not supported!");
+	}
+
+    DOMElem::Ptr root = parent->addChild(DOMPropertyMapFormat::idProperty());
+    DOMElem::Ptr element = DOMBasisTypes::createElement(DOMPropertyMapFormat::idPropertyName(), property->getIdentifier(), root);
 
     if (!property->getDescription().empty()) {
-        element = DOMBasisTypes::createElement(DOMPropertyMapFormat::PropertyDescriptionId, property->getDescription(), root);
+        element = DOMBasisTypes::createElement(DOMPropertyMapFormat::idPropertyDescription(), property->getDescription(), root);
     }
 
-    element = root->addChild(DOMPropertyMapFormat::PropertyValueId);
+    element = root->addChild(DOMPropertyMapFormat::idPropertyValue());
     switch (property->getType().getId()) {
     case PropertyType::Unknown:
         RW_THROW("The property type is unknown and therefore not supported! Seeing this message means there is a bug within the function throwing this!");
@@ -160,7 +172,7 @@ void DOMPropertyMapSaver::save(const PropertyBase::Ptr property, DOMElem::Ptr pa
 }
 
 void DOMPropertyMapSaver::save(const rw::common::PropertyMap& map, DOMElem::Ptr parent) {
-    DOMElem::Ptr root = parent->addChild(DOMPropertyMapFormat::PropertyMapId);
+    DOMElem::Ptr root = parent->addChild(DOMPropertyMapFormat::idPropertyMap());
 
     std::pair<PropertyMap::iterator, PropertyMap::iterator> iterators = map.getProperties();
     for (PropertyMap::iterator it = iterators.first; it != iterators.second; ++it) {

@@ -35,6 +35,17 @@ using namespace rw::math;
 using namespace rw::loaders;
 using namespace rw::trajectory;
 
+DOMTrajectorySaver::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		DOMBasisTypes::Initializer init1;
+		DOMTrajectoryLoader::Initializer init2;
+		done = true;
+	}
+}
+
+const DOMTrajectorySaver::Initializer DOMTrajectorySaver::initializer;
+
 namespace {
 
     template <class T>
@@ -71,12 +82,12 @@ namespace {
      };
 
     template<> const std::string& Identifiers<Q>::linearInterpolatorId() {
-        return DOMTrajectoryLoader::QLinearInterpolatorId;
+        return DOMTrajectoryLoader::idQLinearInterpolator();
     }
 
 
     template<> const std::string& Identifiers<Q>::cubicSplineInterpolatorId() {
-        return DOMTrajectoryLoader::QCubicSplineInterpolatorId;
+        return DOMTrajectoryLoader::idQCubicSplineInterpolator();
     }
 
     template<> const std::string& Identifiers<Q>::circularInterpolatorId() {
@@ -87,25 +98,25 @@ namespace {
 
 
     template<> const std::string& Identifiers<Vector3D<> >::linearInterpolatorId() {
-        return DOMTrajectoryLoader::V3DLinearInterpolatorId;
+        return DOMTrajectoryLoader::idV3DLinearInterpolator();
     }
 
     template<> const std::string& Identifiers<Vector3D<> >::cubicSplineInterpolatorId() {
-        return DOMTrajectoryLoader::V3DCubicSplineInterpolatorId;
+        return DOMTrajectoryLoader::idV3DCubicSplineInterpolator();
     }
 
     template<> const std::string& Identifiers<Vector3D<> >::circularInterpolatorId() {
-        return DOMTrajectoryLoader::V3DCircularInterpolatorId;
+        return DOMTrajectoryLoader::idV3DCircularInterpolator();
     }
 
 
     template<> const std::string& Identifiers<Rotation3D<> >::linearInterpolatorId() {
-        return DOMTrajectoryLoader::R3DLinearInterpolatorId;
+        return DOMTrajectoryLoader::idR3DLinearInterpolator();
     }
 
 
     template<> const std::string& Identifiers<Rotation3D<> >::cubicSplineInterpolatorId() {
-        return DOMTrajectoryLoader::R3DCubicSplineInterpolatorId;
+        return DOMTrajectoryLoader::idR3DCubicSplineInterpolator();
     }
 
     template<> const std::string& Identifiers<Rotation3D<> >::circularInterpolatorId() {
@@ -114,12 +125,12 @@ namespace {
     }
 
     template<> const std::string& Identifiers<Transform3D<> >::linearInterpolatorId() {
-        return DOMTrajectoryLoader::T3DLinearInterpolatorId;
+        return DOMTrajectoryLoader::idT3DLinearInterpolator();
     }
 
 
     template<> const std::string& Identifiers<Transform3D<> >::cubicSplineInterpolatorId() {
-        return DOMTrajectoryLoader::T3DCubicSplineInterpolatorId;
+        return DOMTrajectoryLoader::idT3DCubicSplineInterpolator();
     }
 
     template<> const std::string& Identifiers<Transform3D<> >::circularInterpolatorId() {
@@ -137,7 +148,7 @@ namespace {
             T end = linear->getEnd();
             double duration = linear->duration();
             DOMElem::Ptr element = parent->addChild(Identifiers<T>::linearInterpolatorId());
-            element->addAttribute(DOMTrajectoryLoader::DurationAttributeId)->setValue(duration);
+            element->addAttribute(DOMTrajectoryLoader::idDurationAttribute())->setValue(duration);
 
             ElementCreator<T>::createElement(start, element);
             ElementCreator<T>::createElement(end, element);
@@ -159,7 +170,7 @@ namespace {
              double duration = circular->duration();
 
              DOMElem::Ptr element = parent->addChild(Identifiers<T>::circularInterpolatorId());
-             element->addAttribute(DOMTrajectoryLoader::DurationAttributeId)->setValue(duration);
+             element->addAttribute(DOMTrajectoryLoader::idDurationAttribute())->setValue(duration);
 
              ElementCreator<T>::createElement(p1, parent);
              ElementCreator<T>::createElement(p2, parent);
@@ -177,8 +188,8 @@ namespace {
         const ParabolicBlend<T>* parabolic = dynamic_cast<const ParabolicBlend<T>*>(blend.get());
         if (parabolic != NULL) {
             double tau = parabolic->tau1();
-            DOMElem::Ptr element  = parent->addChild(DOMTrajectoryLoader::ParabolicBlendId);
-            element->addAttribute(DOMTrajectoryLoader::TauAttributeId)->setValue( tau );
+            DOMElem::Ptr element  = parent->addChild(DOMTrajectoryLoader::idParabolicBlend());
+            element->addAttribute(DOMTrajectoryLoader::idTauAttribute())->setValue( tau );
             return element;
         }
 
@@ -187,9 +198,9 @@ namespace {
             double tau = lloydHayward->tau1();
             double kappa = lloydHayward->kappa();
 
-            DOMElem::Ptr element = parent->addChild( DOMTrajectoryLoader::LloydHaywardBlendId );
-            element->addAttribute(DOMTrajectoryLoader::TauAttributeId)->setValue(tau);
-            element->addAttribute(DOMTrajectoryLoader::KappaAttributeId)->setValue(kappa);
+            DOMElem::Ptr element = parent->addChild( DOMTrajectoryLoader::idLloydHaywardBlend() );
+            element->addAttribute(DOMTrajectoryLoader::idTauAttribute())->setValue(tau);
+            element->addAttribute(DOMTrajectoryLoader::idKappaAttribute())->setValue(kappa);
             return element;
         }
         RW_THROW("The Trajectory contains a blend not supported by DOMTrajectorySaver");
@@ -248,36 +259,36 @@ namespace {
 
 
 bool DOMTrajectorySaver::save(const rw::trajectory::QTrajectory& trajectory, const std::string& filename) {
-    return saveTrajectoryImpl<Q, const QTrajectory>(trajectory, DOMTrajectoryLoader::QTrajectoryId, filename);
+    return saveTrajectoryImpl<Q, const QTrajectory>(trajectory, DOMTrajectoryLoader::idQTrajectory(), filename);
 }
 
 
 bool DOMTrajectorySaver::save(const rw::trajectory::Vector3DTrajectory& trajectory, const std::string& filename) {
-    return saveTrajectoryImpl<Vector3D<>, const Vector3DTrajectory>(trajectory, DOMTrajectoryLoader::V3DTrajectoryId, filename);
+    return saveTrajectoryImpl<Vector3D<>, const Vector3DTrajectory>(trajectory, DOMTrajectoryLoader::idV3DTrajectory(), filename);
 }
 
 bool DOMTrajectorySaver::save(const rw::trajectory::Rotation3DTrajectory& trajectory, const std::string& filename) {
-    return saveTrajectoryImpl<Rotation3D<>, const Rotation3DTrajectory>(trajectory, DOMTrajectoryLoader::R3DTrajectoryId, filename);
+    return saveTrajectoryImpl<Rotation3D<>, const Rotation3DTrajectory>(trajectory, DOMTrajectoryLoader::idR3DTrajectory(), filename);
 }
 
 bool DOMTrajectorySaver::save(const rw::trajectory::Transform3DTrajectory& trajectory, const std::string& filename) {
-    return saveTrajectoryImpl<Transform3D<>, const Transform3DTrajectory>(trajectory, DOMTrajectoryLoader::T3DTrajectoryId, filename);
+    return saveTrajectoryImpl<Transform3D<>, const Transform3DTrajectory>(trajectory, DOMTrajectoryLoader::idT3DTrajectory(), filename);
 }
 
 
 
 bool DOMTrajectorySaver::write(const rw::trajectory::QTrajectory& trajectory, std::ostream& outstream) {
-    return saveTrajectoryImpl<Q, const QTrajectory>(trajectory, DOMTrajectoryLoader::QTrajectoryId, outstream);
+    return saveTrajectoryImpl<Q, const QTrajectory>(trajectory, DOMTrajectoryLoader::idQTrajectory(), outstream);
 }
 
 bool DOMTrajectorySaver::write(const rw::trajectory::Vector3DTrajectory& trajectory, std::ostream& outstream) {
-    return saveTrajectoryImpl<Vector3D<>, const Vector3DTrajectory>(trajectory, DOMTrajectoryLoader::V3DTrajectoryId, outstream);
+    return saveTrajectoryImpl<Vector3D<>, const Vector3DTrajectory>(trajectory, DOMTrajectoryLoader::idV3DTrajectory(), outstream);
 }
 
 bool DOMTrajectorySaver::write(const rw::trajectory::Rotation3DTrajectory& trajectory, std::ostream& outstream) {
-    return saveTrajectoryImpl<Rotation3D<>, const Rotation3DTrajectory>(trajectory, DOMTrajectoryLoader::R3DTrajectoryId, outstream);
+    return saveTrajectoryImpl<Rotation3D<>, const Rotation3DTrajectory>(trajectory, DOMTrajectoryLoader::idR3DTrajectory(), outstream);
 }
 
 bool DOMTrajectorySaver::write(const rw::trajectory::Transform3DTrajectory& trajectory, std::ostream& outstream) {
-    return saveTrajectoryImpl<Transform3D<>, const Transform3DTrajectory>(trajectory, DOMTrajectoryLoader::T3DTrajectoryId, outstream);
+    return saveTrajectoryImpl<Transform3D<>, const Transform3DTrajectory>(trajectory, DOMTrajectoryLoader::idT3DTrajectory(), outstream);
 }

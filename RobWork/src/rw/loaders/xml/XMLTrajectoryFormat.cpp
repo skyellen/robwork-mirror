@@ -22,34 +22,126 @@
 using namespace rw::loaders;
 using namespace xercesc;
 
-const XercesInitializer XMLTrajectoryFormat::initializer;
+XMLTrajectoryFormat::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		static XercesInitializer initializer;
+		idQTrajectory();
+		idV3DTrajectory();
+		idR3DTrajectory();
+		idT3DTrajectory();
+		idQLinearInterpolator();
+		idQCubicSplineInterpolator();
+		idV3DLinearInterpolator();
+		idV3DCubicSplineInterpolator();
+		idV3DCircularInterpolator();
+		idR3DLinearInterpolator();
+		idR3DCubicSplineInterpolator();
+		idT3DLinearInterpolator();
+		idT3DCubicSplineInterpolator();
+		idParabolicBlend();
+		idLloydHaywardBlend();
+		idDurationAttribute();
+		idStartTimeAttribute();
+		idTauAttribute();
+		idKappaAttribute();
+		done = true;
+	}
+}
 
-const XMLCh* XMLTrajectoryFormat::QTrajectoryId = XMLString::transcode("QTrajectory");
-const XMLCh* XMLTrajectoryFormat::V3DTrajectoryId = XMLString::transcode("V3DTrajectory");
+const XMLTrajectoryFormat::Initializer XMLTrajectoryFormat::initializer;
 
-const XMLCh* XMLTrajectoryFormat::R3DTrajectoryId = XMLString::transcode("R3DTrajectory");
-const XMLCh* XMLTrajectoryFormat::T3DTrajectoryId = XMLString::transcode("T3DTrajectory");
+const XMLCh* XMLTrajectoryFormat::idQTrajectory() {
+	static const XMLStr id("QTrajectory");
+	return id.uni();
+}
 
-const XMLCh* XMLTrajectoryFormat::QLinearInterpolatorId = XMLString::transcode("QLinearInterpolator");
-const XMLCh* XMLTrajectoryFormat::QCubicSplineInterpolatorId = XMLString::transcode("QCubicSplineInterpolator");
+const XMLCh* XMLTrajectoryFormat::idV3DTrajectory() {
+	static const XMLStr id("V3DTrajectory");
+	return id.uni();
+}
 
-const XMLCh* XMLTrajectoryFormat::V3DLinearInterpolatorId = XMLString::transcode("V3DLinearInterpolator");
-const XMLCh* XMLTrajectoryFormat::V3DCubicSplineInterpolatorId = XMLString::transcode("V3DCubicSplineInterpolator");
-const XMLCh* XMLTrajectoryFormat::V3DCircularInterpolatorId = XMLString::transcode("V3DCircularInterpolator");
+const XMLCh* XMLTrajectoryFormat::idR3DTrajectory() {
+	static const XMLStr id("R3DTrajectory");
+	return id.uni();
+}
 
-const XMLCh* XMLTrajectoryFormat::R3DLinearInterpolatorId = XMLString::transcode("R3DLinearInterpolator");
-const XMLCh* XMLTrajectoryFormat::R3DCubicSplineInterpolatorId = XMLString::transcode("R3DCubicSplineInterpolator");
+const XMLCh* XMLTrajectoryFormat::idT3DTrajectory() {
+	static const XMLStr id("T3DTrajectory");
+	return id.uni();
+}
 
-const XMLCh* XMLTrajectoryFormat::T3DLinearInterpolatorId = XMLString::transcode("T3DLinearInterpolator");
-const XMLCh* XMLTrajectoryFormat::T3DCubicSplineInterpolatorId = XMLString::transcode("T3DCubicSplineInterpolator");
+const XMLCh* XMLTrajectoryFormat::idQLinearInterpolator() {
+	static const XMLStr id("QLinearInterpolator");
+	return id.uni();
+}
 
+const XMLCh* XMLTrajectoryFormat::idQCubicSplineInterpolator() {
+	static const XMLStr id("QCubicSplineInterpolator");
+	return id.uni();
+}
 
-const XMLCh* XMLTrajectoryFormat::ParabolicBlendId = XMLString::transcode("ParabolicBlend");
-const XMLCh* XMLTrajectoryFormat::LloydHaywardBlendId = XMLString::transcode("LloydHaywardBlend");
+const XMLCh* XMLTrajectoryFormat::idV3DLinearInterpolator() {
+	static const XMLStr id("V3DLinearInterpolator");
+	return id.uni();
+}
 
+const XMLCh* XMLTrajectoryFormat::idV3DCubicSplineInterpolator() {
+	static const XMLStr id("V3DCubicSplineInterpolator");
+	return id.uni();
+}
 
-const XMLCh* XMLTrajectoryFormat::DurationAttributeId = XMLString::transcode("duration");
-const XMLCh* XMLTrajectoryFormat::StartTimeAttributeId = XMLString::transcode("starttime");
-const XMLCh* XMLTrajectoryFormat::TauAttributeId = XMLString::transcode("tau");
-const XMLCh* XMLTrajectoryFormat::KappaAttributeId = XMLString::transcode("kappa");
+const XMLCh* XMLTrajectoryFormat::idV3DCircularInterpolator() {
+	static const XMLStr id("V3DCircularInterpolator");
+	return id.uni();
+}
 
+const XMLCh* XMLTrajectoryFormat::idR3DLinearInterpolator() {
+	static const XMLStr id("R3DLinearInterpolator");
+	return id.uni();
+}
+
+const XMLCh* XMLTrajectoryFormat::idR3DCubicSplineInterpolator() {
+	static const XMLStr id("R3DCubicSplineInterpolator");
+	return id.uni();
+}
+
+const XMLCh* XMLTrajectoryFormat::idT3DLinearInterpolator() {
+	static const XMLStr id("T3DLinearInterpolator");
+	return id.uni();
+}
+
+const XMLCh* XMLTrajectoryFormat::idT3DCubicSplineInterpolator() {
+	static const XMLStr id("T3DCubicSplineInterpolator");
+	return id.uni();
+}
+
+const XMLCh* XMLTrajectoryFormat::idParabolicBlend() {
+	static const XMLStr id("ParabolicBlend");
+	return id.uni();
+}
+
+const XMLCh* XMLTrajectoryFormat::idLloydHaywardBlend() {
+	static const XMLStr id("LloydHaywardBlend");
+	return id.uni();
+}
+
+const XMLCh* XMLTrajectoryFormat::idDurationAttribute() {
+	static const XMLStr id("duration");
+	return id.uni();
+}
+
+const XMLCh* XMLTrajectoryFormat::idStartTimeAttribute() {
+	static const XMLStr id("starttime");
+	return id.uni();
+}
+
+const XMLCh* XMLTrajectoryFormat::idTauAttribute() {
+	static const XMLStr id("tau");
+	return id.uni();
+}
+
+const XMLCh* XMLTrajectoryFormat::idKappaAttribute() {
+	static const XMLStr id("kappa");
+	return id.uni();
+}

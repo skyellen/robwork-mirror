@@ -137,64 +137,138 @@ public:
 	rw::trajectory::Transform3DTrajectory::Ptr getTransform3DTrajectory();
 public:
 public:
-    /** @brief Identifier for rw::trajectory::Trajectory<rw::math::Q> in the XML format  */
-    static const std::string QTrajectoryId;
+	/**
+	 * @brief Identifier for rw::trajectory::Trajectory<rw::math::Q> in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idQTrajectory();
 
-    /** @brief Identifier for rw::trajectory::Trajectory<rw::math::Vector3D> in the XML format  */
-    static const std::string V3DTrajectoryId;
+	/**
+	 * @brief Identifier for rw::trajectory::Trajectory<rw::math::Vector3D> in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idV3DTrajectory();
 
-    /** @brief Identifier for rw::trajectory::Trajectory<rw::math::Rotation3D> in the XML format  */
-    static const std::string R3DTrajectoryId;
+	/**
+	 * @brief Identifier for rw::trajectory::Trajectory<rw::math::Rotation3D> in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idR3DTrajectory();
 
-    /** @brief Identifier for rw::trajectory::Trajectory<rw::math::Transform3D> in the XML format  */
-    static const std::string T3DTrajectoryId;
+	/**
+	 * @brief Identifier for rw::trajectory::Trajectory<rw::math::Transform3D> in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idT3DTrajectory();
 
-    /** @brief Identifier for rw::trajectory::LinearInterpolator<rw::math::Q> in the XML format  */
-    static const std::string QLinearInterpolatorId;
+	/**
+	 * @brief Identifier for rw::trajectory::LinearInterpolator<rw::math::Q> in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idQLinearInterpolator();
 
-    /** @brief Identifier for rw::trajectory::CubicSplineInterpolator<rw::math::Q> in the XML format  */
-    static const std::string QCubicSplineInterpolatorId;
+	/**
+	 * @brief Identifier for rw::trajectory::CubicSplineInterpolator<rw::math::Q> in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idQCubicSplineInterpolator();
 
-    /** @brief Identifier for rw::trajectory::LinearInterpolator<rw::math::Vector3D<> > in the XML format  */
-    static const std::string V3DLinearInterpolatorId;
+	/**
+	 * @brief Identifier for rw::trajectory::LinearInterpolator<rw::math::Vector3D> in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idV3DLinearInterpolator();
 
-    /** @brief Identifier for rw::trajectory::CubicSplineInterpolator<rw::math::Vector3D<> > in the XML format  */
-    static const std::string V3DCubicSplineInterpolatorId;
+	/**
+	 * @brief Identifier for rw::trajectory::CubicSplineInterpolator<rw::math::Vector3D<> > in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idV3DCubicSplineInterpolator();
 
-    /** @brief Identifier for rw::trajectory::CircularInterpolator<rw::math::Vector3D<> > in the XML format  */
-    static const std::string V3DCircularInterpolatorId;
+	/**
+	 * @brief Identifier for rw::trajectory::CircularInterpolator<rw::math::Vector3D<> > in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idV3DCircularInterpolator();
 
-    /** @brief Identifier for rw::trajectory::LinearInterpolator<rw::math::Rotation3D<> > in the XML format  */
-    static const std::string R3DLinearInterpolatorId;
+	/**
+	 * @brief Identifier for rw::trajectory::LinearInterpolator<rw::math::Rotation3D<> > in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idR3DLinearInterpolator();
 
-    /** @brief Identifier for rw::trajectory::CubicSplineInterpolator<rw::math::Rotation3D<> > in the XML format  */
-    static const std::string R3DCubicSplineInterpolatorId;
+	/**
+	 * @brief Identifier for rw::trajectory::CubicSplineInterpolator<rw::math::Rotation3D<> > in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idR3DCubicSplineInterpolator();
 
-    /** @brief Identifier for rw::trajectory::LinearInterpolator<rw::math::Transform3D<> > in the XML format  */
-    static const std::string T3DLinearInterpolatorId;
+	/**
+	 * @brief Identifier for rw::trajectory::LinearInterpolator<rw::math::Transform3D<> > in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idT3DLinearInterpolator();
 
-    /** @brief Identifier for rw::trajectory::CubicSplineInterpolator<rw::math::Transform3D<> > in the XML format  */
-    static const std::string T3DCubicSplineInterpolatorId;
+	/**
+	 * @brief Identifier for rw::trajectory::CubicSplineInterpolator<rw::math::Transform3D<> > in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idT3DCubicSplineInterpolator();
 
-    /** @brief Identifier for rw::trajectory::ParabolicBlend in the XML format  */
-    static const std::string ParabolicBlendId;
+	/**
+	 * @brief Identifier for rw::trajectory::ParabolicBlend in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idParabolicBlend();
 
-    /** @brief Identifier for rw::trajectory::LloydHaywardblend in the XML format  */
-    static const std::string LloydHaywardBlendId;
+	/**
+	 * @brief Identifier for rw::trajectory::LloydHaywardblend in the XML format.
+	 * @return the identifier.
+	 */
+	static const std::string& idLloydHaywardBlend();
 
-    /** @brief Identifier for duration specification for interpolators  */
-    static const std::string DurationAttributeId;
+	/**
+	 * @brief Identifier for duration specification for interpolators.
+	 * @return the identifier.
+	 */
+	static const std::string& idDurationAttribute();
 
-    /** @brief Identifier for duration specification for interpolators  */
-    static const std::string StartTimeAttributeId;
+	/**
+	 * @brief Identifier for duration specification for interpolators.
+	 * @return the identifier.
+	 */
+	static const std::string& idStartTimeAttribute();
 
-    /** @brief Identifier for the blend time tau used for blends  */
-    static const std::string TauAttributeId;
+	/**
+	 * @brief Identifier for the blend time tau used for blends.
+	 * @return the identifier.
+	 */
+	static const std::string& idTauAttribute();
 
-    /** @brief Identifier for the parameter kappa used in LloydHayward blends  */
-    static const std::string KappaAttributeId;
+	/**
+	 * @brief Identifier for the parameter kappa used in LloydHayward blends.
+	 * @return the identifier.
+	 */
+	static const std::string& idKappaAttribute();
+
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the DOMTrajectoryLoader is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if DOMTrajectoryLoader is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
+	public:
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
 
 private:
+	static const Initializer initializer;
 
     void readTrajectory(rw::common::Ptr<rw::common::DOMElem> element);
 

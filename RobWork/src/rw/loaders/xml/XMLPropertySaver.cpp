@@ -47,20 +47,32 @@ using namespace rw::loaders;
 using namespace rw::trajectory;
 using namespace xercesc;
 
+XMLPropertySaver::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		XMLBasisTypes::Initializer init1;
+		XMLPropertyFormat::Initializer init2;
+		XMLPathFormat::Initializer init3;
+		XMLPathSaver::Initializer init4;
+		done = true;
+	}
+}
+
+const XMLPropertySaver::Initializer XMLPropertySaver::initializer;
 
 xercesc::DOMElement* XMLPropertySaver::save(PropertyBase::Ptr property, xercesc::DOMDocument* doc) {
     if( property->getType().getId()==PropertyType::Unknown )
         return NULL;
 
-    xercesc::DOMElement* root = doc->createElement(XMLPropertyFormat::PropertyId);
+    xercesc::DOMElement* root = doc->createElement(XMLPropertyFormat::idProperty());
 
-    xercesc::DOMElement* element = doc->createElement(XMLPropertyFormat::PropertyNameId);
+    xercesc::DOMElement* element = doc->createElement(XMLPropertyFormat::idPropertyName());
     root->appendChild(element);
     DOMText* txt = doc->createTextNode(XMLStr(property->getIdentifier()).uni());
     element->appendChild(txt);
 
     if( property->getDescription().size()>0){
-        element = doc->createElement(XMLPropertyFormat::PropertyDescriptionId);
+        element = doc->createElement(XMLPropertyFormat::idPropertyDescription());
         root->appendChild(element);
         txt = doc->createTextNode(XMLStr(property->getDescription()).uni());
         element->appendChild(txt);
@@ -70,7 +82,7 @@ xercesc::DOMElement* XMLPropertySaver::save(PropertyBase::Ptr property, xercesc:
    // txt = doc->createTextNode(XMLStr(property->getType().getId()).uni());
    // element->appendChild(txt);
 
-    element = doc->createElement(XMLPropertyFormat::PropertyValueId);
+    element = doc->createElement(XMLPropertyFormat::idPropertyValue());
     root->appendChild(element);
 
     xercesc::DOMElement* elem = NULL;
@@ -165,12 +177,12 @@ xercesc::DOMElement* XMLPropertySaver::save(PropertyBase::Ptr property, xercesc:
     }
     case PropertyType::QPath: {
         const Property<QPath>* prop = dynamic_cast<const Property<QPath>*>(property.get());
-        elem = XMLPathSaver::createElement<Q, QPath>(prop->getValue(), XMLPathFormat::QPathId, doc);
+        elem = XMLPathSaver::createElement<Q, QPath>(prop->getValue(), XMLPathFormat::idQPath(), doc);
         break;
     }
     case PropertyType::Transform3DPath: {
         const Property<Transform3DPath>* prop = dynamic_cast<const Property<Transform3DPath>*>(property.get());
-        elem = XMLPathSaver::createElement<Transform3D<>, Transform3DPath>(prop->getValue(), XMLPathFormat::T3DPathId, doc);
+        elem = XMLPathSaver::createElement<Transform3D<>, Transform3DPath>(prop->getValue(), XMLPathFormat::idT3DPath(), doc);
         break;
     }
     case PropertyType::IntList: {
@@ -206,7 +218,7 @@ void XMLPropertySaver::save(const rw::common::PropertyMap& map, xercesc::DOMElem
 
 
 xercesc::DOMElement* XMLPropertySaver::save(const PropertyMap& map, xercesc::DOMDocument* doc) {
-    xercesc::DOMElement* element = doc->createElement(XMLPropertyFormat::PropertyMapId);
+    xercesc::DOMElement* element = doc->createElement(XMLPropertyFormat::idPropertyMap());
     save(map, element, doc);
     return element;
 }
@@ -222,7 +234,7 @@ xercesc::DOMDocument* XMLPropertySaver::createDOMDocument(const PropertyMap& map
         try
         {
             doc = impl->createDocument(0,                                  // root element namespace URI.
-                                       XMLPropertyFormat::PropertyMapId,       // root element name
+                                       XMLPropertyFormat::idPropertyMap(),       // root element name
                                        0);                                 // We do not wish to specify a document type
 
             xercesc::DOMElement* root = doc->getDocumentElement();

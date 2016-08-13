@@ -28,22 +28,48 @@
 using namespace rw::loaders;
 using namespace xercesc;
 
-const XercesInitializer XMLPropertyFormat::initializer;
+XMLPropertyFormat::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		static XercesInitializer initializer;
+	    idPropertyMap();
+	    idProperty();
+	    idPropertyName();
+	    idPropertyDescription();
+	    idPropertyType();
+	    idPropertyValue();
+		done = true;
+	}
+}
 
-/** @brief Identifier for rw::common::PropertyMap in the XML format  */
-const XMLCh* XMLPropertyFormat::PropertyMapId = XMLString::transcode("PropertyMap");
+const XMLPropertyFormat::Initializer XMLPropertyFormat::initializer;
 
-/** @brief Identifier for rw::common::Property in the XML format  */
-const XMLCh* XMLPropertyFormat::PropertyId = XMLString::transcode("Property");
+const XMLCh* XMLPropertyFormat::idPropertyMap() {
+	static const XMLStr id("PropertyMap");
+	return id.uni();
+}
 
-/** @brief Identifier for the name of a rw::common::Property */
-const XMLCh* XMLPropertyFormat::PropertyNameId = XMLString::transcode("Name");
+const XMLCh* XMLPropertyFormat::idProperty() {
+	static const XMLStr id("Property");
+	return id.uni();
+}
 
-/** @brief Identifier for the description of a rw::common::Property */
-const XMLCh* XMLPropertyFormat::PropertyDescriptionId = XMLString::transcode("Description");
+const XMLCh* XMLPropertyFormat::idPropertyName() {
+	static const XMLStr id("Name");
+	return id.uni();
+}
 
-/** @brief Identifier for the type of a rw::common::Property */
-const XMLCh* XMLPropertyFormat::PropertyTypeId = XMLString::transcode("Type");
+const XMLCh* XMLPropertyFormat::idPropertyDescription() {
+	static const XMLStr id("Description");
+	return id.uni();
+}
 
-/** @brief Identifier for the value of a rw::common::Property */
-const XMLCh* XMLPropertyFormat::PropertyValueId = XMLString::transcode("Value");
+const XMLCh* XMLPropertyFormat::idPropertyType() {
+	static const XMLStr id("Type");
+	return id.uni();
+}
+
+const XMLCh* XMLPropertyFormat::idPropertyValue() {
+	static const XMLStr id("Value");
+	return id.uni();
+}

@@ -232,8 +232,8 @@ namespace {
 
     // The instance must be defined as a local static to give us necessary control of the lifetime (RobWork depends on other global static variables):
     RobWork::Ptr rwinstance() {
-    	// Local static variable used, such that variables in BoostXMLParser is still available at destruction of RobWork
-    	// (BoostXMLParser is currently used by DOMPropertyMapSaver in the RobWork destructor)
+    	// Local static variable used, such that variables used by DOMPropertyMapSaver is still available at destruction of RobWork
+    	static DOMPropertyMapSaver::Initializer init; // make sure that local static variables is destructed after RobWork instance is destructed.
     	static RobWork::Ptr _rwinstance = ownedPtr(new RobWork());
     	if (_newInstance != NULL) {
     		// Allow switching with a new instance

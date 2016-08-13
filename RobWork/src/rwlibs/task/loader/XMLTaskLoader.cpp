@@ -57,6 +57,19 @@ using namespace rw::loaders;
 using namespace rw::math;
 using namespace rw::common;
 
+XMLTaskLoader::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		XMLBasisTypes::Initializer init1;
+		XMLPropertyFormat::Initializer init2;
+		XMLPropertyLoader::Initializer init3;
+		XMLTaskFormat::Initializer init4;
+		done = true;
+	}
+}
+
+const XMLTaskLoader::Initializer XMLTaskLoader::initializer;
+
 XMLTaskLoader::XMLTaskLoader() {
 	// TODO Auto-generated constructor stub
 
@@ -91,11 +104,11 @@ std::string readStringAttribute(xercesc::DOMElement* element, const XMLCh* id) {
 
 MotionType readMotionTypeAttribute(xercesc::DOMElement* element, const XMLCh* id) {
 	std::string type = readStringAttribute(element, id);
-	if (type == XMLStr(XMLTaskFormat::LinearMotionId).str())
+	if (type == XMLStr(XMLTaskFormat::idLinearMotion()).str())
 		return MotionType::Linear;
-	if (type == XMLStr(XMLTaskFormat::P2PMotionId).str())
+	if (type == XMLStr(XMLTaskFormat::idP2PMotion()).str())
 		return MotionType::P2P;
-	if (type == XMLStr(XMLTaskFormat::CircularMotionId).str())
+	if (type == XMLStr(XMLTaskFormat::idCircularMotion()).str())
 		return MotionType::Circular;
 	RW_THROW("Unsupported type of motion: \""<<type<<"\"");
 }
@@ -134,15 +147,15 @@ void XMLTaskLoader::readEntityData(xercesc::DOMElement* element, Ptr<Entity> ent
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
 		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
-			if (XMLString::equals(XMLTaskFormat::EntityIndexId, child->getNodeName())) {
+			if (XMLString::equals(XMLTaskFormat::idEntityIndex(), child->getNodeName())) {
 				entity->setIndex(XMLBasisTypes::readInt(child, false));
 			}
-			if (XMLString::equals(XMLTaskFormat::EntityIdId, child->getNodeName())) {
+			if (XMLString::equals(XMLTaskFormat::idEntityId(), child->getNodeName())) {
 				try {
 					entity->setId(XMLBasisTypes::readElementText(child, false));
 				} catch (...) {}
 			}
-			if (XMLString::equals(XMLPropertyFormat::PropertyMapId, child->getNodeName())) {
+			if (XMLString::equals(XMLPropertyFormat::idPropertyMap(), child->getNodeName())) {
 				entity->setPropertyMap(XMLPropertyLoader::readProperties(child, false));
 			}
 		}
@@ -156,14 +169,14 @@ typename Target<T>::Ptr XMLTaskLoader::readTarget(xercesc::DOMElement* element) 
 	T value;
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
-	std::string id = readStringAttribute(element, XMLTaskFormat::TargetIdAttrId);
+	std::string id = readStringAttribute(element, XMLTaskFormat::idTargetIdAttr());
 	
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
 		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
-			if (XMLString::equals(XMLBasisTypes::QId, child->getNodeName())) {
+			if (XMLString::equals(XMLBasisTypes::idQ(), child->getNodeName())) {
 				value = ElementReader<T>::readElement(child);
-			} else if (XMLString::equals(XMLBasisTypes::Transform3DId, child->getNodeName())) {
+			} else if (XMLString::equals(XMLBasisTypes::idTransform3D(), child->getNodeName())) {
 				value = ElementReader<T>::readElement(child);
 			}
 
@@ -183,7 +196,7 @@ typename Target<T>::Ptr XMLTaskLoader::readTarget(xercesc::DOMElement* element) 
 
 
 Action::Ptr XMLTaskLoader::readAction(xercesc::DOMElement* element) {
-	int type = readIntAttribute(element, XMLTaskFormat::ActionTypeAttrId);
+	int type = readIntAttribute(element, XMLTaskFormat::idActionTypeAttr());
 
 	Action::Ptr action = ownedPtr(new Action(type));
 	readEntityData(element, action);
@@ -198,7 +211,7 @@ template <class T>
 typename Motion<T>::Ptr XMLTaskLoader::readMotion(xercesc::DOMElement* element) {
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
-	MotionType type = readMotionTypeAttribute(element, XMLTaskFormat::MotionTypeAttrId);
+	MotionType type = readMotionTypeAttribute(element, XMLTaskFormat::idMotionTypeAttr());
 
 	std::string start;
 	std::string mid = "";
@@ -206,11 +219,11 @@ typename Motion<T>::Ptr XMLTaskLoader::readMotion(xercesc::DOMElement* element) 
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
 		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
-			if (XMLString::equals(XMLTaskFormat::MotionStartId, child->getNodeName())) {
+			if (XMLString::equals(XMLTaskFormat::idMotionStart(), child->getNodeName())) {
 				start = ElementReader<std::string>::readElement(child);
-			} else if (XMLString::equals(XMLTaskFormat::MotionMidId, child->getNodeName())) {
+			} else if (XMLString::equals(XMLTaskFormat::idMotionMid(), child->getNodeName())) {
 				mid = ElementReader<std::string>::readElement(child);
-			} else if (XMLString::equals(XMLTaskFormat::MotionEndId, child->getNodeName())) {
+			} else if (XMLString::equals(XMLTaskFormat::idMotionEnd(), child->getNodeName())) {
 				end = ElementReader<std::string>::readElement(child);
 			}
 		}
@@ -268,12 +281,12 @@ void XMLTaskLoader::readEntities(xercesc::DOMElement* element, typename Task<T>:
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
 		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
-			if (XMLString::equals(XMLTaskFormat::MotionId, child->getNodeName())) {
+			if (XMLString::equals(XMLTaskFormat::idMotion(), child->getNodeName())) {
 				task->addMotion(readMotion<T>(child));
-			} else if (XMLString::equals(XMLTaskFormat::ActionId, child->getNodeName())) {
+			} else if (XMLString::equals(XMLTaskFormat::idAction(), child->getNodeName())) {
 				task->addAction(readAction(child));
-			} else if (XMLString::equals(XMLTaskFormat::QTaskId, child->getNodeName()) ||
-			           XMLString::equals(XMLTaskFormat::CartesianTaskId, child->getNodeName())) {
+			} else if (XMLString::equals(XMLTaskFormat::idQTask(), child->getNodeName()) ||
+			           XMLString::equals(XMLTaskFormat::idCartesianTask(), child->getNodeName())) {
 
 			    //A subtask may have duplicates of the target names. We therefore
 			    //store the old targets temporarily and
@@ -294,8 +307,8 @@ void XMLTaskLoader::readTargets(xercesc::DOMElement* element, typename Task<T>::
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
 		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
-			if (XMLString::equals(XMLTaskFormat::QTargetId, child->getNodeName()) ||
-                XMLString::equals(XMLTaskFormat::CartesianTargetId, child->getNodeName()))
+			if (XMLString::equals(XMLTaskFormat::idQTarget(), child->getNodeName()) ||
+                XMLString::equals(XMLTaskFormat::idCartesianTarget(), child->getNodeName()))
 			{				
 				task->addTarget(readTarget<T>(child));
 			}
@@ -331,11 +344,11 @@ typename Task<T>::Ptr XMLTaskLoader::readTemplateTask(xercesc::DOMElement* eleme
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
 		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
-			if (XMLString::equals(XMLTaskFormat::TargetsId, child->getNodeName())) {
+			if (XMLString::equals(XMLTaskFormat::idTargets(), child->getNodeName())) {
 				readTargets<T>(child, task);
-			} else if (XMLString::equals(XMLTaskFormat::EntitiesId, child->getNodeName())) {
+			} else if (XMLString::equals(XMLTaskFormat::idEntities(), child->getNodeName())) {
 				readEntities<T>(child, task);
-			} else if (XMLString::equals(XMLTaskFormat::AugmentationsId, child->getNodeName())) {
+			} else if (XMLString::equals(XMLTaskFormat::idAugmentations(), child->getNodeName())) {
 				readAugmentations(child, task);
 			}
 		}
@@ -347,14 +360,14 @@ typename Task<T>::Ptr XMLTaskLoader::readTemplateTask(xercesc::DOMElement* eleme
 
 TaskBase::Ptr XMLTaskLoader::readTask(xercesc::DOMElement* element) {
 
-	if (XMLString::equals(XMLTaskFormat::QTaskId, element->getNodeName())) {
+	if (XMLString::equals(XMLTaskFormat::idQTask(), element->getNodeName())) {
 		_qTask = readTemplateTask<Q>(element);
 		return _qTask;
-	} else if (XMLString::equals(XMLTaskFormat::CartesianTaskId, element->getNodeName())) {
+	} else if (XMLString::equals(XMLTaskFormat::idCartesianTask(), element->getNodeName())) {
 		_cartTask = readTemplateTask<Transform3D<> >(element);
 		return _cartTask;
 	} else {
-		RW_THROW("Element name does not match " + XMLStr(XMLTaskFormat::QTaskId).str() + " or " + XMLStr(XMLTaskFormat::CartesianTaskId).str() + " as expected");
+		RW_THROW("Element name does not match " + XMLStr(XMLTaskFormat::idQTask()).str() + " or " + XMLStr(XMLTaskFormat::idCartesianTask()).str() + " as expected");
 	}
 }
 

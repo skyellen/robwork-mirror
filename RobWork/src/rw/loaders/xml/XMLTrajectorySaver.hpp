@@ -121,7 +121,25 @@ public:
      */
     static bool write(const rw::trajectory::Transform3DTrajectory& trajectory, std::ostream& outstream);
 
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the XMLTrajectorySaver is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if XMLTrajectorySaver is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
+	public:
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
+
 private:
+	static const Initializer initializer;
+
     XMLTrajectorySaver() {};
 };
 

@@ -61,6 +61,17 @@ using namespace rw::loaders;
 using namespace rw::kinematics;
 using namespace rw::models;
 
+XMLPathLoader::Initializer::Initializer() {
+	static bool done = false;
+	if (!done) {
+		XMLBasisTypes::Initializer init1;
+		XMLPathFormat::Initializer init2;
+		done = true;
+	}
+}
+
+const XMLPathLoader::Initializer XMLPathLoader::initializer;
+
 XMLPathLoader::XMLPathLoader(const std::string& filename, rw::models::WorkCell::Ptr workcell, const std::string& schemaFileName)
 {
     _workcell = workcell;
@@ -137,9 +148,9 @@ namespace {
         for(XMLSize_t i = 0; i < nodeCount; ++i ) {
             xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
             if (child != NULL) {
-                if (XMLString::equals(child->getNodeName(), XMLPathFormat::TimeId)) {
+                if (XMLString::equals(child->getNodeName(), XMLPathFormat::idTime())) {
                     time = XMLDouble(child->getChildNodes()->item(0)->getNodeValue()).getValue();
-                } else if (XMLString::equals(child->getNodeName(), XMLBasisTypes::QId)) {
+                } else if (XMLString::equals(child->getNodeName(), XMLBasisTypes::idQ())) {
                     q = XMLBasisTypes::readQ(child, false);
                 }
             }
@@ -155,9 +166,9 @@ namespace {
         for(XMLSize_t i = 0; i < nodeCount; ++i ) {
             xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
             if (child != NULL) {
-                if (XMLString::equals(child->getNodeName(), XMLPathFormat::TimeId)) {
+                if (XMLString::equals(child->getNodeName(), XMLPathFormat::idTime())) {
                     time = XMLDouble(child->getChildNodes()->item(0)->getNodeValue()).getValue();
-                } else if (XMLString::equals(child->getNodeName(), XMLBasisTypes::StateId)) {
+                } else if (XMLString::equals(child->getNodeName(), XMLBasisTypes::idState())) {
                     state = XMLBasisTypes::readState(child, _workcell, false);
                 }
             }
@@ -245,31 +256,31 @@ rw::trajectory::TimedStatePath::Ptr XMLPathLoader::getTimedStatePath() {
 
 
 void XMLPathLoader::readPath(xercesc::DOMElement* element) {
-    if (XMLString::equals(XMLPathFormat::QPathId, element->getNodeName())) {
+    if (XMLString::equals(XMLPathFormat::idQPath(), element->getNodeName())) {
         _qPath = ownedPtr(new QPath());
 		read<Q, QPath::Ptr>(element, _qPath);
         _type = QType;
-    } else if (XMLString::equals(XMLPathFormat::V3DPathId, element->getNodeName())) {
+    } else if (XMLString::equals(XMLPathFormat::idV3DPath(), element->getNodeName())) {
         _v3dPath = ownedPtr(new Vector3DPath());
 		read<Vector3D<>, Vector3DPath::Ptr>(element, _v3dPath);
         _type = Vector3DType;
-    } else if (XMLString::equals(XMLPathFormat::R3DPathId, element->getNodeName())) {
+    } else if (XMLString::equals(XMLPathFormat::idR3DPath(), element->getNodeName())) {
         _r3dPath = ownedPtr(new Rotation3DPath());
 		read<Rotation3D<>, Rotation3DPath::Ptr>(element, _r3dPath);
         _type = Rotation3DType;
-    } else if (XMLString::equals(XMLPathFormat::T3DPathId, element->getNodeName())) {
+    } else if (XMLString::equals(XMLPathFormat::idT3DPath(), element->getNodeName())) {
         _t3dPath = ownedPtr(new Transform3DPath());
 		read<Transform3D<>, Transform3DPath::Ptr>(element, _t3dPath);
         _type = Transform3DType;
-    } else if(XMLString::equals(XMLPathFormat::StatePathId, element->getNodeName())) {
+    } else if(XMLString::equals(XMLPathFormat::idStatePath(), element->getNodeName())) {
         _statePath = ownedPtr(new StatePath());
 		read<State, StatePath::Ptr>(element, _statePath, _workcell);
         _type = StateType;
-    } else if(XMLString::equals(XMLPathFormat::TimedQPathId, element->getNodeName())) {
+    } else if(XMLString::equals(XMLPathFormat::idTimedQPath(), element->getNodeName())) {
         _timedQPath = ownedPtr(new TimedQPath());
 		read<TimedQ, TimedQPath::Ptr>(element, _timedQPath, _workcell);
         _type = TimedQType;
-    } else if(XMLString::equals(XMLPathFormat::TimedStatePathId, element->getNodeName())) {
+    } else if(XMLString::equals(XMLPathFormat::idTimedStatePath(), element->getNodeName())) {
         _timedStatePath = ownedPtr(new TimedStatePath());
 		read<TimedState, TimedStatePath::Ptr>(element, _timedStatePath, _workcell);
         _type = TimedStateType;

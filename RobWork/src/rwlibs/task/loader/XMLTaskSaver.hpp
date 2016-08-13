@@ -22,7 +22,13 @@
 
 #include "../Task.hpp"
 
-#include <xercesc/dom/DOM.hpp>
+#include <xercesc/util/XercesDefs.hpp>
+
+XERCES_CPP_NAMESPACE_BEGIN
+class DOMDocument;
+class DOMElement;
+class XMLFormatTarget;
+XERCES_CPP_NAMESPACE_END
 
 namespace rwlibs {
 namespace task {
@@ -78,6 +84,25 @@ private:
 
 
 	std::map<rwlibs::task::TargetBase::Ptr, std::string> _targetMap;
+
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the XMLTaskSaver is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if XMLTaskSaver is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
+	public:
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
+
+private:
+	static const Initializer initializer;
 };
 
 /** @} */
