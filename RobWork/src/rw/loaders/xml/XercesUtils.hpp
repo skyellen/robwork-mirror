@@ -166,7 +166,6 @@ public:
     XercesInitializer() {
         try
         {
-        	std::cout << "init" << std::endl;
            xercesc::XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
         }
         catch(xercesc::XMLException& e) {
@@ -176,7 +175,6 @@ public:
 
     //! @brief Terminate Xerces when destructed.
     ~XercesInitializer() {
-    	std::cout << "term" << std::endl;
     	xercesc::XMLPlatformUtils::Terminate();
     }
 };
