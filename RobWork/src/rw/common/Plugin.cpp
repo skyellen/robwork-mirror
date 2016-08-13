@@ -37,7 +37,7 @@ public:
 	~AutoClosePlugin() {
 		const OSHandle* const handle = _plugin->getHandle();
 		delete _plugin;
-		//Plugin::close(handle);
+		Plugin::close(handle);
 	}
 
     std::vector<Extension::Descriptor> getExtensionDescriptors() {
