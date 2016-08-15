@@ -95,7 +95,7 @@ const Plugin::OSHandle* Plugin::getHandle() {
 
 void Plugin::close(const OSHandle* handle) {
 	if (handle != NULL) {
-		if (!FreeLibrary(handle->handle)) {
+		/*if (!FreeLibrary(handle->handle)) {
 	        LPTSTR buffer = NULL;
 	        if(FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
 	                      FORMAT_MESSAGE_FROM_SYSTEM,
@@ -110,7 +110,7 @@ void Plugin::close(const OSHandle* handle) {
 	        } else {
 		        RW_THROW("Unknown Error: Plugin could not be unloaded!");
 	        }
-		}
+		}*/
 		delete handle;
 	}
 }
