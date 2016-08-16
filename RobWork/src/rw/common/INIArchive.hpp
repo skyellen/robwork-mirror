@@ -85,18 +85,8 @@ protected:
 
 		void doOpenArchive(const std::string& filename);
 		void doOpenArchive(std::iostream& stream);
-		void doOpenOutput(std::ostream& ofs){
-			_fstr = NULL;
-			_iostr = NULL;
-			_ofs = &ofs;
-			_isopen = true;
-		}
-		void doOpenInput(std::istream& ifs){
-			_fstr = NULL;
-			_iostr = NULL;
-			_ifs = &ifs;
-			_isopen = true;
-		}
+		void doOpenOutput(std::ostream& ofs);
+		void doOpenInput(std::istream& ifs);
 
 		///////////////////////// WRITING
 		virtual void doWrite(bool val, const std::string& id){

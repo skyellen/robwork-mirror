@@ -30,8 +30,11 @@ BINArchive::~BINArchive(){
 }
 
 void BINArchive::close(){
-	if(_fstr!=NULL)
+	if(_fstr != NULL) {
 		_fstr->close();
+		delete _fstr;
+		_fstr = NULL;
+	}
 }
 
 void BINArchive::doWriteEnterScope(const std::string& id){
@@ -72,11 +75,37 @@ void BINArchive::doOpenArchive(const std::string& filename){
 }
 
 void BINArchive::doOpenArchive(std::iostream& stream){
-	_fstr = NULL;
+	if(_fstr != NULL) {
+		_fstr->close();
+		delete _fstr;
+		_fstr = NULL;
+	}
 	_iostr = &stream;
 	_ofs = _iostr;
 	_ifs = _iostr;
 	_isopen =  true;
+}
+
+void BINArchive::doOpenOutput(std::ostream& ofs){
+	if(_fstr != NULL) {
+		_fstr->close();
+		delete _fstr;
+		_fstr = NULL;
+	}
+	_iostr = NULL;
+	_ofs = &ofs;
+	_isopen = true;
+}
+
+void BINArchive::doOpenInput(std::istream& ifs){
+	if(_fstr != NULL) {
+		_fstr->close();
+		delete _fstr;
+		_fstr = NULL;
+	}
+	_iostr = NULL;
+	_ifs = &ifs;
+	_isopen = true;
 }
 
 void BINArchive::flush(){

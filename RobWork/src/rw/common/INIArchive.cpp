@@ -25,7 +25,11 @@ using namespace rw::common;
 void INIArchive::close()
 {
     //flush();
-    if (_fstr != NULL) _fstr->close();
+    if (_fstr != NULL) {
+    	_fstr->close();
+    	delete _fstr;
+    	_fstr = NULL;
+    }
 }
 
 void INIArchive::doWriteEnterScope(const std::string& id)
@@ -73,11 +77,37 @@ void INIArchive::doOpenArchive(const std::string& filename)
 
 void INIArchive::doOpenArchive(std::iostream& stream)
 {
-    _fstr = NULL;
+    if (_fstr != NULL) {
+    	_fstr->close();
+    	delete _fstr;
+    	_fstr = NULL;
+    }
     _iostr = &stream;
     _ofs = _iostr;
     _ifs = _iostr;
     _isopen = true;
+}
+
+void INIArchive::doOpenOutput(std::ostream& ofs){
+    if (_fstr != NULL) {
+    	_fstr->close();
+    	delete _fstr;
+    	_fstr = NULL;
+    }
+	_iostr = NULL;
+	_ofs = &ofs;
+	_isopen = true;
+}
+
+void INIArchive::doOpenInput(std::istream& ifs){
+    if (_fstr != NULL) {
+    	_fstr->close();
+    	delete _fstr;
+    	_fstr = NULL;
+    }
+	_iostr = NULL;
+	_ifs = &ifs;
+	_isopen = true;
 }
 
 void INIArchive::flush()
