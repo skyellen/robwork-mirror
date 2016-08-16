@@ -1,0 +1,58 @@
+# This file can be used to suppress valgrind errors
+{
+   Leaks in libgobject
+   Memcheck:Leak
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libgobject-2.0.so.*
+   ...
+}
+{
+   Leaks in glib
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   obj:/lib/x86_64-linux-gnu/libglib-2.0.so.*
+   ...
+}
+{
+   Leaks in _dlerror_run in dlopen
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_*
+   ...
+}
+{
+   Leaks in dlclose at exit
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_dl_close_worker
+   ...
+   fun:dlclose
+   ...
+   fun:__run_exit_handlers
+}
+{
+   Leaks in dlopen
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_dl_map_object
+   ...
+   fun:_dl_open
+   ...
+}
+{
+   Leaks in _dl_init
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libstdc++.so.*
+   fun:call_init.part.0
+   fun:call_init
+   fun:_dl_init
+   obj:/lib/x86_64-linux-gnu/ld-*.so
+}
+
