@@ -52,12 +52,14 @@ namespace proximity {
         }
 
         virtual ~BTPNode(){
-            /*
-            if(_data._children._left)
-                delete _data._children._left;
-            if(_data._children._right)
-                delete _data._children._right;
-            */
+        	if (!isLeaf()) {
+        		if(_data._children._left != NULL)
+        			delete _data._children._left;
+        		if(_data._children._right != NULL)
+        			delete _data._children._right;
+        		_data._children._left = NULL;
+        		_data._children._right = NULL;
+        	}
         }
 
         //! @brief get the OBB of this node
@@ -69,8 +71,18 @@ namespace proximity {
         inline BTPNode* left(){ return _data._children._left; };
         inline BTPNode* right(){ return _data._children._right; };
 
-        inline void setLeft(BTPNode*  left){_data._children._left = left;};
-        inline void setRight(BTPNode* right){_data._children._right = right;};
+        inline void setLeft(BTPNode*  left){
+        	RW_ASSERT(!isLeaf());
+            if(_data._children._left != NULL)
+                delete _data._children._left;
+            _data._children._left = left;
+        }
+        inline void setRight(BTPNode* right){
+        	RW_ASSERT(!isLeaf());
+            if(_data._children._right != NULL)
+                delete _data._children._right;
+        	_data._children._right = right;
+        }
 
         inline bool isLeaf(){ return _size>0 /*|| ((left()==NULL) && (right()==NULL))*/;}
 
@@ -145,6 +157,14 @@ namespace proximity {
 		    _root(NULL)
 		{
 		    //std::cout << "SIZE OF NODE: " << sizeof(Node) << std::endl;
+		}
+
+		//! @brief Destructor.
+		~BinaryBVTree() {
+			if (_root != NULL) {
+				delete _root;
+				_root = NULL;
+			}
 		}
 
 		NodeIterator getIterator() const { return getRootIterator(); };
@@ -305,7 +325,7 @@ namespace proximity {
 
 		Node *_root;
 		std::vector<size_t> _leafIndexes;
-		rw::common::Ptr<std::vector<Node> > _nodes;
+		//rw::common::Ptr<std::vector<Node> > _nodes;
 	};
 
 

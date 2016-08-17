@@ -97,7 +97,7 @@ bool ProximityStrategyRW::addGeometry(ProximityModel* model, const Geometry& geo
 
         //Timer t;
         //std::cout << "Mesh size: " << mesh->getSize() << std::endl;
-        BinaryOBBPtrTreeD::Ptr tree = treefactory.makeTopDownOBBTreeCovarMedian<BinaryOBBPtrTreeD>(mesh,1);
+        BinaryOBBPtrTreeD::Ptr tree = ownedPtr(treefactory.makeTopDownOBBTreeCovarMedian<BinaryOBBPtrTreeD>(mesh,1));
         //std::cout << "Time to create OBB tree: " << t.toString("ss:zzz") << std::endl;
         rwmodel = ownedPtr( new Model(geom.getId(), geom.getTransform(), tree) );
         rwmodel->ckey = key;

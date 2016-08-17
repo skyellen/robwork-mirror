@@ -27,6 +27,7 @@ namespace proximity {
     template<class PRIM>
     struct PrimArrayAccessor {
         typedef PRIM PRIMType;
+        virtual ~PrimArrayAccessor() {}
         virtual void getPrimitive(size_t pidx, PRIM& prim) const = 0;
         virtual size_t getSize() const = 0;
         //virtual const PRIM& getPrimitive(size_t pidx) const = 0;
@@ -140,11 +141,18 @@ namespace proximity {
 
     public:
 
+        /**
+         * @brief Constructor. The BVTree takes ownership of the \b primAccessor .
+         * @param primAccessor
+         */
         BVTree(PrimArrayAccessor<PRIMType>* primAccessor):_pAccessor(primAccessor)
         {
-        };
+        }
 
-        virtual ~BVTree(){};
+        //! @brief Destructor.
+        virtual ~BVTree(){
+        	delete _pAccessor;
+        }
 
         virtual NodeIterator getRootIterator() const = 0;//{ return static_cast<DERIVED*>(this)->getRoot(); }
         virtual int getMaxTrisPerLeaf() const = 0;
@@ -185,7 +193,7 @@ namespace proximity {
         */
 
     private:
-        PrimArrayAccessor<PRIMType>* _pAccessor;
+        const PrimArrayAccessor<PRIMType>* const _pAccessor;
     };
 
 

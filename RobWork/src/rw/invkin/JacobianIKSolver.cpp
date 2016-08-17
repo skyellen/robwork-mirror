@@ -41,6 +41,7 @@ JacobianIKSolver::JacobianIKSolver(Device::Ptr device, Frame *foi, const State& 
     _fkrange( device->getBase(), foi, state),
     _devJac( device->baseJCframe(foi,state) ),
     _useJointClamping(false),
+	_useInterpolation(false),
     _checkJointLimits(false),
 	_solverType(SVD)
 {
@@ -53,6 +54,7 @@ JacobianIKSolver::JacobianIKSolver(Device::Ptr device, const State& state):
     _fkrange( device->getBase(), device->getEnd(), state),
     _devJac( device->baseJCend(state) ),
     _useJointClamping(false),
+	_useInterpolation(false),
     _checkJointLimits(false),
     _solverType(SVD)
 {
