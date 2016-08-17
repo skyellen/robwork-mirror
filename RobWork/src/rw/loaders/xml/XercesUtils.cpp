@@ -39,15 +39,7 @@ using namespace rw::loaders;
 
 
 xercesc::DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, const std::string& filename, const std::string& schemaFileName) {
-   /* try
-    {
-       xercesc::XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
-    }
-    catch(xercesc::XMLException& e )
-    {
-       RW_THROW("Xerces initialization Error"<<rw::loaders::XMLStr(e.getMessage()).str());
-    }*/
-
+	static XercesInitializer initXerces;
     rw::loaders::XercesErrorHandler errorHandler;
 
     parser.setDoNamespaces( true );
@@ -67,52 +59,14 @@ xercesc::DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser
     return parser.getDocument();
 }
 
-
-
-
 xercesc::DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, std::istream& instream, const std::string& schemaFileName) {
-    /*try
-    {
-       xercesc::XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
-    }
-    catch(xercesc::XMLException& e )
-    {
-       RW_THROW("Xerces initialization Error"<<rw::loaders::XMLStr(e.getMessage()).str());
-    }
-
-    rw::loaders::XercesErrorHandler errorHandler;
-
-    parser.setDoNamespaces( true );
-    parser.setDoSchema( true );
-    if (schemaFileName.size() != 0)
-        parser.setExternalNoNamespaceSchemaLocation(schemaFileName.c_str());
-
-
-    parser.setErrorHandler(&errorHandler);
-    parser.setValidationScheme(xercesc::XercesDOMParser::Val_Auto);
-
-    parser.parse(InputStreamSource(instream));
-    if (parser.getErrorCount() != 0) {
-        std::cerr<<std::endl<<std::endl<<"Error(s) = "<<std::endl<<XMLStr(errorHandler.getMessages()).str()<<std::endl;
-        RW_THROW(""<<parser.getErrorCount()<<" Errors: "<<XMLStr(errorHandler.getMessages()).str());
-    }
-    return parser.getDocument();*/
-
 	InputStreamSource isource(instream);
 
     return readDocument(parser, isource, schemaFileName);
 }
 
 xercesc::DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, const InputSource& source, const std::string& schemaFileName) {
-    try
-    {
-       xercesc::XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
-    }
-    catch(xercesc::XMLException& e )
-    {
-       RW_THROW("Xerces initialization Error"<<rw::loaders::XMLStr(e.getMessage()).str());
-    }
-
+	static XercesInitializer initXerces;
     rw::loaders::XercesErrorHandler errorHandler;
 
     parser.setDoNamespaces( true );
@@ -135,6 +89,7 @@ xercesc::DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser
 
 
 xercesc::DOMDocument* XercesDocumentWriter::createDocument(const XMLCh* rootName) {
+	static XercesInitializer initXerces;
     xercesc::DOMImplementation* impl =  xercesc::DOMImplementationRegistry::getDOMImplementation(XMLStr("Core").uni());
 
     if (impl != NULL)
@@ -199,6 +154,7 @@ void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, const std::s
 
 
 void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, XMLFormatTarget* formatTarget) {
+	static XercesInitializer initXerces;
       //int retval;
       {
 
