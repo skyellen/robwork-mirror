@@ -31,8 +31,10 @@ using namespace rwsim::dynamics;
 BOOST_AUTO_TEST_CASE( ConstraintTest ) {
 	BOOST_TEST_MESSAGE("- ConstraintTest");
 
-	const RigidObject::Ptr objectA = ownedPtr(new RigidObject(new MovableFrame("BodyA")));
-	const RigidObject::Ptr objectB = ownedPtr(new RigidObject(new MovableFrame("BodyB")));
+	const MovableFrame::Ptr frameA = ownedPtr(new MovableFrame("BodyA"));
+	const MovableFrame::Ptr frameB = ownedPtr(new MovableFrame("BodyB"));
+	const RigidObject::Ptr objectA = ownedPtr(new RigidObject(frameA.get()));
+	const RigidObject::Ptr objectB = ownedPtr(new RigidObject(frameB.get()));
 	RigidBody bodyA(BodyInfo(),objectA);
 	RigidBody bodyB(BodyInfo(),objectB);
 
