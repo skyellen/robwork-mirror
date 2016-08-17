@@ -27,12 +27,18 @@ SerialDeviceController::SerialDeviceController(
 	_ddev(ddev),
 	_currentQ(Q::zero(ddev->getModel().getDOF())),
 	_currentQd(Q::zero(ddev->getModel().getDOF())),
+	_enabled(true),
+	_stop(false),
+	_pause(false),
 	_targetAdded(false),
+	_currentTrajTime(0),
 	_name(name),
 	_linVelMax(1), // default 1 m/s
 	_angVelMax(Pi), // default Pi rad/s
+	_idCnt(0),
 	_q_error(ddev->getModel().getDOF()),
 	_q_error_last(ddev->getModel().getDOF()),
+	_taskFrame(NULL),
 	_ftSensor(NULL)
 {
 	RW_WARN("creating solver");
@@ -52,12 +58,18 @@ SerialDeviceController::SerialDeviceController(
 	_rdev(ddev),
 	_currentQ(Q::zero(ddev->getModel().getDOF())),
 	_currentQd(Q::zero(ddev->getModel().getDOF())),
+	_enabled(true),
+	_stop(false),
+	_pause(false),
 	_targetAdded(false),
+	_currentTrajTime(0),
 	_name(name),
 	_linVelMax(1), // default 1 m/s
 	_angVelMax(Pi), // default Pi rad/s
+	_idCnt(0),
 	_q_error(ddev->getModel().getDOF()),
 	_q_error_last(ddev->getModel().getDOF()),
+	_taskFrame(NULL),
 	_ftSensor(NULL)
 {
 	RW_WARN("creating solver");
