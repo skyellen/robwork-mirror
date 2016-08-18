@@ -39,17 +39,17 @@ TactileArrayModel::TactileArrayModel(const std::string& name,
     // calculate the normals and centers of all texels
     // first calculate the 3D vertexes of the grid from the heightmap specification
     double tw = _cellWidth, th = _cellHeight;
-    _vertexGrid.resize(boost::extents[h+1][w+1]);
+    _vertexGrid.resize(boost::extents[w+1][h+1]);
     for(int y=0;y<h+1; y++){
         for(int x=0;x<w+1; x++){
             _vertexGrid[x][y](0) = x*tw;
             _vertexGrid[x][y](1) = y*th;
-            _vertexGrid[x][y](2) = _heightMap(x,y);
+            _vertexGrid[x][y](2) = _heightMap(y,x);
         }
     }
 
-    _cellCenters.resize(boost::extents[h][w]);
-    _cellNormals.resize(boost::extents[h][w]);
+    _cellCenters.resize(boost::extents[w][h]);
+    _cellNormals.resize(boost::extents[w][h]);
     for(int j=0;j<h; j++){
      	for(int i=0;i<w; i++){
             Vector3D<> p = _vertexGrid[i][j]  +_vertexGrid[i+1][j]+

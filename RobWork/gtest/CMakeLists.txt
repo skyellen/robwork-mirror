@@ -112,6 +112,17 @@ TARGET_LINK_LIBRARIES( rw_loaders-gtest ${LOADERS_TEST_LIBRARIES})
 ADD_RW_GTEST(rw_loaders-gtest)
 
 ########################################################################
+# Sensor
+########################################################################
+
+SET(SENSOR_TEST_SRC
+  sensor/TactileArrayTest.cpp
+)
+ADD_EXECUTABLE( rw_sensor-gtest ${SENSOR_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rw_sensor-gtest ${GTEST_BOTH_LIBRARIES} rw)
+ADD_RW_GTEST(rw_sensor-gtest)
+
+########################################################################
 # Task
 ########################################################################
 
