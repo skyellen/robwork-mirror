@@ -30,6 +30,8 @@
 #include <limits>
 #include <cassert>
 
+#include <Eigen/Eigen>
+
 namespace rw { namespace math {
 
     /** @addtogroup math */
@@ -53,8 +55,10 @@ namespace rw { namespace math {
     class Transform3D
     {
     public:
-		//! Value type.
+        //! Value type.
         typedef T value_type;
+
+        typedef Eigen::Matrix<T, 4, 4> EigenMatrix4x4;
 
         /**
          * @brief Default Constructor.
@@ -505,6 +509,15 @@ namespace rw { namespace math {
 
             return inverse(Transform3D(R*-eye, R));
         }
+
+        /**
+         * @brief Returns a Eigen 4x4 matrix @f$ \mathbf{M}\in SE(3)
+         * @f$ that represents this homogeneous transformation
+         *
+         * @return @f$ \mathbf{M}\in SE(3) @f$
+         */
+        EigenMatrix4x4 e() const;
+
 
     private:
         Vector3D<T> _d;

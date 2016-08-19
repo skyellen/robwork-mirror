@@ -61,6 +61,17 @@ const Transform3D<T> Transform3D<T>::craigDH(T alpha, T a, T d, T theta)
             sin(theta)*sin(alpha), cos(theta) * sin(alpha), cos(alpha)));
 }
 
+template<class T>
+typename Transform3D<T>::EigenMatrix4x4 Transform3D<T>::e() const
+{
+    EigenMatrix4x4 matrix;
+    matrix.block(0, 0, 3, 3) = _R.e();
+    matrix.block(0, 3, 3, 1) = _d.e();
+    matrix(3, 0) = matrix(3, 1) = matrix(3, 2) = 0.0;
+    matrix(3, 3) = 1.0;
+    return matrix;
+}
+
 // Explicit template instantiations.
 template class Transform3D<double>;
 template class Transform3D<float>;
