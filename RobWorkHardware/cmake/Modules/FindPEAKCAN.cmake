@@ -3,7 +3,7 @@
 # If it's found it sets PEAKCAN_FOUND to TRUE
 # and following variables are set:
 #    PEAKCAN_INCLUDE_DIR
-#    PEAKCAN_LIBRARY
+#    PEAKCAN_LIBRARIES
 #
 #    PEAKCAN_FOUND
 
