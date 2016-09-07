@@ -181,20 +181,27 @@ void ContactVelocitiesWidget::contactSetPairsChanged(const QItemSelection&, cons
 		const std::string& nameB = c.getNameB();
 		const QString hover = toQString(c, velA, velB);
 		// Note: setItem takes ownership of the QTableWidgetItems
-		QTableWidgetItem* itemA;
-		QTableWidgetItem* itemB;
-		QTableWidgetItem* itemAx = new QTableWidgetItem(QString::number(velA[0]));
-		QTableWidgetItem* itemAy = new QTableWidgetItem(QString::number(velA[1]));
-		QTableWidgetItem* itemAz = new QTableWidgetItem(QString::number(velA[2]));
-		QTableWidgetItem* itemBx = new QTableWidgetItem(QString::number(velB[0]));
-		QTableWidgetItem* itemBy = new QTableWidgetItem(QString::number(velB[1]));
-		QTableWidgetItem* itemBz = new QTableWidgetItem(QString::number(velB[2]));
+		QTableWidgetItem *itemA, *itemB;
+		QTableWidgetItem *itemAx, *itemAy, *itemAz;
+		QTableWidgetItem *itemBx, *itemBy, *itemBz;
 		if (nameA < nameB) {
 			itemA = new QTableWidgetItem(QString::fromStdString(nameA));
+			itemAx = new QTableWidgetItem(QString::number(velA[0]));
+			itemAy = new QTableWidgetItem(QString::number(velA[1]));
+			itemAz = new QTableWidgetItem(QString::number(velA[2]));
 			itemB = new QTableWidgetItem(QString::fromStdString(nameB));
+			itemBx = new QTableWidgetItem(QString::number(velB[0]));
+			itemBy = new QTableWidgetItem(QString::number(velB[1]));
+			itemBz = new QTableWidgetItem(QString::number(velB[2]));
 		} else {
 			itemA = new QTableWidgetItem(QString::fromStdString(nameB));
+			itemAx = new QTableWidgetItem(QString::number(velB[0]));
+			itemAy = new QTableWidgetItem(QString::number(velB[1]));
+			itemAz = new QTableWidgetItem(QString::number(velB[2]));
 			itemB = new QTableWidgetItem(QString::fromStdString(nameA));
+			itemBx = new QTableWidgetItem(QString::number(velA[0]));
+			itemBy = new QTableWidgetItem(QString::number(velA[1]));
+			itemBz = new QTableWidgetItem(QString::number(velA[2]));
 		}
 		itemA->setData(Qt::ToolTipRole,hover);
 		itemB->setData(Qt::ToolTipRole,hover);
