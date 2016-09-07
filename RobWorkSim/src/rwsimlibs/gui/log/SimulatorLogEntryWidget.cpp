@@ -18,9 +18,11 @@
 #include "SimulatorLogEntryWidget.hpp"
 #include "BodyMotionWidget.hpp"
 #include "CollisionResultWidget.hpp"
-#include "ContactForceTorqueWidget.hpp"
+#include "ConstraintWidget.hpp"
 #include "ContactSetWidget.hpp"
 #include "ContactVelocitiesWidget.hpp"
+#include "EquationSystemWidget.hpp"
+#include "ForceTorqueWidget.hpp"
 #include "LogMessageWidget.hpp"
 #include "LogValuesWidget.hpp"
 
@@ -51,13 +53,19 @@ std::list<SimulatorLogEntryWidget::Dispatcher::Ptr> SimulatorLogEntryWidget::Fac
 	dispatcher = ownedPtr(new CollisionResultWidget::Dispatcher());
 	if (dispatcher->accepts(entry))
 		res.push_back(dispatcher);
-	dispatcher = ownedPtr(new ContactForceTorqueWidget::Dispatcher());
+	dispatcher = ownedPtr(new ConstraintWidget::Dispatcher());
+	if (dispatcher->accepts(entry))
+		res.push_back(dispatcher);
+	dispatcher = ownedPtr(new ForceTorqueWidget::Dispatcher());
 	if (dispatcher->accepts(entry))
 		res.push_back(dispatcher);
 	dispatcher = ownedPtr(new ContactSetWidget::Dispatcher());
 	if (dispatcher->accepts(entry))
 		res.push_back(dispatcher);
 	dispatcher = ownedPtr(new ContactVelocitiesWidget::Dispatcher());
+	if (dispatcher->accepts(entry))
+		res.push_back(dispatcher);
+	dispatcher = ownedPtr(new EquationSystemWidget::Dispatcher());
 	if (dispatcher->accepts(entry))
 		res.push_back(dispatcher);
 	dispatcher = ownedPtr(new LogValuesWidget::Dispatcher());

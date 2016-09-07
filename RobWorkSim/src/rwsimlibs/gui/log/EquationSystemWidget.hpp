@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2015 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Copyright 2016 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
  * Faculty of Engineering, University of Southern Denmark
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,44 +15,41 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWSIMLIBS_GUI_CONTACTFORCETORQUEWIDGET_HPP_
-#define RWSIMLIBS_GUI_CONTACTFORCETORQUEWIDGET_HPP_
+#ifndef RWSIMLIBS_GUI_LOG_EQUATIONSYSTEMWIDGET_HPP_
+#define RWSIMLIBS_GUI_LOG_EQUATIONSYSTEMWIDGET_HPP_
 
 /**
- * @file ContactForceTorqueWidget.hpp
+ * @file EquationSystemWidget.hpp
  *
- * \copydoc rwsimlibs::gui::ContactForceTorqueWidget
+ * \copydoc rwsimlibs::gui::EquationSystemWidget
  */
 
 #include "SimulatorLogEntryWidget.hpp"
-#include <rw/math/Wrench6D.hpp>
 
-namespace rwsim { namespace contacts { class Contact; } }
-namespace rwsim { namespace log { class LogContactSet; } }
-namespace rwsim { namespace log { class LogContactForceTorque; } }
+namespace rwsim { namespace log { class LogEquationSystem; } }
 
-namespace Ui { class ContactForceTorqueWidget; }
-
-class QItemSelection;
+namespace Ui { class EquationSystemWidget; }
 
 namespace rwsimlibs {
 namespace gui {
 //! @addtogroup rwsimlibs_gui
 
 //! @{
-//! @brief Graphical representation of the log entry rwsim::log::LogContactForceTorque.
-class ContactForceTorqueWidget: public SimulatorLogEntryWidget {
+/**
+ * @brief Graphical representation of the log entry rwsim::log::LogEquationSystem.
+ */
+class EquationSystemWidget: public SimulatorLogEntryWidget {
     Q_OBJECT
 public:
 	/**
 	 * @brief Construct new widget for a log entry.
-	 * @param entry [in] a force/torque entry.
+	 * @param entry [in] an equation system entry.
 	 * @param parent [in] (optional) the parent Qt widget. Ownership is shared by the caller and the parent widget if given.
 	 */
-	ContactForceTorqueWidget(rw::common::Ptr<const rwsim::log::LogContactForceTorque> entry, QWidget* parent = 0);
+	EquationSystemWidget(rw::common::Ptr<const rwsim::log::LogEquationSystem> entry, QWidget* parent = 0);
 
 	//! @brief Destructor.
-	virtual ~ContactForceTorqueWidget();
+	virtual ~EquationSystemWidget();
 
 	//! @copydoc SimulatorLogEntryWidget::setDWC
 	virtual void setDWC(rw::common::Ptr<const rwsim::dynamics::DynamicWorkCell> dwc);
@@ -88,22 +85,15 @@ public:
 		bool accepts(rw::common::Ptr<const rwsim::log::SimulatorLog> entry) const;
 	};
 
+
 private slots:
-	void contactSetPairsChanged(const QItemSelection& newSelection, const QItemSelection& oldSelection);
-	void contactSetChanged(const QItemSelection& newSelection, const QItemSelection& oldSelection);
+	void showContextMenu(const QPoint& pos);
 
 private:
-	QString toQString(const rw::math::Vector3D<>& vec);
-	QString toQString(const rwsim::contacts::Contact& contact, const rw::math::Wrench6D<>& ftA, const rw::math::Wrench6D<>& ftB);
-
-private:
-    Ui::ContactForceTorqueWidget* const _ui;
-    rw::common::Ptr<const rwsim::log::LogContactForceTorque> _forces;
-    rw::common::Ptr<const rwsim::log::LogContactSet> _contactSet;
-    rw::common::Ptr<rw::graphics::GroupNode> _root;
-    rw::common::Ptr<rw::graphics::SceneGraph> _graph;
+    Ui::EquationSystemWidget* const _ui;
+    rw::common::Ptr<const rwsim::log::LogEquationSystem> _system;
 };
 //! @}
 } /* namespace gui */
 } /* namespace rwsimlibs */
-#endif /* RWSIMLIBS_GUI_CONTACTFORCETORQUEWIDGET_HPP_ */
+#endif /* RWSIMLIBS_GUI_LOG_EQUATIONSYSTEMWIDGET_HPP_ */

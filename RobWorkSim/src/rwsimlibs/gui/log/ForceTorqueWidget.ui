@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ContactSetWidget</class>
- <widget class="QWidget" name="ContactSetWidget">
+ <class>ForceTorqueWidget</class>
+ <widget class="QWidget" name="ForceTorqueWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -15,40 +15,40 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QScrollArea" name="_contactScroll">
+    <widget class="QScrollArea" name="_scroll">
      <property name="horizontalScrollBarPolicy">
       <enum>Qt::ScrollBarAlwaysOff</enum>
      </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
-     <widget class="QWidget" name="_contactContents">
+     <widget class="QWidget" name="_contents">
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-260</y>
+        <y>-248</y>
         <width>364</width>
-        <height>540</height>
+        <height>536</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">
-        <widget class="QGroupBox" name="_contactsGroupBox">
+        <widget class="QGroupBox" name="_groupBox">
          <property name="title">
-          <string>Contact Set</string>
+          <string>Force/Torque</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_6">
           <item row="0" column="0">
-           <layout class="QFormLayout" name="_contactFormLayout">
+           <layout class="QFormLayout" name="_infoLayout">
             <item row="0" column="0">
-             <widget class="QLabel" name="_contactDescriptionLabel">
+             <widget class="QLabel" name="_descriptionLabel">
               <property name="text">
                <string>Description:</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLabel" name="_contactDescription">
+             <widget class="QLabel" name="_description">
               <property name="text">
                <string>No Description</string>
               </property>
@@ -58,14 +58,14 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="_contactContactsLabel">
+             <widget class="QLabel" name="_valuesLabel">
               <property name="text">
-               <string>Contacts:</string>
+               <string>Values:</string>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLabel" name="_contacts">
+             <widget class="QLabel" name="_values">
               <property name="text">
                <string>0</string>
               </property>
@@ -74,16 +74,16 @@
            </layout>
           </item>
           <item row="1" column="0">
-           <layout class="QVBoxLayout" name="_contactLayout">
+           <layout class="QVBoxLayout" name="_tableLayout">
             <item>
-             <widget class="QLabel" name="_contactFilterLabel">
+             <widget class="QLabel" name="_pairLabel">
               <property name="text">
                <string>Select Bodies:</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QTableWidget" name="_contactBodyPairs">
+             <widget class="QTableWidget" name="_pairs">
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
               </property>
@@ -111,14 +111,37 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="_contactListLabel">
+             <widget class="QLabel" name="_tableLabel">
               <property name="text">
-               <string>Contacts:</string>
+               <string>Force/Torque:</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="ContactTableWidget" name="_contactTable"/>
+             <widget class="QTableWidget" name="_table">
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <property name="columnCount">
+               <number>1</number>
+              </property>
+              <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderDefaultSectionSize">
+               <number>20</number>
+              </attribute>
+              <column/>
+             </widget>
             </item>
            </layout>
           </item>
@@ -131,13 +154,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>ContactTableWidget</class>
-   <extends>QTableWidget</extends>
-   <header location="global">rwsimlibs/gui/ContactTableWidget.hpp</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

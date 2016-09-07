@@ -37,132 +37,362 @@
          <property name="title">
           <string>Equation System</string>
          </property>
-         <widget class="QLabel" name="_equalLabel">
-          <property name="geometry">
-           <rect>
-            <x>420</x>
-            <y>190</y>
-            <width>16</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>=</string>
-          </property>
-         </widget>
-         <widget class="QTableWidget" name="tableWidget">
-          <property name="geometry">
-           <rect>
-            <x>310</x>
-            <y>31</y>
-            <width>81</width>
-            <height>291</height>
-           </rect>
-          </property>
-         </widget>
-         <widget class="QTableWidget" name="tableWidget_2">
-          <property name="geometry">
-           <rect>
-            <x>470</x>
-            <y>100</y>
-            <width>81</width>
-            <height>161</height>
-           </rect>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label">
-          <property name="geometry">
-           <rect>
-            <x>60</x>
-            <y>320</y>
-            <width>60</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>17 x 25</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_2">
-          <property name="geometry">
-           <rect>
-            <x>320</x>
-            <y>330</y>
-            <width>60</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>25 x 1</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_3">
-          <property name="geometry">
-           <rect>
-            <x>490</x>
-            <y>330</y>
-            <width>60</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>17 x 1</string>
-          </property>
-         </widget>
-         <widget class="QWidget" name="">
-          <layout class="QFormLayout" name="_formLayout">
-           <property name="fieldGrowthPolicy">
-            <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-           </property>
-           <item row="0" column="0">
-            <widget class="QLabel" name="_descriptionLabel">
-             <property name="text">
-              <string>Description:</string>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QWidget" name="_AHor" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>2</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_7">
+             <property name="spacing">
+              <number>0</number>
              </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="_description">
-             <property name="text">
-              <string>No Description</string>
+             <property name="margin">
+              <number>0</number>
              </property>
-             <property name="wordWrap">
-              <bool>true</bool>
+             <item>
+              <widget class="QWidget" name="_AVertTop" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>4</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QTableWidget" name="_A">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>17</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="editTriggers">
+                <set>QAbstractItemView::NoEditTriggers</set>
+               </property>
+               <property name="rowCount">
+                <number>17</number>
+               </property>
+               <property name="columnCount">
+                <number>25</number>
+               </property>
+               <attribute name="horizontalHeaderDefaultSectionSize">
+                <number>10</number>
+               </attribute>
+               <attribute name="horizontalHeaderMinimumSectionSize">
+                <number>1</number>
+               </attribute>
+               <attribute name="verticalHeaderDefaultSectionSize">
+                <number>17</number>
+               </attribute>
+               <attribute name="verticalHeaderMinimumSectionSize">
+                <number>5</number>
+               </attribute>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+               <column/>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="_AVertBot" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>4</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="_Adim">
+               <property name="text">
+                <string>17 x 25</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="_xHor" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>1</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <property name="spacing">
+              <number>0</number>
              </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="_sizeLabel">
-             <property name="text">
-              <string>Size:</string>
+             <property name="margin">
+              <number>0</number>
              </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLabel" name="_size">
-             <property name="text">
-              <string>0</string>
+             <item>
+              <widget class="QWidget" name="_xVertTop" native="true"/>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>25</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QTableWidget" name="_x">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>25</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="horizontalScrollMode">
+                <enum>QAbstractItemView::ScrollPerPixel</enum>
+               </property>
+               <property name="rowCount">
+                <number>25</number>
+               </property>
+               <property name="columnCount">
+                <number>1</number>
+               </property>
+               <attribute name="horizontalHeaderVisible">
+                <bool>false</bool>
+               </attribute>
+               <attribute name="horizontalHeaderDefaultSectionSize">
+                <number>10</number>
+               </attribute>
+               <attribute name="horizontalHeaderMinimumSectionSize">
+                <number>1</number>
+               </attribute>
+               <attribute name="verticalHeaderDefaultSectionSize">
+                <number>17</number>
+               </attribute>
+               <attribute name="verticalHeaderMinimumSectionSize">
+                <number>5</number>
+               </attribute>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <column/>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="_xVertBot" native="true"/>
+             </item>
+             <item>
+              <widget class="QLabel" name="_xDim">
+               <property name="text">
+                <string>25 x 1</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="_equalLabel">
+            <property name="text">
+             <string>=</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="_bHor" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>1</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <property name="spacing">
+              <number>0</number>
              </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QTableWidget" name="_framePairTable">
-          <property name="geometry">
-           <rect>
-            <x>18</x>
-            <y>94</y>
-            <width>271</width>
-            <height>131</height>
-           </rect>
-          </property>
-          <property name="editTriggers">
-           <set>QAbstractItemView::NoEditTriggers</set>
-          </property>
-          <attribute name="verticalHeaderDefaultSectionSize">
-           <number>20</number>
-          </attribute>
-         </widget>
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QWidget" name="_bVertTop" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>4</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>25</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QTableWidget" name="_b">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>17</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="horizontalScrollMode">
+                <enum>QAbstractItemView::ScrollPerPixel</enum>
+               </property>
+               <property name="rowCount">
+                <number>17</number>
+               </property>
+               <property name="columnCount">
+                <number>1</number>
+               </property>
+               <attribute name="horizontalHeaderVisible">
+                <bool>false</bool>
+               </attribute>
+               <attribute name="horizontalHeaderDefaultSectionSize">
+                <number>10</number>
+               </attribute>
+               <attribute name="horizontalHeaderMinimumSectionSize">
+                <number>1</number>
+               </attribute>
+               <attribute name="verticalHeaderDefaultSectionSize">
+                <number>17</number>
+               </attribute>
+               <attribute name="verticalHeaderMinimumSectionSize">
+                <number>5</number>
+               </attribute>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <row/>
+               <column/>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="_bVertBot" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>4</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="_bDim">
+               <property name="text">
+                <string>17 x 1</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>

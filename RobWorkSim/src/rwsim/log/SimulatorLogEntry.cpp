@@ -21,9 +21,12 @@
 #include <rw/common/InputArchive.hpp>
 #include <rw/common/OutputArchive.hpp>
 #include "LogCollisionResult.hpp"
+#include "LogConstraintForceTorque.hpp"
+#include "LogConstraints.hpp"
 #include "LogContactForceTorque.hpp"
 #include "LogContactSet.hpp"
 #include "LogContactVelocities.hpp"
+#include "LogEquationSystem.hpp"
 #include "LogMessage.hpp"
 #include "LogPositions.hpp"
 #include "LogVelocities.hpp"
@@ -71,9 +74,12 @@ SimulatorLogEntry::Factory::Factory():
 std::vector<std::string> SimulatorLogEntry::Factory::getEntryTypes() {
 	std::vector<std::string> res;
 	res.push_back(LogCollisionResult::getTypeID());
+	res.push_back(LogConstraintForceTorque::getTypeID());
+	res.push_back(LogConstraints::getTypeID());
 	res.push_back(LogContactForceTorque::getTypeID());
 	res.push_back(LogContactSet::getTypeID());
 	res.push_back(LogContactVelocities::getTypeID());
+	res.push_back(LogEquationSystem::getTypeID());
 	res.push_back(LogPositions::getTypeID());
 	res.push_back(LogVelocities::getTypeID());
 	res.push_back(LogMessage::getTypeID());
@@ -89,11 +95,17 @@ std::vector<std::string> SimulatorLogEntry::Factory::getEntryTypes() {
 bool SimulatorLogEntry::Factory::hasEntryType(const std::string& entryType) {
 	if (entryType == LogCollisionResult::getTypeID())
 		return true;
+	else if (entryType == LogConstraintForceTorque::getTypeID())
+		return true;
+	else if (entryType == LogConstraints::getTypeID())
+		return true;
 	else if (entryType == LogContactForceTorque::getTypeID())
 		return true;
 	else if (entryType == LogContactSet::getTypeID())
 		return true;
 	else if (entryType == LogContactVelocities::getTypeID())
+		return true;
+	else if (entryType == LogEquationSystem::getTypeID())
 		return true;
 	else if (entryType == LogPositions::getTypeID())
 		return true;
@@ -115,12 +127,18 @@ bool SimulatorLogEntry::Factory::hasEntryType(const std::string& entryType) {
 SimulatorLogEntry::Ptr SimulatorLogEntry::Factory::makeEntry(const std::string& entryType, SimulatorLogScope* parent) {
 	if (entryType == LogCollisionResult::getTypeID())
 		return ownedPtr(new LogCollisionResult(parent));
+	else if (entryType == LogConstraintForceTorque::getTypeID())
+		return ownedPtr(new LogConstraintForceTorque(parent));
+	else if (entryType == LogConstraints::getTypeID())
+		return ownedPtr(new LogConstraints(parent));
 	else if (entryType == LogContactForceTorque::getTypeID())
 		return ownedPtr(new LogContactForceTorque(parent));
 	else if (entryType == LogContactSet::getTypeID())
 		return ownedPtr(new LogContactSet(parent));
 	else if (entryType == LogContactVelocities::getTypeID())
 		return ownedPtr(new LogContactVelocities(parent));
+	else if (entryType == LogEquationSystem::getTypeID())
+		return ownedPtr(new LogEquationSystem(parent));
 	else if (entryType == LogPositions::getTypeID())
 		return ownedPtr(new LogPositions(parent));
 	else if (entryType == LogVelocities::getTypeID())

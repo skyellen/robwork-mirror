@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2015 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Copyright 2016 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
  * Faculty of Engineering, University of Southern Denmark
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +15,13 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWSIM_LOG_LOGCONTACTFORCETORQUE_HPP_
-#define RWSIM_LOG_LOGCONTACTFORCETORQUE_HPP_
+#ifndef RWSIM_LOG_LOGCONSTRAINTFORCETORQUE_HPP_
+#define RWSIM_LOG_LOGCONSTRAINTFORCETORQUE_HPP_
 
 /**
- * @file LogContactForceTorque.hpp
+ * @file LogConstraintForceTorque.hpp
  *
- * \copydoc rwsim::log::LogContactForceTorque
+ * \copydoc rwsim::log::LogConstraintForceTorque
  */
 
 #include "LogForceTorque.hpp"
@@ -29,24 +29,24 @@
 namespace rwsim {
 namespace log {
 
-class LogContactSet;
+class LogConstraints;
 
 //! @addtogroup rwsim_log
 
 //! @{
 /**
- * @brief Log a set of contact forces and torques.
+ * @brief Log wrench for constraints.
  */
-class LogContactForceTorque: public LogForceTorque {
+class LogConstraintForceTorque: public LogForceTorque {
 public:
-    //! Smart pointer type of LogContactForceTorque
-    typedef rw::common::Ptr<LogContactForceTorque> Ptr;
+    //! Smart pointer type of LogConstraintForceTorque
+    typedef rw::common::Ptr<LogConstraintForceTorque> Ptr;
 
     //! @copydoc SimulatorLogEntry::SimulatorLogEntry
-    LogContactForceTorque(SimulatorLogScope* parent);
+    LogConstraintForceTorque(SimulatorLogScope* parent);
 
 	//! @brief Destructor.
-	virtual ~LogContactForceTorque();
+	virtual ~LogConstraintForceTorque();
 
 	//! @copydoc SimulatorLogEntry::getType
 	virtual std::string getType() const;
@@ -82,19 +82,19 @@ public:
 	static std::string getTypeID();
 
 	/**
-	 * @brief Get the positions of the contacts.
+	 * @brief Get the positions of the constraints.
 	 *
 	 * This is similar to getLinkedEntries.
 	 *
-	 * @return the log entry with positions of contacts (or NULL if not linked).
+	 * @return the log entry with positions of constraints (or NULL if not linked).
 	 */
-	rw::common::Ptr<LogContactSet> getContacts() const;
+	rw::common::Ptr<LogConstraints> getConstraints() const;
 
 private:
-	rw::common::Ptr<LogContactSet> _contacts;
+	rw::common::Ptr<LogConstraints> _constraints;
 	const std::string _emptyStr;
 };
 //! @}
 } /* namespace log */
 } /* namespace rwsim */
-#endif /* RWSIM_LOG_LOGCONTACTFORCETORQUE_HPP_ */
+#endif /* RWSIM_LOG_LOGCONSTRAINTFORCETORQUE_HPP_ */

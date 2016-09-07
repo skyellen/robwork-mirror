@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2015 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Copyright 2016 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
  * Faculty of Engineering, University of Southern Denmark
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,38 +15,38 @@
  * limitations under the License.
  ********************************************************************************/
 
+#include "LogConstraintForceTorque.hpp"
+#include "LogConstraints.hpp"
 #include "SimulatorLogScope.hpp"
 
 #include <rw/common/InputArchive.hpp>
 #include <rw/common/OutputArchive.hpp>
-#include "LogContactForceTorque.hpp"
-#include "LogContactSet.hpp"
 
 using namespace rw::common;
 using namespace rw::math;
 using namespace rwsim::log;
 
-LogContactForceTorque::LogContactForceTorque(SimulatorLogScope* parent):
+LogConstraintForceTorque::LogConstraintForceTorque(SimulatorLogScope* parent):
 	LogForceTorque(parent)
 {
 }
 
-LogContactForceTorque::~LogContactForceTorque() {
+LogConstraintForceTorque::~LogConstraintForceTorque() {
 }
 
-std::string LogContactForceTorque::getType() const {
+std::string LogConstraintForceTorque::getType() const {
 	return getTypeID();
 }
 
-std::list<SimulatorLogEntry::Ptr> LogContactForceTorque::getLinkedEntries() const {
-	if (_contacts == NULL)
+std::list<SimulatorLogEntry::Ptr> LogConstraintForceTorque::getLinkedEntries() const {
+	if (_constraints == NULL)
 		return std::list<SimulatorLogEntry::Ptr>();
 	else
-		return std::list<SimulatorLogEntry::Ptr>(1,_contacts);
+		return std::list<SimulatorLogEntry::Ptr>(1,_constraints);
 }
 
-bool LogContactForceTorque::autoLink() {
-	_contacts = NULL;
+bool LogConstraintForceTorque::autoLink() {
+	_constraints = NULL;
 	// Link to last position entry in tree
 	SimulatorLogScope* scope = getParent();
 	if (scope == NULL)
@@ -71,8 +71,8 @@ bool LogContactForceTorque::autoLink() {
 		// Now search backwards
 		for(; it != children.rend(); it++) {
 			RW_ASSERT(*it != NULL);
-			_contacts = (*it).cast<LogContactSet>();
-			if (_contacts != NULL) {
+			_constraints = (*it).cast<LogConstraints>();
+			if (_constraints != NULL) {
 				found = true;
 				break;
 			}
@@ -80,47 +80,48 @@ bool LogContactForceTorque::autoLink() {
 		find = scope;
 		scope = scope->getParent();
 	}
-	return _contacts != NULL;
+	return _constraints != NULL;
 }
 
-SimulatorLogEntry::Ptr LogContactForceTorque::createNew(SimulatorLogScope* parent) const {
-	return ownedPtr(new LogContactForceTorque(parent));
+SimulatorLogEntry::Ptr LogConstraintForceTorque::createNew(SimulatorLogScope* parent) const {
+	return ownedPtr(new LogConstraintForceTorque(parent));
 }
 
-int LogContactForceTorque::sizeLinkedEntry() const {
-	if (_contacts.isNull())
+const std::string& LogConstraintForceTorque::getNameA(std::size_t i) const {
+	if (_constraints.isNull())
+		return _emptyStr;
+	return _constraints->getConstraint(i).frameA;
+}
+
+const std::string& LogConstraintForceTorque::getNameB(std::size_t i) const {
+	if (_constraints.isNull())
+		return _emptyStr;
+	return _constraints->getConstraint(i).frameB;
+}
+
+Vector3D<> LogConstraintForceTorque::getPositionA(std::size_t i) const {
+	if (_constraints.isNull())
+		return Vector3D<>::zero();
+	return _constraints->getConstraint(i).posA;
+}
+
+Vector3D<> LogConstraintForceTorque::getPositionB(std::size_t i) const {
+	if (_constraints.isNull())
+		return Vector3D<>::zero();
+	return _constraints->getConstraint(i).posB;
+}
+
+int LogConstraintForceTorque::sizeLinkedEntry() const {
+	if (_constraints.isNull())
 		return -1;
-	return _contacts->size();
+	else
+		return _constraints->size();
 }
 
-const std::string& LogContactForceTorque::getNameA(std::size_t i) const {
-	if (_contacts.isNull())
-		return _emptyStr;
-	return _contacts->getContact(i).getNameA();
+std::string LogConstraintForceTorque::getTypeID() {
+	return "ConstraintForceTorque";
 }
 
-const std::string& LogContactForceTorque::getNameB(std::size_t i) const {
-	if (_contacts.isNull())
-		return _emptyStr;
-	return _contacts->getContact(i).getNameB();
-}
-
-Vector3D<> LogContactForceTorque::getPositionA(std::size_t i) const {
-	if (_contacts.isNull())
-		return Vector3D<>::zero();
-	return _contacts->getContact(i).getPointA();
-}
-
-Vector3D<> LogContactForceTorque::getPositionB(std::size_t i) const {
-	if (_contacts.isNull())
-		return Vector3D<>::zero();
-	return _contacts->getContact(i).getPointB();
-}
-
-std::string LogContactForceTorque::getTypeID() {
-	return "ContactForceTorque";
-}
-
-LogContactSet::Ptr LogContactForceTorque::getContacts() const {
-	return _contacts;
+LogConstraints::Ptr LogConstraintForceTorque::getConstraints() const {
+	return _constraints;
 }
