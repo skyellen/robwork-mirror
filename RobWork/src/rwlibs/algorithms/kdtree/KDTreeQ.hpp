@@ -551,7 +551,7 @@ namespace rwlibs { namespace algorithms {
             }
         }
         return NULL;
-    };
+    }
 
     template<class T>
     typename KDTreeQ<T>::KDNode& KDTreeQ<T>::nnSearch(const rw::math::Q& nnkey){
@@ -589,7 +589,7 @@ namespace rwlibs { namespace algorithms {
                   tmpNode = tmpNode->_left;
               }
           }
-    };
+    }
 
     template<class T>
     void KDTreeQ<T>::nnSearchElipse(const rw::math::Q& nnkey,
@@ -693,7 +693,7 @@ namespace rwlibs { namespace algorithms {
             if( (upp(axis) > key(axis)) && (n->_right!=NULL) )
                 unhandled.push( n->_right );
         }
-    };
+    }
 
     template<class T>
     void KDTreeQ<T>::addNode(const rw::math::Q& nnkey, T val){
@@ -730,7 +730,7 @@ namespace rwlibs { namespace algorithms {
                 tmpNode = tmpNode->_left;
             }
         }
-    };
+    }
 
 
 

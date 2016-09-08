@@ -204,7 +204,7 @@ namespace {
          }
         RW_THROW("The Trajectory contains an interpolator not supported by XMLTrajectorySaver");
 
-    };
+    }
 
 
     template <class T>

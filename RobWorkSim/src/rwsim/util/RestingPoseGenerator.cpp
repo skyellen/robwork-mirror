@@ -75,11 +75,9 @@ RestingPoseGenerator::RestingPoseGenerator(DynamicSimulator::Ptr sim, const rw::
     _thread(NULL),
     _initState(initState)
 {
-
 }
 
-
-RestingPoseGenerator::~RestingPoseGenerator(){};
+RestingPoseGenerator::~RestingPoseGenerator(){}
 
 void RestingPoseGenerator::start(int nrOfTests){
     boost::mutex::scoped_lock lock(_simMutex);

@@ -27,7 +27,7 @@ using namespace rwlibs::task;
 AssemblyState::AssemblyState():
 	contact(false)
 {
-};
+}
 
 AssemblyState::AssemblyState(CartesianTarget::Ptr target) {
 	femaleTmale = target->getValue<Transform3D<> >();

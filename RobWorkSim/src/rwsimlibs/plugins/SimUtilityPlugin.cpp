@@ -298,5 +298,5 @@ void SimUtilityPlugin::initialize(){
 
 #if !RWS_USE_QT5
 #include <QtCore/qplugin.h>
-Q_EXPORT_PLUGIN(SimUtilityPlugin);
+Q_EXPORT_PLUGIN(SimUtilityPlugin)
 #endif

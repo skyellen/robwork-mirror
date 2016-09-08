@@ -53,7 +53,7 @@ void GLFrameGrabber::resize(int width, int height) {
     _view->_camGroup->setOffscreenRenderColor(_colorCode);
     _view->_camGroup->setOffscreenRenderSize(getWidth(),getHeight());
     _view->_camGroup->setCopyToImage(_img);
-};
+}
 
 void GLFrameGrabber::resize(int width, int height, rw::sensor::Image::ColorCode colorCode)
 {
@@ -61,7 +61,7 @@ void GLFrameGrabber::resize(int width, int height, rw::sensor::Image::ColorCode 
     _view->_camGroup->setOffscreenRenderColor(_colorCode);
     _view->_camGroup->setOffscreenRenderSize(getWidth(),getHeight());
     _view->_camGroup->setCopyToImage( _img);
-};
+}
 
 
 void GLFrameGrabber::init(rw::graphics::SceneViewer::Ptr drawer){

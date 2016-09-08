@@ -57,9 +57,9 @@ namespace {
 	class TimeLabel {
 		TimeLabel(){}
 
-		void setTimeInMs(long val){ ms=val; };
-		void setTimeInSec(long val){ ms=val*1000;};
-		void setTimeInMin(long val){ ms=val*1000*60;};;
+		void setTimeInMs(long val){ ms=val; }
+		void setTimeInSec(long val){ ms=val*1000;}
+		void setTimeInMin(long val){ ms=val*1000*60;}
 
 		std::string toString(){
 			//long sec;
@@ -1141,5 +1141,5 @@ void GraspTableGeneratorPlugin::genericEventListener(const std::string& event){
 
 #if !RWS_USE_QT5
 #include <QtCore/qplugin.h>
-Q_EXPORT_PLUGIN(GraspTableGeneratorPlugin);
+Q_EXPORT_PLUGIN(GraspTableGeneratorPlugin)
 #endif

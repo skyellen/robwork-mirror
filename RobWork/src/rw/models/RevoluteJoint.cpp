@@ -372,7 +372,7 @@ rw::math::Transform3D<> RevoluteJoint::RevoluteJointBasic::getTransform(double q
 
 rw::math::Transform3D<> RevoluteJoint::RevoluteJointBasic::getFixedTransform() const{
     return _transform;
-};
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////
 /////// RevoluteJointZeroOffsetImpl

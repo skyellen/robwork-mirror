@@ -33,7 +33,7 @@ void SyncPDController::setTargetVel(const rw::math::Q& vals){
 	_targetVel = vals;
 }
 
-void SyncPDController::setTargetAcc(const rw::math::Q& vals){};
+void SyncPDController::setTargetAcc(const rw::math::Q& vals){}
 
 /**
  * @brief updates the state of the dynamicdevice

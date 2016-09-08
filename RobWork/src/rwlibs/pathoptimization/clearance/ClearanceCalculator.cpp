@@ -20,4 +20,4 @@
 
 using namespace rwlibs::pathoptimization;
 
-ClearanceCalculator::~ClearanceCalculator() {};
+ClearanceCalculator::~ClearanceCalculator() {}

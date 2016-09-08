@@ -14,7 +14,11 @@ public:
 	~InitRobWork(){ }
 };
 
-BOOST_GLOBAL_FIXTURE( InitRobWork )
+#if BOOST_VERSION >= 105900
+BOOST_GLOBAL_FIXTURE(InitRobWork);
+#else
+BOOST_GLOBAL_FIXTURE(InitRobWork) // the semicolon was included in macro in Boost 1.58 and earlier (to avoid pedantic warnings about extra ';')
+#endif
 
 boost::unit_test::test_suite* init_unit_test_suite(int argc, char** const argv)
 {

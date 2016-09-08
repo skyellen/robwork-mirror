@@ -62,7 +62,7 @@ ODEVelocityDevice::~ODEVelocityDevice(){
 		delete body;
 	}
 
-};
+}
 
 void ODEVelocityDevice::reset(rw::kinematics::State& state){
     rw::math::Q q = _rdev->getModel().getQ(state);

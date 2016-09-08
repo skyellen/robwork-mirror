@@ -66,7 +66,7 @@ class RobWorkStudio;
  *
  */
 class SceneOpenGLViewer: public QGLWidget, public SceneViewerWidget {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
 

@@ -38,7 +38,6 @@ public:
 
 		//! Expansion coefficient.
 		double kExpansion;
-		;
 
 		//! Contraction coefficient.
 		double kContraction;

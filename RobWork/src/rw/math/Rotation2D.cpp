@@ -45,9 +45,9 @@ namespace rw{ namespace common { namespace serialization {
     }
 
     // we need these to explicitly instantiate these functions
-    template<> void write( const Rotation2D<double>& tmp, OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);};
-    template<> void write( const Rotation2D<float>& tmp, OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);};
-    template<> void read(Rotation2D<double>& tmp, InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);};
-    template<> void read(Rotation2D<float>& tmp, InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);};
+    template<> void write( const Rotation2D<double>& tmp, OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);}
+    template<> void write( const Rotation2D<float>& tmp, OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);}
+    template<> void read(Rotation2D<double>& tmp, InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);}
+    template<> void read(Rotation2D<float>& tmp, InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);}
 
 }}}

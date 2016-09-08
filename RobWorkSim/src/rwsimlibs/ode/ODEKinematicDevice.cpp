@@ -56,7 +56,7 @@ ODEKinematicDevice::ODEKinematicDevice(rwsim::dynamics::KinematicDevice *kdev,
     }
 }
 
-ODEKinematicDevice::~ODEKinematicDevice(){};
+ODEKinematicDevice::~ODEKinematicDevice(){}
 
 void ODEKinematicDevice::reset(rw::kinematics::State& state){
     std::vector<Body::Ptr> bodies = _kdev->getLinks();

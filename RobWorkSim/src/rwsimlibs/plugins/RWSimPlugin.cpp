@@ -117,7 +117,7 @@ RWSimPlugin::~RWSimPlugin(){
 	if(_timerShot!=NULL)
         _timerShot->stop();
     _timer->stop();
-};
+}
 
 namespace {
 }
@@ -671,5 +671,5 @@ void RWSimPlugin::stateChangedListener(const State& state){
 
 #if !RWS_USE_QT5
 #include <QtCore/qplugin.h>
-Q_EXPORT_PLUGIN(RWSimPlugin);
+Q_EXPORT_PLUGIN(RWSimPlugin)
 #endif

@@ -34,7 +34,7 @@ namespace {
         glVertex3d(0,0,0);
         glVertex3d(0,0,size);
         glEnd();
-	};
+	}
 
 	void renderSolid(float alpha, float width, float size, GLUquadricObj *quad){
 		const float REL_WIDTH = 0.05f;
@@ -65,13 +65,13 @@ namespace {
         gluCylinder(quad, widthBody, widthBody, lenBody, 32, 32);    // Draw Our Cylinder
         glTranslatef(0.0f,0.0f,lenBody);// Center The Cone
         gluCylinder(quad, widthHead, 0.0f, lenHead, 32, 32);// A Cone
-	};
+	}
 
 	void initializeColors(float *r, float *g, float *b){
 		r[0] = 1.0; r[1] = 0.0; r[2] = 0.0; r[3] = 1.0;
 		g[0] = 0.0; g[1] = 1.0; g[2] = 0.0; g[3] = 1.0;
 		b[0] = 0.0; b[1] = 0.0; b[2] = 1.0; b[3] = 1.0;
-	};
+	}
 }
 
 RenderFrame::RenderFrame(float size):

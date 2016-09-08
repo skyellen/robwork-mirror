@@ -18,8 +18,8 @@ using namespace rw::math;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-LoaderTRI::LoaderTRI(){};
-LoaderTRI::~LoaderTRI(){};
+LoaderTRI::LoaderTRI(){}
+LoaderTRI::~LoaderTRI(){}
 
 
 Model3D::Ptr LoaderTRI::load(const std::string& filename)

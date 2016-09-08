@@ -41,7 +41,7 @@ Body::Body(const BodyInfo& info, rw::models::Object::Ptr obj):
 
     }
 
-};
+}
 
 
 rw::math::Vector3D<> Body::getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const {

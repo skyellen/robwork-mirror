@@ -31,7 +31,7 @@ AssemblyParameterization::AssemblyParameterization(rw::common::Ptr<PropertyMap> 
 }
 
 AssemblyParameterization::~AssemblyParameterization() {
-};
+}
 
 rw::common::Ptr<PropertyMap> AssemblyParameterization::toPropertyMap() const {
 	return _pmap;

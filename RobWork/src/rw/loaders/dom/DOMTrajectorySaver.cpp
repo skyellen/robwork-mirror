@@ -180,7 +180,7 @@ namespace {
          }
         RW_THROW("The Trajectory contains an interpolator not supported by DOMTrajectorySaver");
 
-    };
+    }
 
 
     template <class T>

@@ -38,7 +38,7 @@ void BeamJointController::setTargetVel(const rw::math::Q& vals){
 	_targetVel = vals;
 }
 
-void BeamJointController::setTargetAcc(const rw::math::Q& vals){};
+void BeamJointController::setTargetAcc(const rw::math::Q& vals){}
 
 
 double BeamJointController::getSampleTime(){

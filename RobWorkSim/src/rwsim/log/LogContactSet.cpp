@@ -87,7 +87,7 @@ bool LogContactSet::autoLink() {
 
 SimulatorLogEntry::Ptr LogContactSet::createNew(SimulatorLogScope* parent) const {
 	return ownedPtr(new LogContactSet(parent));
-};
+}
 
 std::string LogContactSet::getTypeID() {
 	return "ContactSet";

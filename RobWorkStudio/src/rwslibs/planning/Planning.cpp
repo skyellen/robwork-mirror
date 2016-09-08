@@ -609,6 +609,6 @@ namespace {
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
 #if !RWS_USE_QT5
 #include <QtCore/qplugin.h>
-Q_EXPORT_PLUGIN(Planning);
+Q_EXPORT_PLUGIN(Planning)
 #endif
 #endif

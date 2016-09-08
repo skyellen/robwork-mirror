@@ -66,6 +66,6 @@ typedef std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > Wrench3D;
 		boost::mutex _mutex;
 
     };
-};
+}
 
 #endif /* ROBOTLABFT_HPP_ */

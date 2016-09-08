@@ -539,5 +539,5 @@ void RWSimulatorPlugin::initialize(){
 
 #if !RWS_USE_QT5
 #include <QtCore/qplugin.h>
-Q_EXPORT_PLUGIN(RWSimulatorPlugin);
+Q_EXPORT_PLUGIN(RWSimulatorPlugin)
 #endif

@@ -31,7 +31,7 @@ namespace {
 	asio::ip::tcp::socket* _socket = NULL;
     const char* PORT = "8000";
     const size_t VGTBLOCKSIZE = 1000;
-};
+}
 
 DockWelder::DockWelder()
 {

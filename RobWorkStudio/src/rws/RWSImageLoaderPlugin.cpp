@@ -54,8 +54,8 @@ namespace {
 
 RWSImageLoaderPlugin::RWSImageLoaderPlugin():Plugin("RWSImageLoaderPlugin", "RWSImageLoaderPlugin", "0.1")
 {
+}
 
-};
 RWSImageLoaderPlugin::~RWSImageLoaderPlugin(){
 }
 

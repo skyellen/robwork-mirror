@@ -49,4 +49,4 @@ bool SpherePoseSampler::sample(State& state)
 }
 
 
-bool SpherePoseSampler::empty() const{ return false; };
+bool SpherePoseSampler::empty() const{ return false; }

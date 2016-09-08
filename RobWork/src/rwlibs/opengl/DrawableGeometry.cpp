@@ -102,7 +102,7 @@ void DrawableGeometry::initLines(){
     }
 }
 
-void DrawableGeometry::draw(const rw::graphics::DrawableNode::RenderInfo& info) const{ _drawable->draw(info); };
+void DrawableGeometry::draw(const rw::graphics::DrawableNode::RenderInfo& info) const{ _drawable->draw(info); }
 
 void DrawableGeometry::setHighlighted(bool b){ _drawable->setHighlighted(b); }
 

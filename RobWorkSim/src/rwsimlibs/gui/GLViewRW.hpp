@@ -52,7 +52,7 @@ class QMenu;
  * @brief Class representing an OpenGL based QT Widget for 3D visualization of Drawables
  */
 class GLViewRW: public QGLWidget {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     /**

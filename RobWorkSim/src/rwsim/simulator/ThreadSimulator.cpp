@@ -66,7 +66,7 @@ ThreadSimulator::ThreadSimulator(rwlibs::simulation::Simulator::Ptr simulator):
 ThreadSimulator::~ThreadSimulator(){
     if(isRunning())
         stop();
-};
+}
 
 /*
 void ThreadSimulator::setPeriodMs(long period){

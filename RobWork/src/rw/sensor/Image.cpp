@@ -128,7 +128,7 @@ Image::Image():
     _widthStepByte = _widthStep*getBitsPerPixel()/8;
     initFloatConversion();
 
-};
+}
 
 
 Image::Image(

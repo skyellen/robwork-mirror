@@ -366,7 +366,7 @@ void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr wc){
      */
 
 
-};
+}
 
 rw::kinematics::Frame* RWStudioView3D::pickFrame(int x, int y){
     DrawableNode::Ptr d = _view->pickDrawable( x, y);

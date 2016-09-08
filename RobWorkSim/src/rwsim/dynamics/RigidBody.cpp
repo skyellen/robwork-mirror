@@ -54,7 +54,7 @@ RigidBody::RigidBody(const BodyInfo& info,rw::models::Object::Ptr obj):
     }
 
     add(_rstate);
-};
+}
 
 rw::math::InertiaMatrix<> RigidBody::calcInertiaTensor(const rw::kinematics::State& state) const {
 	Transform3D<> pTb = Kinematics::frameTframe(getParent(state), _mframe, state);

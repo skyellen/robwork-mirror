@@ -549,7 +549,7 @@ SimulatorDebugRender::Ptr BtSimulator::createDebugRender(){
 
 PropertyMap& BtSimulator::getPropertyMap() {
 	return _propertyMap;
-};
+}
 
 void BtSimulator::emitPropertyChanged(){
 	RW_THROW("BtSimulator (emitPropertyChanged): not implemented yet!");

@@ -25,7 +25,11 @@ public:
     ~InitRobWorkSim(){ }
 };
 
+#if BOOST_VERSION >= 105900
 BOOST_GLOBAL_FIXTURE(InitRobWorkSim);
+#else
+BOOST_GLOBAL_FIXTURE(InitRobWorkSim) // the semicolon was included in macro in Boost 1.58 and earlier (to avoid pedantic warnings about extra ';')
+#endif
 
 std::string _testfilesDir;
 std::string testFilePath() { return _testfilesDir; }

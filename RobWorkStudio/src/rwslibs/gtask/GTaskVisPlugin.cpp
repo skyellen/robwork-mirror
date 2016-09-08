@@ -637,5 +637,5 @@ void GTaskVisPlugin::on_btnRecordVideo_clicked() {
 
 #if !RWS_USE_QT5
 #include <QtCore/qplugin.h>
-Q_EXPORT_PLUGIN(GTaskVisPlugin);
+Q_EXPORT_PLUGIN(GTaskVisPlugin)
 #endif

@@ -83,9 +83,9 @@ namespace rw{ namespace common { namespace serialization {
     }
 
     // we need these to explicitly instantiate these functions
-    template<> void write( const rw::math::VelocityScrew6D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);};
-    template<> void write( const rw::math::VelocityScrew6D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);};
-    template<> void read(rw::math::VelocityScrew6D<double>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);};
-    template<> void read(rw::math::VelocityScrew6D<float>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);};
+    template<> void write( const rw::math::VelocityScrew6D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);}
+    template<> void write( const rw::math::VelocityScrew6D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);}
+    template<> void read(rw::math::VelocityScrew6D<double>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);}
+    template<> void read(rw::math::VelocityScrew6D<float>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);}
 
 }}}

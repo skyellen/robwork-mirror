@@ -300,7 +300,7 @@ namespace proximity {
         //          << " incollision:" << incollision
         //          << " _nrOfPrimTests: " << _nrOfPrimTests << std::endl;
         return incollision;
-    };
+    }
 
 }
 }

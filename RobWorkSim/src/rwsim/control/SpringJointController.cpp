@@ -38,7 +38,7 @@ void SpringJointController::setTargetVel(const rw::math::Q& vals){
 	_targetVel = vals;
 }
 
-void SpringJointController::setTargetAcc(const rw::math::Q& vals){};
+void SpringJointController::setTargetAcc(const rw::math::Q& vals){}
 
 
 double SpringJointController::getSampleTime(){

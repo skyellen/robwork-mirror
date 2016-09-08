@@ -22,7 +22,7 @@ using namespace rw::proximity;
 
 ProximityModel::~ProximityModel()
 {
-};
+}
 
 bool ProximityModel::addGeometry(const rw::geometry::Geometry& geom){
 	return owner->addGeometry(this, geom);
