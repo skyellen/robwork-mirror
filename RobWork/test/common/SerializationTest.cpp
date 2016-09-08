@@ -106,6 +106,11 @@ struct SerializationData: public rw::common::Serializable {
 		data4 = rw::math::Math::ranI(0, 10000);
 		data5 = rw::math::Math::ranI(0, 10000);
 		data6 = rw::math::Math::ranI(0, 255);
+		Eigen::MatrixXd highPrecision(1,3);
+		highPrecision << 1.2345678901234, 4.7021e10, 49.1000948272e-19;
+		data9 = Eigen::MatrixXd(2,123); // use enough numbers that INI line length is exceeded!
+		data9 << highPrecision, Eigen::MatrixXd::Random(1,120),
+				Eigen::MatrixXd::Random(1,3), Eigen::MatrixXd::Random(1,120);
 	}
 
 	bool operator== (const SerializationData& rhs) const {
@@ -123,6 +128,10 @@ struct SerializationData: public rw::common::Serializable {
 	    result &= data5 == rhs.data5;
 	    result &= data6 == rhs.data6;
 	    result &= (data7 - rhs.data7).normInf()<epsilon;
+	    result &= data9.rows() == rhs.data9.rows();
+	    result &= data9.cols() == rhs.data9.cols();
+	    if (result)
+	    	result &= (data9-rhs.data9).cwiseAbs().maxCoeff() < epsilon;
 	    return result;
 	}
 
@@ -142,6 +151,7 @@ struct SerializationData: public rw::common::Serializable {
         iarchive.read(data7,"data7");
         iarchive.read(data8,"data8");
         iarchive.readLeaveScope("primitives");
+        iarchive.read(data9,"data9");
 	}
 
 	void write(OutputArchive& oarchive, const std::string& id_tmp) const{
@@ -160,6 +170,7 @@ struct SerializationData: public rw::common::Serializable {
 		oarchive.write(data7,"data7");
 		oarchive.write(data8,"data8");
 		oarchive.writeLeaveScope("primitives");
+		oarchive.write(data9,"data9");
 	}
 
 
@@ -173,6 +184,8 @@ struct SerializationData: public rw::common::Serializable {
 
 	rw::math::Vector3D<double> data7;
 	rw::math::Vector2D<double> data8;
+
+	Eigen::MatrixXd data9;
 };
 
 // {0.069, 0.204, 0.022, 0, 90, 90}

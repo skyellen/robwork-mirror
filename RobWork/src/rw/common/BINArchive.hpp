@@ -109,6 +109,12 @@ namespace common {
 		void doWrite(const std::vector<double>& val, const std::string& id){ writeValue(val,id);};
 		void doWrite(const std::vector<std::string>& val, const std::string& id);
 
+		//! @copydoc OutputArchive::doWrite(const Eigen::MatrixXd&, const std::string&)
+		void doWrite(const Eigen::MatrixXd& val, const std::string& id){ writeMatrix(val,id);}
+
+		//! @copydoc OutputArchive::doWrite(const Eigen::VectorXd&, const std::string&)
+		void doWrite(const Eigen::VectorXd& val, const std::string& id){ writeMatrix(val,id);}
+
 		//template<class T>
 		//void write(const T& data, const std::string& id){ OutputArchive::write<T>(data,id); }
 
@@ -125,6 +131,26 @@ namespace common {
 		template<class T>
 		void writeValue( const T&  val, const std::string& id ){
 		    _ofs->write((char*)&val, sizeof(val) );
+		}
+
+		/**
+		 * @brief Write a generic Eigen matrix to output.
+		 * @param val [in] the matrix to output.
+		 * @param id [in] (not used)
+		 */
+		template <class Derived>
+		void writeMatrix(const Eigen::DenseCoeffsBase<Derived,Eigen::ReadOnlyAccessors>& val, const std::string& id) {
+			typedef typename Eigen::DenseCoeffsBase<Derived,Eigen::ReadOnlyAccessors>::Index Index;
+			boost::uint32_t m = val.rows();
+			boost::uint32_t n = val.cols();
+			_ofs->write((char*)&m, sizeof(m) );
+			_ofs->write((char*)&n, sizeof(n) );
+			for (Index i = 0; i < val.rows(); i++) {
+				for (Index j = 0; j < val.cols(); j++) {
+					const double rval = val(i,j);
+					_ofs->write((char*)&rval, sizeof(rval) );
+				}
+			}
 		}
 
 		//template<class T>
@@ -161,6 +187,12 @@ namespace common {
 		virtual void doRead(std::vector<double>& val, const std::string& id){readValue(val,id);}
 		virtual void doRead(std::vector<std::string>& val, const std::string& id) ;
 
+		//! @copydoc InputArchive::doRead(const Eigen::MatrixXd&, const std::string&)
+	    virtual void doRead(Eigen::MatrixXd& val, const std::string& id){ readMatrix(val,id); }
+
+		//! @copydoc InputArchive::doRead(const Eigen::VectorXd&, const std::string&)
+	    virtual void doRead(Eigen::VectorXd& val, const std::string& id){ readMatrix(val,id); }
+
         //template<class T>
         //void read(T& object, const std::string& id){
         //    ((InputArchive*)this)->read<T>(object, id);
@@ -185,6 +217,26 @@ namespace common {
 		     //std::cout << val << " ";
 		 }
 
+		 /**
+		  * @brief Read a generic Eigen matrix.
+		  * @param val [out] the result.
+		  * @param id [in] (not used)
+		  */
+		 template <class Derived>
+		 void readMatrix(Eigen::PlainObjectBase<Derived>& val, const std::string& id) {
+			 typedef typename Eigen::PlainObjectBase<Derived>::Index Index;
+			 boost::uint32_t m = 0;
+			 boost::uint32_t n = 0;
+			 _ifs->read((char*)&m, sizeof(boost::uint32_t) );
+			 _ifs->read((char*)&n, sizeof(boost::uint32_t) );
+			 val.resize(m,n);
+			 for (Index i = 0; i < val.rows(); i++) {
+				 for (Index j = 0; j < val.cols(); j++) {
+					 double& tmp = val(i,j);
+					 _ifs->read((char*)& (tmp), sizeof(double) );
+				 }
+			 }
+		 }
 
 	private:
 		std::string getScope();

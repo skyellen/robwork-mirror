@@ -23,6 +23,8 @@
 #include <boost/cstdint.hpp>
 #include <boost/type_traits.hpp>
 
+#include <Eigen/Core>
+
 namespace rw {
 namespace common {
 	/**
@@ -134,6 +136,20 @@ namespace common {
 		virtual void doWrite(const std::vector<float>& val, const std::string& id) = 0;
 		virtual void doWrite(const std::vector<double>& val, const std::string& id) = 0;
 		virtual void doWrite(const std::vector<std::string>& val, const std::string& id) = 0;
+
+		/**
+		 * @brief Write an Eigen matrix to output.
+		 * @param val [in] the matrix to output.
+		 * @param id [in] identifier for the matrix.
+		 */
+		virtual void doWrite(const Eigen::MatrixXd& val, const std::string& id) = 0;
+
+		/**
+		 * @brief Write an Eigen vector to output.
+		 * @param val [in] the vector to output.
+		 * @param id [in] identifier for the matrix.
+		 */
+		virtual void doWrite(const Eigen::VectorXd& val, const std::string& id) = 0;
 
 		/**
 		 * @brief handles serialization of an object. The object must either be a primitive type,

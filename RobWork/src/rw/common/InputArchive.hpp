@@ -24,6 +24,8 @@
 #include <boost/cstdint.hpp>
 #include <boost/type_traits.hpp>
 
+#include <Eigen/Core>
+
 namespace rw {
 namespace common {
 /**
@@ -136,6 +138,20 @@ protected:
     virtual void doRead(std::vector<float>& val, const std::string& id) = 0;
     virtual void doRead(std::vector<double>& val, const std::string& id) = 0;
     virtual void doRead(std::vector<std::string>& val, const std::string& id) = 0;
+
+	/**
+	 * @brief Read an Eigen matrix from input.
+	 * @param val [out] the result.
+	 * @param id [in] identifier for the matrix.
+	 */
+    virtual void doRead(Eigen::MatrixXd& val, const std::string& id) = 0;
+
+	/**
+	 * @brief Read an Eigen vector from input.
+	 * @param val [out] the result.
+	 * @param id [in] identifier for the matrix.
+	 */
+    virtual void doRead(Eigen::VectorXd& val, const std::string& id) = 0;
 
     // utils to handle arrays
     virtual void doReadEnterScope(const std::string& id) = 0;
