@@ -1,11 +1,16 @@
-# CMake module to search for PEAK CAN library
+# CMake module to search for TrakStar library
 #
-# If it's found it sets PEAKCAN_FOUND to TRUE
+# If it's found it sets TRAKSTAR_FOUND to TRUE
 # and following variables are set:
 #    TRAKSTAR_INCLUDE_DIR
-#    TRAKSTAR_LIBRARY
+#    TRAKSTAR_LIBRARIES
 #
 #    TRAKSTAR_FOUND
+
+if (POLICY CMP0045)
+	# allow non-existent target in get_target_property
+	cmake_policy(SET CMP0045 OLD)
+endif()
 
 IF( UNIX AND NOT CYGWIN )
     FIND_PATH(TRAKSTAR_INCLUDE_DIR ATC3DG.h
