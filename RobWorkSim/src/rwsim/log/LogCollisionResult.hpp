@@ -59,6 +59,9 @@ public:
 	//! @copydoc SimulatorLogEntry::getType
 	virtual std::string getType() const;
 
+	//! @copydoc SimulatorLogEntry::operator==
+	virtual bool operator==(const SimulatorLog &b) const;
+
 	//! @copydoc SimulatorLogEntry::getLinkedEntries
 	virtual std::list<SimulatorLogEntry::Ptr> getLinkedEntries() const;
 
@@ -90,6 +93,13 @@ public:
 
 		//! @brief The geometry ids for the second frame.
 		std::vector<std::string> geoNamesB;
+
+		/**
+		 * @brief Compare with other ResultInfo structure.
+		 * @param b [in] the other structure.
+		 * @return true if equal, false otherwise.
+		 */
+		bool operator==(const ResultInfo &b) const;
 	};
 
 	/**

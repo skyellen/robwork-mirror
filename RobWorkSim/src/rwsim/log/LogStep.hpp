@@ -56,6 +56,9 @@ public:
 	//! @copydoc SimulatorLog::getType
 	virtual std::string getType() const;
 
+	//! @copydoc SimulatorLogEntry::operator==
+	virtual bool operator==(const SimulatorLog &b) const;
+
 	//! @copydoc SimulatorLogScope::getDescription
 	virtual std::string getDescription() const;
 

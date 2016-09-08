@@ -117,6 +117,10 @@ void SimulatorLogWidget::setLog(rw::common::Ptr<SimulatorLogScope> log) {
 	_model->setRoot(_log);
 }
 
+void SimulatorLogWidget::compare(rw::common::Ptr<const rwsim::log::SimulatorLogScope> info) {
+	_model->compare(info);
+}
+
 void SimulatorLogWidget::setSelectedTime(double time) {
 	if (isVisible()) {
 		int row = 0;

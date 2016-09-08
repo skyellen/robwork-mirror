@@ -81,6 +81,21 @@ std::string SimulatorLogScope::getType() const {
 	return "Scope";
 }
 
+bool SimulatorLogScope::operator==(const SimulatorLog &b) const {
+	if (const SimulatorLogScope* const scope = dynamic_cast<const SimulatorLogScope*>(&b)) {
+		if (_line != scope->_line)
+			return false;
+		const std::vector<SimulatorLog::Ptr> bChildren = scope->_children;
+		if (bChildren.size() != _children.size())
+			return false;
+		for (std::size_t i = 0; i < _children.size(); i++) {
+			if (*_children[i] != *bChildren[i])
+				return false;
+		}
+	}
+	return SimulatorLog::operator==(b);
+}
+
 std::vector<SimulatorLog::Ptr> SimulatorLogScope::getChildren() const {
 	return _children;
 }

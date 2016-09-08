@@ -64,6 +64,14 @@ std::string LogMessage::getType() const {
 	return getTypeID();
 }
 
+bool LogMessage::operator==(const SimulatorLog &b) const {
+	if (const LogMessage* const entry = dynamic_cast<const LogMessage*>(&b)) {
+		if (_message.str() != entry->_message.str())
+			return false;
+	}
+	return SimulatorLogEntry::operator==(b);
+}
+
 std::list<SimulatorLogEntry::Ptr> LogMessage::getLinkedEntries() const {
 	return std::list<SimulatorLogEntry::Ptr>();
 }

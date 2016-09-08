@@ -54,6 +54,14 @@ std::string LogPositions::getType() const {
 	return getTypeID();
 }
 
+bool LogPositions::operator==(const SimulatorLog &b) const {
+	if (const LogPositions* const entry = dynamic_cast<const LogPositions*>(&b)) {
+		if (_positions != entry->_positions)
+			return false;
+	}
+	return SimulatorLogEntry::operator==(b);
+}
+
 std::list<SimulatorLogEntry::Ptr> LogPositions::getLinkedEntries() const {
 	return std::list<SimulatorLogEntry::Ptr>();
 }

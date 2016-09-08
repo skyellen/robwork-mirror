@@ -52,6 +52,14 @@ void LogForceTorque::write(OutputArchive& oarchive, const std::string& id) const
 	SimulatorLogEntry::write(oarchive,id);
 }
 
+bool LogForceTorque::operator==(const SimulatorLog &b) const {
+	if (const LogForceTorque* const entry = dynamic_cast<const LogForceTorque*>(&b)) {
+		if (_forces != entry->_forces)
+			return false;
+	}
+	return SimulatorLogEntry::operator==(b);
+}
+
 Wrench6D<> LogForceTorque::getWrenchBodyA(std::size_t i) const {
 	RW_ASSERT(i < _forces.size());
 	return _forces[i].first;

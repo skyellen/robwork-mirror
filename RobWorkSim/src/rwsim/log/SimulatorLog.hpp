@@ -79,6 +79,20 @@ public:
 	virtual std::string getType() const = 0;
 
 	/**
+	 * @brief Check if logs are identical.
+	 * @param b [in] other log to compare with.
+	 * @return true if identical, false otherwise.
+	 */
+	virtual bool operator==(const SimulatorLog &b) const;
+
+	/**
+	 * @brief Check if logs are non-identical.
+	 * @param b [in] other log to compare with.
+	 * @return true if not identical, false otherwise.
+	 */
+	virtual bool operator!=(const SimulatorLog &b) const;
+
+	/**
 	 * @brief Get the full filename with path for where this log entry was created.
 	 * @return the full filename.
 	 */

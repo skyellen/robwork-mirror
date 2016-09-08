@@ -51,6 +51,9 @@ public:
 	//! @copydoc SimulatorLogEntry::getType
 	virtual std::string getType() const;
 
+	//! @copydoc LogForceTorque::operator==
+	virtual bool operator==(const SimulatorLog &b) const;
+
 	//! @copydoc SimulatorLogEntry::getLinkedEntries
 	virtual std::list<SimulatorLogEntry::Ptr> getLinkedEntries() const;
 

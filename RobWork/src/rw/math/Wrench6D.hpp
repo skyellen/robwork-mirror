@@ -566,6 +566,23 @@ namespace rw { namespace math {
 			return res;
 		}
 
+		/**
+         * @brief Compares \b a and \b b for equality.
+		 * @param b [in] other wrench to compare with.
+         * @return True if a equals b, false otherwise.
+		 */
+        bool operator==(const Wrench6D<T>& b) const {
+        	return _wrench[0] == b[0] && _wrench[1] == b[1] && _wrench[2] == b[2] && _wrench[3] == b[3] && _wrench[4] == b[4] && _wrench[5] == b[5];
+        }
+
+        /**
+         * @brief Compares \b a and \b b for inequality.
+		 * @param b [in] other wrench to compare with.
+         * @return True if a and b are different, false otherwise.
+         */
+        bool operator!=(const Wrench6D<T>& b) const {
+            return !(*this == b);
+        }
 
     };
 

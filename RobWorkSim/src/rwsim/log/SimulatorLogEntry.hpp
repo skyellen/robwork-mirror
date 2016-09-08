@@ -69,6 +69,9 @@ public:
 	//! @copydoc SimulatorLog::children
 	virtual std::size_t children() const;
 
+	//! @copydoc SimulatorLog::operator==
+	virtual bool operator==(const SimulatorLog &b) const;
+
 	/**
 	 * @brief Get the line number in the file where this entry was added.
 	 * @return the line number.

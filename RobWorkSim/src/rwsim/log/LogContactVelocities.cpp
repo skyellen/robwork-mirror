@@ -58,6 +58,16 @@ std::string LogContactVelocities::getType() const {
 	return getTypeID();
 }
 
+bool LogContactVelocities::operator==(const SimulatorLog &b) const {
+	if (const LogContactVelocities* const entry = dynamic_cast<const LogContactVelocities*>(&b)) {
+		if (*_contacts != *entry->_contacts)
+			return false;
+		if (_velocities != entry->_velocities)
+			return false;
+	}
+	return SimulatorLogEntry::operator==(b);
+}
+
 std::list<SimulatorLogEntry::Ptr> LogContactVelocities::getLinkedEntries() const {
 	if (_contacts == NULL)
 		return std::list<SimulatorLogEntry::Ptr>();

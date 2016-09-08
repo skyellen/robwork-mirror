@@ -49,6 +49,18 @@ std::string LogEquationSystem::getType() const {
 	return getTypeID();
 }
 
+bool LogEquationSystem::operator==(const SimulatorLog &b) const {
+	if (const LogEquationSystem* const entry = dynamic_cast<const LogEquationSystem*>(&b)) {
+		if (_A != entry->_A)
+			return false;
+		if (_x != entry->_x)
+			return false;
+		if (_b != entry->_b)
+			return false;
+	}
+	return SimulatorLogEntry::operator==(b);
+}
+
 std::list<SimulatorLogEntry::Ptr> LogEquationSystem::getLinkedEntries() const {
 	return std::list<SimulatorLogEntry::Ptr>();
 }

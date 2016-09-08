@@ -46,6 +46,14 @@ std::string LogStep::getType() const {
 	return "Step";
 }
 
+bool LogStep::operator==(const SimulatorLog &b) const {
+	if (const LogStep* const entry = dynamic_cast<const LogStep*>(&b)) {
+		if (_interval != entry->_interval)
+			return false;
+	}
+	return SimulatorLogScope::operator==(b);
+}
+
 std::string LogStep::getDescription() const {
 	std::stringstream str;
 	str << "Step (time " << _interval.first << " to " << _interval.second << ")";

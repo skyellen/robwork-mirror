@@ -55,6 +55,9 @@ public:
 	//! @copydoc SimulatorLogEntry::getType
 	virtual std::string getType() const = 0;
 
+	//! @copydoc SimulatorLogEntry::operator==
+	virtual bool operator==(const SimulatorLog &b) const;
+
 	//! @copydoc SimulatorLogEntry::getLinkedEntries
 	virtual std::list<SimulatorLogEntry::Ptr> getLinkedEntries() const = 0;
 

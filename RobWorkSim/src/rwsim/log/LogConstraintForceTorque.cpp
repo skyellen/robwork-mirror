@@ -38,6 +38,14 @@ std::string LogConstraintForceTorque::getType() const {
 	return getTypeID();
 }
 
+bool LogConstraintForceTorque::operator==(const SimulatorLog &b) const {
+	if (const LogConstraintForceTorque* const entry = dynamic_cast<const LogConstraintForceTorque*>(&b)) {
+		if (*_constraints != *entry->_constraints)
+			return false;
+	}
+	return LogForceTorque::operator==(b);
+}
+
 std::list<SimulatorLogEntry::Ptr> LogConstraintForceTorque::getLinkedEntries() const {
 	if (_constraints == NULL)
 		return std::list<SimulatorLogEntry::Ptr>();

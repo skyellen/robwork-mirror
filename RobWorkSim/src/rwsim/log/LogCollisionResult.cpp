@@ -97,6 +97,50 @@ std::string LogCollisionResult::getType() const {
 	return getTypeID();
 }
 
+bool LogCollisionResult::ResultInfo::operator==(const ResultInfo &b) const {
+	if (frameA != b.frameA)
+		return false;
+	if (frameB != b.frameB)
+		return false;
+	if (geoNamesA != b.geoNamesA)
+		return false;
+	if (geoNamesB != b.geoNamesB)
+		return false;
+
+	if (result._aTb != b.result._aTb)
+		return false;
+	if (result._collisionPairs.size() != b.result._collisionPairs.size())
+		return false;
+	for (std::size_t i = 0; i < result._collisionPairs.size(); i++) {
+		if (result._collisionPairs[i].geoIdxA != b.result._collisionPairs[i].geoIdxA)
+			return false;
+		if (result._collisionPairs[i].geoIdxB != b.result._collisionPairs[i].geoIdxB)
+			return false;
+		if (result._collisionPairs[i].startIdx != b.result._collisionPairs[i].startIdx)
+			return false;
+		if (result._collisionPairs[i].size != b.result._collisionPairs[i].size)
+			return false;
+	}
+	if (result._geomPrimIds != b.result._geomPrimIds)
+		return false;
+	if (result._nrBVTests != b.result._nrBVTests)
+		return false;
+	if (result._nrPrimTests != b.result._nrPrimTests)
+		return false;
+
+	return true;
+}
+
+bool LogCollisionResult::operator==(const SimulatorLog &b) const {
+	if (const LogCollisionResult* const entry = dynamic_cast<const LogCollisionResult*>(&b)) {
+		if (*_positions != *entry->_positions)
+			return false;
+		if (_results != entry->_results)
+			return false;
+	}
+	return SimulatorLogEntry::operator==(b);
+}
+
 std::list<SimulatorLogEntry::Ptr> LogCollisionResult::getLinkedEntries() const {
 	if (_positions == NULL)
 		return std::list<SimulatorLogEntry::Ptr>();

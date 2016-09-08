@@ -38,6 +38,14 @@ std::string LogContactForceTorque::getType() const {
 	return getTypeID();
 }
 
+bool LogContactForceTorque::operator==(const SimulatorLog &b) const {
+	if (const LogContactForceTorque* const entry = dynamic_cast<const LogContactForceTorque*>(&b)) {
+		if (*_contacts != *entry->_contacts)
+			return false;
+	}
+	return LogForceTorque::operator==(b);
+}
+
 std::list<SimulatorLogEntry::Ptr> LogContactForceTorque::getLinkedEntries() const {
 	if (_contacts == NULL)
 		return std::list<SimulatorLogEntry::Ptr>();

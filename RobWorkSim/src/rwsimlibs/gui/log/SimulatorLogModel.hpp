@@ -56,6 +56,12 @@ public:
 	void setRoot(rw::common::Ptr<const rwsim::log::SimulatorLog> root);
 
 	/**
+	 * @brief Compare with a different log.
+	 * @param info [in] the other simulation log.
+	 */
+	void compare(rw::common::Ptr<const rwsim::log::SimulatorLog> info);
+
+	/**
 	 * @brief Find a log entity from index.
 	 * @param index [in] the index.
 	 * @return the log entity.
@@ -75,6 +81,10 @@ public:
     bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
     ///@}
+
+private:
+	void compare(rw::common::Ptr<const rwsim::log::SimulatorLog> a, rw::common::Ptr<const rwsim::log::SimulatorLog> b);
+	void compareFailSubTree(rw::common::Ptr<const rwsim::log::SimulatorLog> a);
 
 private:
     rw::common::Ptr<const rwsim::log::SimulatorLog> _root;

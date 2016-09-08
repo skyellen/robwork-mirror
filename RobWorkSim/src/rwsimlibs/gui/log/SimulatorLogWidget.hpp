@@ -78,6 +78,12 @@ public:
 	void setLog(rw::common::Ptr<rwsim::log::SimulatorLogScope> info);
 
 	/**
+	 * @brief Compare with a different log.
+	 * @param info [in] the other simulation log.
+	 */
+	void compare(rw::common::Ptr<const rwsim::log::SimulatorLogScope> info);
+
+	/**
 	 * @brief Try to find a specific simulation time.
 	 * @param time [in] the time.
 	 */

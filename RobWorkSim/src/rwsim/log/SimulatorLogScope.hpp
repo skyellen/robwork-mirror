@@ -64,6 +64,9 @@ public:
 	//! @copydoc SimulatorLog::getType
 	virtual std::string getType() const;
 
+	//! @copydoc SimulatorLog::operator==
+	virtual bool operator==(const SimulatorLog &b) const;
+
 	/**
 	 * @brief Get the children of this scope.
 	 * @return a vector of children log items.

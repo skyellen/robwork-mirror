@@ -58,6 +58,14 @@ std::size_t SimulatorLogEntry::children() const {
 	return 0;
 }
 
+bool SimulatorLogEntry::operator==(const SimulatorLog &b) const {
+	if (const SimulatorLogEntry* const entry = dynamic_cast<const SimulatorLogEntry*>(&b)) {
+		if (_line != entry->_line)
+			return false;
+	}
+	return SimulatorLog::operator==(b);
+}
+
 int SimulatorLogEntry::line() const {
 	return _line;
 }

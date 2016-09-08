@@ -64,6 +64,18 @@ SimulatorLogScope* SimulatorLog::getParent() const {
 	return _parent;
 }
 
+bool SimulatorLog::operator==(const SimulatorLog &b) const {
+	if (_filename != b._filename)
+		return false;
+	if (_description != b._description)
+		return false;
+	return true;
+}
+
+bool SimulatorLog::operator!=(const SimulatorLog &b) const {
+	return !operator==(b);
+}
+
 std::string SimulatorLog::getFilename() const {
 	return _filename;
 }
