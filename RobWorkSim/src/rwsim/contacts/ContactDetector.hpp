@@ -349,6 +349,8 @@ private:
 
 	rw::common::Ptr<rw::models::WorkCell> _wc;
 	rw::proximity::ProximityFilterStrategy::Ptr _bpfilter;
+	struct OrderFramePairs;
+	const OrderFramePairs* const _orderFramePairs;
 	StrategyTable _strategies;
 
 	rw::kinematics::FrameMap<std::vector<rw::common::Ptr<rw::geometry::Geometry> > > _frameToGeo;
