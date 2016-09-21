@@ -61,6 +61,10 @@ namespace simulator {
 		 */
 		virtual void postUpdate(rw::kinematics::State& state) = 0;
 
+		/**
+		 * @brief Get the ODE bodies in the device.
+		 * @return a vector of bodies.
+		 */
 		virtual std::vector<ODEBody*> getBodies() = 0;
 
 	protected:

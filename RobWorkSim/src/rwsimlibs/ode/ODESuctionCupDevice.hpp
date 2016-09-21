@@ -42,20 +42,32 @@ namespace simulator {
 	 */
 	class ODESuctionCupDevice : public ODEDevice {
 	public:
-
+		/**
+		 * @brief Constructor.
+		 * @param base [in] the base body of the device.
+		 * @param dev [in] the RobWork SuctionCup device.
+		 * @param odesim [in] the simulator.
+		 * @param state [in] the state.
+		 */
 	    ODESuctionCupDevice(
 	                        ODEBody *base,
 	                        rwsim::dynamics::SuctionCup* dev,
 	                        ODESimulator *odesim,
 	                        rw::kinematics::State& state);
 
+	    /**
+	     * @brief Initialize the device.
+		 * @param base [in] the base body of the device.
+		 * @param dev [in] the RobWork SuctionCup device.
+		 * @param odesim [in] the simulator.
+		 * @param state [in] the state.
+	     */
 	    void init(ODEBody *base,
 	              rwsim::dynamics::SuctionCup* dev,
                             ODESimulator *odesim,
                             rw::kinematics::State& state);
-		/**
-		 * @brief destructor
-		 */
+
+		//! @brief Destructor.
 		virtual ~ODESuctionCupDevice();
 
 		/**
@@ -85,13 +97,21 @@ namespace simulator {
 		 */
 		virtual void postUpdate(rw::kinematics::State& state);
 
+		//static ODESuctionCupDevice* makeSuctionCup(rwsim::dynamics::SuctionCup* scup, ODESimulator *sim, rw::kinematics::State &state);
 
-		static ODESuctionCupDevice* makeSuctionCup(rwsim::dynamics::SuctionCup* scup, ODESimulator *sim, rw::kinematics::State &state);
-
+		/**
+		 * @brief Get spiked mesh.
+		 * @return the mesh.
+		 */
 		rw::geometry::TriMesh::Ptr getSpikedMesh(){ return _spikedCupMesh; }
 
+		/**
+		 * @brief Get the end body.
+		 * @return the end body.
+		 */
 		ODEBody* getEndBody(){ return _odeEnd; }
 
+		//! @copydoc ODEDevice::getBodies
         std::vector<ODEBody*> getBodies(){ return _ode_bodies; };
 
 	private:

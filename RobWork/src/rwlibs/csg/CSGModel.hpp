@@ -39,13 +39,20 @@ namespace csg {
 class CSGModel
 {
 public:
+	//! @brief Smart pointer type for CSGModel.
 	typedef rw::common::Ptr<CSGModel> Ptr;
 	
 public:
+	//! @brief Constructor.
 	CSGModel();
 	
+	//! @brief Destructor.
 	virtual ~CSGModel() {}
 	
+	/**
+	 * @brief Copy constructor.
+	 * @param csgmodel [in] other CSGModel to copy.
+	 */
 	CSGModel(const CSGModel& csgmodel);
 	
 	/** @brief Constructs CSGModel from TriMesh. */

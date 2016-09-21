@@ -39,7 +39,7 @@ namespace rwlibs { namespace simulation {
     class FrameGrabber
     {
     public:
-
+    	//! @brief Smart pointer type for FrameGrabber.
         typedef rw::common::Ptr<FrameGrabber> Ptr;
 
         /**

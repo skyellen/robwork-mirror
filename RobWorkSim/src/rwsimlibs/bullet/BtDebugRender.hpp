@@ -50,7 +50,7 @@ public:
 
     //! @copydoc rw::graphics::Render::draw
 	virtual void draw(const rw::graphics::DrawableNode::RenderInfo& info,
-			DrawType draw,
+			DrawType type,
 			double alpha) const;
 
     //! @copydoc rwsim::drawable::SimulatorDebugRender::setDrawMask

@@ -52,6 +52,7 @@ namespace rwlibs { namespace simulation {
     class GLFrameGrabber : public FrameGrabber
     {
     public:
+    	//! @brief Smart pointer type for GLFrameGrabber.
         typedef rw::common::Ptr<GLFrameGrabber> Ptr;
 
         /**
@@ -59,8 +60,8 @@ namespace rwlibs { namespace simulation {
          * @param width [in] width of image
          * @param height [in] height of image
          * @param fov [in] the vertical field of view angle in degree
-         * @param drawer [in] the WorkCellGLDrawer that draws the OpenGL scene
-         * @param state [in] the state of the workcell
+         * @param near [in] the minimum depth of camera.
+         * @param far [in] the maximum depth of camera.
          */
         GLFrameGrabber(int width, int height,
                        double fov,

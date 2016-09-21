@@ -60,11 +60,14 @@ public:
 	 * @param simulator [in] the ODESimulator that creates this constraint.
 	 */
 	ODEConstraint(rw::common::Ptr<const rwsim::dynamics::Constraint> constraint, const ODEBody* const parent, const ODEBody* const child, const ODESimulator* const simulator);
+
+	//! @brief Destructor.
 	virtual ~ODEConstraint();
 
 	/**
 	 * @brief Called before collision checking and time stepping
-	 * @param state
+	 * @param dt [in] info related to the timestep.
+	 * @param state [in/out] the state is updated with new values.
 	 */
 	void update(const rwlibs::simulation::Simulator::UpdateInfo& dt, rw::kinematics::State& state);
 

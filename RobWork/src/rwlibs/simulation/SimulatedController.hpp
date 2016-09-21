@@ -37,6 +37,10 @@ namespace simulation {
      */
     class SimulatedController: public rw::kinematics::Stateless {
     protected:
+    	/**
+    	 * @brief Constructor.
+    	 * @param model [in] the controller model.
+    	 */
     	SimulatedController(rw::models::ControllerModel::Ptr model);
 
     public:
@@ -52,7 +56,7 @@ namespace simulation {
         /**
          * @brief updates/steps the controller with time step \b dt. It will update
          * the state \b state accordingly
-         * @param dt [in] timestep in seconds
+         * @param info [in] update information related to the time step.
          * @param state [in/out] the current state
          */
         virtual void update(const Simulator::UpdateInfo& info, rw::kinematics::State& state) = 0;

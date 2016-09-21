@@ -46,8 +46,8 @@ public:
 	 * @brief Construct new collision algorithm for Bullet that wraps a RobWork ContactDetector.
 	 * @param detector [in] the contact detector to use.
 	 * @param ci [in] the construction info.
-	 * @param body0Wrap [in] information about the first bullet body.
-	 * @param body1Wrap [in] information about the second bullet body.
+	 * @param col0Wrap [in] information about the first bullet body.
+	 * @param col1Wrap [in] information about the second bullet body.
 	 */
 	BtRWCollisionAlgorithm(rw::common::Ptr<const rwsim::contacts::ContactDetector> detector,
 			const btCollisionAlgorithmConstructionInfo& ci,
@@ -108,8 +108,8 @@ public:
 		/**
 		 * @brief Construct a new algorithm for a object pair.
 		 * @param ci [in] construction info for a btCollisionAlgorithm.
-		 * @param body0 [in] information about the first bullet body.
-	 	 * @param body1 [in] information about the second bullet body.
+		 * @param body0Wrap [in] information about the first bullet body.
+	 	 * @param body1Wrap [in] information about the second bullet body.
 		 * @return a pointer to the new algorithm.
 		 */
 		virtual	btCollisionAlgorithm* CreateCollisionAlgorithm(btCollisionAlgorithmConstructionInfo& ci, const btCollisionObjectWrapper* body0Wrap,const btCollisionObjectWrapper* body1Wrap);

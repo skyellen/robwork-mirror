@@ -153,10 +153,18 @@ public:
         return _entityType;
     }
 
+    /**
+     * @brief Set the id for the entity.
+     * @param id [in] the id.
+     */
     void setId(const std::string& id) {
     	_id = id;
     }
 
+    /**
+     * @brief Get the id of the entity.
+     * @return the id.
+     */
     const std::string& getId() const {
     	return _id;
     }
@@ -184,9 +192,13 @@ public:
     }
 
 protected:
+    //! @brief Properties of entity.
     rw::common::PropertyMap _properties;
+    //! @brief The type of entity.
     EntityType _entityType;
+    //! @brief The index of the entity.
     int _index;
+    //! @brief The id of the entity.
     std::string _id;
 };
 

@@ -19,7 +19,7 @@
 #define RWSIM_CONTACTS_CONTACTMODEL_HPP_
 
 /**
- * @file ContactModel.hpp
+ * @file rwsim/contacts/ContactModel.hpp
  *
  * \copydoc rwsim::contacts::ContactModel
  */

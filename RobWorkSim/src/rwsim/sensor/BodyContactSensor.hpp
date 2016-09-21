@@ -36,28 +36,31 @@ namespace sensor {
 	 */
 	class BodyContactSensor: public SimulatedTactileSensor {
 	public:
-
+		//! @brief Smart pointer type for BodyContactSensor.
 	    typedef rw::common::Ptr<BodyContactSensor> Ptr;
 
 		/**
 		 * @brief constructor
 		 * @param name [in] the sensor name
 		 * @param frame [in] the frame of this sensor.
-		 * @return
 		 */
 		BodyContactSensor(const std::string& name, rw::kinematics::Frame* frame);
 
-		/**
-		 * @brief Destructor
-		 * @return
-		 */
+		//! @brief Destructor.
 		virtual ~BodyContactSensor();
 
 		//// Interface inherited from SimulatedSensor
+
+		//! @copydoc SimulatedSensor::update
 		void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
+		//! @copydoc SimulatedSensor::reset
 		void reset(const rw::kinematics::State& state);
 
+		/**
+		 * @brief Get sensor (should not be used).
+		 * @return NULL always.
+		 */
 		rw::sensor::Sensor::Ptr getSensor();
 
 
@@ -93,32 +96,42 @@ namespace sensor {
 		 * @brief return all contacts registered in the last timestep
 		 *
 		 * @note all the contacts are represented in body frame.
-		 *
-		 * @return
+		 * @param state [in] the state.
+		 * @return a vector of contacts.
 		 */
 		const std::vector<rw::sensor::Contact3D>& getContacts(const rw::kinematics::State& state) const {
 			return _sdata.getStateCache<ClassState>(state)->_contacts;
 		}
 
+		/**
+		 * @brief Get the bodies in contact.
+		 * @param state [in] the state.
+		 * @return a list of bodies.
+		 */
 		std::vector<rw::common::Ptr<rwsim::dynamics::Body> > getBodies(const rw::kinematics::State& state){
 			return _sdata.getStateCache<ClassState>(state)->_bodies;
 		}
 
 	public: // stateless stuff
-
+		//! @brief The state of the sensor.
 		class ClassState: public rw::kinematics::StateCache {
 		public:
-			std::vector<rw::sensor::Contact3D> _contactsTmp, _contacts;
-			std::vector<rw::common::Ptr<rwsim::dynamics::Body> > _bodiesTmp, _bodies;
+			//! @brief The contacts detected by the sensor (temporary).
+			std::vector<rw::sensor::Contact3D> _contactsTmp;
+			//! @brief The contacts detected by the sensor.
+			std::vector<rw::sensor::Contact3D> _contacts;
+			//! @brief The bodies in contact with the sensor (temporary).
+			std::vector<rw::common::Ptr<rwsim::dynamics::Body> > _bodiesTmp;
+			//! @brief The bodies in contact with the sensor (temporary).
+			std::vector<rw::common::Ptr<rwsim::dynamics::Body> > _bodies;
 
+            //! @copydoc StateCache::size
             size_t size() const{
                 return (_contacts.size()+_contactsTmp.size())*sizeof(rw::sensor::Contact3D) +
                 		(_bodiesTmp.size()+_bodies.size())*sizeof(rw::common::Ptr<rwsim::dynamics::Body>);
             }
 
-            /**
-             * @brief this creates a deep copy of this cache
-             */
+            //! @copydoc StateCache::clone
             rw::common::Ptr<rw::kinematics::StateCache> clone() const{
                 return rw::common::ownedPtr( new ClassState( *this ) );
             }
@@ -130,6 +143,10 @@ namespace sensor {
 		rw::kinematics::StatelessData<int> _sdata;
 	};
 
+    /**
+     * @brief Old smart pointer type.
+     * @deprecated Please use BodyContactSensor::Ptr instead.
+     */
 	typedef rw::common::Ptr<BodyContactSensor> BodyContactSensorPtr;
 	//! @}
 }

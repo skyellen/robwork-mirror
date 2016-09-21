@@ -202,6 +202,7 @@ public:
 	virtual void setPropertyMap(const rw::common::PropertyMap& map);
 
 protected:
+	//! @brief Properties for strategy.
 	rw::common::PropertyMap _propertyMap;
 };
 //! @}

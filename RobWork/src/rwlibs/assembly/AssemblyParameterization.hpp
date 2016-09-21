@@ -40,8 +40,8 @@ namespace assembly {
  *
  * By deriving from this class, the parameterization can be stored and restored via a PropertyMap structure.
  * This is mainly used as a way to extend the assembly assembly specification with additional data, while maintaining
- * the ability to serialize, load and save the AssemblyTask. Derived classes should override the #clone, #make,
- * #reset and #toPropertyMap functions.
+ * the ability to serialize, load and save the AssemblyTask. Derived classes should override the clone(), make(),
+ * reset() and toPropertyMap() functions.
  *
  * Notice that this is also a concrete class, allowing the user to create a parameterization that is always empty,
  * or create a parameterization based on a custom PropertyMap. The latter is especially useful if scripting

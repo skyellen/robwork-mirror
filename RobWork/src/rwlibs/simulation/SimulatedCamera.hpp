@@ -50,11 +50,13 @@ namespace rwlibs { namespace simulation {
     class SimulatedCamera : public SimulatedSensor
     {
     public:
+		//! @brief Smart pointer type for a SimulatedCamera.
         typedef rw::common::Ptr<SimulatedCamera> Ptr;
 
         /**
          * @brief creates a simulated pinhole camera,
          * @param name [in] name of sensor
+         * @param fov [in] field of view for the camera.
          * @param frame [in] frame to which the camera is attached
          * @param frameGrabber [in] the frameGrabber from which this Camera should grab images
          */
@@ -137,6 +139,11 @@ namespace rwlibs { namespace simulation {
          * @copydoc SimulatedSensor::getSensor
          */
         rw::sensor::Sensor::Ptr getSensor(){ return _csensor; };
+
+        /**
+         * @brief Get the camera sensor.
+         * @return the sensor.
+         */
         rw::sensor::Camera::Ptr getCameraSensor(){ return _csensor; };
 
     private:

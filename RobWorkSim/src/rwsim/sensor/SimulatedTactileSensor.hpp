@@ -32,6 +32,10 @@ namespace sensor {
 	 */
 	class SimulatedTactileSensor: public rwlibs::simulation::SimulatedSensor {
 	protected:
+		/**
+		 * @brief Constructor.
+		 * @param model [in] the model of the sensor.
+		 */
 	    SimulatedTactileSensor(rw::sensor::SensorModel::Ptr model);
 
 	public:
@@ -46,6 +50,7 @@ namespace sensor {
 		 * @param force [in] the direction in which the force is acting
 		 * @param cnormal [in] the contact normal where the origin is on the
 		 * contacting body and the direction is toward the sensor
+		 * @param state [in/out] the state is updated with new sensor information.
 		 * @param body [in] the body that caused the contact force. If no body
 		 * caused the force on the sensor (could be user input) then the body is NULL
 		 */
@@ -62,6 +67,7 @@ namespace sensor {
 		 * @param force [in] the direction in which the force is acting
 		 * @param cnormal [in] the contact normal where the origin is on the
 		 * contacting body and the direction is toward the sensor
+		 * @param state [in/out] the state is updated with new sensor information.
 		 * @param body [in] the body that caused the contact force. If no body
 		 * caused the force on the sensor (could be user input) then the body is NULL
 		 */
@@ -87,6 +93,7 @@ namespace sensor {
         /**
          * @brief add a wrench described in World frame to the center of mass of this object
          * @param force
+		 * @param torque
          * @param state
          * @param body
          */

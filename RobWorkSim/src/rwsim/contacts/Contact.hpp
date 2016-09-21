@@ -19,7 +19,7 @@
 #define RWSIM_CONTACTS_CONTACT_HPP_
 
 /**
- * @file Contact.hpp
+ * @file rwsim/contacts/Contact.hpp
  *
  * \copydoc rwsim::contacts::Contact
  */
@@ -165,14 +165,14 @@ public:
 	/**
 	 * @brief Set the name of the first object.
 	 * @note This will remove the pointer to frame A.
-	 * @param [in] the name.
+	 * @param name [in] the name.
 	 */
 	void setNameA(const std::string& name);
 
 	/**
 	 * @brief Set the name of the second object.
 	 * @note This will remove the pointer to frame B.
-	 * @param [in] the name.
+	 * @param name [in] the name.
 	 */
 	void setNameB(const std::string& name);
 

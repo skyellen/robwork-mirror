@@ -41,6 +41,7 @@ namespace rwlibs { namespace simulation {
         /**
          * @brief constructor
          * @param name [in] name of this simulated scanner
+         * @param frame [in] the frame the scanner is attached to.
          */
     	SimulatedKinect(const std::string& name, rw::kinematics::Frame *frame);
 
@@ -48,6 +49,7 @@ namespace rwlibs { namespace simulation {
          * @brief constructor
          * @param name [in] name of this simulated scanner
          * @param desc [in] description of this scanner
+         * @param frame [in] the frame the scanner is attached to.
          */
     	SimulatedKinect(const std::string& name, const std::string& desc, rw::kinematics::Frame *frame);
 
@@ -58,12 +60,13 @@ namespace rwlibs { namespace simulation {
     	 */
     	SimulatedKinect(rw::sensor::CameraModel::Ptr camModel, rw::sensor::Scanner25DModel::Ptr scannerModel);
 
-    	/**
-    	 * @brief destructor
-    	 */
+    	//! @brief destructor
     	virtual ~SimulatedKinect();
 
-
+    	/**
+    	 * @brief Initialize sensor.
+    	 * @param drawer [in] the scene viewer.
+    	 */
     	void init(rw::graphics::SceneViewer::Ptr drawer);
 
     	/**
@@ -98,6 +101,10 @@ namespace rwlibs { namespace simulation {
         //! @copydoc Scanner25D::getImage
     	const rw::geometry::PointCloud& getScan();
 
+    	/**
+    	 * @brief Get scanned image.
+    	 * @return a reference to the image.
+    	 */
     	const rw::sensor::Image& getImage();
 
     	//! @copydoc SimulatedSensor::update

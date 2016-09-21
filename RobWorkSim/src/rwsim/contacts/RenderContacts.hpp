@@ -21,7 +21,7 @@
 #include <rw/graphics/Render.hpp>
 
 /**
- * @file RenderContacts.hpp
+ * @file rwsim/contacts/RenderContacts.hpp
  *
  * \copydoc rwsim::contacts::RenderContacts
  */

@@ -42,8 +42,8 @@ namespace simulator {
 	    /**
 	     * @brief constructor
 	     * @param rdev
-	     * @param space
-	     * @param state
+	     * @param state [in]
+	     * @param sim the simulator.
 	     */
         ODEKinematicDevice(dynamics::KinematicDevice *rdev,
                            const rw::kinematics::State& state,
@@ -63,7 +63,7 @@ namespace simulator {
 
 		void postUpdate(rw::kinematics::State& state);
 
-		// @brief get the kinematic bodies of this ODEKinematicDevice
+		//! @copydoc ODEDevice::getBodies
 		std::vector<ODEBody*> getBodies(){ return _bodies; };
 
 	private:

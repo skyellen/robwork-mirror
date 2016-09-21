@@ -111,6 +111,10 @@ public:
         return _actionType;
     }
 
+    /**
+     * @brief Make a copy of the action.
+     * @return new identical action.
+     */
     virtual rw::common::Ptr<Action> clone() {
     	return rw::common::ownedPtr(new Action(_actionType));
     }

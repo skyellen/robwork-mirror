@@ -74,17 +74,10 @@ namespace simulator {
 		 */
 		void postUpdate(rw::kinematics::State& state);
 
-        std::vector<ODEBody*> getBodies(){ return _ode_bodies; };
-		/**
-		 *
-		 * @param rdev
-		 * @param base
-		 * @return
-		 */
-		static ODEVelocityDevice* makeDevice(dynamics::RigidDevice *rdev,
-											dBodyID base,
-											dSpaceID space,
-											dWorldID worldId);
+		//! @copydoc ODEDevice::getBodies
+        std::vector<ODEBody*> getBodies(){ return _ode_bodies; }
+
+		//static ODEVelocityDevice* makeDevice(dynamics::RigidDevice *rdev, dBodyID base, dSpaceID space, dWorldID worldId);
 	private:
 		void init(dynamics::RigidDevice *rdev,
 		          const rw::kinematics::State &state,

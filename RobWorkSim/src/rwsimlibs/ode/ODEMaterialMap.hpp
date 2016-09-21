@@ -29,6 +29,7 @@ namespace rwsim {
 namespace simulator {
 	class ODEBody;
 
+	//! @brief The ODE material map is responsible for the modelling of contact dynamics, such as friction and restitution phenomena.
 	class ODEMaterialMap {
 	public:
 		/**

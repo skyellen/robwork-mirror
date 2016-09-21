@@ -54,19 +54,18 @@ namespace simulator {
 
         /**
          * @brief constructor for rigid bodies
-         * @param odeBody
-         * @param rwbody
-         * @param offset [in] offset of the center of mass relative to \b rwbody
-         * @return
+         * @param odeBody [in] the id of the ode body.
+         * @param frame [in] the body frame.
          */
         ODEBody(dBodyID odeBody, rw::kinematics::Frame* frame);
 
 		/**
 		 * @brief constructor for rigid bodies
-		 * @param odeBody
+         * @param odeBody [in] the id of the ode body.
 		 * @param rwbody
 		 * @param offset [in] offset of the center of mass relative to \b rwbody
-		 * @return
+		 * @param matID [in]
+		 * @param conID [in]
 		 */
 		ODEBody(dBodyID odeBody,
 				rw::common::Ptr<rwsim::dynamics::RigidBody> rwbody,
@@ -76,9 +75,9 @@ namespace simulator {
 		/**
 		 * @brief constructor for user defined type, eg. body does not necesarilly need to by
 		 * of RigidBody to create an ODEBody::RIGID
-		 * @param odeBody
+         * @param odeBody [in] the id of the ode body.
 		 * @param body
-		 * @param offset
+         * @param offset [in] offset of the center of mass relative to \b body
 		 * @param matID
 		 * @param conID
 		 * @param type
@@ -93,23 +92,21 @@ namespace simulator {
 		 * @brief constructor for kinematic bodies
 		 * @param odeBody [in]
 		 * @param rwbody
-		 * @param offset [in] offset of the center of mass relative to \b rwbody
-		 * @return
+		 * @param matID
+		 * @param conID
 		 */
 		ODEBody(dBodyID odeBody, rw::common::Ptr<rwsim::dynamics::KinematicBody> rwbody,int matID, int conID);
 
 		/**
 		 * @brief constructor for fixed bodies
 		 * @param geomId
-		 * @param frame
-		 * @return
+		 * @param body
+		 * @param matID
+		 * @param conID
 		 */
 		ODEBody(std::vector<dGeomID> geomId, dynamics::Body::Ptr body, int matID, int conID);
 
-		/**
-		 * @brief destructor
-		 * @return
-		 */
+		//! @brief Destructor.
 		virtual ~ODEBody(){
 			BOOST_FOREACH(ODEUtil::TriGeomData* data ,_triGeomDatas){
 				delete data;
@@ -120,6 +117,7 @@ namespace simulator {
 
 		/**
 		 * @brief Called before collision checking and time stepping
+		 * @param dt [in] info related to the timestep.
 		 * @param state
 		 */
 		void update(const rwlibs::simulation::Simulator::UpdateInfo& dt, rw::kinematics::State& state);
@@ -183,9 +181,33 @@ namespace simulator {
 		void setTriGeomData(std::vector<ODEUtil::TriGeomData*>& data){ _triGeomDatas = data; }
 		std::vector<ODEUtil::TriGeomData*>& getTriGeomData(){ return _triGeomDatas; }
 
+		/**
+		 * @brief Construct a rigid body.
+		 * @param rwbody [in] the RobWork body.
+		 * @param spaceId [in] the ODE space to construct body in.
+		 * @param sim [in] the ODE simulator.
+		 * @return a new ODEBody.
+		 */
 		static ODEBody* makeRigidBody(dynamics::Body::Ptr rwbody,  dSpaceID spaceId, ODESimulator *sim);
+
+		/**
+		 * @brief Construct a kinematic body.
+		 * @param kbody [in] the RobWork body.
+		 * @param spaceId [in] the ODE space to construct body in.
+		 * @param sim [in] the ODE simulator.
+		 * @return a new ODEBody.
+		 */
 		static ODEBody* makeKinematicBody(dynamics::Body::Ptr kbody, dSpaceID spaceid, ODESimulator *sim);
+
+		/**
+		 * @brief Construct a fixed body.
+		 * @param kbody [in] the RobWork body.
+		 * @param spaceId [in] the ODE space to construct body in.
+		 * @param sim [in] the ODE simulator.
+		 * @return a new ODEBody.
+		 */
 		static ODEBody* makeFixedBody(dynamics::Body::Ptr kbody, dSpaceID spaceid, ODESimulator *sim);
+
 	private:
 
 		// for rigid body

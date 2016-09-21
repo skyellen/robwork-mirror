@@ -64,7 +64,7 @@ namespace simulation {
         /**
          * @brief steps the the SimulatedSensor with time \b dt and saves any state
          *  changes in \b state.
-         * @param dt [in] the time step in seconds
+         * @param info [in] update information related to the time step.
          * @param state [out] changes of the SimulatedSensor is saved in state.
          */
         virtual void update(const Simulator::UpdateInfo& info, rw::kinematics::State& state) = 0;

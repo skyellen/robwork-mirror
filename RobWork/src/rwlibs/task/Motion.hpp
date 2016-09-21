@@ -156,8 +156,14 @@ public:
      */
     virtual TargetPtr endTarget() = 0;
 
+    /**
+     * @brief Make a copy of the motion.
+     * @param newTargets [in] a vector of targets.
+     * @return new identical motion.
+     */
     virtual rw::common::Ptr<Motion<T> > clone(const std::vector<TargetPtr>& newTargets) = 0;
 
+    //! @brief Do reverse motion.
     virtual void reverse() = 0;
 protected:
 
@@ -254,7 +260,7 @@ public:
         return _end;
     }
 
-
+    //! @copydoc Motion::clone
     virtual rw::common::Ptr<Motion<T> > clone(const std::vector<TargetPtr>& newTargets) {
     	TargetPtr start;
     	TargetPtr end;
@@ -271,7 +277,7 @@ public:
     	return result;
     }
 
-
+    //! @copydoc Motion::reverse
     virtual void reverse() {
     	std::swap(_start, _end);
     }
@@ -360,6 +366,7 @@ public:
          return _end;
      }
 
+     //! @copydoc Motion::clone
      virtual rw::common::Ptr<Motion<T> > clone(const std::vector<TargetPtr>& newTargets) {
      	TargetPtr start;
      	TargetPtr end;
@@ -372,6 +379,7 @@ public:
      	return rw::common::ownedPtr(new LinearMotion<T>(start, end));
      }
 
+     //! @copydoc Motion::reverse
      virtual void reverse() {
      	std::swap(_start, _end);
      }
@@ -478,6 +486,7 @@ public:
         return _end;
     }
 
+    //! @copydoc Motion::clone
     virtual rw::common::Ptr<Motion<T> > clone(const std::vector<TargetPtr>& newTargets) {
 		TargetPtr start, mid, end;
 		BOOST_FOREACH(TargetPtr target, newTargets) {
@@ -491,6 +500,7 @@ public:
 		return rw::common::ownedPtr(new CircularMotion(start, mid, end));
 	}
 
+    //! @copydoc Motion::reverse
     virtual void reverse() {
     	std::swap(_start, _end);
     }

@@ -63,7 +63,7 @@ public:
 	//! @copydoc SimulatorLogEntry::createNew
 	virtual SimulatorLogEntry::Ptr createNew(SimulatorLogScope* parent) const;
 
-	//! @copydoc LogForceTorque::createNew
+	//! @copydoc LogForceTorque::sizeLinkedEntry
 	virtual int sizeLinkedEntry() const;
 
 	//! @copydoc LogForceTorque::getNameA

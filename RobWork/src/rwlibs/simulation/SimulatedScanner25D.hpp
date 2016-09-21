@@ -44,6 +44,7 @@ namespace rwlibs { namespace simulation {
         /**
          * @brief constructor
          * @param name [in] name of this simulated scanner
+         * @param frame [in] the frame the scanner is attached to.
          * @param framegrabber [in] the framegrabber used for grabbing 2.5D images
          */
     	SimulatedScanner25D(const std::string& name,
@@ -54,6 +55,7 @@ namespace rwlibs { namespace simulation {
          * @brief constructor
          * @param name [in] name of this simulated scanner
          * @param desc [in] description of this scanner
+         * @param frame [in] the frame the scanner is attached to.
          * @param framegrabber [in] the framegrabber used for grabbing 2.5D images
          */
     	SimulatedScanner25D(const std::string& name,

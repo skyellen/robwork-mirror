@@ -92,7 +92,7 @@ public:
 
 	/**
 	 * @brief Store a list of results to a file.
-	 * @param result [in] the list of results to store.
+	 * @param results [in] the list of results to store.
 	 * @param name [in] the file to save to (normally with the extension .assembly.xml).
 	 */
 	static void saveRWResult(std::vector<AssemblyResult::Ptr> results, const std::string& name);
@@ -106,7 +106,7 @@ public:
 
 	/**
 	 * @brief Load a list of results from a input stream.
-	 * @param name [in] the stream to load from.
+	 * @param inputStream [in] the stream to load from.
 	 * @return a list of results.
 	 */
 	static std::vector<AssemblyResult::Ptr> load(std::istringstream& inputStream);

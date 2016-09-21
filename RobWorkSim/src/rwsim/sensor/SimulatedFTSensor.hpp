@@ -34,7 +34,9 @@ namespace sensor {
 	 */
 	class SimulatedFTSensor: public SimulatedTactileSensor {
 	public:
+		//! @brief Smart pointer type for SimulatedFTSensor.
 		typedef rw::common::Ptr<SimulatedFTSensor> Ptr;
+
 		/**
 		 * @brief constructor - the forces will be described relative to body \b body1
 		 * @param name [in] identifier
@@ -125,6 +127,10 @@ namespace sensor {
 		 */
 		rw::kinematics::Frame * getSensorFrame() const { return _sframe; }
 
+		/**
+		 * @brief Acquire new force reading.
+		 * @note This function does nothing currently!
+		 */
  		void acquire(){}
 
 		/**

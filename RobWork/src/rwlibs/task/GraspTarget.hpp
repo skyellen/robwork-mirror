@@ -49,7 +49,9 @@ public:
 	}
 
 public:
+	//! @brief The pose of the grasp.
 	rw::math::Transform3D<> pose;
+	//! @brief The result of execution of this target.
 	GraspResult::Ptr result;
 };
 

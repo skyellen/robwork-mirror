@@ -80,6 +80,7 @@ public:
     T& getValue();
 
 protected:
+    //! @brief The type of the target.
     Type _targetType;
 };
 
@@ -124,6 +125,10 @@ public:
      */
     const T& get() const { return _value; };
 
+    /**
+     * @brief Make a copy of the target.
+     * @return new identical target.
+     */
     rw::common::Ptr<Target<T> > clone() {
     	return rw::common::ownedPtr(new Target<T>(*this));
     }

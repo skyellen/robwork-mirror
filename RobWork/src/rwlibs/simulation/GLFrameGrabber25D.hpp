@@ -49,7 +49,7 @@ namespace rwlibs { namespace simulation {
     class GLFrameGrabber25D : public FrameGrabber25D
     {
     public:
-
+    	//! @brief Smart pointer type for GLFrameGrabber25D.
         typedef rw::common::Ptr<GLFrameGrabber25D> Ptr;
 
         /**
@@ -57,6 +57,8 @@ namespace rwlibs { namespace simulation {
          * @param width [in] width of image
          * @param height [in] height of image
          * @param fov [in] the vertical field of view angle in degree
+         * @param mindepth [in] the minimum depth of camera.
+         * @param maxdepth [in] the maximum depth of camera.
          */
         GLFrameGrabber25D(int width, int height, double fov, double mindepth=0.1, double maxdepth=10.0);
 

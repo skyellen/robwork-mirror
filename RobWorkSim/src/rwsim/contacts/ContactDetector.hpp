@@ -236,7 +236,7 @@ public:
 	/**
 	 * @brief Add a strategy that is used for frames that match a set of rules.
 	 *
-	 * @param rule [in] The rules for the frame names that this strategy applies to.
+	 * @param rules [in] The rules for the frame names that this strategy applies to.
 	 * @param strategy [in/out] The strategy to add. Relevant ContactModels are automatically created.
 	 * @param priority [in] the priority of the new strategy (default is maximum priority - 0).
 	 */

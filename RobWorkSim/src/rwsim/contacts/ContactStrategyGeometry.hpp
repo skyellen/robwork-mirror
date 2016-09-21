@@ -41,6 +41,7 @@ namespace contacts {
 template <class A, class B>
 class ContactStrategyGeometry: public rwsim::contacts::ContactStrategy {
 protected:
+	//! @brief The type of the contact model.
 	typedef ContactModelGeometry<A, B> GeometryModel;
 
 public:
