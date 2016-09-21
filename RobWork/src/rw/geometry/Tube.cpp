@@ -115,9 +115,9 @@ void Tube::setParameters(const rw::math::Q& q) {
 		RW_THROW("Size of parameter list must equal to 3!");
 	}
 	
-	_radius = q(0);
-	_thickness = q(1);
-	_height = q(2);
+	_radius = static_cast<float>(q(0));
+	_thickness = static_cast<float>(q(1));
+	_height = static_cast<float>(q(2));
 }
 
 bool Tube::doIsInside(const Vector3D<>& point) {

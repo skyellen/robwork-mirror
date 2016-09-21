@@ -68,17 +68,21 @@ rw::common::Ptr<const SimulatorLog> LogValuesWidget::getEntry() const {
 }
 
 void LogValuesWidget::updateEntryWidget() {
+	const int nrOfEntries = static_cast<int>(_values->size());
+	if (_values->size() > static_cast<std::size_t>(nrOfEntries))
+		RW_THROW("There are too many entries for the widget to handle!");
+
 	_ui->_description->setText(QString::fromStdString(_values->getDescription()));
-	_ui->_values->setRowCount(_values->size());
+	_ui->_values->setRowCount(nrOfEntries);
 	_ui->_values->setSortingEnabled(false);
-	for (std::size_t i = 0; i < _values->size(); i++) {
+	for (int i = 0; i < nrOfEntries; i++) {
 		std::string label = "No Label";
-		if (_values->size() >= i) {
-			if (_values->getLabel(i) != "")
-				label = _values->getLabel(i);
+		if (nrOfEntries >= i) {
+			if (_values->getLabel(static_cast<std::size_t>(i)) != "")
+				label = _values->getLabel(static_cast<std::size_t>(i));
 		}
 		_ui->_values->setItem(i,0,new QTableWidgetItem(QString::fromStdString(label)));
-		_ui->_values->setItem(i,1,new QTableWidgetItem(QString::number(_values->getValue(i))));
+		_ui->_values->setItem(i,1,new QTableWidgetItem(QString::number(_values->getValue(static_cast<std::size_t>(i)))));
 	}
 	_ui->_values->setSortingEnabled(true);
 }

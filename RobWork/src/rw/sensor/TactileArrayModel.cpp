@@ -97,11 +97,11 @@ const TactileArrayModel::VertexMatrix& TactileArrayModel::getNormals()  const{
 }
 
 int TactileArrayModel::getWidth() const{
-	return _heightMap.cols()-1;
+	return static_cast<int>(_heightMap.cols()-1);
 }
 
 int TactileArrayModel::getHeight() const{
-	return _heightMap.rows()-1;
+	return static_cast<int>(_heightMap.rows()-1);
 }
 
 

@@ -742,7 +742,7 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 		CompiledTarget traj;
 		try{
 		    traj = makeTrajectory(targets, state);
-		} catch( const std::exception& e ){
+		} catch( const std::exception& ){
 		    // if inverse kinematics or other things cannot compute then we discard the trajectory
 		    //RW_WARN("Trajectory could not be generated due to: \n\t " << e.what() );
 		}

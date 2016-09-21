@@ -71,7 +71,7 @@ void IntegratorGravityTest::updateResults(const EngineLoopInfo& info) {
 	RW_ASSERT(!rbody.isNull());
 	const Transform3D<> T = rbody->getTransformW(state);
 	const VelocityScrew6D<> vel = rbody->getVelocity(state);
-	const int steps = Math::round(time/dt);
+	const double steps = Math::round(time/dt); // the type is double as int can not be assumed to be large enough
 	const double gravity = dwc->getGravity()[2];
 
 	// Calculate result values

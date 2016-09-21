@@ -293,10 +293,10 @@ TEST(DOMPropertyMapSaveAndLoad, PropertyMap) {
         rw::common::PropertyMap item;
         rw::common::PropertyMap m;
 
-        EXPECT_TRUE(item.add(std::string("int"), std::string("The description of an Int"), 100));
-        EXPECT_TRUE(m.add(std::string("int"), std::string("The description of an Int"), 1001));
-        EXPECT_TRUE(item.add(std::string("propertymap"), std::string("The description of a PropertyMap"), m));
-        EXPECT_TRUE(item.add(std::string("double"), std::string("The description of a Double"), 0.4));
+        EXPECT_TRUE(!item.add(std::string("int"), std::string("The description of an Int"), 100).isNull());
+        EXPECT_TRUE(!m.add(std::string("int"), std::string("The description of an Int"), 1001).isNull());
+        EXPECT_TRUE(!item.add(std::string("propertymap"), std::string("The description of a PropertyMap"), m).isNull());
+        EXPECT_TRUE(!item.add(std::string("double"), std::string("The description of a Double"), 0.4).isNull());
 
         items.push_back(item);
     }
@@ -321,7 +321,7 @@ TEST(DOMPropertyMapSaveAndLoad, String) {
     items.push_back(std::string("This is a manually written string!"));
     for (std::vector<std::string>::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a String"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a String"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -338,7 +338,7 @@ TEST(DOMPropertyMapSaveAndLoad, Float) {
     items.push_back(0.0234f);
     for (std::vector<float>::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a Float"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a Float"), *it).isNull());
         
         testSaverAndLoader(map);
     }
@@ -355,7 +355,7 @@ TEST(DOMPropertyMapSaveAndLoad, Double) {
     items.push_back(7823.9332);
     for (std::vector<double>::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a Double"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a Double"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -372,7 +372,7 @@ TEST(DOMPropertyMapSaveAndLoad, Int) {
     items.push_back(510);
     for (std::vector<int>::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of an Int"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of an Int"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -384,7 +384,7 @@ TEST(DOMPropertyMapSaveAndLoad, Bool) {
     items.push_back(true);
     for (std::vector<bool>::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a Bool"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a Bool"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -398,7 +398,7 @@ TEST(DOMPropertyMapSaveAndLoad, Vector3D) {
     items.push_back(Vector3D<>(12.0, 12340.0, 98822.0));
     for (std::vector<Vector3D<> >::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a Vector3D"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a Vector3D"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -411,7 +411,7 @@ TEST(DOMPropertyMapSaveAndLoad, Vector2D) {
     items.push_back(Vector2D<>(0.0, 0.0));
     for (std::vector<Vector2D<> >::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a Vector2D"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a Vector2D"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -431,7 +431,7 @@ TEST(DOMPropertyMapSaveAndLoad, Q) {
     items.push_back(Q(1, 5.2));
     for (std::vector<Q>::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of an Q"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of an Q"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -450,7 +450,7 @@ TEST(DOMPropertyMapSaveAndLoad, Transform3D) {
     items.push_back(Transform3D<>(Vector3D<>(0.0857885, -0.990521, -0.10728), Rotation3D<>(-0.17678865, 0.8856797, 0.42932184, 0.75682682, 0.40119343, -0.51600097, -0.62925268, 0.23369917, -0.7412326)));
     for (std::vector<Transform3D<> >::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a Transform3D"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a Transform3D"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -469,7 +469,7 @@ TEST(DOMPropertyMapSaveAndLoad, Rotation3D) {
     items.push_back(Rotation3D<>(-0.44357068, -0.57814221, -0.68483329, 0.039335173, -0.77594071, 0.62957824, -0.89537579, 0.25232441, 0.36692587));
     for (std::vector<Rotation3D<> >::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a Rotation3D"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a Rotation3D"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -491,7 +491,7 @@ TEST(DOMPropertyMapSaveAndLoad, RPY) {
     items.push_back(RPY<>(-4.0, 0.25, 0.68));
     for (std::vector<RPY<> >::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of an RPY"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of an RPY"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -510,7 +510,7 @@ TEST(DOMPropertyMapSaveAndLoad, EAA) {
     items.push_back(EAA<>(-2.9, 3.2, 1.6));
     for (std::vector<EAA<> >::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of an EAA"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of an EAA"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -533,7 +533,7 @@ TEST(DOMPropertyMapSaveAndLoad, Quaternion) {
     }
     for (std::vector<Quaternion<> >::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a Quaternion"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a Quaternion"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -552,7 +552,7 @@ TEST(DOMPropertyMapSaveAndLoad, Rotation2D) {
     items.push_back(Rotation2D<>(1.7, 0.58, 5.2, 4.7));
     for (std::vector<Rotation2D<> >::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a Rotation2D"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a Rotation2D"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -571,7 +571,7 @@ TEST(DOMPropertyMapSaveAndLoad, VelocityScrew6D) {
     items.push_back(VelocityScrew6D<>(5.2, 5.9, -2.1, -2.7, 0.58, 1.8));
     for (std::vector<VelocityScrew6D<> >::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a VelocityScrew6D"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a VelocityScrew6D"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -670,7 +670,7 @@ TEST(DOMPropertyMapSaveAndLoad, QPath) {
     
     for (std::vector<QPath>::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a QPath"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a QPath"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -741,7 +741,7 @@ TEST(DOMPropertyMapSaveAndLoad, Transform3DPath) {
 
     for (std::vector<Transform3DPath>::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
-        EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a Transform3DPath"), *it));
+        EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a Transform3DPath"), *it).isNull());
 
         testSaverAndLoader(map);
     }
@@ -753,7 +753,7 @@ TEST(DOMPropertyMapSaveAndLoad, StringList) {
     list.push_back(std::string("first string"));
     list.push_back(std::string("second string"));
     list.push_back(std::string("third string"));
-    EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a StringList"), list));
+    EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a StringList"), list).isNull());
 
     testSaverAndLoader(map);
 }
@@ -764,7 +764,7 @@ TEST(DOMPropertyMapSaveAndLoad, IntList) {
     list.push_back(920501);
     list.push_back(518590);
     list.push_back(133013);
-    EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of an IntList"), list));
+    EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of an IntList"), list).isNull());
 
     testSaverAndLoader(map);
 }
@@ -775,7 +775,7 @@ TEST(DOMPropertyMapSaveAndLoad, DoubleList) {
     list.push_back(3.5);
     list.push_back(0.45);
     list.push_back(3.1);
-    EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a DoubleList"), list));
+    EXPECT_TRUE(!map.add(std::string("identifier"), std::string("The description of a DoubleList"), list).isNull());
 
     testSaverAndLoader(map);
 }

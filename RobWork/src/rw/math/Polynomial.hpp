@@ -112,7 +112,7 @@ public:
 	T evaluate(const T &x) const {
 		// Horner's Method
 		T res = _coef.back();
-		for (int i = _coef.size()-2; i >= 0; i--)
+		for (int i = static_cast<int>(_coef.size()-2); i >= 0; i--)
 			res = _coef[i]+res*x;
 		return res;
 	}
@@ -132,7 +132,7 @@ public:
 		double errComb = 0; // Combinational error of error both in coefficients and x (magnitude very small - eps*eps)
 		errCoef = fabs(res);
 		const double dX = fabs(x)*_EPS;
- 		for (int i = _coef.size()-2; i >= 0; i--) {
+ 		for (int i = static_cast<int>(_coef.size()-2); i >= 0; i--) {
  			errX = fabs(res)*dX+errX*fabs(x)+errX*dX;
 			res = _coef[i]+res*x;
 			errComb = errComb*fabs(x)+errComb*dX+errCoef*_EPS*dX;
@@ -153,8 +153,8 @@ public:
 		// Horner's Method
 		std::vector<T> res(n+1,0);
 		res[0] = _coef.back();
-		for (int i = _coef.size()-2; i >= 0; i--) {
-			int minJ = std::min<std::size_t>(n,_coef.size()-1-i);
+		for (int i = static_cast<int>(_coef.size()-2); i >= 0; i--) {
+			int minJ = static_cast<int>(std::min<std::size_t>(n,_coef.size()-1-i));
 			for (int j = minJ; j > 0; j--) {
 				res[j] = res[j-1]+res[j]*x;
 			}
@@ -184,8 +184,8 @@ public:
 		std::vector<T> res(n+1,0);
 		res[0] = _coef.back();
 		err[0] = fabs(res[0]);
-		for (int i = _coef.size()-2; i >= 0; i--) {
-			int minJ = std::min<std::size_t>(n,_coef.size()-1-i);
+		for (int i = static_cast<int>(_coef.size()-2); i >= 0; i--) {
+			int minJ = static_cast<int>(std::min<std::size_t>(n,_coef.size()-1-i));
 			for (int j = minJ; j > 0; j--) {
 				res[j] = res[j-1]+res[j]*x;
 				err[j] = fabs(res[j-1])+fabs(x)*err[j];
@@ -193,7 +193,7 @@ public:
 			res[0] = _coef[i]+res[0]*x;
 			err[0] = fabs(_coef[i])+fabs(x)*err[0];
 		}
-		unsigned int k = 1;
+		std::size_t k = 1;
 		for (std::size_t i = 2; i <= n; i++) {
 			k *= i;
 			res[i] *= k;

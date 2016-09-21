@@ -107,7 +107,10 @@ void ContactVelocitiesWidget::updateEntryWidget() {
 		else
 			pairs.insert(std::make_pair(nameB,nameA));
 	}
-	_ui->_contactBodyPairs->setRowCount(pairs.size());
+	const int nrOfPairs = static_cast<int>(pairs.size());
+	if (pairs.size() > static_cast<std::size_t>(nrOfPairs))
+		RW_THROW("There are too many entries for the widget to handle!");
+	_ui->_contactBodyPairs->setRowCount(nrOfPairs);
 	int row = 0;
 	_ui->_contactBodyPairs->setSortingEnabled(false);
 	BOOST_FOREACH(const FramePair& pair, pairs) {
@@ -126,8 +129,8 @@ void ContactVelocitiesWidget::updateEntryWidget() {
 		row++;
 	}
 	_ui->_contactBodyPairs->setSortingEnabled(true);
-	if (pairs.size() > 0)
-		_ui->_contactBodyPairs->setRangeSelected(QTableWidgetSelectionRange(0,0,pairs.size()-1,2),true);
+	if (nrOfPairs > 0)
+		_ui->_contactBodyPairs->setRangeSelected(QTableWidgetSelectionRange(0,0,nrOfPairs-1,2),true);
 }
 
 void ContactVelocitiesWidget::showGraphics(GroupNode::Ptr root, SceneGraph::Ptr graph) {
@@ -169,8 +172,11 @@ void ContactVelocitiesWidget::contactSetPairsChanged(const QItemSelection&, cons
 		if (show)
 			contactsToShow.push_back(i);
 	}
+	const int nrOfContactsToShow = static_cast<int>(contactsToShow.size());
+	if (contactsToShow.size() > static_cast<std::size_t>(nrOfContactsToShow))
+		RW_THROW("There are too many entries for the widget to handle!");
 	_ui->_contactTable->clearSelection();
-	_ui->_contactTable->setRowCount(contactsToShow.size());
+	_ui->_contactTable->setRowCount(nrOfContactsToShow);
 	int row = 0;
 	_ui->_contactTable->setSortingEnabled(false);
 	BOOST_FOREACH(const std::size_t i, contactsToShow) {
@@ -223,8 +229,8 @@ void ContactVelocitiesWidget::contactSetPairsChanged(const QItemSelection&, cons
 		row++;
 	}
 	_ui->_contactTable->setSortingEnabled(true);
-	if (contactsToShow.size() > 0)
-		_ui->_contactTable->setRangeSelected(QTableWidgetSelectionRange(0,0,contactsToShow.size()-1,7),true);
+	if (nrOfContactsToShow > 0)
+		_ui->_contactTable->setRangeSelected(QTableWidgetSelectionRange(0,0,nrOfContactsToShow-1,7),true);
 }
 
 void ContactVelocitiesWidget::contactSetChanged(const QItemSelection&, const QItemSelection&) {

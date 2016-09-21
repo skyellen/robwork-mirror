@@ -95,6 +95,11 @@ rw::common::Ptr<const SimulatorLog> CollisionResultWidget::getEntry() const {
 
 void CollisionResultWidget::updateEntryWidget() {
 	const std::vector<LogCollisionResult::ResultInfo>& results = _result->getResults();
+
+	const int nrOfEntries = static_cast<int>(results.size());
+	if (results.size() > static_cast<std::size_t>(nrOfEntries))
+		RW_THROW("There are too many entries for the widget to handle!");
+
 	_ui->_description->setText(QString::fromStdString(_result->getDescription()));
 	int bvTests = 0;
 	int primTests = 0;
@@ -105,7 +110,7 @@ void CollisionResultWidget::updateEntryWidget() {
 	_ui->_bvTests->setText(QString::number(bvTests));
 	_ui->_primTests->setText(QString::number(primTests));
 
-	_ui->_framePairTable->setRowCount(results.size());
+	_ui->_framePairTable->setRowCount(nrOfEntries);
 	_ui->_framePairTable->setSortingEnabled(false);
 
 	int row = 0;
@@ -126,8 +131,8 @@ void CollisionResultWidget::updateEntryWidget() {
 		row++;
 	}
 	_ui->_framePairTable->setSortingEnabled(true);
-	if (results.size() > 0)
-		_ui->_framePairTable->setRangeSelected(QTableWidgetSelectionRange(0,0,results.size()-1,4),true);
+	if (nrOfEntries > 0)
+		_ui->_framePairTable->setRangeSelected(QTableWidgetSelectionRange(0,0,nrOfEntries-1,4),true);
 }
 
 void CollisionResultWidget::showGraphics(GroupNode::Ptr root, SceneGraph::Ptr graph) {
@@ -150,8 +155,11 @@ void CollisionResultWidget::framePairsChanged(const QItemSelection& newSelection
 	foreach (const QModelIndex& index, indexes) {
 		if (index.column() > 0)
 			continue;
-		const LogCollisionResult::ResultInfo& info = results[(std::size_t)index.row()];
-		_ui->_collisionPairs->setRowCount(_ui->_collisionPairs->rowCount()+info.result._collisionPairs.size());
+		const LogCollisionResult::ResultInfo& info = results[static_cast<std::size_t>(index.row())];
+		const int nrOfEntries = static_cast<int>(info.result._collisionPairs.size());
+		if (info.result._collisionPairs.size() > static_cast<std::size_t>(nrOfEntries))
+			RW_THROW("There are too many entries for the widget to handle!");
+		_ui->_collisionPairs->setRowCount(_ui->_collisionPairs->rowCount()+nrOfEntries);
 		for (std::size_t i = 0; i < info.result._collisionPairs.size(); i++) {
 			const std::string geoA = (info.geoNamesA[i] == "") ? "Unknown" : info.geoNamesA[i];
 			const std::string geoB = (info.geoNamesB[i] == "") ? "Unknown" : info.geoNamesB[i];

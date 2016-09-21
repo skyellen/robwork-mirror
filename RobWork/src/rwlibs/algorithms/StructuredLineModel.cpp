@@ -182,9 +182,9 @@ double StructuredLineModel::refit(const std::vector<rw::math::Vector3D<> >& samp
 		double sample_error = fitError(*i);
 		error += sample_error * sample_error;
 	}
-	
-	int n = _data.size();
-	error /= (n > 0 ? n : 1);
+
+	const std::size_t n = _data.size();
+	error /= static_cast<double>(n > 0 ? n : 1);
 	setQuality(error);
 	
 	return error;

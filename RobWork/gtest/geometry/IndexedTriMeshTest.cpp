@@ -51,10 +51,10 @@ TYPED_TEST(IndexedTriMeshTest, GetTriangleTest) {
 	typedef IndexedTriMeshN0<T,S> Mesh;
 	typedef typename Mesh::VertexArray VertexArray;
 	typedef typename Mesh::TriangleArray TriangleArray;
-	const Vector3D<T> vertex0(0.0,0.1,0.2);
-	const Vector3D<T> vertex1(0.3,0.4,0.5);
-	const Vector3D<T> vertex2(0.6,0.7,0.8);
-	const Vector3D<T> vertex3(0.9,1.0,1.1);
+	const Vector3D<T> vertex0(static_cast<T>(0.0),static_cast<T>(0.1),static_cast<T>(0.2));
+	const Vector3D<T> vertex1(static_cast<T>(0.3),static_cast<T>(0.4),static_cast<T>(0.5));
+	const Vector3D<T> vertex2(static_cast<T>(0.6),static_cast<T>(0.7),static_cast<T>(0.8));
+	const Vector3D<T> vertex3(static_cast<T>(0.9),static_cast<T>(1.0),static_cast<T>(1.1));
 	const rw::common::Ptr<VertexArray> vertices = ownedPtr(new VertexArray(4)); // allocation of exact size is important
 	(*vertices)[0] = vertex0;
 	(*vertices)[1] = vertex1;

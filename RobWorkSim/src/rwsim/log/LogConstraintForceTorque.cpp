@@ -22,6 +22,8 @@
 #include <rw/common/InputArchive.hpp>
 #include <rw/common/OutputArchive.hpp>
 
+#include <limits>
+
 using namespace rw::common;
 using namespace rw::math;
 using namespace rwsim::log;
@@ -122,8 +124,12 @@ Vector3D<> LogConstraintForceTorque::getPositionB(std::size_t i) const {
 int LogConstraintForceTorque::sizeLinkedEntry() const {
 	if (_constraints.isNull())
 		return -1;
+
+	const int val = static_cast<int>(_constraints->size());
+	if (static_cast<std::size_t>(val) < _constraints->size())
+		return std::numeric_limits<int>::max();
 	else
-		return _constraints->size();
+		return val;
 }
 
 std::string LogConstraintForceTorque::getTypeID() {

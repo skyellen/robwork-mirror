@@ -452,10 +452,13 @@ bool EngineTestPlugin::event(QEvent *event) {
     			_ui->runVerbose->setEnabled(true);
 
     		const std::vector<EngineTest::Result>& results = _testHandle->getResults();
-    	    _ui->results->setRowCount(results.size());
-    	    for (std::size_t i = 0; i < results.size(); i++) {
-    			_ui->results->setItem(i,0,new QTableWidgetItem(QString::fromStdString(results[i].name)));
-    			_ui->results->item(i,0)->setData(Qt::ToolTipRole,QString::fromStdString(results[i].description));
+    		const int nrOfEntries = static_cast<int>(results.size());
+    		if (results.size() > static_cast<std::size_t>(nrOfEntries))
+    			RW_THROW("There are too many simulation results for the plugin to handle!");
+    	    _ui->results->setRowCount(nrOfEntries);
+    	    for (int i = 0; i < nrOfEntries; i++) {
+    			_ui->results->setItem(i,0,new QTableWidgetItem(QString::fromStdString(results[static_cast<std::size_t>(i)].name)));
+    			_ui->results->item(i,0)->setData(Qt::ToolTipRole,QString::fromStdString(results[static_cast<std::size_t>(i)].description));
     	    	QPushButton* const button = new QPushButton("Show");
     	        connect(button, SIGNAL(pressed()), this, SLOT(resultShow()) );
     	    	_ui->results->setCellWidget(i,1,button);

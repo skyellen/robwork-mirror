@@ -55,7 +55,7 @@ namespace {
 
 
 SimulatedScanner2D::SimulatedScanner2D(const std::string& name, rw::kinematics::Frame* frame, FrameGrabber25D::Ptr framegrabber):
-   SimulatedSensor( rw::common::ownedPtr( new Scanner2DModel(name, framegrabber->getFieldOfViewY(), framegrabber->getWidth(), frame) )),
+   SimulatedSensor( rw::common::ownedPtr( new Scanner2DModel(name, framegrabber->getFieldOfViewY(), static_cast<int>(framegrabber->getWidth()), frame) )),
    _framegrabber(framegrabber),
     _frameRate(30),
     _dtsum(0)
@@ -66,7 +66,7 @@ SimulatedScanner2D::SimulatedScanner2D(const std::string& name,
                                        const std::string& desc,
                                        rw::kinematics::Frame* frame,
                                        FrameGrabber25D::Ptr framegrabber):
-       SimulatedSensor( ownedPtr( new Scanner2DModel(name, _framegrabber->getFieldOfViewY(), framegrabber->getWidth(),frame) )),
+       SimulatedSensor( ownedPtr( new Scanner2DModel(name, _framegrabber->getFieldOfViewY(), static_cast<int>(framegrabber->getWidth()),frame) )),
 		_framegrabber(framegrabber),
 		_frameRate(30),
         _dtsum(0)

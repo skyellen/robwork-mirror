@@ -376,35 +376,35 @@ namespace geometry {
 
         //! @copydoc IndexedTriMesh::getVertexNormal
         const rw::math::Vector3D<T>& getVertexNormal(size_t i, VertexIdx vidx) const {
-            const uint32_t idx = this->_stride*i+vidx*this->_idxsize; // this is the unmasked idx
+            const uint32_t idx = static_cast<uint32_t>(this->_stride*i+vidx*this->_idxsize); // this is the unmasked idx
             const S uidx =  *((S*)&(this->_triIdxArr[ idx ]));
             return (*this->_normals)[ uidx ];
         }
 
         //! @copydoc IndexedTriMesh::getVertexNormal
         rw::math::Vector3D<T>& getVertexNormal(size_t i, VertexIdx vidx) {
-            const uint32_t idx = this->_stride*i+vidx*this->_idxsize; // this is the unmasked idx
+            const uint32_t idx = static_cast<uint32_t>(this->_stride*i+vidx*this->_idxsize); // this is the unmasked idx
             const S uidx =  *((S*)&(this->_triIdxArr[ idx ]));
             return (*this->_normals)[ uidx ];
         }
 
         //! @copydoc IndexedTriMesh::getVertex(size_t,VertexIdx)
         const rw::math::Vector3D<T>& getVertex(size_t i, VertexIdx vidx) const{
-        	const uint32_t idx = this->_stride*i+vidx*this->_idxsize; // this is the unmasked idx
+        	const uint32_t idx = static_cast<uint32_t>(this->_stride*i+vidx*this->_idxsize); // this is the unmasked idx
         	const S uidx =  *((S*)&(this->_triIdxArr[ idx ]));
         	return (*this->_vertices)[ uidx ];
         }
 
         //! @copydoc IndexedTriMesh::getVertex(size_t,VertexIdx)
         rw::math::Vector3D<T>& getVertex(size_t i, VertexIdx vidx){
-        	const uint32_t idx = (uint32_t)(this->_stride*i+vidx*this->_idxsize); // this is the unmasked idx
+        	const uint32_t idx = static_cast<uint32_t>(this->_stride*i+vidx*this->_idxsize); // this is the unmasked idx
         	const S uidx =  *((S*)&(this->_triIdxArr[ idx ]));
         	return (*this->_vertices)[ uidx ];
         }
 
         //! @copydoc IndexedTriMesh::getIndexedTriangle
         IndexedTriangle<uint32_t> getIndexedTriangle(size_t i) const {
-        	const uint32_t idx = (uint32_t)(this->_stride*i); // this is the unmasked idx
+        	const uint32_t idx = static_cast<uint32_t>(this->_stride*i); // this is the unmasked idx
         	const S v1 = *((S*)&(this->_triIdxArr[ idx ]));
         	const S v2 = *((S*)&(this->_triIdxArr[ idx+this->_idxsize ]));
         	const S v3 = *((S*)&(this->_triIdxArr[ idx+2*this->_idxsize ]));

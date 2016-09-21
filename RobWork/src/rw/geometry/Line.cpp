@@ -87,7 +87,7 @@ double Line::refit(std::vector<rw::math::Vector3D<> >& data) {
 	for (size_t i = 0; i < data.size(); ++i) {
 		centroid += data[i];
 	}
-	centroid /= data.size();
+	centroid /= static_cast<double>(data.size());
 	
 	/* perform singular value decomposition of data points */
 	// create covariance matrix

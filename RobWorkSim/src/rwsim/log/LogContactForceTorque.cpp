@@ -22,6 +22,8 @@
 #include "LogContactForceTorque.hpp"
 #include "LogContactSet.hpp"
 
+#include <limits>
+
 using namespace rw::common;
 using namespace rw::math;
 using namespace rwsim::log;
@@ -98,7 +100,12 @@ SimulatorLogEntry::Ptr LogContactForceTorque::createNew(SimulatorLogScope* paren
 int LogContactForceTorque::sizeLinkedEntry() const {
 	if (_contacts.isNull())
 		return -1;
-	return _contacts->size();
+
+	const int val = static_cast<int>(_contacts->size());
+	if (static_cast<std::size_t>(val) < _contacts->size())
+		return std::numeric_limits<int>::max();
+	else
+		return val;
 }
 
 const std::string& LogContactForceTorque::getNameA(std::size_t i) const {

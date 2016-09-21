@@ -105,6 +105,10 @@ void BodyMotionWidget::updateEntryWidget() {
 	QStringList headerLabels;
 	headerLabels.push_back("Body");
 	if (!(_velocities == NULL)) {
+		const int nrOfEntries = static_cast<int>(_velocities->size());
+		if (_velocities->size() > static_cast<std::size_t>(nrOfEntries))
+			RW_THROW("There are too many entries for the widget to handle!");
+
 		headerLabels.push_back("Vel X");
 		headerLabels.push_back("Vel Y");
 		headerLabels.push_back("Vel Z");
@@ -112,10 +116,9 @@ void BodyMotionWidget::updateEntryWidget() {
 		headerLabels.push_back("Avel Y");
 		headerLabels.push_back("Avel Z");
 		_ui->_motionBodiesTable->setHorizontalHeaderLabels(headerLabels);
-		const std::size_t n = _velocities->size();
 		_ui->_motionDescription->setText(QString::fromStdString(_velocities->getDescription()));
-		_ui->_motionBodies->setText(QString::number(n));
-		_ui->_motionBodiesTable->setRowCount(n);
+		_ui->_motionBodies->setText(QString::number(nrOfEntries));
+		_ui->_motionBodiesTable->setRowCount(nrOfEntries);
 		int row = 0;
 		_ui->_motionBodiesTable->setSortingEnabled(false);
 		const std::map<std::string, VelocityScrew6D<> >& velMap = _velocities->getVelocities();
@@ -124,14 +127,18 @@ void BodyMotionWidget::updateEntryWidget() {
 			const std::string& body = it->first;
 			const VelocityScrew6D<>& vel = it->second;
 			_ui->_motionBodiesTable->setItem(row,0,new QTableWidgetItem(QString::fromStdString(body)));
-			for (std::size_t i = 0; i < 6; i++)
-				_ui->_motionBodiesTable->setItem(row,i+1,new QTableWidgetItem(QString::number(vel[i],'d',4)));
+			for (int i = 0; i < 6; i++)
+				_ui->_motionBodiesTable->setItem(row,i+1,new QTableWidgetItem(QString::number(vel[static_cast<std::size_t>(i)],'d',4)));
 			row++;
 		}
 		_ui->_motionBodiesTable->setSortingEnabled(true);
-		if (n > 0)
-			_ui->_motionBodiesTable->setRangeSelected(QTableWidgetSelectionRange(0,0,n-1,6),true);
+		if (nrOfEntries > 0)
+			_ui->_motionBodiesTable->setRangeSelected(QTableWidgetSelectionRange(0,0,nrOfEntries-1,6),true);
 	} else if (!(_positions == NULL)) {
+		const int nrOfEntries = static_cast<int>(_positions->size());
+		if (_positions->size() > static_cast<std::size_t>(nrOfEntries))
+			RW_THROW("There are too many entries for the widget to handle!");
+
 		headerLabels.push_back("Pos X");
 		headerLabels.push_back("Pos Y");
 		headerLabels.push_back("Pos Z");
@@ -139,10 +146,9 @@ void BodyMotionWidget::updateEntryWidget() {
 		headerLabels.push_back("Rot Y");
 		headerLabels.push_back("Rot Z");
 		_ui->_motionBodiesTable->setHorizontalHeaderLabels(headerLabels);
-		const std::size_t n = _positions->size();
 		_ui->_motionDescription->setText(QString::fromStdString(_positions->getDescription()));
-		_ui->_motionBodies->setText(QString::number(n));
-		_ui->_motionBodiesTable->setRowCount(n);
+		_ui->_motionBodies->setText(QString::number(nrOfEntries));
+		_ui->_motionBodiesTable->setRowCount(nrOfEntries);
 		int row = 0;
 		_ui->_motionBodiesTable->setSortingEnabled(false);
 		const std::map<std::string, Transform3D<> >& posMap = _positions->getPositions();
@@ -151,16 +157,18 @@ void BodyMotionWidget::updateEntryWidget() {
 			const std::string& body = it->first;
 			const Transform3D<>& pos = it->second;
 			_ui->_motionBodiesTable->setItem(row,0,new QTableWidgetItem(QString::fromStdString(body)));
-			for (std::size_t i = 0; i < 3; i++)
-				_ui->_motionBodiesTable->setItem(row,i+1,new QTableWidgetItem(QString::number(pos.P()[i],'d',4)));
+			_ui->_motionBodiesTable->setItem(row,1,new QTableWidgetItem(QString::number(pos.P()[0],'d',4)));
+			_ui->_motionBodiesTable->setItem(row,2,new QTableWidgetItem(QString::number(pos.P()[1],'d',4)));
+			_ui->_motionBodiesTable->setItem(row,3,new QTableWidgetItem(QString::number(pos.P()[2],'d',4)));
 			const EAA<> rot(pos.R());
-			for (std::size_t i = 0; i < 3; i++)
-				_ui->_motionBodiesTable->setItem(row,i+4,new QTableWidgetItem(QString::number(rot[i],'d',4)));
+			_ui->_motionBodiesTable->setItem(row,4,new QTableWidgetItem(QString::number(rot[0],'d',4)));
+			_ui->_motionBodiesTable->setItem(row,5,new QTableWidgetItem(QString::number(rot[1],'d',4)));
+			_ui->_motionBodiesTable->setItem(row,6,new QTableWidgetItem(QString::number(rot[2],'d',4)));
 			row++;
 		}
 		_ui->_motionBodiesTable->setSortingEnabled(true);
-		if (n > 0)
-			_ui->_motionBodiesTable->setRangeSelected(QTableWidgetSelectionRange(0,0,n-1,6),true);
+		if (nrOfEntries > 0)
+			_ui->_motionBodiesTable->setRangeSelected(QTableWidgetSelectionRange(0,0,nrOfEntries-1,6),true);
 	}
 }
 
@@ -237,9 +245,9 @@ void BodyMotionWidget::motionBodiesChanged(const QItemSelection& selection, cons
 			BOOST_FOREACH(const Geometry::Ptr geo, body->getGeometry()) {
 				const RenderVelocity::Ptr render = ownedPtr(new RenderVelocity());
 				render->setVelocity(_velocities->getVelocity(name));
-				render->setScaleAngular(0.1/(Pi/2));
+				render->setScaleAngular(static_cast<float>(0.1/(Pi/2)));
 				//render->setScaleLinear(0.1/(Pi/2));
-				render->setScaleLinear(1.0); // spring test
+				render->setScaleLinear(1.0f); // spring test
 				//render->setScaleAngular(0.1/(4*Pi)); // rotation test
 				DrawableNode::Ptr node = ownedPtr(new Drawable(render,"VelocityRender",DrawableNode::Virtual));
 				const Transform3D<> t3d = _positions->getPosition(name);

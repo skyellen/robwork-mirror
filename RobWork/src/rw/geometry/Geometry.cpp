@@ -109,14 +109,14 @@ Geometry::Ptr Geometry::makeGrid(int dim_x, int dim_y, double size_x, double siz
 
     for(int dy=0;dy<=dim_y;dy++){
     	for(int dx=0;dx<=dim_x;dx++){
-    		imesh->getVertices().push_back( xdir_n* (dx-dim_x/2.0*size_x) + ydir_n*(dy-dim_y/2.0*size_y) );
+    		imesh->getVertices().push_back( cast<float>(xdir_n* (dx-dim_x/2.0*size_x) + ydir_n*(dy-dim_y/2.0*size_y)) );
     	}
     }
 
     for(int dy=0;dy<=dim_y-1;dy++){
     	for(int dx=0;dx<=dim_x-1;dx++){
-    		imesh->add( IndexedTriangle<>(dx+1 + dy*size_y, dx + dy*size_y , dx+1 + (dy+1)*size_y) );
-    		imesh->add( IndexedTriangle<>(dx + (dy+1)*size_y , dx+1 + (dy+1)*size_y, dx+1 + dy*size_y) );
+    		imesh->add( IndexedTriangle<>(static_cast<uint16_t>(dx+1 + dy*size_y), static_cast<uint16_t>(dx + dy*size_y), static_cast<uint16_t>(dx+1 + (dy+1)*size_y)) );
+    		imesh->add( IndexedTriangle<>(static_cast<uint16_t>(dx + (dy+1)*size_y), static_cast<uint16_t>(dx+1 + (dy+1)*size_y), static_cast<uint16_t>(dx+1 + dy*size_y)) );
     	}
     }
 

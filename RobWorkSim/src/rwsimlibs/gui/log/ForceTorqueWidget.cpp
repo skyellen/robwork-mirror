@@ -100,7 +100,10 @@ void ForceTorqueWidget::updateEntryWidget() {
 		else
 			pairs.insert(std::make_pair(nameB,nameA));
 	}
-	_ui->_pairs->setRowCount(pairs.size());
+	const int nrOfPairs = static_cast<int>(pairs.size());
+	if (pairs.size() > static_cast<std::size_t>(nrOfPairs))
+		RW_THROW("There are too many entries for the widget to handle!");
+	_ui->_pairs->setRowCount(nrOfPairs);
 	int row = 0;
 	_ui->_pairs->setSortingEnabled(false);
 	BOOST_FOREACH(const FramePair& pair, pairs) {
@@ -119,8 +122,8 @@ void ForceTorqueWidget::updateEntryWidget() {
 		row++;
 	}
 	_ui->_pairs->setSortingEnabled(true);
-	if (pairs.size() > 0)
-		_ui->_pairs->setRangeSelected(QTableWidgetSelectionRange(0,0,pairs.size()-1,2),true);
+	if (nrOfPairs > 0)
+		_ui->_pairs->setRangeSelected(QTableWidgetSelectionRange(0,0,nrOfPairs-1,2),true);
 }
 
 void ForceTorqueWidget::showGraphics(GroupNode::Ptr root, SceneGraph::Ptr graph) {
@@ -161,8 +164,11 @@ void ForceTorqueWidget::pairsChanged(const QItemSelection&, const QItemSelection
 		if (show)
 			contactsToShow.push_back(i);
 	}
+	const int nrOfContactsToShow = static_cast<int>(contactsToShow.size());
+	if (contactsToShow.size() > static_cast<std::size_t>(nrOfContactsToShow))
+		RW_THROW("There are too many entries for the widget to handle!");
 	_ui->_table->clearSelection();
-	_ui->_table->setRowCount(contactsToShow.size());
+	_ui->_table->setRowCount(nrOfContactsToShow);
 	int row = 0;
 	_ui->_table->setSortingEnabled(false);
 	BOOST_FOREACH(const std::size_t i, contactsToShow) {
@@ -201,8 +207,8 @@ void ForceTorqueWidget::pairsChanged(const QItemSelection&, const QItemSelection
 		row++;
 	}
 	_ui->_table->setSortingEnabled(true);
-	if (contactsToShow.size() > 0)
-		_ui->_table->setRangeSelected(QTableWidgetSelectionRange(0,0,contactsToShow.size()-1,5),true);
+	if (nrOfContactsToShow > 0)
+		_ui->_table->setRangeSelected(QTableWidgetSelectionRange(0,0,nrOfContactsToShow-1,5),true);
 }
 
 void ForceTorqueWidget::contactSetChanged(const QItemSelection&, const QItemSelection&) {
@@ -220,8 +226,8 @@ void ForceTorqueWidget::contactSetChanged(const QItemSelection&, const QItemSele
 		const Wrench6D<> ftB = _forces->getWrenchBodyB(i);
 		renderA->setVelocity(VelocityScrew6D<>(ftA.force(),EAA<>(ftA.torque())));
 		renderB->setVelocity(VelocityScrew6D<>(ftB.force(),EAA<>(ftB.torque())));
-		renderA->setScales(0.1,0.1);
-		renderB->setScales(0.1,0.1);
+		renderA->setScales(0.1f,0.1f);
+		renderB->setScales(0.1f,0.1f);
 		const DrawableNode::Ptr drawableA = _graph->makeDrawable("WrenchA",renderA,DrawableNode::Physical);
 		const DrawableNode::Ptr drawableB = _graph->makeDrawable("WrenchB",renderB,DrawableNode::Physical);
 		drawableA->setTransform(Transform3D<>(_forces->getPositionA(i)));

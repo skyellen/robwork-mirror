@@ -152,9 +152,9 @@ protected:
 #if __cplusplus >= 201103L
 			const int digitsType = std::numeric_limits<double>::max_digits10;
 #else
-			const int digitsType = std::floor(std::numeric_limits<double>::digits * std::log10(2) + 2);
+			const int digitsType = static_cast<int>(std::floor(std::numeric_limits<double>::digits * std::log10(2) + 2));
 #endif
-			const int digits = _ofs->precision() < digitsType ? _ofs->precision() : digitsType;
+			const int digits = static_cast<int>(_ofs->precision()) < digitsType ? static_cast<int>(_ofs->precision()) : digitsType;
 			const int spacePerVal = digits+1+1+1+5; // including a space, sign, decimal seperator and exponential (e.g e+123)
 			const int maxVal = MAX_LINE_WIDTH/spacePerVal;
 			if (maxVal == 0)

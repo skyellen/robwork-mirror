@@ -67,8 +67,8 @@ rw::common::Ptr<rw::common::PropertyMap> IntegratorTest::getDefaultParameters() 
 
 DynamicWorkCell::Ptr IntegratorTest::makeIntegratorDWC(const std::string& integratorType) {
 	MovableFrame* const frame = new MovableFrame("Object");
-	const GeometryData::Ptr cylinderData = ownedPtr(new Cylinder(0.015,0.1));
-	const GeometryData::Ptr cylinderEndData = ownedPtr(new Cylinder(0.045,0.02));
+	const GeometryData::Ptr cylinderData = ownedPtr(new Cylinder(0.015f,0.1f));
+	const GeometryData::Ptr cylinderEndData = ownedPtr(new Cylinder(0.045f,0.02f));
 	Geometry::Ptr cylinder = ownedPtr(new Geometry(cylinderData, "CylinderGeo"));
 	Geometry::Ptr cylinderEnd = ownedPtr(new Geometry(cylinderEndData, "CylinderEndGeo"));
 	const Transform3D<> Tcyl(Vector3D<>(0,0,-27./700.));

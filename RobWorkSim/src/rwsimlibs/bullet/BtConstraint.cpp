@@ -110,7 +110,7 @@ void BtConstraint::createJoint() {
 		// Note: from Bullet 2.82 there is a dedicated fixed constraint type!
 		btGeneric6DofConstraint* const btConstraint = new btGeneric6DofConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
 		// Fix all linear and angular axes by setting higher and lower limits equal
-		for (std::size_t i = 0; i < 6; i++) {
+		for (int i = 0; i < 6; i++) {
 			btConstraint->setParam(BT_CONSTRAINT_CFM,0,i);
 			btConstraint->setParam(BT_CONSTRAINT_STOP_CFM,0,i); // Default is m_globalCfm set in BtSimulator (which is default 0)
 			btConstraint->setParam(BT_CONSTRAINT_STOP_ERP,0.2,i); // Default is m_erp set in BtSimulator (which is default 0.2)

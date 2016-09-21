@@ -52,7 +52,7 @@ public:
 	TriMeshModel(ContactStrategy *owner): ContactModel(owner) {}
 	~TriMeshModel() {
 		if (models.size() > 0) {
-			RW_THROW("Please use destroyModel on ContactStrategyPQP to deallocate internal caching before deleting the ProximityModel.");
+			RW_WARN("Please use destroyModel on ContactStrategyPQP to deallocate internal caching before deleting the ProximityModel.");
 		}
 	}
 	virtual std::string getName() const { return "TriMeshModel"; }

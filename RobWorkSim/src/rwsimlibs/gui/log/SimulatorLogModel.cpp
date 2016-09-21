@@ -85,7 +85,10 @@ int SimulatorLogModel::rowCount(const QModelIndex &parent) const {
 	if (!parentNode) {
 		return 0;
 	}
-	return parentNode->children();
+	const int nrOfChildren = static_cast<int>(parentNode->children());
+	if (parentNode->children() > static_cast<std::size_t>(nrOfChildren))
+		RW_THROW("There are too many children for the log model to handle!");
+	return nrOfChildren;
 }
 
 int SimulatorLogModel::columnCount(const QModelIndex &parent) const {

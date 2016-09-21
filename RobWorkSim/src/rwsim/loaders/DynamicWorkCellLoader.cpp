@@ -1298,7 +1298,7 @@ namespace
     	Constraint::SpringParams params;
     	params.enabled = true;
         for (CI p = tree.begin(); p != tree.end(); ++p) {
-        	const int freeDOF = constraint->getDOF();
+        	const int freeDOF = static_cast<int>(constraint->getDOF()); // safe cast: never larger than 6 dof
         	if (p->first == "Compliance") {
         		params.compliance = readMatrixD(p->second, std::make_pair(freeDOF,freeDOF));
         	} else if (p->first == "Damping") {

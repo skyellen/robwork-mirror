@@ -101,6 +101,6 @@ void Cylinder::setParameters(const rw::math::Q& q) {
 		RW_THROW("Size of parameter list must equal 2!");
 	}
 	
-	_height = q(0);
-	_radius = q(1);
+	_height = static_cast<float>(q(0));
+	_radius = static_cast<float>(q(1));
 }

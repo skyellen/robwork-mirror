@@ -52,7 +52,7 @@ WorkCell::Ptr WorkCellLoader::Factory::load(const std::string& file) {
 	const WorkCellLoader::Ptr loader = getWorkCellLoader(ext);
 	try {
 		return loader->loadWorkCell(file);
-	} catch (const std::exception& e){
+	} catch (const std::exception&){
 		Log::debugLog() << "Tried loading workcell with extension, but failed!\n";
 	}
     return NULL;

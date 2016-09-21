@@ -120,7 +120,9 @@ namespace common {
 
 		template<class T>
 		void writeValue( const std::vector<T>& val, const std::string& id ){
-		    boost::uint32_t s = val.size();
+		    boost::uint32_t s = static_cast<boost::uint32_t>(val.size());
+		    if (val.size() != static_cast<std::size_t>(s))
+		    	RW_THROW("BINArchive could not write values, as the vector is too long!");
 		    _ofs->write((char*)&s, sizeof(s) );
 		    for (boost::uint32_t i = 0; i < s; i++) {
 				const T& rval = val[i];
@@ -141,8 +143,10 @@ namespace common {
 		template <class Derived>
 		void writeMatrix(const Eigen::DenseCoeffsBase<Derived,Eigen::ReadOnlyAccessors>& val, const std::string& id) {
 			typedef typename Eigen::DenseCoeffsBase<Derived,Eigen::ReadOnlyAccessors>::Index Index;
-			boost::uint32_t m = val.rows();
-			boost::uint32_t n = val.cols();
+			boost::uint32_t m = static_cast<boost::uint32_t>(val.rows());
+			boost::uint32_t n = static_cast<boost::uint32_t>(val.cols());
+		    if (val.rows() != static_cast<std::size_t>(m) || val.cols() != static_cast<std::size_t>(n))
+		    	RW_THROW("BINArchive could not write matrix, as it is too big!");
 			_ofs->write((char*)&m, sizeof(m) );
 			_ofs->write((char*)&n, sizeof(n) );
 			for (Index i = 0; i < val.rows(); i++) {

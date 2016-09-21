@@ -51,7 +51,7 @@ void workFunction(ThreadPool* pool, unsigned int id) {
 			return;
 		boost::mutex::scoped_lock lock(jobMutex);
 		jobDone[id] = true;
-	} catch(boost::thread_interrupted &e) {
+	} catch(boost::thread_interrupted &) {
 		boost::mutex::scoped_lock lock(testMutex);
 		BOOST_CHECK(pool->isStopping() == true);
 	}
@@ -72,7 +72,7 @@ void workFunctionStop(ThreadPool* pool, unsigned int id) {
 			return;
 		boost::mutex::scoped_lock lock(jobMutex);
 		jobDone[id] = true;
-	} catch(boost::thread_interrupted &e) {
+	} catch(boost::thread_interrupted &) {
 		boost::mutex::scoped_lock lock(testMutex);
 		BOOST_CHECK(pool->isStopping() == true);
 	}

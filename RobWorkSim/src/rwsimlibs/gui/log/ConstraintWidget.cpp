@@ -71,11 +71,15 @@ rw::common::Ptr<const SimulatorLog> ConstraintWidget::getEntry() const {
 }
 
 void ConstraintWidget::updateEntryWidget() {
+	const int nrOfEntries = static_cast<int>(_constraints->size());
+	if (_constraints->size() > static_cast<std::size_t>(nrOfEntries))
+		RW_THROW("There are too many entries for the widget to handle!");
+
 	_ui->_constraintsDescription->setText(QString::fromStdString(_constraints->getDescription()));
 	_ui->_constraints->setText(QString::number(_constraints->size()));
 
 	_ui->_constraintTable->clearSelection();
-	_ui->_constraintTable->setRowCount(_constraints->size());
+	_ui->_constraintTable->setRowCount(nrOfEntries);
 	_ui->_constraintTable->setSortingEnabled(false);
 	int row = 0;
 	BOOST_FOREACH(const LogConstraints::Constraint& c, _constraints->getConstraints()) {
@@ -99,8 +103,8 @@ void ConstraintWidget::updateEntryWidget() {
 		row++;
 	}
 	_ui->_constraintTable->setSortingEnabled(true);
-	if (_constraints->size() > 0)
-		_ui->_constraintTable->setRangeSelected(QTableWidgetSelectionRange(0,0,_constraints->size()-1,2),true);
+	if (nrOfEntries > 0)
+		_ui->_constraintTable->setRangeSelected(QTableWidgetSelectionRange(0,0,nrOfEntries-1,2),true);
 }
 
 void ConstraintWidget::showGraphics(GroupNode::Ptr root, SceneGraph::Ptr graph) {
@@ -146,7 +150,7 @@ void ConstraintWidget::constraintSetChanged(const QItemSelection& newSelection, 
 	}
 	_root->removeChild("Constraints");
 	GroupNode::Ptr constraintGroup = ownedPtr(new GroupNode("Constraints"));
-	const RenderFrame::Ptr render = ownedPtr(new RenderFrame(0.1));
+	const RenderFrame::Ptr render = ownedPtr(new RenderFrame(0.1f));
 	const DrawableNode::Ptr drawable = _graph->makeDrawable("Frame",render,DrawableNode::Physical);
 	for (std::size_t i = 0; i < show.size(); i++) {
 		LogConstraints::Constraint& con = show[i];

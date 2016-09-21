@@ -65,14 +65,6 @@ namespace math {
 		virtual ~CameraMatrix(){};
 
 		/**
-		 * @brief calculates a CameraMatrix that maps points from point
-		 * set pts1 to point set pts2
-		 */
-		static CameraMatrix
-			calcTransform(std::vector<Vector3D<T> > pts1,
-						  std::vector<Vector3D<T> > pts2);
-
-		/**
 		 * @brief Returns matrix element reference
 		 * @param row [in] row, row must be @f$ < 3 @f$
 		 * @param col [in] col, col must be @f$ < 3 @f$

@@ -176,7 +176,7 @@ struct GLViewRW::GLData {
 
 GLViewRW::GLViewRW(QWidget* parent) :
     QGLWidget(QGLFormat(QGL::DepthBuffer), parent),
-    _viewRotation(RPY<float>( 0, 0, -45*Deg2Rad ).toRotation3D()),
+    _viewRotation(RPY<float>( 0, 0, static_cast<float>(-45*Deg2Rad) ).toRotation3D()),
     _viewPos(0,0,-5),
     _drawType(DrawableNode::SOLID),
     _alpha(1),

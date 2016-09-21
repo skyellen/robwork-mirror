@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
 				defaultTests.push_back(TestParam(etest,testName,engineName,-1,def));
 				const std::vector<PropertyMap::Ptr> predefined = etest->getPredefinedParameters();
 				for (std::size_t i = 0; i < predefined.size(); i++) {
-					predefinedTests.push_back(TestParam(etest,testName,engineName,i,predefined[i]));
+					predefinedTests.push_back(TestParam(etest,testName,engineName,static_cast<int>(i),predefined[i]));
 				}
 			}
 		}

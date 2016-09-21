@@ -58,9 +58,13 @@ ContactTableWidget::~ContactTableWidget() {
 }
 
 void ContactTableWidget::setContacts(const std::vector<Contact>& contacts) {
+	const int nrOfContacts = static_cast<int>(_contacts.size());
+	if (_contacts.size() > static_cast<std::size_t>(nrOfContacts))
+		RW_THROW("There are too many contacts for the contact table to handle!");
+
 	_contacts = contacts;
 	clearSelection();
-	setRowCount(_contacts.size());
+	setRowCount(nrOfContacts);
 	setSortingEnabled(false);
 	int row = 0;
 	BOOST_FOREACH(const Contact& c, _contacts) {
@@ -108,7 +112,7 @@ void ContactTableWidget::showGraphics(rw::common::Ptr<GroupNode> root, rw::commo
 
 void ContactTableWidget::selectAll() {
 	if (_contacts.size() > 0)
-		setRangeSelected(QTableWidgetSelectionRange(0,0,_contacts.size()-1,2),true);
+		setRangeSelected(QTableWidgetSelectionRange(0,0,static_cast<int>(_contacts.size()-1),2),true);
 }
 
 void ContactTableWidget::clearContents() {

@@ -32,7 +32,7 @@ namespace rw{ namespace common { namespace serialization {
 
     template<class T>
     void writeImpl(const rw::math::Polynomial<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
-        const std::vector<double> data = rw::math::Math::toStdVector(tmp, tmp.order()+1);
+        const std::vector<double> data = rw::math::Math::toStdVector(tmp, static_cast<int>(tmp.order()+1));
         oar.write(data, id);
     }
 

@@ -254,7 +254,7 @@ void ATaskVisPlugin::selectTask(std::size_t i) {
 		Frame* ftFrame = _wc->findFrame(_currentTask->maleID);
 		if (ftFrame != NULL) {
 			_maleFTrender = ownedPtr(new RenderForceTorque());
-			_maleFTrender->setScales(0.01,1);
+			_maleFTrender->setScales(0.01f,1);
 			getRobWorkStudio()->getWorkCellScene()->addRender("MaleFTRender", _maleFTrender, ftFrame);
 		}
 	}
@@ -263,7 +263,7 @@ void ATaskVisPlugin::selectTask(std::size_t i) {
 		Frame* ftFrame = _wc->findFrame(_currentTask->femaleID);
 		if (ftFrame != NULL) {
 			_femaleFTrender = ownedPtr(new RenderForceTorque());
-			_femaleFTrender->setScales(0.01,1);
+			_femaleFTrender->setScales(0.01f,1);
 			getRobWorkStudio()->getWorkCellScene()->addRender("FemaleFTRender", _femaleFTrender, ftFrame);
 		}
 	}

@@ -172,7 +172,7 @@ void DynamicWorkCellBuilder::addCylinder(const DynamicWorkCell::Ptr dwc, const d
 	MovableFrame* const frame = new MovableFrame(name);
 	wc->addFrame(frame,parentFrame);
 
-	GeometryData::Ptr geoData = ownedPtr(new Cylinder(radius,height));
+	GeometryData::Ptr geoData = ownedPtr(new Cylinder(static_cast<float>(radius),static_cast<float>(height)));
 	if (trimesh)
 		geoData = geoData->getTriMesh(true);
 	Geometry::Ptr geo = ownedPtr(new Geometry(geoData, "Cylinder"));
@@ -202,7 +202,7 @@ void DynamicWorkCellBuilder::addCylinderFixed(const DynamicWorkCell::Ptr dwc, co
 	FixedFrame* const frame = new FixedFrame(name,Transform3D<>());
 	wc->addFrame(frame,parentFrame);
 
-	GeometryData::Ptr geoData = ownedPtr(new Cylinder(radius,height));
+	GeometryData::Ptr geoData = ownedPtr(new Cylinder(static_cast<float>(radius),static_cast<float>(height)));
 	if (trimesh)
 		geoData = geoData->getTriMesh(true);
 	Geometry::Ptr geo = ownedPtr(new Geometry(geoData, "Cylinder"));
@@ -228,7 +228,7 @@ void DynamicWorkCellBuilder::addTube(const DynamicWorkCell::Ptr dwc, const doubl
 	MovableFrame* const frame = new MovableFrame(name);
 	wc->addFrame(frame,wc->getWorldFrame());
 
-	GeometryData::Ptr geoData = ownedPtr(new Tube(radius,thickness,height));
+	GeometryData::Ptr geoData = ownedPtr(new Tube(static_cast<float>(radius),static_cast<float>(thickness),static_cast<float>(height)));
 	if (trimesh)
 		geoData = geoData->getTriMesh(true);
 	Geometry::Ptr geo = ownedPtr(new Geometry(geoData, "Tube"));

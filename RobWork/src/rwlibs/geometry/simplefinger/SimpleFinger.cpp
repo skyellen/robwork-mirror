@@ -54,8 +54,8 @@ SimpleFinger::SimpleFinger(const rw::math::Q& initQ) {
 
 TriMesh::Ptr SimpleFinger::createMesh(int resolution) const {
 	/* make base geometry */
-	CSGModel::Ptr base = CSGModelFactory::makeBox(_length, _width, _depth);
-	base->translate(_length/2, 0, _depth/2);
+	CSGModel::Ptr base = CSGModelFactory::makeBox(static_cast<float>(_length), static_cast<float>(_width), static_cast<float>(_depth));
+	base->translate(static_cast<float>(_length/2), 0, static_cast<float>(_depth/2));
 	
 	/* make chamfering */
 	Vector3D<> point(_length - _chflength, 0.0, _depth);
@@ -63,10 +63,10 @@ TriMesh::Ptr SimpleFinger::createMesh(int resolution) const {
 	base->subtract(CSGModelFactory::makePlane(point, -normal));
 	
 	/* make cutout */
-	CSGModel::Ptr cutout = CSGModelFactory::makeWedge(_cutangle*Deg2Rad);
-	cutout->rotate(-90*Deg2Rad, 90*Deg2Rad, 0);
-	cutout->rotate(_cuttilt*Deg2Rad, 0, 0);
-	cutout->translate(_cutpos, 0, _cutdepth);
+	CSGModel::Ptr cutout = CSGModelFactory::makeWedge(static_cast<float>(_cutangle*Deg2Rad));
+	cutout->rotate(static_cast<float>(-90*Deg2Rad), static_cast<float>(90*Deg2Rad), 0);
+	cutout->rotate(static_cast<float>(_cuttilt*Deg2Rad), 0, 0);
+	cutout->translate(static_cast<float>(_cutpos), 0, static_cast<float>(_cutdepth));
 	base->subtract(cutout);
 	
 	TriMesh::Ptr mesh = base->getTriMesh();
