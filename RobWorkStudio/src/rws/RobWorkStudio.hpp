@@ -100,14 +100,30 @@ namespace rws {
 		 * @param workcell [in] the workcell
 		 */		
 		void setWorkcell(rw::models::WorkCell::Ptr workcell);
+
+		//! @copydoc setWorkcell
 		void setWorkCell(rw::models::WorkCell::Ptr workcell){ setWorkcell(workcell); }
 
+		/**
+		 * @copydoc setWorkcell
+		 *
+		 * Use this if request comes from non-GUI thread.
+		 */
 		void postWorkCell(rw::models::WorkCell::Ptr workcell);
+
+		/**
+		 * @brief Request loading of a new workcell. Use this if request comes from non-GUI thread.
+		 * @param string [in] the filename.
+		 */
 		void postOpenWorkCell(const std::string& string);
+
 		/**
 		 * @brief Returns the workcell opened in RobWorkStudio
+		 * @return the workcell.
 		 */
 		rw::models::WorkCell::Ptr getWorkcell();
+
+		//! @copydoc getWorkcell
 		rw::models::WorkCell::Ptr getWorkCell(){ return getWorkcell(); }
 
 		/**
@@ -157,8 +173,15 @@ namespace rws {
 		 * @param path [in] The new TimedStatePath
 		 */		
 		void setTimedStatePath(const rw::trajectory::TimedStatePath& path);
+
+		/**
+		 * @copydoc setTimedStatePath
+		 *
+		 * Use this version if request comes from non-GUI thread.
+		 */
 		void postTimedStatePath(const rw::trajectory::TimedStatePath& path);
 		
+		//! @brief Request program termination.
 		void postExit();
 
 		/**
@@ -169,11 +192,40 @@ namespace rws {
 		 * @param state [in] The new state
 		 */		
 		void setState(const rw::kinematics::State& state);
+
+		/**
+		 * @copydoc setState
+		 *
+		 * This function can be called from other threads.
+		 */
 		void postState(const rw::kinematics::State& state);
+
+		/**
+		 * @copydoc updateAndRepaint
+		 *
+		 * This function can be called from other threads.
+		 */
 		void postUpdateAndRepaint();
+
+		/**
+		 * @copydoc saveViewGL
+		 *
+		 * This function can be called from other threads.
+		 */
 		void postSaveViewGL(const std::string& str);
+
+		/**
+		 * @brief Post a generic event.
+		 * @param id [in] identifier for the event.
+		 */
 		void postGenericEvent(const std::string& id);
-		void postGenericAnyEvent(const std::string& id, boost::any);
+
+		/**
+		 * @brief Post a generic event.
+		 * @param id [in] identifier for the event.
+		 * @param data [in] the data for the event.
+		 */
+		void postGenericAnyEvent(const std::string& id, boost::any data);
 
 		/**
 		 * @brief Returns the current state
@@ -185,11 +237,21 @@ namespace rws {
 
 		/**
 		 * @brief the log of RobWorkStudio.
+		 * @return a reference to the log.
 		 */		
 		rw::common::Log& log();
 
+		/**
+		 * @brief the log of RobWorkStudio.
+		 * @return a smart pointer to the log.
+		 */
 		rw::common::Log::Ptr logPtr();
 
+		/**
+		 * @brief Handle an event.
+		 * @param event [in] the Qt event.
+		 * @return true if handled, false otherwise.
+		 */
 		bool event(QEvent *event);
 
 		///////////////////////////////
@@ -280,6 +342,14 @@ namespace rws {
 		 */
 		GenericEvent& genericEvent() { return _genericEvent; }
 
+		/**
+		 * @brief Defines a generic event listener with data.
+		 *
+		 * Listeners to this event is called when someone fires a generic event with data.
+		 *
+		 * GenericAnyEventListener describes the signature of a callback method, used for generic
+		 * (user defined) event containing a string message and data.
+		 */
         typedef boost::function<void(const std::string&, boost::any)> GenericAnyEventListener;
 
         /**
@@ -451,6 +521,10 @@ namespace rws {
 			updateAndRepaint();
 		}
 		
+		/**
+		 * @brief Handles a Qt key event.
+		 * @param e [in] the event.
+		 */
 		void keyPressEvent(QKeyEvent *e);
 
 		/**
@@ -459,16 +533,33 @@ namespace rws {
 		 * Plugins can add their own tab to the about box.
 		 */						
 		AboutBox* getAboutBox() { return _aboutBox; };
-			
-		
+
+		/**
+		 * @brief Handles changed properties.
+		 * @param base [in] the changed property.
+		 */
 		void propertyChangedListener(rw::common::PropertyBase* base);
 
+		/**
+		 * @brief Add a plugin.
+		 * @param plugin [in/out] the plugin.
+		 * @param visible [in] true if the plugin should be visible.
+		 * @param area [in] the area for the widget.
+		 */
         void addPlugin(RobWorkStudioPlugin* plugin,
                        bool visible,
                        Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
 
+        /**
+         * @brief Restore the RobWorkStudio settings from a file.
+         * @param file [in] the filename.
+         */
         void loadSettingsSetupPlugins(const std::string& file);
 
+        /**
+         * @brief Get the current RobWorkStudio settings.
+         * @return a reference to the settings.
+         */
         rw::common::PropertyMap& getSettings(){ return *_settingsMap; }
 
 	private:
@@ -483,6 +574,10 @@ namespace rws {
 		PositionSelectedEvent _positionSelectedEvent;
 
 	public slots:
+		/**
+		 * @brief Slot for changing the common timed state path.
+		 * @param path [in] the path.
+		 */
 	    void setTStatePath(rw::trajectory::TimedStatePath path);
 
 	private slots:

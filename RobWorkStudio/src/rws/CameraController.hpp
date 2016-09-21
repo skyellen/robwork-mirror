@@ -51,7 +51,7 @@ namespace rws {
 		/**
 		 * @brief update the center of rotation and screen center
 		 * @param center [in] center of rotation in world coordinates
-		 * @param centerScreen [in] center of rotation in screen coordinates
+		 * @param screenCenter [in] center of rotation in screen coordinates
 		 */
 		virtual void setCenter(const rw::math::Vector3D<>& center,
 		                          const rw::math::Vector2D<>& screenCenter) = 0;

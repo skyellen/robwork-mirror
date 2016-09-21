@@ -56,7 +56,7 @@ namespace rws {
 
         /**
          * @brief get handle to the running RobWorkStudio instance.
-         * @notice do not directly change Qt visualization objects, this will
+         * @note do not directly change Qt visualization objects, this will
          * produce segfaults. Instead use Qt events and the post* handles on
          * RobWorkStudio interface.
          * @return handle to RobWorkStudio

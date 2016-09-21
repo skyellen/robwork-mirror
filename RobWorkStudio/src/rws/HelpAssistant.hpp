@@ -12,9 +12,16 @@ QT_END_NAMESPACE
 class HelpAssistant
 {
 public:
+	//! @brief Constructor.
     HelpAssistant();
+
+	//! @brief Destructor.
     virtual ~HelpAssistant();
 
+    /**
+     * @brief Show the help assistant.
+     * @param paths [in] a list of paths to search for the documentation files.
+     */
     void showDocumentation(const QStringList &paths);
     
 private:

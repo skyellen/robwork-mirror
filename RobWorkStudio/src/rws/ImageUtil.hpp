@@ -19,9 +19,18 @@ namespace rws {
  */
 class ImageUtil {
 public:
-
+	/**
+	 * @brief Convert Qt image to RobWork image format.
+	 * @param srcimg [in] the QImage.
+	 * @return a new equivalent RobWork image.
+	 */
     static rw::sensor::Image::Ptr toRwImage( const QImage& srcimg );
 
+    /**
+	 * @brief Convert Qt image to RobWork image format.
+     * @param srcimg [in] the QImage.
+     * @param dstimg [out] the RobWork image.
+     */
     static void toRwImage( const QImage& srcimg, rw::sensor::Image& dstimg);
 
 };

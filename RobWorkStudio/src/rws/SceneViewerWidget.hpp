@@ -15,9 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-
-#ifndef QTGUI_WORKCELLVIEWERWIDGET_HPP
-#define QTGUI_WORKCELLVIEWERWIDGET_HPP
+#ifndef RWS_SCENEVIEWERWIDGET_HPP_
+#define RWS_SCENEVIEWERWIDGET_HPP_
 
 #ifdef __WIN32
 #include <windows.h>
@@ -28,23 +27,30 @@
 #include <rw/graphics/SceneGraph.hpp>
 
 namespace rws {
-
-    /**
-     * @brief Class representing an OpenGL based QT Widget for 3D visualization of Drawables
-     */
+    //! @brief Class representing a Qt widget for 3D visualization of a scene.
     class SceneViewerWidget: public rw::graphics::SceneViewer {
     public:
-
+    	//! @brief Smart pointer type for a SceneViewerWidget.
         typedef rw::common::Ptr<SceneViewerWidget> Ptr;
 
+        /**
+         * @brief Get rendering info for the scene.
+         * @return the render info.
+         */
         virtual rw::graphics::SceneGraph::RenderInfo& getRenderInfo() = 0;
 
+        /**
+         * @brief Get the drawable used for pivoting.
+         * @return the drawable node.
+         */
         virtual rw::graphics::DrawableNode::Ptr getPivotDrawable() = 0;
 
+        /**
+         * @brief Get the Qt widget for visualization of the scene.
+         * @return the Qt widget.
+         */
         virtual QWidget* getWidget() = 0;
-
     };
-
 }
 
-#endif //#ifndef QTGUI_VIEWGL_HPP
+#endif //#ifndef RWS_SCENEVIEWERWIDGET_HPP_

@@ -54,15 +54,13 @@ namespace rwslibs {
  * To use the plugin, create a RobWorkStudio.ini file in the RobWorkStudio/bin/debug folder with the following content (for debug build):
  * \par RobWorkStudio.ini:
  *
+ * \code
  *  [Plugins]
- *
  *  ATaskVisPlugin\DockArea=2
- *
  *  ATaskVisPlugin\Filename=librws_atask
- *
  *  ATaskVisPlugin\Path=../../libs/debug
- *
  *  ATaskVisPlugin\Visible=true
+ * \endcode
  */
 class ATaskVisPlugin: public rws::RobWorkStudioPlugin, private Ui::ATaskVisPlugin
 {

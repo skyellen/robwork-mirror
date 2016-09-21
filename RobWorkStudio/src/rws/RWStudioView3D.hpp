@@ -61,7 +61,7 @@ class RWStudioView3D: public QWidget {
     Q_OBJECT
 
 public:
-
+	//! @brief Smart pointer type for RWStudioView3D.
     typedef rw::common::Ptr<RWStudioView3D> Ptr;
 
     /**
@@ -71,14 +71,12 @@ public:
      */
     RWStudioView3D(RobWorkStudio* rwStudio, QWidget* parent);
 
-    /**
-     * @brief destructor
-     */
+    //! @brief Destructor.
     virtual ~RWStudioView3D();
 
     /**
-     * @brief
-     * @param visible
+     * @brief Set the widget used for visualization of the scene.
+     * @param viewer [in] the widget for visualization of the scene.
      */
     void setSceneViewerWidget(SceneViewerWidget* viewer);
 
@@ -111,9 +109,9 @@ public:
 
     /**
      * @brief picks a drawable in the scene.
-     * @param x
-     * @param y
-     * @return
+     * @param x [in] x coordinate
+     * @param y [in] y coordinate
+     * @return the drawable that was selected, Null if no frames where selected.
      */
     rw::graphics::DrawableNode::Ptr pick(int x, int y);
 
@@ -134,16 +132,28 @@ public:
      */
     rw::common::PropertyMap& getPropertyMap(){ return _pmap->getValue(); }
 
-
-
+    /**
+     * @brief Get the scene.
+     * @return the scene.
+     */
     rw::graphics::WorkCellScene::Ptr getWorkCellScene(){ return _wcscene;};
 
+    /**
+     * @brief Get the scene viewer.
+     * @return the scene viewer.
+     */
     rw::graphics::SceneViewer::Ptr getSceneViewer(){ return _view; }
 
+    /**
+     * @brief Set the workcell.
+     * @param workcell [in] the workcell.
+     */
     void setWorkCell(rw::common::Ptr<rw::models::WorkCell> workcell);
 
+    //! @brief Clear the view.
     void clear();
 
+    //! @copydoc SceneOpenGLViewer::saveBufferToFile
     void saveBufferToFile(const QString& filename, const int fillR=0, const int fillG=0, const int fillB=0){
         _view->saveBufferToFile(filename.toStdString(), fillR, fillG, fillB);
     }

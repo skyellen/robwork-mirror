@@ -30,14 +30,14 @@ public:
 
     /**
      * @brief Adds about text for a plugin.
-     * @param name [in] Name of the plugin
+     * @param title [in] Name of the plugin
      * @param text [in] The text to be displayed
      */
     void addPluginAboutText(const QString& title, const QString& text);
 
     /**
      * @brief Adds widget with about box information for a plugin.
-     * @param name [in] Name of the plugin
+     * @param title [in] Name of the plugin
      * @param widget [in] The widget to display
      */
     void addPluginAboutWidget(const QString& title, QWidget* widget);

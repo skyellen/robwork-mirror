@@ -2,7 +2,7 @@ RobWork Plugins and Extensions   {#pageRobworkPlugins}
 ===============================
 
 This tutorial will cover the creation and usage of RobWork plugins. This should not be confused with
-the QT based GUI plugins which are discussed in another tutorial \ref page-rw-robworkstudio-plugins.
+the QT based GUI plugins which are discussed in another tutorial: \ref pageRobWorkStudioPlugins.
 
 # Introduction # 
 The primary usage of the RobWork plugins are to extend the core functionality of RobWork. This might be

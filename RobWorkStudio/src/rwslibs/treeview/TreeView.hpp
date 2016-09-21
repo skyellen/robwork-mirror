@@ -59,7 +59,7 @@ public:
     //! @copydoc RobWorkStudioPlugin::open
     virtual void open(rw::models::WorkCell* workcell);
 
-    //! @copydoc RobWorkStudioPlugin::open
+    //! @copydoc RobWorkStudioPlugin::close
     virtual void close();
 
 

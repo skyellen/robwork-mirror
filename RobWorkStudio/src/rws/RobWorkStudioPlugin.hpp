@@ -147,18 +147,34 @@ namespace rws {
 		void setState(const rw::kinematics::State& state);
 
 	public slots:
-		/**
-		 * @brief toggles the visibility of the plugin
-		 */
+		//! @brief toggles the visibility of the plugin
 		void showPlugin();
+
 	protected:
-
-		// utils for finding menu items in the menu
+		/**
+		 * @brief Find action in \b widget with name \b actionName .
+		 * @param widget [in] the widget.
+		 * @param actionName [in] the name to look for.
+		 * @return a tuple with the widget, the found action and the index of the action. The returned action is NULL and the index is -1 if not found.
+		 */
 	    boost::tuple<QWidget*, QAction*, int> getAction(QWidget* widget, const std::string& actionName);
-	    boost::tuple<QWidget*, QMenu*,int> getMenu(QWidget* widget, const std::string& menuName);
-	    boost::tuple<QMenu*, QAction*,int> getAction(QWidget* widget, const std::string& actionName, const std::string& actionName2);
 
-	private:
+	    /**
+	     * @brief Find menu in \b widget with name \b menuName .
+		 * @param widget [in] the widget.
+	     * @param menuName [in] the name to look for.
+		 * @return a tuple with the widget, the found menu and the index of the action. The returned menu is NULL and the index is -1 if not found.
+	     */
+	    boost::tuple<QWidget*, QMenu*,int> getMenu(QWidget* widget, const std::string& menuName);
+
+	    /**
+	     * @brief Find action, \b actionName2, in menu, \b actionName, in a \b widget.
+	     * @param widget [in] the widget.
+	     * @param actionName [in] the name of the menu to look in.
+	     * @param actionName2 [in] the name of the action to look for.
+		 * @return a tuple with the widget, the found action and the index of the action within the menu. The returned action is NULL and the index is -1 if not found.
+	     */
+	    boost::tuple<QMenu*, QAction*,int> getAction(QWidget* widget, const std::string& actionName, const std::string& actionName2);
 
 	protected:
 		///! @brief The show action

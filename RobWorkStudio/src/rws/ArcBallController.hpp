@@ -45,7 +45,7 @@ namespace rws{
 		rw::math::Vector3D<> mapToSphere(double x, double y) const;
 
 	public:
-
+		//! @brief Smart pointer type for ArcBallController
 		typedef rw::common::Ptr<ArcBallController> Ptr;
 
 		/**

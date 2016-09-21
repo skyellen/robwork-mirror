@@ -22,16 +22,25 @@
 
 namespace rw { namespace sensor { class Image; } }
 
+//! @brief GUI Element for showing RobWork images.
 class ImageView: public QLabel
 {
     Q_OBJECT
 public:
-
+	/**
+	 * @brief Constructor.
+	 * @param parent [in] the owner.
+	 */
     ImageView(QWidget* parent = NULL);
+
+    //! @brief Destructor.
     virtual ~ImageView();
 
+    /**
+     * @brief Display the image.
+     * @param image [in] the image to show.
+     */
     void display(const rw::sensor::Image& image);
-
 };
 
 #endif /* RWSTUDIO_COMPONENTS_IMAGEVIEW_HPP */

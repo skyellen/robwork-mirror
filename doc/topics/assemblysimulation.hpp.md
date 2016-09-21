@@ -57,12 +57,10 @@ Typically it will be the result of simulations that will be visualized this way.
 On the \ref page_rw_gettingstarted page it is described how a plugin can be loaded in RobWorkStudio.
 To load the ATaskVisPlugin, the RobWorkStudio.ini file should contain something similar to:
 
- [Plugins]
- 
- ATaskVisPlugin\DockArea=2
- 
- ATaskVisPlugin\Filename=librws_atask
- 
- ATaskVisPlugin\Path=../../libs/debug
- 
- ATaskVisPlugin\Visible=true
+\verbatim
+[Plugins]
+ATaskVisPlugin\DockArea=2
+ATaskVisPlugin\Filename=librws_atask
+ATaskVisPlugin\Path=../../libs/debug
+ATaskVisPlugin\Visible=true
+\endverbatim

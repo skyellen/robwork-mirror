@@ -59,7 +59,7 @@ namespace rws {
         void close();
 
         //! @copydoc RobWorkStudioPlugin::setupMenu
-        void setupMenu(QMenu* pluginmenu);
+        void setupMenu(QMenu* menu);
     private:
         // This listens for changes to the state of RobWorkStudio.
         void stateChangedListener(const rw::kinematics::State& state);
