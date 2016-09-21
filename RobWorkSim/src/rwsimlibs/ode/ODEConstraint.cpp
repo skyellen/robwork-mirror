@@ -507,7 +507,7 @@ void ODEConstraint::createSpring() {
 	const Constraint::ConstraintType type = _rwConstraint->getType();
 	_spring = new Spring();
 	_spring->linComp = static_cast<unsigned int>(_rwConstraint->getDOFLinear());
-	_spring->angComp = nrOfAngMotors_rwConstraint->getDOFAngular());
+	_spring->angComp = static_cast<unsigned int>(_rwConstraint->getDOFAngular());
 	// Construct map of compliant directions based on constraint type.
 	for (std::size_t i = 0; i < 6; i++)
 		_spring->comp[i] = false;
