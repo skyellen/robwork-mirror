@@ -62,15 +62,15 @@ namespace rwlibs {
 
 
 			virtual void computeJacobian(Eigen::MatrixXd& stackedJacobians) {
-				const int measurementCount = _measurements.size();
-				const int rowCount = 6 * measurementCount;
-				const int columnCount = _jacobian->getColumnCount();
-				RW_ASSERT(columnCount > 0);
+				const std::size_t measurementCount = _measurements.size();
+				const Eigen::MatrixXd::Index rowCount = static_cast<Eigen::MatrixXd::Index>(6 * measurementCount);
+				const Eigen::MatrixXd::Index columnCount = static_cast<Eigen::MatrixXd::Index>(_jacobian->getColumnCount());
+				RW_ASSERT(_jacobian->getColumnCount() > 0);
 				RW_ASSERT(rowCount >= columnCount);
 
 				stackedJacobians.resize(rowCount, columnCount);
 				rw::kinematics::State workCellState = _workCellState;
-				for (int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
+				for (std::size_t measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
 					const CalibrationMeasurement::Ptr measurement = _measurements[measurementIndex];
 
 					Device::Ptr device = getDevice(measurement);
@@ -81,7 +81,7 @@ namespace rwlibs {
 					device->setQ(q, workCellState);
 
 					// Compute Jacobian.
-					const int rowIndex = 6 * measurementIndex;
+					const Eigen::MatrixXd::Index rowIndex = static_cast<Eigen::MatrixXd::Index>(6 * measurementIndex);
 					stackedJacobians.block(rowIndex, 0, 6, columnCount) = _jacobian->computeJacobian(sensorFrame, markerFrame, workCellState);
 					//if (measurementIndex == 0) {
 					//	std::cout<<"Jacobian[0] = "<<_jacobian->computeJacobian(sensorFrame, markerFrame, workCellState)<<std::endl;
@@ -97,12 +97,12 @@ namespace rwlibs {
 			}
 
 			virtual void computeResiduals(Eigen::VectorXd& stackedResiduals) {
-				const int measurementCount = _measurements.size();
+				const std::size_t measurementCount = _measurements.size();
 
 				// const int rowCount = 6 * measurementCount;  // not used
-				stackedResiduals.resize(6 * measurementCount);
+				stackedResiduals.resize(static_cast<Eigen::MatrixXd::Index>(6 * measurementCount));
 				rw::kinematics::State workCellState = _workCellState;
-				for (int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
+				for (std::size_t measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
 					const CalibrationMeasurement::Ptr measurement = _measurements[measurementIndex];
 
 					Device::Ptr device = getDevice(measurement);
@@ -114,7 +114,7 @@ namespace rwlibs {
 					device->setQ(q, workCellState);
 
 					// Compute residuals.
-					const int rowIndex = 6 * measurementIndex;
+					const Eigen::MatrixXd::Index rowIndex = static_cast<Eigen::MatrixXd::Index>(6 * measurementIndex);
 					const rw::math::Transform3D<> tfmMeasurement = measurement->getTransform();
 					//std::cout<<"Measurement = "<<tfmMeasurement<<std::endl;
 					//std::cout<<"Error Reference Frame = "<<_referenceFrame->getName()<<std::endl;
@@ -209,7 +209,7 @@ namespace rwlibs {
 		}
 
 		int WorkCellCalibrator::getMeasurementCount() const {
-			return _measurements.size();
+			return static_cast<int>(_measurements.size());
 		}
 
 		void WorkCellCalibrator::addMeasurement(CalibrationMeasurement::Ptr measurement) {

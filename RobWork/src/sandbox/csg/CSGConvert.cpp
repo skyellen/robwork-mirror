@@ -24,24 +24,24 @@ csgjs_model* CSGConvert::TriMesh2csgjs_model(const geometry::TriMesh& mesh)
 		
 		
 		// get triangle normal
-		Vector3D<double> tnormal = t.calcFaceNormal();
+		const Vector3D<float> tnormal = cast<float>(t.calcFaceNormal());
 		
 		// create vertices
-		Vector3D<double> tv;
+		Vector3D<float> tv;
 		csgjs_vertex v;
 		v.normal = csgjs_vector(tnormal[0], tnormal[1], tnormal[2]);
 		
-		tv = t[0];
+		tv = cast<float>(t[0]);
 		v.pos = csgjs_vector(tv[0], tv[1], tv[2]);
 		model->vertices.push_back(v);
 		model->indices.push_back(3*i+0);
 		
-		tv = t[1];
+		tv = cast<float>(t[1]);
 		v.pos = csgjs_vector(tv[0], tv[1], tv[2]);
 		model->vertices.push_back(v);
 		model->indices.push_back(3*i+1);
 		
-		tv = t[2];
+		tv = cast<float>(t[2]);
 		v.pos = csgjs_vector(tv[0], tv[1], tv[2]);
 		model->vertices.push_back(v);
 		model->indices.push_back(3*i+2);

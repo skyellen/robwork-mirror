@@ -139,7 +139,7 @@ public:
 			errCoef = fabs(_coef[i]) + fabs(x)*errCoef;
 		}
  		errCoef *= _EPS;
- 		err = errCoef+errX+errComb;
+ 		err = static_cast<T>(errCoef+errX+errComb);
 		return res;
 	}
 
@@ -200,7 +200,7 @@ public:
 			err[i] *= k;
 		}
 		for (std::size_t i = 0; i <= n; i++) {
-			err[i] *= _EPS;
+			err[i] *= static_cast<T>(_EPS);
 		}
 		return res;
 	}

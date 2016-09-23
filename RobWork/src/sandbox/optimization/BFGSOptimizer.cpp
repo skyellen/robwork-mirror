@@ -31,7 +31,7 @@ void BFGSOptimizer::setLineSearchStrategy(LineSearch::Ptr strategy) {
 void BFGSOptimizer::newOptimization(const VectorType& initialGuess,
 		ResultType& initialValue, double& initialError) {
 	// initialize Hessian with identity matrix
-	unsigned n = initialGuess.size();
+	const Eigen::MatrixXd::Index n = static_cast<Eigen::MatrixXd::Index>(initialGuess.size());
 
 	_B = matrix::Identity(n, n);
 }
@@ -87,7 +87,7 @@ void BFGSOptimizer::step(VectorType& currentGuess, ResultType& currentValue,
 void BFGSOptimizer::updateHessian(const vector& sk, const vector& yk) {
 	RW_ASSERT(sk.size() == yk.size());
 
-	unsigned n = sk.size(); // number of dimensions
+	const vector::Index n = sk.size(); // number of dimensions
 
 	// calculate left temporary
 	matrix leftTmp = matrix::Identity(n, n)

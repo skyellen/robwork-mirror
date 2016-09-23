@@ -257,7 +257,7 @@ class RANSACModel
 				thresholds.push_back(total_inliers);
 			}
 
-			size_t pick = rw::math::Math::ran(0.0, 1.0) * total_inliers;
+			size_t pick = static_cast<std::size_t>(rw::math::Math::ran(0.0, 1.0) * total_inliers);
 
 			size_t idx = 0; // model index
 			for (size_t i = 0; i < models.size(); ++i) {

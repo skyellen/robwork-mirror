@@ -34,12 +34,12 @@ void PowellOptimizer::newOptimization(const VectorType& initialGuess,
 	 * Build directions set from unit vectors.
 	 */
 
-	unsigned dims = initialGuess.size();
+	const std::size_t dims = initialGuess.size();
 
 	DirectionSet& directionSet = getDirectionSet();
 	directionSet.clear();
 
-	for (unsigned i = 0; i < dims; ++i) {
+	for (std::size_t i = 0; i < dims; ++i) {
 		VectorType baseDir(dims, 0.0);
 		baseDir(i) = 1.0;
 

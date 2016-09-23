@@ -408,7 +408,7 @@ namespace geometry {
         	const S v1 = *((S*)&(this->_triIdxArr[ idx ]));
         	const S v2 = *((S*)&(this->_triIdxArr[ idx+this->_idxsize ]));
         	const S v3 = *((S*)&(this->_triIdxArr[ idx+2*this->_idxsize ]));
-        	return IndexedTriangle<uint32_t>(v1,v2,v3);
+        	return IndexedTriangle<uint32_t>(static_cast<uint32_t>(v1),static_cast<uint32_t>(v2),static_cast<uint32_t>(v3));
         }
 
         //! @copydoc TriMesh::getTriangle

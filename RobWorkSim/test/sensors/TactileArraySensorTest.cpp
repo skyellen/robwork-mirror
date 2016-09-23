@@ -46,8 +46,7 @@ BOOST_AUTO_TEST_CASE( TactileArraySensorTest )
 {
 	// load a scene with a FT sensor mounted in between a kinematic body and a dynamic
 	// place the kinematic body in different poses and pla
-    DynamicWorkCellLoader loader;
-    DynamicWorkCell::Ptr dwc = loader.load( testFilePath() + "/scene/sensors/single_object_tactile_array.dwc.xml" );
+    DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::loader.load( testFilePath() + "/scene/sensors/single_object_tactile_array.dwc.xml" );
 
     ODESimulator::Ptr odesim = ownedPtr( new ODESimulator( dwc ) );
     State state = dwc->getWorkcell()->getStateStructure()->getDefaultState();
@@ -61,7 +60,6 @@ BOOST_AUTO_TEST_CASE( TactileArraySensorTest )
     // test that the control interface works
     odesim->initPhysics(state);
     BOOST_CHECK_EQUAL(odesim->getTime(), 0.0 );
-    rw::loaders::PathLoader ploader;
     for(int i=0; i<1000; i++){
     	std::cout << i << "\t";
     	odesim->step(0.01, state);
@@ -76,7 +74,7 @@ BOOST_AUTO_TEST_CASE( TactileArraySensorTest )
     	tpath.push_back( TimedState(odesim->getTime(),state));
 
     }
-    ploader.storeTimedStatePath(*dwc->getWorkcell(), tpath,"tpath.rwplay");
+    rw::loaders::PathLoader::storeTimedStatePath(*dwc->getWorkcell(), tpath,"tpath.rwplay");
 
 
 

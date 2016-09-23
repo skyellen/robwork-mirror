@@ -35,8 +35,8 @@ void DownhillOptimizer::newOptimization(const VectorType& initialGuess,
 	_vertices.push_back(std::make_pair(initialGuess, 0.0));
 
 	// place remaining vertices
-	unsigned n = initialGuess.size();
-	for (unsigned i = 0; i < n; ++i) {
+	const std::size_t n = initialGuess.size();
+	for (std::size_t i = 0; i < n; ++i) {
 		Vertex v = std::make_pair(initialGuess, 0.0);
 		v.first[i] += _simplexSize;
 		_vertices.push_back(v);
@@ -132,7 +132,7 @@ void DownhillOptimizer::step(VectorType& currentGuess, ResultType& currentValue,
 }
 
 VectorType DownhillOptimizer::getCentroid(const Vertex& ve) const {
-	unsigned n = _vertices.size();
+	const std::size_t n = _vertices.size();
 
 	VectorType centroid(n, 0.0);
 

@@ -114,7 +114,7 @@ namespace rw { namespace proximity {
             double tolerance,
             class ProximityStrategyData& data)
         {
-            return isWithinDistance(a,wTa,b,wTb,tolerance,data);
+            return doIsWithinDistance(a,wTa,b,wTb,tolerance,data);
         }
 
     protected:

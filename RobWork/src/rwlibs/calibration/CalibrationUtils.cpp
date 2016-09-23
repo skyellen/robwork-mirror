@@ -23,13 +23,13 @@ void CalibrationUtils::printMeasurementSummary(const std::vector<CalibrationMeas
 
 
 void CalibrationUtils::printMeasurementSummary(const std::vector<CalibrationMeasurement::Ptr>& measurements, WorkCell::Ptr workcell, const State& workcellState, LogWriter& output) {
-	const unsigned int measurementCount = measurements.size();
+	const std::size_t measurementCount = measurements.size();
 	rw::kinematics::State state = workcellState;
 	std::map<std::string, Statistics<double> > distances;
 	std::map<std::string, Statistics<double> > angles;
 
 	//Run through measurements and compute the errors
-	for (unsigned int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
+	for (std::size_t measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
 		CalibrationMeasurement::Ptr measurement = measurements[measurementIndex];
 		SerialDevice::Ptr serialDevice = workcell->findDevice<SerialDevice>(measurement->getDeviceName());
 		Frame* sensorFrame = workcell->findFrame(measurement->getSensorFrameName());

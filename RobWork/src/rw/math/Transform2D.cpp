@@ -39,7 +39,7 @@ namespace rw{ namespace common { namespace serialization {
 
     template<class T>
     void readImpl(Transform2D<T>& tmp, InputArchive& iar, const std::string& id){
-        std::vector<double> data;
+        std::vector<T> data;
         iar.read(data, id);
         Math::fromStdVectorToMat(data, tmp, 2, 3 );
     }

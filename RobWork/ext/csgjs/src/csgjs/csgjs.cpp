@@ -123,7 +123,7 @@ inline static csgjs_vector operator / (const csgjs_vector & a, double b) { retur
 inline static double dot(const csgjs_vector & a, const csgjs_vector & b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
 inline static csgjs_vector lerp(const csgjs_vector & a, const csgjs_vector & b, double v) { return a + (b - a) * v; }
 inline static csgjs_vector negate(const csgjs_vector & a) { return a * -1.0f; }
-inline static double length(const csgjs_vector & a) { return sqrtf(dot(a, a)); }
+inline static double length(const csgjs_vector & a) { return sqrt(dot(a, a)); }
 inline static csgjs_vector unit(const csgjs_vector & a) { return a / length(a); }
 inline static csgjs_vector cross(const csgjs_vector & a, const csgjs_vector & b) { return csgjs_vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }
 
@@ -226,7 +226,7 @@ void csgjs_plane::splitPolygon(const csgjs_polygon & polygon, std::vector<csgjs_
 			std::vector<csgjs_vertex> f, b;
 			for (size_t i = 0; i < polygon.vertices.size(); i++) 
 			{
-				int j = (i + 1) % polygon.vertices.size();
+				const std::size_t j = (i + 1) % polygon.vertices.size();
 				int ti = types[i], tj = types[j];
 				csgjs_vertex vi = polygon.vertices[i], vj = polygon.vertices[j];
 				if (ti != BACK) f.push_back(vi);

@@ -226,7 +226,7 @@ void csgjs_plane::splitPolygon(const csgjs_polygon & polygon, std::vector<csgjs_
 			std::vector<csgjs_vertex> f, b;
 			for (size_t i = 0; i < polygon.vertices.size(); i++) 
 			{
-				int j = (i + 1) % polygon.vertices.size();
+				const std::size_t j = (i + 1) % polygon.vertices.size();
 				int ti = types[i], tj = types[j];
 				csgjs_vertex vi = polygon.vertices[i], vj = polygon.vertices[j];
 				if (ti != BACK) f.push_back(vi);

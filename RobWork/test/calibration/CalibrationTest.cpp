@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	//artificialCalibration->getFixedFrameCalibrations()->getCalibration(1)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(3.0 / 1000.0, -11.0 / 1000.0, -3.0 / 1000.0), rw::math::RPY<>(1.3 * rw::math::Deg2Rad, -1.2 * rw::math::Deg2Rad, 0.7 * rw::math::Deg2Rad)));
 	artificialCalibration->getFixedFrameCalibrations()->getCalibration(2)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(1.0 / 1000.0, 2.0 / 1000.0, -3.0 / 1000.0), rw::math::RPY<>(-0.3 * rw::math::Deg2Rad, 0.2 * rw::math::Deg2Rad, 0.1 * rw::math::Deg2Rad)));
 	CompositeCalibration<ParallelAxisDHCalibration>::Ptr artificialCompositeLinkCalibration = artificialCalibration->getCompositeLinkCalibration();
-	for (size_t calibrationIndex = 0; calibrationIndex < static_cast<size_t>(artificialCompositeLinkCalibration->getCalibrationCount()); calibrationIndex++) {
+	for (int calibrationIndex = 0; calibrationIndex < artificialCompositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
 		ParallelAxisDHCalibration::Ptr artificialLinkCalibration = artificialCompositeLinkCalibration->getCalibration(calibrationIndex);
 		CalibrationParameterSet parameterSet = artificialLinkCalibration->getParameterSet();
 		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_A).isEnabled())
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 		artificialLinkCalibration->setParameterSet(parameterSet);
 	}
 	CompositeCalibration<JointEncoderCalibration>::Ptr artificialCompositeJointCalibration = artificialCalibration->getCompositeJointEncoderCalibration();
-	for (size_t calibrationIndex = 0; calibrationIndex < static_cast<size_t>(artificialCompositeJointCalibration->getCalibrationCount()); calibrationIndex++) {
+	for (int calibrationIndex = 0; calibrationIndex < artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
 		JointEncoderCalibration::Ptr artificialJointCalibration = artificialCompositeJointCalibration->getCalibration(calibrationIndex);
 		CalibrationParameterSet parameterSet = artificialJointCalibration->getParameterSet();
 		if (parameterSet(JointEncoderCalibration::PARAMETER_TAU).isEnabled())
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	//BOOST_CHECK_EQUAL(iterationCount, 6);
 
 	//// Verify that the calibration match the artificial calibration.
-	for (size_t i = 0; i < static_cast<size_t>(calibration->getFixedFrameCalibrations()->getCalibrationCount()); i++) {
+	for (int i = 0; i < calibration->getFixedFrameCalibrations()->getCalibrationCount(); i++) {
 		FixedFrameCalibration::Ptr ffCalibration = calibration->getFixedFrameCalibrations()->getCalibration(i);
 		if (ffCalibration->isEnabled()) {
 			FixedFrameCalibration::Ptr artificialFFCalibration = artificialCalibration->getFixedFrameCalibrations()->getCalibration(i);
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 
 	CompositeCalibration<ParallelAxisDHCalibration>::Ptr compositeLinkCalibration = calibration->getCompositeLinkCalibration();
 	if (compositeLinkCalibration->isEnabled()) {
-		for (size_t calibrationIndex = 0; calibrationIndex < static_cast<size_t>(artificialCompositeLinkCalibration->getCalibrationCount()); calibrationIndex++) {
+		for (int calibrationIndex = 0; calibrationIndex < artificialCompositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
 			ParallelAxisDHCalibration::Ptr calibration = compositeLinkCalibration->getCalibration(calibrationIndex);
 			if (calibration->isEnabled()) {
 				const CalibrationParameterSet parameterSet = calibration->getParameterSet();
@@ -180,7 +180,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	}
 	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointEncoderCalibration();
 	if (compositeJointCalibration->isEnabled()) {
-		for (size_t calibrationIndex = 0; calibrationIndex < static_cast<size_t>(artificialCompositeJointCalibration->getCalibrationCount()); calibrationIndex++) {
+		for (int calibrationIndex = 0; calibrationIndex < artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
 			JointEncoderCalibration::Ptr calibration = compositeJointCalibration->getCalibration(calibrationIndex);
 			if (calibration->isEnabled()) {
 				const CalibrationParameterSet parameterSet = calibration->getParameterSet();
@@ -319,7 +319,7 @@ BOOST_AUTO_TEST_CASE( CalibrationMeasureSaveLoad ) {
 
 
 std::vector<CalibrationMeasurement::Ptr> generateMeasurements(rw::models::SerialDevice::Ptr serialDevice, const std::vector<Frame*>& sensorFrames, rw::kinematics::Frame::Ptr markerFrame, rw::kinematics::State state, unsigned int measurementCount, bool addNoise) {
-	MultivariateNormalDistribution<double, 6> mvnd(time(0));
+	MultivariateNormalDistribution<double, 6> mvnd(static_cast<unsigned int>(time(0)));
 
 	std::vector<CalibrationMeasurement::Ptr> measurements;
 

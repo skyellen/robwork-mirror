@@ -256,11 +256,11 @@ int main(int argumentCount, char** argumentArray) {
 
 	std::set<int> indices;
 	while (indices.size() < validationMeasurementCount) {
-		indices.insert(Math::ranI(0, measurementCount));
+		indices.insert(Math::ranI(0, static_cast<int>(measurementCount)));
 	}
 
 	for (size_t i = 0; i < measurementCount; i++) {
-		if (indices.find(i) == indices.end()) {
+		if (indices.find(static_cast<int>(i)) == indices.end()) {
 			calibrationMeasurements.push_back(measurements[i]);
 		} else {
 			validationMeasurements.push_back(measurements[i]);
@@ -458,7 +458,7 @@ std::ostream& operator<<(std::ostream& out, const WorkCellCalibration::Ptr calib
 	bool hasPrevious = false;
 
 	CompositeCalibration<FixedFrameCalibration>::Ptr ffCalibrations = calibration->getFixedFrameCalibrations();
-	for (size_t i = 0; i < static_cast<size_t>(ffCalibrations->getCalibrationCount()); i++) {
+	for (int i = 0; i < ffCalibrations->getCalibrationCount(); i++) {
 		if (ffCalibrations->getCalibration(i)->isEnabled()) {
 			if (hasPrevious)
 				out<<std::endl;
@@ -483,7 +483,7 @@ std::ostream& operator<<(std::ostream& out, const WorkCellCalibration::Ptr calib
 
 	CompositeCalibration<ParallelAxisDHCalibration>::Ptr compositeLinkCalibration = calibration->getCompositeLinkCalibration();
 	if (compositeLinkCalibration->isEnabled()) {
-		for (size_t calibrationIndex = 0; calibrationIndex < static_cast<size_t>(compositeLinkCalibration->getCalibrationCount()); calibrationIndex++) {
+		for (int calibrationIndex = 0; calibrationIndex < compositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
 			ParallelAxisDHCalibration::Ptr linkCalibration = compositeLinkCalibration->getCalibration(calibrationIndex);
 			if (linkCalibration->isEnabled()) {
 				if (hasPrevious)
@@ -496,7 +496,7 @@ std::ostream& operator<<(std::ostream& out, const WorkCellCalibration::Ptr calib
 
 	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointEncoderCalibration();
 	if (compositeJointCalibration->isEnabled()) {
-		for (size_t calibrationIndex = 0; calibrationIndex < static_cast<size_t>(compositeJointCalibration->getCalibrationCount()); calibrationIndex++) {
+		for (int calibrationIndex = 0; calibrationIndex < compositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
 			JointEncoderCalibration::Ptr jointCalibration = compositeJointCalibration->getCalibration(calibrationIndex);
 			if (jointCalibration->isEnabled()) {
 				if (hasPrevious)

@@ -76,7 +76,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 	const double PlaneModelThreshold = 0.05;
 	
 	_data = samples;
-	int n = _data.size();
+	const std::size_t n = _data.size();
 
 	/* re-fit point model */
 	/* 1. fit x, y, z planes and pick the best one */
@@ -133,7 +133,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		xPoints.clear();
 
 		for (size_t i = 0; i < bestPlane->getInlierIndices().size(); ++i) {
-			int idx = bestPlane->getInlierIndices()[i];
+			const std::size_t idx = bestPlane->getInlierIndices()[i];
 			xPoints.push_back(_data[idx].getRow(0));
 		}
 		
@@ -146,7 +146,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		yPoints.clear();
 
 		for (size_t i = 0; i < bestPlane->getInlierIndices().size(); ++i) {
-			int idx = bestPlane->getInlierIndices()[i];
+			const std::size_t idx = bestPlane->getInlierIndices()[i];
 			yPoints.push_back(_data[idx].getRow(1));
 		}
 		
@@ -159,7 +159,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		zPoints.clear();
 
 		for (size_t i = 0; i < bestPlane->getInlierIndices().size(); ++i) {
-			int idx = bestPlane->getInlierIndices()[i];
+			const std::size_t idx = bestPlane->getInlierIndices()[i];
 			zPoints.push_back(_data[idx].getRow(2));
 		}
 		
@@ -205,7 +205,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		error += sample_error * sample_error;
 	}
 
-	error /= (n > 0 ? n : 1);
+	error /= std::dynamic_cast<double>(n > 0 ? n : 1);
 	setQuality(error);
 	
 	//cout << *this << "  | error= " << error << endl;

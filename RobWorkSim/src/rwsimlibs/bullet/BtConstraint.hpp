@@ -31,7 +31,7 @@
 class btDynamicsWorld;
 class btTypedConstraint;
 class btRigidBody;
-class btJointFeedback;
+struct btJointFeedback;
 
 namespace rw { namespace kinematics { class State; } }
 namespace rwsim { namespace dynamics { class Constraint; } }

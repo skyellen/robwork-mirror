@@ -823,9 +823,9 @@ CollModel::MemUsage(FILE* f) const
   
   if (f) {
     fprintf(f, "Total for model %p: %d bytes\n", this, total_mem);
-    fprintf(f, "OBB_Nodes: %u alloced (%lu bytes each) \t==> %u bytes\n", 
+    fprintf(f, "OBB_Nodes: %u alloced (%zu bytes each) \t==> %u bytes\n",
             num_obbs, sizeof(OBB_Node), mem_obb_nodes);
-    fprintf(f, "TriNodes:  %u alloced (%lu bytes each) \t==> %u bytes\n", 
+    fprintf(f, "TriNodes:  %u alloced (%zu bytes each) \t==> %u bytes\n",
             num_tri_nodes, sizeof(TriNode), mem_tri_nodes);
     
     if (tri_mesh != 0) {

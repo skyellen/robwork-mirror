@@ -16,7 +16,7 @@ int BFGS::optimizer(
 		)
 {
 	int STATUS = SUCCESS;
-	unsigned int dim = startguess.size();
+	const vector::size_type dim = startguess.size();
 
 	//Allocate array for inverse hessian approximation
 	matrix Hk(dim,dim);
@@ -25,9 +25,9 @@ int BFGS::optimizer(
 	matrix tempRight(dim,dim);
 
 	//Initialize H with identity matrix
-	for(unsigned int i=0;i<dim;i++)
+	for(vector::size_type i=0;i<dim;i++)
 	{
-		for(unsigned int j=0;j<dim;j++)
+		for(vector::size_type j=0;j<dim;j++)
 		{
 			Hk(i,j) = 0;
 		}
@@ -36,22 +36,22 @@ int BFGS::optimizer(
 
 	//Allocate memory for gradient
 	vector gfk(dim);
-	for(unsigned int i=0;i<dim;i++)
+	for(vector::size_type i=0;i<dim;i++)
 		gfk(i) = 0;
 
 	//Allocate memory for next gradient
 	vector gfk1(dim);
-	for(unsigned int i=0;i<dim;i++)
+	for(vector::size_type i=0;i<dim;i++)
 		gfk1(i) = 0;
 
 	//Allocate memory for gradient differences
 	vector yk(dim);
-	for(unsigned int i=0;i<dim;i++)
+	for(vector::size_type i=0;i<dim;i++)
 		yk(i) = 0;
 
 	//Allocate memory for search direction
 	vector pk(dim);
-	for(unsigned int i=0;i<dim;i++)
+	for(vector::size_type i=0;i<dim;i++)
 		pk(i) = 0;
 
 	//Allocate memory for step
@@ -60,7 +60,7 @@ int BFGS::optimizer(
 
 	//Allocate memory for next step
 	vector xk1(dim);
-	for(unsigned int i=0;i<dim;i++)
+	for(vector::size_type i=0;i<dim;i++)
 		xk1(i) = 0;
 
 	//Allocate memory for step differences
@@ -120,8 +120,8 @@ int BFGS::optimizer(
 		colDotRow(yk, skrhok, tempRight);
 
 		//Calculate I - tempLeft and I - tempRight
-		for(unsigned int i=0;i<dim;i++)
-			for(unsigned int j=0;j<dim;j++)
+		for(vector::size_type i=0;i<dim;i++)
+			for(vector::size_type j=0;j<dim;j++)
 			{
 				if(i==j)
 				{
@@ -166,10 +166,10 @@ void BFGS::colDotRow(
 		matrix &result)
 {
 	//Calculate colvec.rowvec
-	unsigned int dimRow = result.size1();
-	unsigned int dimCol = result.size1();
-	for(unsigned int i=0;i<dimRow;i++)
-		for(unsigned int j=0;j<dimCol;j++)
+	const vector::size_type dimRow = result.size1();
+	const vector::size_type dimCol = result.size1();
+	for(vector::size_type i=0;i<dimRow;i++)
+		for(vector::size_type j=0;j<dimCol;j++)
 			result(i,j) = colvec(i) * rowvec(j);
 
 

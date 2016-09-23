@@ -233,7 +233,7 @@ void ThreadTask::runWrap(ThreadPool* pool) {
 	}
 	try {
 		run();
-	} catch(boost::thread_interrupted const& e) {
+	} catch(boost::thread_interrupted const&) {
 		RW_THROW("Please catch boost::thread_interrupted exception thrown in ThreadTask run funtion!");
 	}
 	// State is set to CHILDREN causing children to try to move to IDLE when they finish (if keep alive is disabled).
@@ -303,7 +303,7 @@ void ThreadTask::finish() {
 	// Finish is guaranteed to only be invoked once - state is POSTWORK
 	try {
 		done();
-	} catch(boost::thread_interrupted const& e) {
+	} catch(boost::thread_interrupted const&) {
 		RW_THROW("Please catch boost::thread_interrupted exception thrown in ThreadTask done funtion!");
 	}
 	ParentCallback parentCallback;

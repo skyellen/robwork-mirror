@@ -163,9 +163,9 @@ CSGModel& CSGModel::transform(const math::Transform3D<>& T)
 		
 		v = T * v;
 		
-		_model.vertices[i].pos.x = v[0];
-		_model.vertices[i].pos.y = v[1];
-		_model.vertices[i].pos.z = v[2];
+		_model.vertices[i].pos.x = static_cast<float>(v[0]);
+		_model.vertices[i].pos.y = static_cast<float>(v[1]);
+		_model.vertices[i].pos.z = static_cast<float>(v[2]);
 	}
 	
 	_needsConversion = true;

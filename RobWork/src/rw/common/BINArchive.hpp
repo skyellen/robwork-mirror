@@ -145,7 +145,7 @@ namespace common {
 			typedef typename Eigen::DenseCoeffsBase<Derived,Eigen::ReadOnlyAccessors>::Index Index;
 			boost::uint32_t m = static_cast<boost::uint32_t>(val.rows());
 			boost::uint32_t n = static_cast<boost::uint32_t>(val.cols());
-		    if (val.rows() != static_cast<std::size_t>(m) || val.cols() != static_cast<std::size_t>(n))
+		    if (val.rows() != static_cast<Index>(m) || val.cols() != static_cast<Index>(n))
 		    	RW_THROW("BINArchive could not write matrix, as it is too big!");
 			_ofs->write((char*)&m, sizeof(m) );
 			_ofs->write((char*)&n, sizeof(n) );

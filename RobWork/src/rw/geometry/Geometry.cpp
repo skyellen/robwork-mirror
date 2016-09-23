@@ -109,7 +109,7 @@ Geometry::Ptr Geometry::makeGrid(int dim_x, int dim_y, double size_x, double siz
 
     for(int dy=0;dy<=dim_y;dy++){
     	for(int dx=0;dx<=dim_x;dx++){
-    		imesh->getVertices().push_back( cast<float>(xdir_n* (dx-dim_x/2.0*size_x) + ydir_n*(dy-dim_y/2.0*size_y)) );
+    		imesh->getVertices().push_back( xdir_n* static_cast<float>(dx-dim_x/2.0*size_x) + ydir_n*static_cast<float>(dy-dim_y/2.0*size_y) );
     	}
     }
 

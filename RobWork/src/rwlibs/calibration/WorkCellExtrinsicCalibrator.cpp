@@ -133,8 +133,8 @@ void WorkCellExtrinsicCalibrator::calibrate(WorkCellCalibration::Ptr workcellCal
 			eaas += eaa.axis() * eaa.angle();
 			pos += correction.P();
 		}
-		eaas /= (*it).second.size();
-		pos /= (*it).second.size();
+		eaas /= static_cast<double>((*it).second.size());
+		pos /= static_cast<double>((*it).second.size());
 		Transform3D<> Tcorrection(pos, EAA<>(eaas(0), eaas(1), eaas(2)));
 	//	std::cout<<"Final Correction for Secondary Device = "<<Tcorrection<<std::endl;		
 		workcellCalibration->getFixedFrameCalibrationForDevice((*it).first)->setCorrectionTransform(Tcorrection);
@@ -187,14 +187,14 @@ void WorkCellExtrinsicCalibrator::calibrateSingleDeviceAndSensor(const std::vect
 
 	//Compute the initial estimate of the base transformation
 	//1: Compute p_avg = 1/K Sum(p_k)
-	const unsigned int K = measurements.size();
+	const std::size_t K = measurements.size();
 	Eigen::VectorXd p_avg = Eigen::VectorXd::Zero(3);
 	BOOST_FOREACH(CalibrationMeasurement::Ptr measurement, measurements) {
 		//std::cout<<"p org="<<measurement->getTransform().P()<<std::endl;
 		p_avg += measurement->getTransform().P().e();
 		//std::cout<<"Measurement: "<<measurement->getTransform().P()<<std::endl;
 	}
-	p_avg /= K;
+	p_avg /= static_cast<double>(K);
 	//std::cout<<"p_avg = "<<p_avg<<std::endl;
 	//char ch[4]; std::cin.getline(ch, 1);
 	//2: Compute p_k
@@ -480,7 +480,7 @@ void WorkCellExtrinsicCalibrator::calibrateSingleDeviceAndSensor(const std::vect
 	//std::cout<<"Ttool = "<<Transform3D<>(posTool, EAA<>(eaaAxis, eaaAngle))<<std::endl;
 	result.sensor2base = Tbase;
 	result.tool2marker = Transform3D<>(posTool, EAA<>(eaaAxis, eaaAngle));
-	result.cnt = measurements.size();
+	result.cnt = static_cast<int>(measurements.size());
 	//return std::make_pair(Tbase, Transform3D<>(posTool, EAA<>(eaaTool(0), eaaTool(1), eaaTool(2))));
 
 

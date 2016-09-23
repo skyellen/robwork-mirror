@@ -87,7 +87,7 @@ void ThreadPool::waitForEmptyQueue() {
 void ThreadPool::runWrap(WorkFunction work) {
 	try {
 		work(this);
-	} catch(boost::thread_interrupted const& e) {
+	} catch(boost::thread_interrupted const&) {
 		RW_THROW("Please catch boost::thread_interrupted exception thrown in work function for ThreadPool!");
 	}
 	{

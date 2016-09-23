@@ -31,12 +31,12 @@ void TaxiCabOptimizer::newOptimization(const VectorType& initialGuess,
 	 * Build directions set from unit vectors.
 	 */
 
-	unsigned dims = initialGuess.size();
+	const std::size_t dims = initialGuess.size();
 
 	DirectionSet& directionSet = getDirectionSet();
 	directionSet.clear();
 
-	for (unsigned i = 0; i < dims; ++i) {
+	for (std::size_t i = 0; i < dims; ++i) {
 		Q unit(dims, 0.0);
 		unit(i) = 1.0;
 

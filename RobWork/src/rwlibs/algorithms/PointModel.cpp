@@ -43,9 +43,9 @@ double PointModel::refit(const std::vector<rw::math::Vector3D<> >& samples)
 	_data = samples;
 
 	// re-fit point model
-	int n = _data.size();
+	const std::size_t n = _data.size();
 	_model = rw::math::Vector3D<>();
-	for (int i = 0; i < n; ++i) {
+	for (std::size_t i = 0; i < n; ++i) {
 		_model += _data[i];
 	}
 	_model *= 1.0 / (n > 0 ? n : 1);
