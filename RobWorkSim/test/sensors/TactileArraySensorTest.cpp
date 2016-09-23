@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE( TactileArraySensorTest )
 {
 	// load a scene with a FT sensor mounted in between a kinematic body and a dynamic
 	// place the kinematic body in different poses and pla
-    DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::loader.load( testFilePath() + "/scene/sensors/single_object_tactile_array.dwc.xml" );
+    DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load( testFilePath() + "/scene/sensors/single_object_tactile_array.dwc.xml" );
 
     ODESimulator::Ptr odesim = ownedPtr( new ODESimulator( dwc ) );
     State state = dwc->getWorkcell()->getStateStructure()->getDefaultState();
