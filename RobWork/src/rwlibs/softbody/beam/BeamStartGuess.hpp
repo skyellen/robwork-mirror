@@ -49,7 +49,7 @@ public:
      * @brief sets starting guess angles for a cuboid beam initialized to that of an analytical Euler-Bernoulli beam model
      *
      * @param avec reference to starting guess vector containing angles to be set 
-     * @param beamPtr pointer to the beam geometry
+     * @param beamGeomPtr pointer to the beam geometry
      **/
     static void setEulerStartingGuess ( boost::numeric::ublas::vector<double> &avec, boost::shared_ptr< rwlibs::softbody::BeamGeometryCuboid > beamGeomPtr );
 };

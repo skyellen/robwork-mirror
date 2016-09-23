@@ -19,9 +19,9 @@
 #define RWSIMLIBS_GUI_SIMULATORLOGENTRYWIDGET_HPP_
 
 /**
- * @file InternalInfoEntryWidget.hpp
+ * @file SimulatorLogEntryWidget.hpp
  *
- * \copydoc rwsimlibs::gui::InternalInfoEntryWidget
+ * \copydoc rwsimlibs::gui::SimulatorLogEntryWidget
  */
 
 #include <QWidget>

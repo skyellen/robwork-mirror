@@ -31,6 +31,7 @@ class QComboBox;
 
 namespace rws {
 
+//! @brief Plugin for editing properties.
 class PropertyView: public RobWorkStudioPlugin {
 Q_OBJECT
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
@@ -40,14 +41,19 @@ Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1" FILE "plugin.
 #endif
 #endif
 public:
+	//! @brief Constructor.
     PropertyView();
 
+	//! @brief Destructor.
     virtual ~PropertyView();
 
+    //! @copydoc RobWorkStudioPlugin::initialize
     virtual void initialize();
 
+    //! @copydoc RobWorkStudioPlugin::open
     virtual void open(rw::models::WorkCell* workcell);
 
+    //! @copydoc RobWorkStudioPlugin::close
     virtual void close();
 
 //protected:

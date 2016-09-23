@@ -82,6 +82,11 @@ namespace rw { namespace loaders {
 	    	//! constructor
 	        Factory():rw::common::ExtensionPoint<WorkCellLoader>("rw.loaders.WorkCellLoader", "Example extension point"){};
 
+	        /**
+	         * @brief Get loaders for a specific format.
+	         * @param format [in] the extension (including initial dot).
+	         * @return a suitable loader.
+	         */
 	        static rw::common::Ptr<WorkCellLoader> getWorkCellLoader(const std::string& format);
 
 			/**
@@ -95,8 +100,13 @@ namespace rw { namespace loaders {
 	    };
 
     protected:
+	    //! @brief Constructor.
 		WorkCellLoader() {}
 
+		/**
+		 * @brief Constructor with a drawable scene.
+		 * @param scene [in] a workcell scene.
+		 */
 		WorkCellLoader(rw::graphics::WorkCellScene::Ptr scene):_wcscene(scene) {}
 
     private:
@@ -104,6 +114,10 @@ namespace rw { namespace loaders {
 
     };
 
+	/**
+	 * @brief Shortcut type for the WorkCellLoader::Factory
+	 * @deprecated Please use WorkCellLoader::Factory instead.
+	 */
     typedef WorkCellLoader::Factory WorkCellFactory;
     /**@}*/
 }} // end namespaces

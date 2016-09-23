@@ -156,8 +156,16 @@ namespace rw { namespace pathplanning {
         */
         virtual bool doInCollision(const rw::math::Q& q) const = 0;
 
+        /**
+         * @brief Set a log.
+         * @param log [in] the log.
+         */
 		virtual void doSetLog(rw::common::Log::Ptr log) = 0;
 
+		/**
+		 * @brief Update constraint.
+		 * @param state [in] the state.
+		 */
 		virtual void doUpdate(const rw::kinematics::State& state) {};
 
         /**

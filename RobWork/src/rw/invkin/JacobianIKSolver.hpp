@@ -87,14 +87,18 @@ namespace rw { namespace invkin {
         typedef enum{Transpose, SVD, DLS, SDLS} JacobianSolverType;
 
         /**
-         * @brief Constructs JacobianIKSolver for device \b device, where the
-         * @param device [in] the Device that
+         * @brief Constructs JacobianIKSolver for device \b device.
+         * @param device [in] the device to do inverse kinematics for.
+         * @param state [in] the initial state.
          */
         JacobianIKSolver(rw::common::Ptr<rw::models::Device> device, const kinematics::State& state);
 
         /**
          * @brief Constructs JacobianIKSolver for device, where the frame \b foi will
          * be used as end effector.
+         * @param device [in] the device to do inverse kinematics for.
+         * @param foi [in] end effector frame.
+         * @param state [in] the initial state.
          */
         JacobianIKSolver(rw::common::Ptr<rw::models::Device> device,
                      rw::kinematics::Frame *foi,
@@ -109,8 +113,7 @@ namespace rw { namespace invkin {
         /**
          * @brief sets the maximal step length that is allowed on the
          * local search towards the solution.
-         * @param qlength [in] maximal step length in quaternion
-         * @param plength [in] maximal step length in position
+         * @param interpolatorStep [in] the interpolation step.
          */
         void setInterpolatorStep(double interpolatorStep){ _interpolationStep = interpolatorStep; }
 

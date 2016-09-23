@@ -1,7 +1,7 @@
 #ifndef RWLIBS_DRAWABLE_RENDERCONTACTS_HPP_
 #define RWLIBS_DRAWABLE_RENDERCONTACTS_HPP_
 
-//! @file RenderContacts.hpp
+//! @file drawable/RenderContacts.hpp
 
 #include <rw/graphics/Render.hpp>
 #include <rwlibs/os/rwgl.hpp>

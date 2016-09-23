@@ -19,7 +19,7 @@
 #define RW_PLUGIN_PLUGINREPOSITORY_HPP
 
 /**
- * @file PluginRepository.hpp
+ * @file rw/plugin/PluginRepository.hpp
  *
  * Defines the rw::plugin::PluginRepository
  */
@@ -54,6 +54,7 @@ namespace plugin {
 class PluginRepository
 {
 public:
+	//! @brief Smart pointer type for PluginRepository.
     typedef rw::common::Ptr<PluginRepository> Ptr;
 
     /**
@@ -83,7 +84,7 @@ public:
      * PluginFactoryBase a rw::common::Exception is thrown.
      * 
      * @param path [in] Path from which to attempt for load plugins
-     * @param searchRecursively [in] True to search recursively into subfolders.
+     * @param searchSubFolders [in] True to search recursively into subfolders.
      */
     void loadFilesInFolder(const std::string& path, bool searchSubFolders);
 

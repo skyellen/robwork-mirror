@@ -51,8 +51,16 @@ namespace dynamics {
     class Link : public Body
     {
     public:
+    	/**
+    	 * @brief Construct a new link.
+    	 * @param info [in] the dynamic properties of the link.
+    	 * @param obj [in] the geometry of the link.
+    	 * @param ddev [in] the dynamic device the link belongs to.
+    	 * @param id [in] id of the link.
+    	 */
         Link( const BodyInfo& info, rw::models::Object::Ptr obj, DynamicDevice *ddev, size_t id);
 
+        //! @brief Destructor.
     	virtual ~Link();
 
     public: // functions that need to be implemented by specialized class
@@ -60,6 +68,7 @@ namespace dynamics {
     	//! @copydoc Body::getVelocity
     	virtual rw::math::VelocityScrew6D<> getVelocity(const rw::kinematics::State &state) const = 0;
 
+    	//! @copydoc Body::reset
     	 virtual void reset(rw::kinematics::State &state);
 
      	//! @copydoc Body::calcEnergy
@@ -67,25 +76,40 @@ namespace dynamics {
          		const rw::math::Vector3D<>& gravity = rw::math::Vector3D<>::zero(),
  				const rw::math::Vector3D<>& potZero = rw::math::Vector3D<>::zero()) const;
 
+         //! @copydoc Body::setForce
     	 virtual void setForce(const rw::math::Vector3D<>& f, rw::kinematics::State& state);
 
+    	 //! @copydoc Body::getForce
     	 virtual rw::math::Vector3D<> getForce(const rw::kinematics::State& state) const;
 
+    	 //! @copydoc Body::addForce
     	 virtual void addForce(const rw::math::Vector3D<>& force, rw::kinematics::State& state);
 
+    	 //! @copydoc Body::setTorque
     	 virtual void setTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state);
 
+    	 //! @copydoc Body::addTorque
     	 virtual void addTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state);
 
+    	 //! @copydoc Body::getTorque
     	 virtual rw::math::Vector3D<> getTorque(const rw::kinematics::State& state) const;
 
+    	 /**
+    	  * @brief Get the dynamic device.
+    	  * @return a pointer to the dynamic device.
+    	  */
     	 DynamicDevice* getDynamicDevice(){ return _ddev; }
 
+    	 /**
+    	  * @brief Get the id of the link.
+    	  * @return the id.
+    	  */
     	 size_t getID(){ return _id; }
+
     private:
     	 rw::models::Object::Ptr _obj;
-    	DynamicDevice *_ddev;
-    	size_t _id;
+    	 DynamicDevice *_ddev;
+    	 size_t _id;
     };
     //! @}
 }

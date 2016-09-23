@@ -35,6 +35,7 @@ namespace calibration {
  */
 class NLLSSolver {
 public:
+	//! @brief Smart pointer type for NLLSSolver.
 	typedef rw::common::Ptr<NLLSSolver> Ptr;
 
 	/**

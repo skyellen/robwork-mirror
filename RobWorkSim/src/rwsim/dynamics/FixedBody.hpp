@@ -35,18 +35,13 @@ namespace dynamics {
     class FixedBody : public Body
     {
     public:
+    	//! @brief Smart pointer type for a fixed body.
         typedef rw::common::Ptr<FixedBody> Ptr;
 
-        /**
-         * @brief constructor
-         * @param info [in] body information
-         * @param bodyframe [in] the body frame
-         * @param geoms [in] geometry
-         */
+        //! @copydoc Body::Body()
     	FixedBody(const BodyInfo& info, rw::models::Object::Ptr obj):
     	    Body(info, obj)
     	{
-
     	}
 
     	//! @brief destructor
@@ -59,6 +54,7 @@ namespace dynamics {
         	return rw::math::Vector3D<>(0,0,0);
         };
 
+        //! @copydoc Body::getVelocity
         rw::math::VelocityScrew6D<> getVelocity(const rw::kinematics::State &state) const{
             return rw::math::VelocityScrew6D<>(0,0,0,0,0,0);
         }

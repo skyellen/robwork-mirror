@@ -33,7 +33,7 @@ namespace rwlibs { namespace simulation {
 	// @{
 
     /**
-     * @brief
+     * @brief Simulated scanner in 2D.
      */
     class SimulatedScanner2D : public SimulatedSensor
     {
@@ -44,6 +44,7 @@ namespace rwlibs { namespace simulation {
         /**
          * @brief constructor
          * @param name [in] name of this simulated scanner
+         * @param frame [in] the sensor frame.
          * @param framegrabber [in] the framegrabber used for grabbing 2.5D images
          */
         SimulatedScanner2D(const std::string& name, rw::kinematics::Frame* frame,
@@ -110,6 +111,10 @@ namespace rwlibs { namespace simulation {
          */
         rw::sensor::Scanner2D::Ptr getScanner2DSensor(rwlibs::simulation::Simulator* instance);
 
+        /**
+         * @brief Get a model of the sensor.
+         * @return the model.
+         */
         rw::sensor::Scanner2DModel::Ptr getSensorModel();
 
         //! @copydoc SimulatedSensor::getAngularRange

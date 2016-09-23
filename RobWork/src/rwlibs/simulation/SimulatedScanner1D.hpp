@@ -32,7 +32,7 @@ namespace rwlibs { namespace simulation {
 	// @{
 
     /**
-     * @brief
+     * @brief A simulated line scanner.
      */
     class SimulatedScanner1D : public rw::sensor::Scanner1D, public virtual SimulatedSensor
     {
@@ -92,7 +92,12 @@ namespace rwlibs { namespace simulation {
         //! @copydoc Scanner1D::getImage
         const rw::geometry::PointCloud& getImage();
 
-        //! @copydoc SimulatedSensor::update
+        /**
+         * @brief steps the the sensor with time \b dt and saves any state
+         *  changes in \b state.
+         * @param dt [in] the timestep.
+         * @param state [out] changes of the SimulatedSensor is saved in state.
+         */
         void update(double dt, rw::kinematics::State& state);
 
         //! @copydoc SimulatedSensor::reset

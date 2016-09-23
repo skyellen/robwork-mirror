@@ -76,7 +76,7 @@ public:
     void initialize();
 
     /**
-     * @brief listener for messegers from other plugins
+     * @brief listener for messages from other plugins
      * @param plugin
      * @param id
      * @param msg
@@ -86,10 +86,21 @@ public:
         const std::string& id,
         const rw::common::Message& msg);
 
+    /**
+     * @brief Write to the log window.
+     * @param str [in] the string to write.
+     * @param color [in] color of text.
+     */
     void write(const std::string& str, const QColor& color);
 
+    //! @brief Clear the log window.
     void flush();
 
+    /**
+     * @brief Handle Qt event.
+     * @param event [in] the event.
+     * @return true if handled, false otherwise.
+     */
     bool event(QEvent *event);
 
 private:

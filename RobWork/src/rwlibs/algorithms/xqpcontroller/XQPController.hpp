@@ -58,7 +58,9 @@ public:
      */
     class Constraint {
     public:
+		//! @brief Constraint \b a part.
         rw::math::Q _a;
+		//! @brief Constraint \b b part.
         double _b;
     public:
         /**

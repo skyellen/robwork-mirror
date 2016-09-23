@@ -41,7 +41,7 @@ public:
 	typedef rw::common::Ptr<NLLSNewtonSolver> Ptr;
 
 	/** 
-	 * @brief Construct solver for \bsystem 
+	 * @brief Construct solver for \b system
 	 */
 	NLLSNewtonSolver(NLLSSystem::Ptr system);
 
@@ -81,11 +81,17 @@ public:
 	virtual Eigen::MatrixXd estimateCovarianceMatrix() const;
 
 protected:
+	//! @brief The NLLSSystem.
 	NLLSSystem::Ptr _system;
+	//! @brief Iteration logs.
 	std::vector<NLLSIterationLog> _iterationLogs;
+	//! @brief The jacobian.
 	Eigen::MatrixXd _jacobian;
+	//! @brief The Singular Value Decomposition.
 	Eigen::JacobiSVD<Eigen::MatrixXd> _jacobianSvd;
+	//! @brief Residuals.
 	Eigen::VectorXd _residuals;
+	//! @brief Step.
 	Eigen::VectorXd _step;
 };
 /* @} */

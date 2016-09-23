@@ -36,14 +36,14 @@ class WorkCellCalibration;
 class XmlCalibrationSaver {
 public:
 	/**
-	 * @brief Saves \bworkcellCalibration to the file \bfileName
+	 * @brief Saves \b workcellCalibration to the file \b fileName
 	 * @param workcellCalibration [in] workcellCalibration to store
 	 * @param fileName [in] Name of the file to which to write.
 	 */
 	static void save(rw::common::Ptr<WorkCellCalibration> workcellCalibration, std::string fileName);
 
 	/**
-	 * @brief Writes \bworkcellCalibration to stream.
+	 * @brief Writes \b workcellCalibration to stream.
 	 * @param workcellCalibration [in] workcellCalibration to write
 	 * @param ostream [in] Stream to write to
 	 */

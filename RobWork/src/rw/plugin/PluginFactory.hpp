@@ -55,7 +55,7 @@ namespace plugin {
 template <class T>
 class PluginFactory: public PluginFactoryBase {
 public:
-
+	//! @brief Smart pointer type for PluginFactory.
     typedef rw::common::Ptr<PluginFactory<T> > Ptr;
 
     /**

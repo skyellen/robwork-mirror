@@ -57,9 +57,8 @@ public:
     /**
      * @brief Constructs clearance optimizer
      *
-     * The clearance optimizer currently assumes the configuration space of the device is rectangular.          �
+     * The clearance optimizer currently assumes the configuration space of the device is rectangular.
      *
-     * @param workcell [in] WorkCell to use
      * @param device [in] Device to plan for
      * @param state [in] State containing position of all other devices and how frames are assembled.
      * @param metric [in] Metric to use for computing distance betweem configurations

@@ -110,6 +110,10 @@ namespace rw { namespace loaders {
 	};
 
 	// for backwards compatibility
+	/**
+	 * @brief Shortcut type for the ImageLoader::Factory
+	 * @deprecated Please use ImageLoader::Factory instead.
+	 */
 	typedef ImageLoader::Factory ImageFactory;
 	/*@}*/
 }}

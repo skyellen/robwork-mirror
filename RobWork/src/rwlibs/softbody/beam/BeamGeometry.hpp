@@ -43,7 +43,7 @@ public:
     *
     * @param L length of object
     * @param Exvec vector of Young's modulus for each cross beam cros section, in MPa
-    * @param vxvce vector of Poisson's ratio for each cross beam cros section
+    * @param vxvcec vector of Poisson's ratio for each cross beam cros section
     * @param rhovec vector of mass density for each cross beam cros section, in kg/mm^3
     * @param wTb world to base of beam transform
     * @param G vector of gravity, m/s^2

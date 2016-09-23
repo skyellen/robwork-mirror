@@ -35,7 +35,7 @@ class QCheckBox;
 
 namespace rws {
 
-
+//! @brief Planning plugin for basic pathplanning.
 class Planning: public RobWorkStudioPlugin {
 Q_OBJECT
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
@@ -45,10 +45,16 @@ Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1" FILE "plugin.
 #endif
 #endif
 public:
+	//! @brief Constructor.
     Planning();
 
+    //! @brief Destructor.
     virtual ~Planning();
+
+    //! @copydoc RobWorkStudioPlugin::open
     virtual void open(rw::models::WorkCell* workcell);
+
+    //! @copydoc RobWorkStudioPlugin::close
     virtual void close();
 
 private slots:

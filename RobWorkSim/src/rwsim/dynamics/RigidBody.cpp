@@ -42,7 +42,6 @@ RigidBody::RigidBody(const BodyInfo& info,rw::models::Object::Ptr obj):
         _mass( info.mass ),
         _massInv( getInvMassImpl(info.mass) ),
         _mframe( NULL ),
-        _bodyType(0),
         _Ibody(info.inertia),
         _IbodyInv( inverse(info.inertia) ),
         _IbodyPrincipal(GeometryUtil::calculatePrincipalInertia(info.inertia))

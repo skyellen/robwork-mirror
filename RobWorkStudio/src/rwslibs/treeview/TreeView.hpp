@@ -62,15 +62,29 @@ public:
     //! @copydoc RobWorkStudioPlugin::close
     virtual void close();
 
+    /**
+     * @brief Update the view - this method can be called from other threads.
+     * @param val [in] not currently used.
+     */
+    void workcellChangedListener(int val);
 
-    void workcellChangedListener(int);
-
+    /**
+     * @brief Select a specific frame.
+     * @param frame [in] the frame.
+     * @note This is not currently used.
+     */
     void frameSelectedListener(rw::kinematics::Frame* frame);
+
+    /**
+     * @brief Listen for updates to the state (for instance attaching/detaching of frames).
+     * @param state [in] the state.
+     */
     void stateChangedListener(const rw::kinematics::State& state);
 
 protected:
 	//void frameSelectedHandler(rw::kinematics::Frame* frame, RobWorkStudio* sender);
 
+    //! @copydoc RobWorkStudioPlugin::initialize
 	void initialize();
 private slots:
     void customContextMenuRequestSlot(const QPoint& pos);

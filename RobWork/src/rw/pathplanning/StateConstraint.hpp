@@ -89,6 +89,10 @@ namespace rw { namespace pathplanning {
         */
         virtual bool doInCollision(const rw::kinematics::State& state) const = 0;
 
+        /**
+         * @brief Set a log.
+         * @param log [in] the log.
+         */
 		virtual void doSetLog(rw::common::Ptr<rw::common::Log> log) = 0;
 
         /**

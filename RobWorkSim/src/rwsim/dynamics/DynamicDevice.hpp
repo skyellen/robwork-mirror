@@ -40,13 +40,13 @@ namespace dynamics {
 	class DynamicDevice: public rw::kinematics::Stateless {
 
 	public:
+		//! @brief Smart pointer type for a DynamicDevice.
 	    typedef rw::common::Ptr<DynamicDevice> Ptr;
 
-
 		/**
-		 * @brief destructor
+		 * @brief Destructor.
 		 */
-		virtual ~DynamicDevice(){};
+		virtual ~DynamicDevice(){}
 
 		/**
 		 * @brief gets the position
@@ -55,6 +55,11 @@ namespace dynamics {
 			return _dev->getQ(state);
 		}
 
+		/**
+		 * @brief Set the position of the joints.
+		 * @param q [in] the positions.
+		 * @param state [out] the state with new positions.
+		 */
 		virtual void setQ(const rw::math::Q &q, rw::kinematics::State& state){
             _dev->setQ(q, state);
         };
@@ -66,6 +71,10 @@ namespace dynamics {
 			return *_dev;
 		}
 
+		/**
+		 * @brief Get the kinematic model of the device.
+		 * @return the kinematic device.
+		 */
         rw::models::Device::Ptr getKinematicModel(){
             return _dev;
         }
@@ -74,7 +83,11 @@ namespace dynamics {
 		//void setQdd(const rw::kinematics::Q& qdd, const rw::kinematics::State& state);
 		//rw::math::Q getQdd(const rw::kinematics::State& state);
 
-		dynamics::Body::Ptr getBase(){ return _base;};
+        /**
+         * @brief Get the base of the device.
+         * @return the base.
+         */
+		dynamics::Body::Ptr getBase(){ return _base;}
 
 
 		/**
@@ -83,29 +96,62 @@ namespace dynamics {
 		 * @return velocites of all joints
 		 */
 		virtual rw::math::Q getJointVelocities(const rw::kinematics::State& state) = 0;
+
+		/**
+		 * @brief Set the velocities of the joints.
+		 * @param vel [in] the joint velocities.
+		 * @param state [out] the state with updated velocities.
+		 */
 		virtual void setJointVelocities(const rw::math::Q &vel, rw::kinematics::State& state) = 0;
 
 
 		/// deprecated
-		virtual rw::math::Q getVelocity(const rw::kinematics::State& state){ return getJointVelocities(state); };
+		/**
+		 * @copydoc getJointVelocities
+		 * @deprecated Use getJointVelocities() instead!
+		 */
+		virtual rw::math::Q getVelocity(const rw::kinematics::State& state){ return getJointVelocities(state); }
+
+		/**
+		 * @copydoc setJointVelocities
+		 * @deprecated Use setJointVelocities() instead!
+		 */
 		virtual void setVelocity(const rw::math::Q &vel, rw::kinematics::State& state)
 		    { setJointVelocities(vel, state); };
 
+		/**
+		 * @brief Set motor targets for the joints.
+		 * @param vel [in] velocity targets.
+		 * @param state [out] the state with new velocity targets.
+		 */
 		virtual void setMotorVelocityTargets(const rw::math::Q& vel, rw::kinematics::State& state){ }
 
+		/**
+		 * @brief Get all links in the dynamic device.
+		 * @return a vector with the links.
+		 */
         virtual const std::vector<Body::Ptr>& getLinks() = 0;
 
-        const std::string& getName() const { return _dev->getName(); };
+        /**
+         * @brief Get the name of the dynamic device.
+         * @return the name.
+         */
+        const std::string& getName() const { return _dev->getName(); }
 
 	protected:
-
+        /**
+         * @brief Construct new dynamic device.
+         * @param base [in] base of the device.
+         * @param dev [in] the kinematic model.
+         */
 		DynamicDevice(dynamics::Body::Ptr base, rw::models::Device::Ptr dev):
 			_dev(dev),
 			_base(base)
 		{}
 
-
+		//! @brief The kinematic model.
 		rw::models::Device::Ptr _dev;
+		//! @brief The base of the device.
 		dynamics::Body::Ptr _base;
 	private:
 		DynamicDevice();
