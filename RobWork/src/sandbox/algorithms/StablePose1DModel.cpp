@@ -205,7 +205,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		error += sample_error * sample_error;
 	}
 
-	error /= std::dynamic_cast<double>(n > 0 ? n : 1);
+	error /= static_cast<double>(n > 0 ? n : 1);
 	setQuality(error);
 	
 	//cout << *this << "  | error= " << error << endl;
