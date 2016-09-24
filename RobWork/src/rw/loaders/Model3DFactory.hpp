@@ -20,7 +20,7 @@
 #define RWLIBS_OPENGL_MODEL3DFACTORY_HPP
 
 /**
- * @file loeaders/Model3DFactory.hpp
+ * @file loaders/Model3DFactory.hpp
  */
 
 #include <rw/graphics/Model3D.hpp>

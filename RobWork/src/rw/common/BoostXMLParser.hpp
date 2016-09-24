@@ -37,15 +37,26 @@ namespace common {
 		//! constructor
 		BoostXMLParser();
 		// loading and saving
+		//! @copydoc DOMParser::load(const std::string&)
 		void load(const std::string& filename);
+		//! @copydoc DOMParser::load(std::istream&)
 		void load(std::istream& input);
+		//! @copydoc DOMParser::save(const std::string&)
 		void save(const std::string& filename);
+		//! @copydoc DOMParser::save(std::ostream&)
 		void save(std::ostream& input);
 
-		void setDebug(bool debug){_debug=debug;};
+		//! @copydoc DOMParser::setDebug
+		void setDebug(bool debug){_debug=debug;}
 
-		bool isDebug(){return _debug;};
-		DOMElem::Ptr getRootElement(){ return _root;};
+		/**
+		 * @brief Get status of debugging.
+		 * @return true if enabled, false if disabled.
+		 */
+		bool isDebug(){return _debug;}
+
+		//! @copydoc DOMParser::getRootElement
+		DOMElem::Ptr getRootElement(){ return _root;}
 
 		/**
 		 * @brief Utility class which initializes Boost local static variables.
@@ -70,8 +81,19 @@ namespace common {
 		rw::common::Ptr< boost::property_tree::ptree > _tree;
 	};
 
+	/**
+	 * @brief DOMElem based on Boost PropertyTree xml parser.
+	 */
 	class BoostDOMElem : public DOMElem {
 	public:
+		/**
+		 * @brief Construct new element.
+		 * @param key [in] the key.
+		 * @param ptree [in] boost property tree.
+		 * @param parent [in] boost property tree.
+		 * @param root [in] boost property tree.
+		 * @param parser [in] the BoostXMLParser.
+		 */
 		BoostDOMElem(const std::string& key,
 		             rw::common::Ptr<boost::property_tree::ptree> ptree,
 		             rw::common::Ptr< boost::property_tree::ptree > parent,
@@ -82,7 +104,7 @@ namespace common {
 			_parent(parent),
 			_root(root),
 			_parser(parser)
-		{};
+		{}
 
 	public:
 
@@ -102,33 +124,52 @@ namespace common {
 		double getValueAsDouble() const ;
 		//! @copydoc DOMElem::getValueAsStringList
 		std::vector<std::string> getValueAsStringList(char stringseperator = ';') const ;
+		//! @copydoc DOMElem::getValueAsDoubleList()
 		std::vector<double> getValueAsDoubleList() const ;
+		//! @copydoc DOMElem::getValueAsDoubleList(int)
 		std::vector<double> getValueAsDoubleList(int size) const ;
 
 		// get elements that searches a specific key
+		//! @copydoc DOMElem::getChild
 		DOMElem::Ptr getChild(const std::string& name, bool optional=false);
+		//! @copydoc DOMElem::getAttribute
 		DOMElem::Ptr getAttribute(const std::string& name, bool optional=false);
 
 
+		//! @copydoc DOMElem::hasChildren
 		bool hasChildren() const;
+		//! @copydoc DOMElem::hasChild
 		bool hasChild(const std::string& name) const ;
+		//! @copydoc DOMElem::hasAttribute
 		bool hasAttribute(const std::string& name) const ;
 
+		//! @copydoc DOMElem::addChild(const std::string&)
 		rw::common::Ptr<DOMElem> addChild(const std::string& name);
+
+		//! @copydoc DOMElem::addAttribute(const std::string&)
 		rw::common::Ptr<DOMElem> addAttribute(const std::string& name);
+
+		//! @copydoc DOMElem::setValue(const std::string&)
 		void setValue(const std::string& val);
 
 
 		// get child elements
-
+		//! @copydoc DOMElem::getChildren
 		DOMElem::IteratorPair getChildren();
 
+		//! @copydoc DOMElem::getAttributes
 		DOMElem::IteratorPair getAttributes();
 
+		//! @copydoc DOMElem::begin
 		DOMElem::Iterator begin();
+		//! @copydoc DOMElem::end
 		DOMElem::Iterator end();
 
-		rw::common::Ptr< boost::property_tree::ptree > getRoot(){ return _root; } ;
+		/**
+		 * @brief Get the root Boost PropertyTree element.
+		 * @return pointer to the tree.
+		 */
+		rw::common::Ptr< boost::property_tree::ptree > getRoot(){ return _root; }
 
 	private:
 		class ElemIterImpl;

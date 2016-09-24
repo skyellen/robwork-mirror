@@ -278,7 +278,7 @@ namespace rw { namespace kinematics {
         void read(class rw::common::InputArchive& iarchive, const std::string& id);
 
 		//! @copydoc rw::common::Serializable::write
-        void write(class rw::common::OutputArchive& iarchive, const std::string& id) const;
+        void write(class rw::common::OutputArchive& oarchive, const std::string& id) const;
 
         /**
          * @brief Get default.

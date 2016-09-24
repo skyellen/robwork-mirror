@@ -28,9 +28,9 @@ namespace common {
 	 * @brief an wrapper interface for easy access to XML DOM parser. This require an
 	 * active back-end that does the actual parsing and validation.
 	 *
-	 * The DOMElem consist of a <name>, <value> and a DOMElem list of <attributes> and <children>. The value is a
+	 * The DOMElem consist of a \<name\>, \<value\> and a DOMElem list of \<attributes\> and \<children\>. The value is a
 	 * string and can (for convenience) be extracted as
-	 * different primitive values on the interface eg. double or std::vector<double>.
+	 * different primitive values on the interface eg. double or std::vector\<double\>.
 	 * Attributes are DOMElem that does not have any children. Children are DOMElem that
 	 * might contain other children.
 	 *
@@ -155,56 +155,141 @@ namespace common {
 		 */
 		virtual bool hasAttribute(const std::string& name) const = 0;
 
-
+		/**
+		 * @brief Get the value of attribute as a string.
+		 * @param name [in] the name of the attribute.
+		 * @return the value.
+		 */
 		std::string getAttributeValue(const std::string& name){ return getAttribute(name)->getValue(); }
+		/**
+		 * \copydoc getAttributeValue(const std::string&)
+		 * @param default_value [in] a default value to return if attibute is not found.
+		 */
 		std::string getAttributeValue(const std::string& name, const std::string& default_value){
 			if( DOMElem::Ptr attrib = getAttribute(name,true) )
 				return attrib->getValue();
 			return default_value;
 		}
 
+		/**
+		 * @brief Get the value of attribute as an integer.
+		 * @param name [in] the name of the attribute.
+		 * @return the value.
+		 */
 		int getAttributeValueAsInt(const std::string& name){ return getAttribute(name)->getValueAsInt(); }
+		/**
+		 * \copydoc getAttributeValueAsInt(const std::string&)
+		 * @param default_value [in] a default value to return if attibute is not found.
+		 */
 		int getAttributeValueAsInt(const std::string& name, int default_value){
 			if( DOMElem::Ptr attrib = getAttribute(name,true) )
 				return attrib->getValueAsInt();
 			return default_value;
 		}
 
+		/**
+		 * @brief Get the value of attribute as an double.
+		 * @param name [in] the name of the attribute.
+		 * @return the value.
+		 */
 		double getAttributeValueAsDouble(const std::string& name){ return getAttribute(name)->getValueAsDouble(); }
+		/**
+		 * \copydoc getAttributeValueAsDouble(const std::string&)
+		 * @param default_value [in] a default value to return if attibute is not found.
+		 */
 		double getAttributeValueAsDouble(const std::string& name, double default_value){
 			if( DOMElem::Ptr attrib = getAttribute(name,true) )
 				return attrib->getValueAsDouble();
 			return default_value;
 		}
 
+		/**
+		 * @brief Get the value as a boolean.
+		 * @return boolean value.
+		 */
 		bool getValueAsBool();
 
+		/**
+		 * @brief Get the value of attribute as an boolean.
+		 * @param name [in] the name of the attribute.
+		 * @return the value.
+		 */
 		bool getAttributeValueAsBool(const std::string& name){
 			return getAttribute(name)->getValueAsBool();
 		}
+		/**
+		 * \copydoc getAttributeValueAsBool(const std::string&)
+		 * @param default_value [in] a default value to return if attibute is not found.
+		 */
 		bool getAttributeValueAsBool(const std::string& name, bool default_value){
 			if( DOMElem::Ptr attrib = getAttribute(name,true) )
 				return attrib->getValueAsBool();
 			return default_value;
 		}
 
+		/**
+		 * @brief Get iterator to first child element.
+		 * @return iterator.
+		 */
 		virtual Iterator begin() = 0;
+
+		/**
+		 * @brief Get iterator to last child element.
+		 * @return iterator.
+		 */
 		virtual Iterator end() = 0;
 
-		// get child element iterators
+		/**
+		 * @brief Get iterator to child elements.
+		 * @return iterator pair for the first and last elements.
+		 */
 		virtual IteratorPair getChildren() = 0;
+
+		/**
+		 * @brief Get iterator to attributes.
+		 * @return iterator pair for the first and last attributes.
+		 */
 		virtual IteratorPair getAttributes() = 0;
 
 
 		// now comes the construction stuff.. so this should enable one to add elements and attributes
-		virtual rw::common::Ptr<DOMElem> addChild(){ return addChild(""); };
+		/**
+		 * @brief Add a child with an empty name.
+		 * @return pointer to the new child element.
+		 */
+		virtual rw::common::Ptr<DOMElem> addChild(){ return addChild(""); }
+
+		/**
+		 * @brief Add a child element.
+		 * @param name [in] name of child.
+		 * @return pointer to the new child element.
+		 */
 		virtual rw::common::Ptr<DOMElem> addChild(const std::string& name) = 0;
+
+		/**
+		 * @brief Add an attribute element.
+		 * @param name [in] name of the attribute.
+		 * @return pointer to the new attribute.
+		 */
 		virtual rw::common::Ptr<DOMElem> addAttribute(const std::string& name) = 0;
+
+		/**
+		 * @brief Set the value of this element.
+		 * @param val [in] new value.
+		 */
 		virtual void setValue(const std::string& val) = 0;
+
+		/**
+		 * @brief Set the name of this element.
+		 * @param val [in] new name.
+		 */
 		virtual void setName(const std::string& val) = 0;
 
+		//! @copydoc setValue(const std::string&)
 		virtual void setValue(bool val);
+		//! @copydoc setValue(const std::string&)
 		virtual void setValue(int val);
+		//! @copydoc setValue(const std::string&)
 		virtual void setValue(double val);
 
 	protected:
@@ -262,6 +347,11 @@ namespace common {
 			//! destructor
 			virtual ~Iterator() { delete _impl; }
 
+			/**
+			 * @brief Assignment operator.
+			 * @param right [in] the Iterator to assign.
+			 * @return a reference to this iterator (for chaining).
+			 */
 			Iterator& operator=(Iterator const& right)
 			{
 				delete _impl;

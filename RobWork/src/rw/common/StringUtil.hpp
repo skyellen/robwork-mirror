@@ -210,7 +210,16 @@ namespace rw { namespace common {
 
 	};
 
+    /**
+     * @brief Convenient definition of a pair of strings.
+     * @relatesalso rw::common::StringUtil
+     */
     typedef std::pair<std::string, std::string> StringPair;
+
+    /**
+     * @brief Convenient definition of a list of string pairs.
+     * @relatesalso rw::common::StringUtil
+     */
     typedef std::vector<StringPair> StringPairList;
 
 	/**@}*/

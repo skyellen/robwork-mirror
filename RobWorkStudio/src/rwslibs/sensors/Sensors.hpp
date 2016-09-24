@@ -31,6 +31,7 @@ namespace Ui {
 namespace rws {
 class SensorView;
 
+//! @brief Sensor plugin for RobWorkStudio.
 class Sensors : public RobWorkStudioPlugin
 {
     Q_OBJECT
@@ -42,18 +43,24 @@ class Sensors : public RobWorkStudioPlugin
 #endif
 
 public:
+	//! @brief Constructor.
     Sensors();
 
+    //! @brief Destructor.
     virtual ~Sensors();
 
+    //! @copydoc RobWorkStudioPlugin::initialize
     void initialize();
 
+    //! @copydoc RobWorkStudioPlugin::open
     void open(rw::models::WorkCell* workcell);
 
+    //! @copydoc RobWorkStudioPlugin::close
     void close();
 
     //void setupToolBar(QToolBar* toolbar);
 public slots:
+	//! @brief Update simulated sensors - invoked by timer.
     void updateSim();
 
 private slots:

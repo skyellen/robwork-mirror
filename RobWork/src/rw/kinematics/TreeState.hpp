@@ -63,9 +63,9 @@ namespace rw { namespace kinematics {
 
         /**
          * @brief Copy constructor.
-         * @param [in] other TreeState to copy.
+         * @param other [in] other TreeState to copy.
          */
-        explicit TreeState(const TreeState &);
+        explicit TreeState(const TreeState& other);
 
         /**
          * @brief destructor

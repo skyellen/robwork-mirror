@@ -131,48 +131,88 @@ RW_DEBUG("The value of x is " << x << ". x should be less than zero.");
  *
  * RW_ASSERT() is an assertion macro in the style of assert(). RW_ASSERT() can
  * be enabled by compiling with RW_ENABLE_ASSERT defined. Otherwise RW_ASSERT()
- * is enabled iff NDBUG is not defined.
+ * is enabled if NDBUG is not defined.
  *
  * You should prefer RW_ASSERT() to assert() everywhere with a possible
  * exception being (unsafe) access of arrays and a few other places where you
  * are sure that a run time sanity check will be a performance issue.
  */
 #ifdef RW_ENABLE_ASSERT
-#define RW_ASSERT(e) RW_ASSERT_IMPL(e, std::string(#e), __FILE__, __LINE__)
-#  define RW_ASSERT_MSG(e, msg) RW_ASSERT_IMPL(e, msg, __FILE__, __LINE__)
+#  define RW_ASSERT(e) RW_ASSERT_IMPL(e, std::string(#e), __FILE__, __LINE__)
 #else
 #  ifdef NDEBUG
 #    define RW_ASSERT(e)
-#    define RW_ASSERT_MSG(e, msg)
 #  else
 #    define RW_ASSERT(e) RW_ASSERT_IMPL(e, std::string(#e), __FILE__, __LINE__)
+#  endif
+#endif
+
+/**
+ * @brief RobWork assertions with user-friendly messages.
+ *
+ * RW_ASSERT_MSG() is an assertion macro similar to RW_ASSERT(). RW_ASSERT_MSG() can
+ * be enabled by compiling with RW_ENABLE_ASSERT defined. Otherwise RW_ASSERT_MSG()
+ * is enabled if NDBUG is not defined.
+ *
+ * RW_ASSERT_MSG() takes one additional argument, allowing printing user-friendly
+ * error message if assertion fails.
+ */
+#ifdef RW_ENABLE_ASSERT
+#  define RW_ASSERT_MSG(e, msg) RW_ASSERT_IMPL(e, msg, __FILE__, __LINE__)
+#else
+#  ifdef NDEBUG
+#    define RW_ASSERT_MSG(e, msg)
+#  else
 #    define RW_ASSERT_MSG(e, msg) RW_ASSERT_IMPL(e, msg, __FILE__, __LINE__)
 #  endif
 #endif
 
 /**
- * @brief Writes \b ostreamExpression to \b log.
+ * @brief Writes \b ostreamExpression to log with LogIndex \b id.
  *
- * \b log be of type rw::common::LogWriter or have a write(const std::string&) method.
+ * \b id be the log level of type rw::common::Log::LogIndex.
  *
  * \b ostreamExpression is an expression that is fed to an output stream.
  *
  * Example:
  * \code
  * int x = 1;
- * RW_WRITE_LOG(myLogWriter, "Warning: The value of x " << x << " is too small");
+ * RW_LOG(rw::common::Log::Debug, "Warning: The value of x " << x << " is too small");
  * \endcode
  *
- * @param log [in] LogWriter to write to
+ * @param id [in] log level to write to.
  * @param ostreamExpression [in] Stream expression which should be written to the log
  */
 #define RW_LOG(id, ostreamExpression) do { rw::common::Log::log().get(id) << ostreamExpression << std::endl; } while (0)
 
+/**
+ * @brief Writes \b ostreamExpression to error log.
+ * @param ostreamExpression [in] Stream expression which should be written to the log
+ */
 #define RW_LOG_ERROR(ostreamExpression) RW_LOG(rw::common::Log::Error, ostreamExpression)
+
+/**
+ * @brief Writes \b ostreamExpression to warning log.
+ * @param ostreamExpression [in] Stream expression which should be written to the log
+ */
 #define RW_LOG_WARNING(ostreamExpression) RW_LOG(rw::common::Log::Warning, ostreamExpression)
+
+/**
+ * @brief Writes \b ostreamExpression to debug log.
+ * @param ostreamExpression [in] Stream expression which should be written to the log
+ */
 #define RW_LOG_DEBUG(ostreamExpression) RW_LOG(rw::common::Log::Debug, ostreamExpression)
+
+/**
+ * @brief Writes \b ostreamExpression to info log.
+ * @param ostreamExpression [in] Stream expression which should be written to the log
+ */
 #define RW_LOG_INFO(ostreamExpression) RW_LOG(rw::common::Log::Info, ostreamExpression)
 
+/**
+ * @brief Convenient convertion of a string expression into a Message.
+ * @param ostreamExpression [in] stream expression which should be converted to a Message.
+ */
 #define RW_MSG(ostreamExpression) (Message(__FILE__, __LINE__)<<ostreamExpression)
 
 /**

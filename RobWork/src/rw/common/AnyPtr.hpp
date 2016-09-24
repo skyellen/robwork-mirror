@@ -11,21 +11,18 @@
 namespace rw {
 namespace common {
 
-/**
- * @brief
- */
+//! @brief Smart pointer that can point to any type, and optionally takes ownership of the object pointer.
 class AnyPtr {
-    public: // structors
-		//typedef rw::common::Ptr<AnyPtr> Ptr;
-
+    public:
+		//! @brief Construct empty null pointer.
         AnyPtr()
           : content(0)
         {
         }
 
         /**
-         * @brief constructor - ownership of pointers are allways taken
-         * @param value
+         * @brief constructor - ownership of pointer is taken
+         * @param value [in] a raw pointer.
          */
         template<typename ValueType>
         AnyPtr(ValueType* value)
@@ -34,8 +31,8 @@ class AnyPtr {
         }
 
         /**
-         * @brief constructor - ownership of pointers are allways taken
-         * @param value
+         * @brief constructor - shares ownership.
+         * @param value [in] a shared pointer.
          */
         template<typename ValueType>
         AnyPtr(const boost::shared_ptr<ValueType> & value)
@@ -43,24 +40,35 @@ class AnyPtr {
         {
         }
 
+        /**
+         * @brief Construct from Ptr - shares ownership.
+         * @param value [in] a smart pointer.
+         */
         template<typename ValueType>
         AnyPtr(const rw::common::Ptr<ValueType> & value)
           : content(new holder<ValueType>(value))
         {
         }
 
-
+        /**
+         * @brief Copy constructor - ownership is shared.
+         * @param other [in] other AnyPtr object.
+         */
         AnyPtr(const AnyPtr & other)
           : content(other.content ? other.content->clone() : 0)
         {
         }
 
-        ~AnyPtr()
-        {
-            delete content;
+        //! @brief Destructor.
+        ~AnyPtr() {
+        	if (content != 0)
+        		delete content;
         }
 
-
+        /**
+         * @brief Cast to a specific smart pointer type.
+         * @return a Ptr object pointing to object if cast success, otherwise a NULL Ptr object is returned.
+         */
 		template <class S>
         Ptr<S> cast() const {
 
@@ -72,23 +80,22 @@ class AnyPtr {
 			return ((holder<S>*)content)->_ptr.template cast<S>();
         }
 
-
-        /**
-           @brief The pointer stored in the object.
-        */
+		/**
+		 * @brief The pointer stored in the object.
+		 * @return raw pointer.
+		 */
 		template<class S>
         S* get() {
 			return  dynamic_cast<S*>((S*)content->getVoidPtr());
 		}
 
-
-        /**
-           @brief Support for implicit conversion to bool.
-        */
+		/**
+		 * @brief Support for implicit conversion to bool.
+		 */
         operator void* () const { return content->getVoidPtr(); }
 
         /**
-         * @brief equallity operator, this only tests if the pointers to the referenced objects are the same
+         * @brief Equality operator. This only tests if the pointers to the referenced objects are the same
          * and NOT if the smart pointers are the same.
          * @param p [in] smart pointer to compare with
          * @return true if the referenced objects are the same
@@ -98,14 +105,15 @@ class AnyPtr {
 
 		/**
 		 * @brief Tests if the smart pointer points to the same instance as \b p
+		 * @return true if equal, false otherwise.
 		 */
         bool operator==(void* p) const { return content->getVoidPtr()==p; }
 
-
 		/**
-		 * @brief Returns true is the smart pointer is null
+		 * @brief Check if pointer is null.
+		 * @return true is the smart pointer is null.
 		 */
-		bool isNull() {
+		bool isNull() const {
 			return content->getVoidPtr() == NULL;
 		}
 

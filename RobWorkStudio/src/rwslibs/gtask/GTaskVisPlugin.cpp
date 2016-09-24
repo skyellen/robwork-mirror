@@ -146,8 +146,8 @@ void GTaskVisPlugin::initialize() {
     getRobWorkStudio()->stateChangedEvent().add(
             boost::bind(&GTaskVisPlugin::stateChangedListener, this, _1), this);
 
-    getRobWorkStudio()->genericEvent().add(
-          boost::bind(&GTaskVisPlugin::genericEventListener, this, _1), this);
+    //getRobWorkStudio()->genericEvent().add(
+    //      boost::bind(&GTaskVisPlugin::genericEventListener, this, _1), this);
 
     getRobWorkStudio()->genericAnyEvent().add(
           boost::bind(&GTaskVisPlugin::genericAnyEventListener, this, _1, _2), this);
@@ -601,11 +601,6 @@ void GTaskVisPlugin::genericAnyEventListener(const std::string& event, boost::an
         Log::warningLog() << "GTaskVisPlugin: Event \"" << event << "\" did not have the correct datatype or an error occured!\n";
     }
 }
-
-void GTaskVisPlugin::genericEventListener(const std::string& event){
-
-}
-
 
 void GTaskVisPlugin::on_btnRecordVideo_clicked() {
 	for (size_t i = 0; i<63; i++) {

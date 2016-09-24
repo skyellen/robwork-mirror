@@ -31,47 +31,63 @@ class ImageView;
 
 namespace rws {
 
-/**
- * @brief a widget for
- */
+//! @brief A Qt widget for visualization of sensors.
 class SensorView: public QWidget {
     Q_OBJECT
 public:
+	//! @brief Smart pointer type for SensorView.
 	typedef rw::common::Ptr<SensorView> Ptr;
 
+	/**
+	 * @brief Construct new widget.
+	 * @param parent [in] owner widget.
+	 */
     SensorView(QWidget* parent = NULL):
         QWidget(parent)
     {
-
     }
 
-    virtual ~SensorView() {
-        
-    }
+    //! @brief Destructor.
+    virtual ~SensorView() {}
 
+    //! @brief Update the view.
     virtual void update() = 0;
 
+    //! @brief Make the widget current.
     virtual void makeCurrent() = 0;
 protected:
+    /**
+     * @brief Handle close event.
+     * @param event [in] the event.
+     */
     void closeEvent(QCloseEvent* event);
 
 signals:
+	/**
+	 * @brief Signal emitted when view is closed.
+	 * @param widget [in] the view just closed.
+	 */
     void viewClosed(SensorView* widget);
 };
 
 
 
 
-/**
- * @brief a view to visualize output of a camera
- */
+//! @brief a view to visualize output of a camera
 class CameraView: public SensorView {
 public:
+	/**
+	 * @brief Create a camera view.
+	 * @param camera [in] the camera sensor.
+	 * @param parent [in] owner widget.
+	 */
 	CameraView(rw::common::Ptr<rw::sensor::Camera> camera, QWidget* parent = NULL);
 
+	//! @copydoc SensorView::update
     virtual void update();
 
-    virtual void makeCurrent() {};
+	//! @copydoc SensorView::makeCurrent
+    virtual void makeCurrent() {}
 
 private:
 	rw::common::Ptr<rw::sensor::Camera> _camera;
@@ -79,14 +95,25 @@ private:
 };
 
 
+//! @brief a view to visualize the output of 2.5D scanners.
 class Scan25DView: public SensorView {
 public:
+	/**
+	 * @brief Create a 2.5D scanner view.
+	 * @param parent [in] owner widget.
+	 */
     Scan25DView(QWidget* parent = NULL);
 
+    /**
+     * @brief Initialize view.
+     * @param scanner [in] the simulated scanner.
+     */
 	virtual void initialize(rw::common::Ptr<rwlibs::simulation::SimulatedScanner25D> scanner);
 
+	//! @copydoc SensorView::update
     virtual void update();
 
+	//! @copydoc SensorView::makeCurrent
     virtual void makeCurrent();
 
 private:
@@ -96,14 +123,25 @@ private:
 
 };
 
+//! @brief a view to visualize the output of 2D scanners.
 class Scan2DView: public SensorView {
 public:
+	/**
+	 * @brief Create a 2D scanner view.
+	 * @param parent [in] owner widget.
+	 */
     Scan2DView(QWidget* parent = NULL);
 
+    /**
+     * @brief Initialize view.
+     * @param scanner [in] the simulated scanner.
+     */
     virtual void initialize(rw::common::Ptr<rwlibs::simulation::SimulatedScanner2D> scanner);
 
+	//! @copydoc SensorView::update
     virtual void update();
 
+	//! @copydoc SensorView::makeCurrent
     virtual void makeCurrent();
 
 private:

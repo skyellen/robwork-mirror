@@ -87,7 +87,10 @@ namespace common {
 		 */
 		virtual DOMElem::Ptr getRootElement() = 0;
 
-
+		/**
+		 * @brief Enable/disable debugging to the debug Log.
+		 * @param debug [in] true to enable debug output.
+		 */
         virtual void setDebug(bool debug) = 0;
 
 		// extra stuff that can be added in top of document
@@ -116,8 +119,8 @@ namespace common {
 
 	        /**
 	         * @brief get a DOM parser for a specific file format
-	         * @param
-	         * @return
+	         * @param format [in] the extension identifying the file format (without initial dot).
+	         * @return a parser if found, false otherwise.
 	         */
 	        static rw::common::Ptr<DOMParser> getDOMParser(const std::string& format);
 
@@ -138,6 +141,7 @@ namespace common {
 
 
 	protected:
+	    //! @brief Filename of schema.
 		std::string _schemaFile;
 	};
 

@@ -15,6 +15,11 @@ namespace common {
 	 */
 	class ProgramOptions {
 	public:
+		/**
+		 * @brief Construct new set of program options.
+		 * @param applicationName [in] the name of the application.
+		 * @param version [in] the version of the application.
+		 */
 		ProgramOptions(const std::string& applicationName, const std::string& version):
 			_appName(applicationName),
 			_version(version),
@@ -32,6 +37,12 @@ namespace common {
 		 * @param desc [in] description of commandline option
 		 */
 		void addStringOption(const std::string& name, const std::string& defval, const std::string& desc);
+
+		/**
+		 * @brief Set \b name of option number \b i.
+		 * @param name [in] the name.
+		 * @param i [in] index of the option.
+		 */
 		void setPositionalOption(const std::string& name, int i);
 
 		/**
@@ -41,12 +52,31 @@ namespace common {
 		 * @return if 0 is returned then help or an error
 		 */
 		int parse(int argc, char** argv);
+
+		/**
+		 * @brief Parses input from a string.
+		 * @param string [in] input line.
+		 * @return 0 if success.
+		 */
 		int parse(const std::string& string);
 
+		/**
+		 * @brief Get the underlying program options description from boost.
+		 * @return reference to options_description.
+		 */
 		boost::program_options::options_description& getOptionDescription(){ return _optionDesc; }
+
+		/**
+		 * @brief Get the underlying positional program options description from boost.
+		 * @return reference to positional_options_description.
+		 */
 		boost::program_options::positional_options_description& getPosOptionDescription(){ return _posOptionDesc; }
 
-		rw::common::PropertyMap getPropertyMap(){ return _pmap;};
+		/**
+		 * @brief Get parsed properties in RobWork format in the form of a PropertyMap.
+		 * @return the property map with parsed options.
+		 */
+		rw::common::PropertyMap getPropertyMap(){ return _pmap;}
 
 	private:
 		int checkVariablesMap(boost::program_options::variables_map &vm);

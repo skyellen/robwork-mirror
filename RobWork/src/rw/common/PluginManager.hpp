@@ -27,10 +27,15 @@ protected:
      * @brief Constructor
      * @param exedir [in] the directory in which the main executable was executed. From
      * this dir the manager will try and autodetect plugins and their locations.
+     * @warning This is not implemented!
      */
     PluginManager(const std::string& exedir);
 
 
+    /**
+     * @brief Search for plugins in standard locations.
+     * @warning This is not implemented!
+     */
     void searchForPlugins();
 
 

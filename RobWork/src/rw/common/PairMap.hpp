@@ -53,8 +53,8 @@ namespace rw { namespace common {
 
         /**
          * @brief creates a map with an initial size of s
-         * @param s [in] nr of elements of the types T with default value "defaultVal"
          * @param defaultVal [in] the default value of new instances of T
+         * @param s [in] nr of elements of the types T with default value "defaultVal"
          */
         PairMap(const T2& defaultVal, int s = 20) :
             _initialSize(s),

@@ -421,7 +421,10 @@ namespace rw { namespace common {
     public:
         //! Iterator for const PropertyBase::Ptr
         typedef MapType::const_iterator iterator;
+
+        //! @brief Type for a range of properties.
         typedef std::pair<iterator,iterator> Range;
+
         /**
            @brief Range of all PropertyBase* objects stored.
 

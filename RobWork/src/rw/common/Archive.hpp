@@ -73,9 +73,13 @@ namespace common {
 
 		// TODO: make extension point for archives
 	protected:
+		//! @copydoc open(const std::string&)
 		virtual void doOpenArchive(const std::string& filename) = 0;
+		//! @copydoc open(std::iostream&)
 		virtual void doOpenArchive(std::iostream& stream) = 0;
+		//! @copydoc open(std::istream&)
 		virtual void doOpenInput(std::istream& ifs) = 0;
+		//! @copydoc open(std::ostream&)
 		virtual void doOpenOutput(std::ostream& ofs) = 0;
 	};
 

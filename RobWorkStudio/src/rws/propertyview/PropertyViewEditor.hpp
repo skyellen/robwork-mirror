@@ -35,12 +35,17 @@ class QtVariantPropertyManager;
 
 class QWidget;
 
+//! @brief Qt widget for editing a PropertyMap.
 class PropertyViewEditor : public QtTreePropertyBrowser {
 Q_OBJECT
 public:
-
+	/**
+	 * @brief Make new editor.
+	 * @param parent [in] the owning parent widget.
+	 */
     PropertyViewEditor(QWidget *parent);
 
+    //! @brief Destructor.
     virtual ~PropertyViewEditor();
 
     /**

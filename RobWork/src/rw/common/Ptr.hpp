@@ -87,6 +87,10 @@ namespace rw { namespace common {
             _owned_ptr(ptr)
         {}
 
+        /**
+         * @brief Cast the smart pointer to a different type.
+         * @return smart pointer that can be null if cast was not possible.
+         */
         template <class S>
         Ptr<S> cast() {
         	// this should test if we cast FROM an Any type
@@ -117,6 +121,7 @@ namespace rw { namespace common {
 				return Ptr<S>(dynamic_cast<S*>(_ptr));
         }
 
+        //! @copydoc cast()
 		template <class S>
         Ptr<S> cast() const {
             if (_owned_ptr)
@@ -125,6 +130,14 @@ namespace rw { namespace common {
                 return Ptr<S>(dynamic_cast<S*>(_ptr));
         }
 
+		/**
+		 * @brief Cast the smart pointer statically to a different type.
+		 *
+		 * This is more efficient if it is already known that the object is of a certain type.
+		 * If this is not known, please use the more safe cast() instead.
+		 *
+         * @return smart pointer that can be null if cast was not possible.
+		 */
         template <class S>
         Ptr<S> scast() {
 			if (_owned_ptr)
@@ -133,6 +146,7 @@ namespace rw { namespace common {
 				return Ptr<S>(static_cast<S*>(_ptr));
         }
 
+        //! @copydoc scast()
 		template <class S>
         Ptr<S> scast() const {
             if (_owned_ptr)

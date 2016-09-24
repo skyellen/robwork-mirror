@@ -42,7 +42,7 @@ namespace common {
         inline bool empty() {
             boost::mutex::scoped_lock lock(_mutex);
             return _queue.empty();
-        };
+        }
 
         /**
          * @brief add data to the queue
@@ -54,7 +54,7 @@ namespace common {
             _size++;
             //lock.unlock();
             _cond.notify_one();
-        };
+        }
 
         /**
          * @brief try to pop data from the queue. If no data is available then false is returned
@@ -100,7 +100,7 @@ namespace common {
             */
 
             return true;
-        };
+        }
 
         /**
          * @brief test if the queue contain a specific data value. This is slow O(N)
@@ -120,6 +120,11 @@ namespace common {
             return false;
         }
 
+        /**
+         * @brief Pop data from the queue in blocking manner and print the element to standard output.
+         * @param wp [out] data that is popped from the queue.
+         * @return true.
+         */
         inline bool popAndPrint(T *wp) {
             boost::mutex::scoped_lock lock(_mutex);
             while(_queue.empty())
@@ -143,9 +148,13 @@ namespace common {
 
             std::cout << "-------------------------" << std::endl;
             return true;
-        };
+        }
 
-        inline size_t size() { return _size; };
+        /**
+         * @brief Get the size of the queue.
+         * @return the size.
+         */
+        inline size_t size() { return _size; }
 
     private:
         std::queue<T> _queue;

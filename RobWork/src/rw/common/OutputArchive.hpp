@@ -43,6 +43,7 @@ namespace common {
 		/**
 		 * @brief create a serialized scope in which objects can be written
 		 * @param id [in] id of the scope
+		 * @param idDefault [in] (optional) default id to use if \b id is an empty string.
 		 */
 	    void writeEnterScope(const std::string& id, const std::string& idDefault=""){
 	    	if(id.empty()){
@@ -55,6 +56,7 @@ namespace common {
 		/**
 		 * @brief leave the current scope
 		 * @param id [in] id of the scope
+		 * @param idDefault [in] (optional) default id to use if \b id is an empty string.
 		 */
 	    void writeLeaveScope(const std::string& id, const std::string& idDefault=""){
 	    	if(id.empty()){
@@ -111,30 +113,62 @@ namespace common {
 
 
 		// writing primitives to archive
+	    /**
+	     * @brief Write value \b val to archive with identifier \b id.
+	     * @param val [in] value to write.
+	     * @param id [in] identifier for the value.
+	     */
 		virtual void doWrite(bool val, const std::string& id) = 0;
+		//! @copydoc doWrite(bool,const std::string&)
 		virtual void doWrite(boost::int8_t val, const std::string& id) = 0;
+		//! @copydoc doWrite(bool,const std::string&)
 		virtual void doWrite(boost::uint8_t val, const std::string& id) = 0;
+		//! @copydoc doWrite(bool,const std::string&)
 		virtual void doWrite(boost::int16_t val, const std::string& id) = 0;
+		//! @copydoc doWrite(bool,const std::string&)
 		virtual void doWrite(boost::uint16_t val, const std::string& id) = 0;
+		//! @copydoc doWrite(bool,const std::string&)
 		virtual void doWrite(boost::int32_t val, const std::string& id) = 0;
+		//! @copydoc doWrite(bool,const std::string&)
 		virtual void doWrite(boost::uint32_t val, const std::string& id) = 0;
+		//! @copydoc doWrite(bool,const std::string&)
 		virtual void doWrite(boost::int64_t val, const std::string& id) = 0;
+		//! @copydoc doWrite(bool,const std::string&)
 		virtual void doWrite(boost::uint64_t val, const std::string& id) = 0;
+		//! @copydoc doWrite(bool,const std::string&)
 		virtual void doWrite(float val, const std::string& id) = 0;
+		//! @copydoc doWrite(bool,const std::string&)
 		virtual void doWrite(double val, const std::string& id) = 0;
+		//! @copydoc doWrite(bool,const std::string&)
 		virtual void doWrite(const std::string& val, const std::string& id) = 0;
 
+	    /**
+	     * @brief Write vector \b val to archive with identifier \b id.
+	     * @param val [in] vector to write.
+	     * @param id [in] identifier for the vector.
+	     */
 		virtual void doWrite(const std::vector<bool>& val, const std::string& id) = 0;
+		//! @copydoc doWrite(const std::vector<bool>&,const std::string&)
 		virtual void doWrite(const std::vector<boost::int8_t>& val, const std::string& id) = 0;
+		//! @copydoc doWrite(const std::vector<bool>&,const std::string&)
 		virtual void doWrite(const std::vector<boost::uint8_t>& val, const std::string& id) = 0;
+		//! @copydoc doWrite(const std::vector<bool>&,const std::string&)
 		virtual void doWrite(const std::vector<boost::int16_t>& val, const std::string& id) = 0;
+		//! @copydoc doWrite(const std::vector<bool>&,const std::string&)
 		virtual void doWrite(const std::vector<boost::uint16_t>& val, const std::string& id) = 0;
+		//! @copydoc doWrite(const std::vector<bool>&,const std::string&)
 		virtual void doWrite(const std::vector<boost::int32_t>& val, const std::string& id) = 0;
+		//! @copydoc doWrite(const std::vector<bool>&,const std::string&)
 		virtual void doWrite(const std::vector<boost::uint32_t>& val, const std::string& id) = 0;
+		//! @copydoc doWrite(const std::vector<bool>&,const std::string&)
 		virtual void doWrite(const std::vector<boost::int64_t>& val, const std::string& id) = 0;
+		//! @copydoc doWrite(const std::vector<bool>&,const std::string&)
 		virtual void doWrite(const std::vector<boost::uint64_t>& val, const std::string& id) = 0;
+		//! @copydoc doWrite(const std::vector<bool>&,const std::string&)
 		virtual void doWrite(const std::vector<float>& val, const std::string& id) = 0;
+		//! @copydoc doWrite(const std::vector<bool>&,const std::string&)
 		virtual void doWrite(const std::vector<double>& val, const std::string& id) = 0;
+		//! @copydoc doWrite(const std::vector<bool>&,const std::string&)
 		virtual void doWrite(const std::vector<std::string>& val, const std::string& id) = 0;
 
 		/**
@@ -166,7 +200,16 @@ namespace common {
 			writeImpl(object, id);
 		}
 
+		/**
+		 * @brief Enter a scope.
+		 * @param id [in] identifier for the scope.
+		 */
 		virtual void doWriteEnterScope(const std::string& id) = 0;
+
+		/**
+		 * @brief Leave a scope.
+		 * @param id [in] identifier for the scope.
+		 */
 		virtual void doWriteLeaveScope(const std::string& id) = 0;
 
 

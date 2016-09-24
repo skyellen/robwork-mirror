@@ -98,6 +98,11 @@ namespace rw { namespace common {
         	return *this;
         }
 
+        /**
+         * @brief Write Message to log.
+         * @param msg [in] the message.
+         * @return a reference to this LogWriter for chaining of stream operators.
+         */
         LogWriter& operator<<(const Message& msg){
             write(msg);
             return *this;

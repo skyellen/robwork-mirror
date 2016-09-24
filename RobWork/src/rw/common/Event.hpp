@@ -208,6 +208,10 @@ namespace common {
 			return std::make_pair(_listeners.begin(), _listeners.end());
 		}
 
+		/**
+		 * @brief Get the list of listeners for this event.
+		 * @return list of listeners.
+		 */
 		std::list<Listener>& getListenerList(){ return _listeners; }
 
 	private:
@@ -229,49 +233,82 @@ namespace common {
     //template<class CallBackMethod> class FireFunctor<CallBackMethod,_n1,_n2,_n3,_n4> : public FireFunctor0<CallBackMethod> {};
 
 
-
     //! FireFunctor with 0 arguments
     template<class CallBackMethod, class T1, class T2, class T3, class T4, class T5> struct FireFunctor {
     public:
+    	/**
+    	 * @brief Constructor.
+    	 * @param event [in] the event.
+    	 */
         FireFunctor(Event<CallBackMethod>* event):_event(event){}
+        //! @brief Functor operator for invoking the callback methods on all listeners.
         void operator()(){
-            BOOST_FOREACH(typename Event<CallBackMethod>::Listener& listener, _event->getListenerList()) { listener.callback( ); } };
+            BOOST_FOREACH(typename Event<CallBackMethod>::Listener& listener, _event->getListenerList()) { listener.callback( ); } }
+    private:
         Event<CallBackMethod> *_event;
     };
 
     //! FireFunctor with 1 arguments
     template<class CallBackMethod, class T1> struct FireFunctor<CallBackMethod, T1,_n1,_n1,_n1, _n1> {
+    	//! @brief Type of the event.
         typedef Event<CallBackMethod, T1> EventType;
+    	/**
+    	 * @brief Constructor.
+    	 * @param event [in] the event.
+    	 */
         FireFunctor(EventType* event):_event(event){}
+        //! @brief Functor operator for invoking the callback methods on all listeners.
         void operator()(T1 t1){
-            BOOST_FOREACH(typename EventType::Listener& listener, _event->getListenerList()) { listener.callback( t1 ); } };
+            BOOST_FOREACH(typename EventType::Listener& listener, _event->getListenerList()) { listener.callback( t1 ); } }
+    private:
         EventType *_event;
     };
 
     //! FireFunctor with 2 arguments
     template<class CallBackMethod, class T1, class T2> struct FireFunctor<CallBackMethod, T1, T2,_n1,_n1, _n1> {
+    	//! @brief Type of the event.
         typedef Event<CallBackMethod, T1, T2> EventType;
+    	/**
+    	 * @brief Constructor.
+    	 * @param event [in] the event.
+    	 */
         FireFunctor(EventType* event):_event(event){}
+        //! @brief Functor operator for invoking the callback methods on all listeners.
         void operator()(T1 t1, T2 t2){
-            BOOST_FOREACH(typename EventType::Listener& listener, _event->getListenerList()) { listener.callback( t1, t2 ); } };
+            BOOST_FOREACH(typename EventType::Listener& listener, _event->getListenerList()) { listener.callback( t1, t2 ); } }
+    private:
         EventType *_event;
     };
 
     //! FireFunctor with 3 arguments
     template<class CallBackMethod, class T1, class T2, class T3> struct FireFunctor<CallBackMethod, T1, T2, T3,_n1, _n1> {
+    	//! @brief Type of the event.
         typedef Event<CallBackMethod, T1, T2, T3> EventType;
+    	/**
+    	 * @brief Constructor.
+    	 * @param event [in] the event.
+    	 */
         FireFunctor(EventType* event):_event(event){}
+        //! @brief Functor operator for invoking the callback methods on all listeners.
         void operator()(T1 t1, T2 t2, T3 t3){
-            BOOST_FOREACH(typename EventType::Listener& listener, _event->getListenerList()) { listener.callback( t1, t2, t3 ); } };
+            BOOST_FOREACH(typename EventType::Listener& listener, _event->getListenerList()) { listener.callback( t1, t2, t3 ); } }
+    private:
         EventType *_event;
     };
 
     //! FireFunctor with 4 arguments
     template<class CallBackMethod, class T1, class T2, class T3, class T4> struct FireFunctor<CallBackMethod, T1, T2, T3, T4, _n1> {
+    	//! @brief Type of the event.
         typedef Event<CallBackMethod, T1, T2, T3, T4> EventType;
+    	/**
+    	 * @brief Constructor.
+    	 * @param event [in] the event.
+    	 */
         FireFunctor(EventType* event):_event(event){}
+        //! @brief Functor operator for invoking the callback methods on all listeners.
         void operator()(T1 t1, T2 t2, T3 t3, T4 t4){
-            BOOST_FOREACH(typename EventType::Listener& listener, _event->getListenerList()) { listener.callback( t1, t2, t3, t4 ); } };
+            BOOST_FOREACH(typename EventType::Listener& listener, _event->getListenerList()) { listener.callback( t1, t2, t3, t4 ); } }
+    private:
         EventType *_event;
     };
 
