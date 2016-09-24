@@ -81,6 +81,11 @@ namespace rw { namespace kinematics {
             return _offsets[id];
         }
 
+        /**
+         * @brief Get the position in cache list where \b data is stored.
+         * @param data [in] the data to look for.
+         * @return the id or a negative value if not found.
+         */
         inline int getCacheIdx(const StateData& data) const
         {
             const int id =  data.getID();
@@ -197,8 +202,17 @@ namespace rw { namespace kinematics {
             return _datas;
         }
 
+        /**
+         * @brief Get the position in cache list where state data with \b id is stored.
+         * @param id [in] state data id.
+         * @return the id or a negative value if not found.
+         */
         inline int getCacheIdx(int id) const { return _sdataTCacheIdx[id]; }
 
+        /**
+         * @brief Get the maximum number of caches possible.
+         * @return number of caches.
+         */
         inline int getMaxCacheIdx() const { return  _nrCaches; }
 
     private:

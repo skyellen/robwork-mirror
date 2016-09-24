@@ -52,20 +52,36 @@ namespace math {
 	class Pose2D
 	{
 	public:
+		//! @brief Zero-initialized Pose2D.
 		Pose2D() :
 			_pos(0,0),
 			_theta(0)
 		{}
 
+		/**
+		 * @brief Constructor.
+		 * @param pos [in] the position.
+		 * @param theta [in] the angle.
+		 */
 		Pose2D(rw::math::Vector2D<T> pos, T theta) :
 			_pos(pos),
 			_theta(theta)
 		{}
 
+		/**
+		 * @brief Constructor.
+		 * @param x [in] the value of the first position dimension.
+		 * @param y [in] the value of the second position dimension.
+		 * @param theta [in] the angle.
+		 */
 		Pose2D(T x, T y, T theta) :
 			_pos(x,y), _theta(theta)
 		{}
 
+		/**
+		 * @brief Constructor.
+		 * @param transform [in] a 2D transform giving the pose.
+		 */
 		Pose2D(const rw::math::Transform2D<T>& transform) :
 			_pos(transform.P()),
 			_theta(
@@ -75,16 +91,41 @@ namespace math {
 					transform.R()(0, 0)))
 		{}
 
+		/**
+		 * @brief Get the first dimension of the position vector.
+		 * @return the position in the first dimension.
+		 */
 		T& x(){return _pos[0];}
+
+		/**
+		 * @brief Get the second dimension of the position vector.
+		 * @return the position in the second dimension.
+		 */
 		T& y(){return _pos[1];}
+
+		/**
+		 * @brief Get the angle.
+		 * @return the angle.
+		 */
 		T& theta(){return _theta;}
+
+		/**
+		 * @brief Get the position vector.
+		 * @return the position.
+		 */
 		rw::math::Vector2D<T>& getPos(){return _pos;}
 
+		//! @copydoc x()
 		T x() const { return _pos[0]; }
-		T y() const { return _pos[1]; }
-		T theta() const { return _theta; }
-		const rw::math::Vector2D<T>& getPos() const { return _pos; }
 
+		//! @copydoc y()
+		T y() const { return _pos[1]; }
+
+		//! @copydoc theta()
+		T theta() const { return _theta; }
+
+		//! @copydoc getPos()
+		const rw::math::Vector2D<T>& getPos() const { return _pos; }
 
         /**
          * @brief Returns reference to vector element (x,y,theta)
@@ -134,17 +175,22 @@ namespace math {
         	return _theta;
         }
 
-
-		// The transform corresponding to the pose.
-		static
-		rw::math::Transform2D<T> transform(const Pose2D<T>& pose){
+        /**
+         * @brief The transform corresponding to the pose.
+         * @param pose [in] the pose.
+         * @return equivalent 2D transform.
+         */
+		static rw::math::Transform2D<T> transform(const Pose2D<T>& pose){
 			return rw::math::Transform2D<T>(
 					rw::math::Vector2D<T>(pose.x(), pose.y()),
 					rw::math::Rotation2D<T>(pose.theta()));
 		}
 
-		static
-		void print(const Pose2D<T>& pose)
+		/**
+		 * @brief Print to standard output.
+		 * @param pose [in] the pose to print.
+		 */
+		static void print(const Pose2D<T>& pose)
 		{
 		    std::cout
 		        << "( x: " << pose.x()
@@ -153,10 +199,12 @@ namespace math {
 		        << ")";
 		}
 
-
-		// A vector of (x, y, theta).
-		static
-		boost::numeric::ublas::vector<T> toUblas(const Pose2D& pose){
+		/**
+		 * @brief Convert to a Boost vector of (x, y, theta).
+		 * @param pose [in] the pose.
+		 * @return boost vector.
+		 */
+		static boost::numeric::ublas::vector<T> toUblas(const Pose2D& pose){
 			typedef boost::numeric::ublas::vector<T> Vec;
 			    Vec vec(3);
 			    vec(0) = pose.x();
@@ -176,12 +224,29 @@ namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Pose2D
+	 */
+    template<> void write(const rw::math::Pose2D<double>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
 
-    template<> void write(const rw::math::Pose2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    template<> void write(const rw::math::Pose2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Pose2D
+	 */
+    template<> void write(const rw::math::Pose2D<float>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
 
-    template<> void read(rw::math::Pose2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    template<> void read(rw::math::Pose2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Pose2D
+	 */
+    template<> void read(rw::math::Pose2D<double>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Pose2D
+	 */
+    template<> void read(rw::math::Pose2D<float>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 
 }}} // end namespaces
 

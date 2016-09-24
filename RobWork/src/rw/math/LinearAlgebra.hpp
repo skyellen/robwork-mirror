@@ -65,21 +65,21 @@ namespace rw { namespace math {
     {
     public:
 
-    	//! types used to reduce namespace cluttering
+    	//! @brief Type for Eigen matrices used to reduce namespace cluttering.
     	template<class T=double>
     	struct EigenMatrix {
     	    //! type of this matrix
 			typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> type;
     	};
 
+    	//! @brief Type for Eigen vectors, used to reduce namespace cluttering.
     	template<class T=double>
     	struct EigenVector {
     	    //! type of this Vector
 			typedef Eigen::Matrix<T, Eigen::Dynamic, 1> type;
     	};
 
-
-
+    	//! @brief Type for Boost matrices used to reduce namespace cluttering.
     	template<class T=double>
     	struct BoostMatrix {
     	    //! type of this matrix
@@ -613,6 +613,11 @@ namespace rw { namespace math {
 
 #endif //RW_USE_UBLAS_LAPACK
 
+		/**
+		 * @brief Decomposition for a symmetric matrix.
+		 * @param Am1 [in] a symmetric matrix.
+		 * @return the decomposition as a pair with eigenvectors and eigenvalues.
+		 */
 		template<class T>
 		//static std::pair<typename EigenMatrix<T>::type, typename EigenVector<T>::type > eigenDecompositionSymmetric(const typename EigenMatrix<T>::type& Am1)
 		static std::pair<typename EigenMatrix<T>::type, typename EigenVector<T>::type > eigenDecompositionSymmetric(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& Am1)
@@ -621,8 +626,12 @@ namespace rw { namespace math {
 			eigenSolver.compute(Am1);
 			return std::make_pair(eigenSolver.eigenvectors(), eigenSolver.eigenvalues());
 		}
-			
-		
+
+		/**
+		 * @brief Eigen decomposition of a matrix.
+		 * @param Am1 [in] the matrix.
+		 * @return the decomposition as a pair with eigenvectors and eigenvalues.
+		 */
 		template<class T>
 		static std::pair<typename EigenMatrix<std::complex<T> >::type, typename EigenVector<std::complex<T> >::type > eigenDecomposition(const typename Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& Am1)
         {

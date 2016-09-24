@@ -198,7 +198,7 @@ namespace rw { namespace math {
 		 *
 		 * Assumes the wrenches are represented in the same coordinate system.
          *
-         * @param screw [in] Wrench to add
+         * @param wrench [in] Wrench to add
          *
          * @return reference to the Wrench6D to support additional assignments.
          */
@@ -213,7 +213,7 @@ namespace rw { namespace math {
          *
 		 * Assumes the wrenches are represented in the same coordinate system.
 		 *
-         * @param screw [in] Velocity screw to subtract
+         * @param wrench [in] Velocity screw to subtract
          *
          * @return reference to the Wrench6D to support additional
          * assignments.
@@ -243,8 +243,6 @@ namespace rw { namespace math {
 
         /**
          * @brief Scales wrench and returns scaled version
-         *
-         * @param wrench [in] Wrench to scale
          * @param s [in] scaling value
          * @return Scaled wrench
          */
@@ -433,7 +431,7 @@ namespace rw { namespace math {
          * @brief Subtracts two velocity screws
          * \f$\mathbf{\nu}_{12}=\mathbf{\nu}_1-\mathbf{\nu}_2\f$
          *
-         * \param wrench [in] \f$\mathbf{w}_1\f$
+         * \param rhs [in] \f$\mathbf{w}_1\f$
          * \return the wrench \f$\mathbf{w}_{12} \f$
          */
         const Wrench6D<T> operator-(const Wrench6D<T>& rhs) const
@@ -469,8 +467,6 @@ namespace rw { namespace math {
         /**
          * @brief Takes the 1-norm of the wrench. All elements both
          * force and torque are given the same weight.
-         *
-         * @param wrench [in] the wrench
          * @return the 1-norm
          */
         T norm1() const {
@@ -494,8 +490,6 @@ namespace rw { namespace math {
         /**
          * @brief Takes the 2-norm of the wrench. All elements both
          * force and torque are given the same weight
-         *
-         * @param wrench [in] the wrench
          * @return the 2-norm
          */
         T norm2() const {
@@ -593,10 +587,29 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-template<> void write(const rw::math::Wrench6D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-template<> void write(const rw::math::Wrench6D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-template<> void read(rw::math::Wrench6D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-template<> void read(rw::math::Wrench6D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+/**
+ * @copydoc rw::common::serialization::write
+ * @relatedalso rw::math::Wrench6D
+ */
+template<> void write(const rw::math::Wrench6D<double>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+/**
+ * @copydoc rw::common::serialization::write
+ * @relatedalso rw::math::Wrench6D
+ */
+template<> void write(const rw::math::Wrench6D<float>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+/**
+ * @copydoc rw::common::serialization::read
+ * @relatedalso rw::math::Wrench6D
+ */
+template<> void read(rw::math::Wrench6D<double>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
+
+/**
+ * @copydoc rw::common::serialization::read
+ * @relatedalso rw::math::Wrench6D
+ */
+template<> void read(rw::math::Wrench6D<float>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 }}} // end namespaces
 
 #endif // end include guard

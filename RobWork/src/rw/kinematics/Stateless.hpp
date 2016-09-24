@@ -39,6 +39,7 @@ namespace kinematics {
     	Stateless():_registered(false) {}
 
     public:
+    	//! @brief Smart pointer type for Stateless.
     	typedef rw::common::Ptr<Stateless> Ptr;
 
     	//! destructor
@@ -60,11 +61,21 @@ namespace kinematics {
     	//! unregisters all state data of this stateless object
     	virtual void unregister();
 
+    	/**
+    	 * @brief Get the state structure.
+    	 * @return the state structure.
+    	 */
     	StateStructure::Ptr getStateStructure(){ return _stateStruct; }
 
+    	//! @copydoc getStateStructure
     	const StateStructure::Ptr getStateStructure() const { return _stateStruct; }
 
+    	/**
+    	 * @brief Check if object has registered its state.
+    	 * @return true if registered, false otherwise.
+    	 */
     	bool isRegistered(){ return _registered;}
+
     protected:
 
     	//! implementations of sensor should add all their stateless data on initialization
@@ -73,6 +84,10 @@ namespace kinematics {
     		add( data.getStateData() );
     	}
 
+    	/**
+    	 * @brief Add data.
+    	 * @param data [in] data to add.
+    	 */
     	void add( StateData* data ){
     		add( boost::shared_ptr<StateData>(data) );
     	}
@@ -84,8 +99,11 @@ namespace kinematics {
     		_datas.push_back( data );
     	}
 
+    	//! @brief True if object has registered its state.
     	bool _registered;
+    	//! @brief Data.
     	std::vector<boost::shared_ptr<StateData> > _datas;
+    	//! @brief The state structure.
     	StateStructure::Ptr _stateStruct;
     };
 

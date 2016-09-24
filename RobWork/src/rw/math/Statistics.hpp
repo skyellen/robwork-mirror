@@ -137,7 +137,7 @@ public:
 	/**
 	 * @brief Returns the mean of the values added 
 	 *
-	 * The mean is computed as \$\frac{1}{n} \Sigma_{d\in data}d \$
+	 * The mean is computed as @f$ \frac{1}{n} \Sigma_{d\in data}d @f$
 	 */
 	T mean() const {
 		return Statistics::mean(_data);
@@ -154,8 +154,8 @@ public:
 
 	/**
 	 * @brief Returns the variance of the values added 
-	 * The variance is computed as \$\frac{1}{n-1} \Sigma_{d\in data}(m-\my)^2 \$
-	 * where \$\my\$ is the mean of the data.
+	 * The variance is computed as @f$ \frac{1}{n-1} \Sigma_{d\in data}(m-\mu)^2 @f$
+	 * where @f$ \mu @f$ is the mean of the data.
 	 */
 	T variance() const {
 		return Statistics::variance(_data, Statistics::mean(_data));

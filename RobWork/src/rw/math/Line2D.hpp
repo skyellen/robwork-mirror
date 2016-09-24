@@ -115,14 +115,18 @@ public:
 	/**
 	 * @brief first point on the line
 	 */
-	rw::math::Vector2D<>& p1(){return _p1;};
-	const rw::math::Vector2D<>& p1() const {return _p1;};
+	rw::math::Vector2D<>& p1(){return _p1;}
+
+	//! @copydoc p1()
+	const rw::math::Vector2D<>& p1() const {return _p1;}
 
 	/**
 	 * @brief second point on the line
 	 */
-	rw::math::Vector2D<>& p2(){ return _p2; };
-	const rw::math::Vector2D<>& p2() const {return _p2;};
+	rw::math::Vector2D<>& p2(){ return _p2; }
+
+	//! @copydoc p2()
+	const rw::math::Vector2D<>& p2() const {return _p2;}
 
 	/**
 	 * @brief calculates the unit normal of the line
@@ -143,8 +147,17 @@ private:
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-	template<> void write(const rw::math::Line2D& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<> void read(rw::math::Line2D& tmp, rw::common::InputArchive& iar, const std::string& id);
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Line2D
+	 */
+	template<> void write(const rw::math::Line2D& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Line2D
+	 */
+	template<> void read(rw::math::Line2D& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 }}} // end namespaces
 
 

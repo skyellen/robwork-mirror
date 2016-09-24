@@ -82,9 +82,9 @@ namespace rw { namespace math {
 
 
 		/**
-         * @brief Creates a 3D VectorND from VectorND_expression
+         * @brief Creates a 3D VectorND from Eigen type.
          *
-         * @param r [in] an ublas VectorND_expression
+         * @param v [in] an Eigen vector.
          */
 		template <class R>
 		VectorND(const Eigen::MatrixBase<R>& v)
@@ -94,6 +94,11 @@ namespace rw { namespace math {
 			_vec = v;
 		}
 
+		/**
+         * @brief Creates a 3D VectorND from Boost vector expression.
+         *
+         * @param r [in] an ublas VectorND_expression
+         */
         template <class R>
         explicit VectorND(const boost::numeric::ublas::vector_expression<R>& r)
         {
@@ -298,12 +303,8 @@ namespace rw { namespace math {
         }
 
         /**
-           @brief Compares \b a and \b b for equality.
-
-           @relates VectorND
-
-           @param a [in]
-           @param b [in]
+           @brief Compare with \b b for equality.
+           @param b [in] other vector.
            @return True if a equals b, false otherwise.
         */
         bool operator==(const VectorND<N,T>& b) const
@@ -314,16 +315,22 @@ namespace rw { namespace math {
             return true;
         }
 
-        void write(rw::common::OutputArchive& oar, const std::string& id) const {
-        	oar.write(Math::toStdVector(*this, N), id, "VectorND");
+        //! @copydoc Serializable::write
+        void write(rw::common::OutputArchive& oarchive, const std::string& id) const {
+        	oarchive.write(Math::toStdVector(*this, N), id, "VectorND");
         }
 
-        void read(rw::common::InputArchive& iar, const std::string& id){
+        //! @copydoc Serializable::read
+        void read(rw::common::InputArchive& iarchive, const std::string& id){
         	std::vector<T> result(N,0);
-        	iar.read(result, id, "VectorND");
+        	iarchive.read(result, id, "VectorND");
         	Math::fromStdVector(result, *this);
         }
 
+        /**
+         * @brief Get zero-initialized vector.
+         * @return vector.
+         */
 		static VectorND<N,T> zero(){ return Eigen::Matrix<T,N,1>::Zero(); }
 
 
@@ -359,6 +366,23 @@ namespace rw { namespace math {
         //return cross(v1.e(),v2.e());
     }
 
+    /**
+     * @brief Calculates the 3D VectorND cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
+     * @param v1 [in] @f$ \mathbf{v1} @f$
+     * @param v2 [in] @f$ \mathbf{v2} @f$
+     * @param dst [out] the 3D VectorND cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
+     *
+     * The 3D VectorND cross product is defined as:
+     * @f$
+     * \mathbf{v1} \times \mathbf{v2} = \left[\begin{array}{c}
+     *  v1_y * v2_z - v1_z * v2_y \\
+     *  v1_z * v2_x - v1_x * v2_z \\
+     *  v1_x * v2_y - v1_y * v2_x
+     * \end{array}\right]
+     * @f$
+     *
+     * @relates VectorND
+     */
     template <size_t ND, class T>
     void cross(const VectorND<ND,T>& v1, const VectorND<ND,T>& v2, VectorND<ND,T>& dst)
     {

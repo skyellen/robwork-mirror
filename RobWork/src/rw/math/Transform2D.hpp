@@ -262,14 +262,29 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-	template<>
-    void write(const rw::math::Transform2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<>
-	void write(const rw::math::Transform2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<>
-	void read(rw::math::Transform2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-	template<>
-	void read(rw::math::Transform2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Transform2D
+	 */
+	template<> void write(const rw::math::Transform2D<double>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Transform2D
+	 */
+	template<> void write(const rw::math::Transform2D<float>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Transform2D
+	 */
+	template<> void read(rw::math::Transform2D<double>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Transform2D
+	 */
+	template<> void read(rw::math::Transform2D<float>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 }}} // end namespaces
 
 

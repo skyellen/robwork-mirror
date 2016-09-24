@@ -103,13 +103,13 @@ namespace rw { namespace math {
         Q(size_t n, double value);
 
         /**
-         * @brief Creates a Q of length \b n and initialize all values in Q to the values specified after \n
+         * @brief Creates a Q of length \b n and initialize all values in Q to the values specified after \b n
          *
          * The number of arguments after \b n must match the number n.
          *
          * @param n [in] Length of q.
-         * @param arg1 [in] Value to initialize q(0)
-         * @param arg2 [in] Value to initialize q(1)
+         * @param a0 [in] Value to initialize q(0)
+         * @param a1 [in] Value to initialize q(1)
          * @param ... [in] Values to initialize [q(2);q(n-1)]
          *
          */
@@ -127,13 +127,21 @@ namespace rw { namespace math {
             va_end(ap);
           }*/
         Q(size_t n, double a0, double a1);
+        //! @copydoc Q(size_t,double,double)
         Q(size_t n, double a0, double a1, double a2);
+        //! @copydoc Q(size_t,double,double)
         Q(size_t n, double a0, double a1, double a2, double a3);
+        //! @copydoc Q(size_t,double,double)
         Q(size_t n, double a0, double a1, double a2, double a3, double a4);
+        //! @copydoc Q(size_t,double,double)
         Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5);
+        //! @copydoc Q(size_t,double,double)
         Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5, double a6);
+        //! @copydoc Q(size_t,double,double)
         Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7);
+        //! @copydoc Q(size_t,double,double)
         Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7, double a8);
+        //! @copydoc Q(size_t,double,double)
         Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7, double a8, double a9);
 
         /**
@@ -149,6 +157,10 @@ namespace rw { namespace math {
                 _vec(i) = r[i];
         }
 
+        /**
+         * @brief Construct from Eigen base.
+         * @param q [in] Eigen base.
+         */
 		Q(const Base& q):
 		_vec(q.rows())
 		{
@@ -156,6 +168,7 @@ namespace rw { namespace math {
                 _vec(i) = q(i,0);
 		}
 
+		//! @brief Destructor.
 		virtual ~Q();
 
         /**
@@ -257,6 +270,11 @@ namespace rw { namespace math {
             return res;
         }
 
+        /**
+         * @brief Set subpart of vector.
+         * @param index [in] the initial index.
+         * @param part [in] the part to insert beginning from \b index.
+         */
         void setSubPart(size_t index, const Q& part) {
             RW_ASSERT(index + part.size() <= size());
             for (size_t i = 0; i<part.size(); i++) {
@@ -439,6 +457,10 @@ namespace rw { namespace math {
 			return false;
 		}
 
+		/**
+		 * @brief Convert to a standard vector.
+		 * @param v [out] the result.
+		 */
 	    void toStdVector(std::vector<double>& v){
 	    	v.resize(size());
 	    	for (size_t i = 0; i<size(); i++) {
@@ -446,6 +468,10 @@ namespace rw { namespace math {
 	    	}
 	    }
 
+	    /**
+	     * @brief Convert to a standard vector.
+	     * @return the result.
+	     */
 	    std::vector<double> toStdVector(){
 	    	std::vector<double> v(size());
 	    	toStdVector(v);
@@ -528,10 +554,17 @@ namespace rw{ namespace common {
     class OutputArchive;
     class InputArchive;
 namespace serialization {
-	template<>
-    void write(const rw::math::Q& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<>
-	void read(rw::math::Q& tmp, rw::common::InputArchive& iar, const std::string& id);
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Q
+	 */
+	template<> void write(const rw::math::Q& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Q
+	 */
+	template<> void read(rw::math::Q& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 }}} // end namespaces
 
 

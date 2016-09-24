@@ -137,14 +137,40 @@ namespace rw { namespace kinematics {
             state.getQState().setQ(*this, vals);
         }
 
-        inline bool hasCache() const { return _hasCache; };
+        /**
+         * @brief Check is state data includes a cache.
+         * @return true if cache, false otherwise.
+         */
+        inline bool hasCache() const { return _hasCache; }
 
         //StateData(int size, StateCache::Ptr defaultCache, const std::string& name);
+        /**
+         * @brief Get the cache.
+         * @param state [in] the state.
+         * @return the cache.
+         */
         rw::common::Ptr<StateCache> getCache(const State& state) const ;
+
+        //! @copydoc getCache(const State&) const .
         rw::common::Ptr<StateCache> getCache(State& state);
+
+        /**
+         * @brief Get default cache.
+         * @return the cache.
+         */
         rw::common::Ptr<StateCache> getDefaultCache(){ return _cache; }
+
+        /**
+         * @brief Set the cache values.
+         * @param cache [in] the cache.
+         * @param state [in/out] state updated with new cache.
+         */
         void setCache(rw::common::Ptr<StateCache> cache, State& state);
 
+        /**
+         * @brief Get the state structure.
+         * @return the state structure.
+         */
         class StateStructure* getStateStructure() { return _sstructure;};
 
     public:
@@ -166,6 +192,11 @@ namespace rw { namespace kinematics {
          * @param name [in] The name of the frame.
          */
         StateData(int size, const std::string& name);
+
+        /**
+         * @copydoc StateData(int, const std::string&)
+         * @param cache [in] a cache.
+         */
         StateData(int size, const std::string& name, rw::common::Ptr<StateCache> cache);
 
 

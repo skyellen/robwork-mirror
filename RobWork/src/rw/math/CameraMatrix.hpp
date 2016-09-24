@@ -117,10 +117,29 @@ namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-	template<> void write(const rw::math::CameraMatrix<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<> void write(const rw::math::CameraMatrix<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    template<> void read(rw::math::CameraMatrix<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    template<> void read(rw::math::CameraMatrix<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::CameraMatrix
+	 */
+	template<> void write(const rw::math::CameraMatrix<double>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::CameraMatrix
+	 */
+	template<> void write(const rw::math::CameraMatrix<float>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::CameraMatrix
+	 */
+    template<> void read(rw::math::CameraMatrix<double>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::CameraMatrix
+	 */
+    template<> void read(rw::math::CameraMatrix<float>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 
 }}} // end namespaces
 

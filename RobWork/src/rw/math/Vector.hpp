@@ -182,6 +182,11 @@ namespace rw { namespace math {
             return res;
         }
 
+        /**
+         * @brief Set a part of the vector.
+         * @param index [in] first index.
+         * @param part [in] the subpart to set.
+         */
         void setSubPart(size_t index, const Vector& part) {
             RW_ASSERT(index + part.size() <= size());
             for (size_t i = 0; i<part.size(); i++) {

@@ -58,6 +58,7 @@ namespace rw { namespace math {
         //! Value type.
         typedef T value_type;
 
+        //! @brief Type for the internal Eigen matrix.
         typedef Eigen::Matrix<T, 4, 4> EigenMatrix4x4;
 
         /**
@@ -286,7 +287,7 @@ namespace rw { namespace math {
          * Performs an element wise comparison. Two elements are considered equal if the difference
          * are less than \b precision.
          *
-         * @param rot [in] Rotation to compare with
+         * @param t3d [in] Transform to compare with
          * @param precision [in] The precision to use for testing
          * @return True if all elements are less than \b precision apart.
          */
@@ -301,7 +302,6 @@ namespace rw { namespace math {
 
         /**
          * @brief Calculates @f$ \robabx{a}{c}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}} \robabx{b}{c}{\mathbf{T}} @f$
-         * @param aTb [in] @f$ \robabx{a}{b}{\mathbf{T}} @f$
          * @param bTc [in] @f$ \robabx{b}{c}{\mathbf{T}} @f$
          * @return @f$ \robabx{a}{c}{\mathbf{T}} @f$
          *
@@ -322,7 +322,6 @@ namespace rw { namespace math {
 
         /**
          * @brief Calculates @f$ \robax{a}{\mathbf{p}} = \robabx{a}{b}{\mathbf{T}} \robax{b}{\mathbf{p}} \f$ thus transforming point @f$ \mathbf{p} @f$ from frame @f$ b @f$ to frame @f$ a @f$
-         * @param aTb [in] @f$ \robabx{a}{c}{\mathbf{T}} @f$
          * @param bP [in] @f$ \robax{b}{\mathbf{p}} @f$
          * @return @f$ \robax{a}{\mathbf{p}} @f$
          */
@@ -561,10 +560,29 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-template<> void write(const rw::math::Transform3D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-template<> void write(const rw::math::Transform3D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-template<> void read(rw::math::Transform3D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-template<> void read(rw::math::Transform3D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+/**
+ * @copydoc rw::common::serialization::write
+ * @relatedalso rw::math::Transform3D
+ */
+template<> void write(const rw::math::Transform3D<double>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+/**
+ * @copydoc rw::common::serialization::write
+ * @relatedalso rw::math::Transform3D
+ */
+template<> void write(const rw::math::Transform3D<float>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+/**
+ * @copydoc rw::common::serialization::read
+ * @relatedalso rw::math::Transform3D
+ */
+template<> void read(rw::math::Transform3D<double>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
+
+/**
+ * @copydoc rw::common::serialization::read
+ * @relatedalso rw::math::Transform3D
+ */
+template<> void read(rw::math::Transform3D<float>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 }}} // end namespaces
 
 

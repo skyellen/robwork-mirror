@@ -304,7 +304,10 @@ namespace rw { namespace math {
             return !(*this == rhs);
         }
 
-
+        /**
+         * @brief Get the size of the EAA.
+         * @return the size (always 3).
+         */
         size_t size() const { return 3; }
 
         /**
@@ -367,10 +370,29 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-    template<> void write(const rw::math::EAA<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    template<> void write(const rw::math::EAA<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    template<> void read(rw::math::EAA<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    template<> void read(rw::math::EAA<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::EAA
+	 */
+	template<> void write(const rw::math::EAA<double>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::EAA
+	 */
+    template<> void write(const rw::math::EAA<float>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::EAA
+	 */
+    template<> void read(rw::math::EAA<double>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::EAA
+	 */
+    template<> void read(rw::math::EAA<float>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 }}} // end namespaces
 
 #endif // end include guard

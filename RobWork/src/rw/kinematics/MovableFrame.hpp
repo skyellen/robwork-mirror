@@ -77,6 +77,7 @@ namespace rw { namespace kinematics {
          * @brief Changes the transform in the state, such that the movable frame is located in the
          * transform which is described relative to refframe
          * @param transform [in] transform to set. transform is described relative to refframe
+         * @param refframe [in] the reference frame.
          * @param state [out] state into which to set the transform
          */
         void moveTo(const math::Transform3D<>& transform, Frame* refframe, State& state);

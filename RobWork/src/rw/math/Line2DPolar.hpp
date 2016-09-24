@@ -107,20 +107,28 @@ public:
 	//! A supporting point on the line (equal to rho * normal).
 	static Vector2D<> linePoint(const Line2DPolar& line);
 
-	// The vector for the projection of 'pnt' onto the normal of 'line'.
-	static
-	Vector2D<> normalProjectionVector(const Line2DPolar& line, const Vector2D<>& pnt);
+	/**
+	 * @brief The vector for the projection of \b pnt onto the normal of \b line.
+	 * @param line [in] a line.
+	 * @param pnt [in] a point.
+	 * @return the projection vector.
+	 */
+	static Vector2D<> normalProjectionVector(const Line2DPolar& line, const Vector2D<>& pnt);
 
 	// Print the line to stdout.
 	//static void print(const LinePolar& line);
 
-	// 'line' given relative to the coordinate frame of 'pose'.
-	static
-	Line2DPolar lineToLocal(
+	/**
+	 * @brief \b line given relative to the coordinate frame of \b pose.
+	 * @param pose [in] the pose.
+	 * @param line [in] the line.
+	 * @return a Line2DPolar.
+	 */
+	static Line2DPolar lineToLocal(
 		const Pose2D<>& pose,
 		const Line2DPolar& line);
 
-public:
+private:
 	double _rho;
 	double _theta;
 };
@@ -132,8 +140,17 @@ public:
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-	template<> void write(const rw::math::Line2DPolar& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<> void read(rw::math::Line2DPolar& tmp, rw::common::InputArchive& iar, const std::string& id);
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Line2DPolar
+	 */
+	template<> void write(const rw::math::Line2DPolar& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Line2DPolar
+	 */
+	template<> void read(rw::math::Line2DPolar& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 }}} // end namespaces
 
 #endif

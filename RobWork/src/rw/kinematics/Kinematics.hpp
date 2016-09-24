@@ -101,8 +101,6 @@ namespace rw { namespace kinematics {
          *
          * @param root [in] The root node from where the frame search is started.
          *
-         * @param state [in] The structure of the tree.
-         *
          * @return All reachable frames.
          */
         static std::vector<Frame*> findAllFrames(Frame* root);
@@ -262,21 +260,43 @@ namespace rw { namespace kinematics {
         */
         static bool isDAF(const Frame* frame);
 
+        /**
+         * @brief Check if frame is fixed.
+         * @param frame [in] the frame.
+         * @return true if fixed, false otherwise.
+         */
         static bool isFixedFrame(const Frame* frame);
 
+        /**
+         * @brief Grip \b item with \b gripper thereby modifying \b state.
+         *
+         * \b item must be a DAF.
+         *
+         * @param item [in] the frame to grip.
+         * @param gripper [in] the grasping frame.
+         * @param state [in/out] the state.
+         * @exception An exception is thrown if \b item is not a DAF.
+         * @see See also gripFrame(MovableFrame*, Frame*, State&).
+         */
 		static void gripFrame(Frame* item, Frame* gripper, State& state);
 
         /**
-           @brief Grip \b item with \b gripper thereby modifying \b state.
-
-           \b item must be a DAF.
-
-           An exception is thrown if \b item is not a DAF.
-
-           See also gripFrame().
+         * @brief Grip \b item with \b gripper thereby modifying \b state.
+         *
+         * \b item must be a DAF.
+         *
+         * @param item [in] the frame to grip.
+         * @param gripper [in] the grasping frame.
+         * @param state [in/out] the state.
+         * @exception An exception is thrown if \b item is not a DAF.
+         * @see See also gripFrame(Frame*, Frame*, State&).
         */
         static void gripFrame(MovableFrame* item, Frame* gripper, State& state);
 
+        /**
+         * @brief Get static frame groups.
+         * @warning This is not implemented - will always return an empty list!
+         */
 		static std::vector<FrameList> getStaticFrameGroups(Frame* root, const State& state);
     };
 

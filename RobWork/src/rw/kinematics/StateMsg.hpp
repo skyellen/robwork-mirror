@@ -86,7 +86,7 @@ namespace rw { namespace kinematics {
 
         /**
          * @brief performs a deep copy of \b src into this state.
-         * @param state [in] the state that is to be cloned
+         * @param src [in] the state that is to be cloned
          */
         void clone( const State& src );
 

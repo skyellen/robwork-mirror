@@ -121,16 +121,26 @@ namespace rw { namespace math {
                 return _orientation.axis()(i-3)*_orientation.angle();
         }
 
-
-        const Vector3D<T>& getPos() const{
+        /**
+         * @brief Get the position.
+         * @return reference to position vector.
+         */
+        const Vector3D<T>& getPos() const {
             return _position;
         }
 
+        //! @copydoc getPos() const
         Vector3D<T>& getPos() {
             return _position;
         }
 
+        /**
+         * @brief Get the orientation.
+         * @return reference to orientation rotation vector.
+         */
         const EAA<T>& getEAA() const{ return _orientation; }
+
+        //! @copydoc getEAA() const
         EAA<T>& getEAA() { return _orientation; }
 
         /**
@@ -213,10 +223,29 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-    template <> void write(const rw::math::Pose6D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    template <> void write(const rw::math::Pose6D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    template <> void read(rw::math::Pose6D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    template <> void read(rw::math::Pose6D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Pose6D
+	 */
+    template <> void write(const rw::math::Pose6D<double>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Pose6D
+	 */
+    template <> void write(const rw::math::Pose6D<float>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Pose6D
+	 */
+    template <> void read(rw::math::Pose6D<double>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Pose6D
+	 */
+    template <> void read(rw::math::Pose6D<float>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 }}} // end namespaces
 
 #endif // end include guard

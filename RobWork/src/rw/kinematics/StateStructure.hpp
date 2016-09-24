@@ -218,6 +218,12 @@ namespace rw { namespace kinematics {
          * @return The frame with name \b name or NULL if no such frame.
          */
         kinematics::Frame* findFrame(const std::string& name) const;
+
+        /**
+         * @brief Find data from name.
+         * @param name [in] the name.
+         * @return the data if found.
+         */
         boost::shared_ptr<kinematics::StateData> findData(const std::string& name) const;
 
         /**
@@ -225,21 +231,31 @@ namespace rw { namespace kinematics {
          * @param StateData [in] the statedata that has been added
          */
         typedef boost::function<void(const kinematics::StateData*)> StateDataAddedListener;
-        typedef boost::function<void(const kinematics::StateData*)> StateDataRemovedListener;
+
         /**
-         * @brief Defines event for PositionChanged.
+         * @brief Defines a listener for StateData removed events
+         * @param StateData [in] the statedata that has been removed.
          */
+        typedef boost::function<void(const kinematics::StateData*)> StateDataRemovedListener;
+
+        //! @brief Defines event for StateData added.
         typedef rw::common::Event<StateDataAddedListener, const kinematics::StateData*> StateDataAddedEvent;
+
+        //! @brief Defines event for StateData removed.
         typedef rw::common::Event<StateDataRemovedListener, const kinematics::StateData*> StateDataRemovedEvent;
 
         /**
-         * @brief Returns PositionChangedEvent object needed for subscription to and firing of event
-         * @return REference to the PositionSelectedEvent
+         * @brief Returns StateDataAddedEvent object needed for subscription to and firing of event
+         * @return Reference to the StateDataAddedEvent
          */
         StateDataAddedEvent& stateDataAddedEvent() {
             return _stateDataAddedEvent;
         }
 
+        /**
+         * @brief Returns StateDataRemovedEvent object needed for subscription to and firing of event
+         * @return Reference to the StateDataRemovedEvent
+         */
         StateDataRemovedEvent& stateDataRemovedEvent() {
             return _stateDataRemovedEvent;
         }
@@ -296,6 +312,10 @@ namespace rw { namespace kinematics {
         StateDataRemovedEvent _stateDataRemovedEvent;
     };
 
+    /**
+     * @brief Shortcut for smart pointer type.
+     * @deprecated Please use StateStructure::Ptr instead!
+     */
     typedef rw::common::Ptr<StateStructure> StateStructurePtr;
 
     /*@}*/

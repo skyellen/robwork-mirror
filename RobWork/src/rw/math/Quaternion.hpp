@@ -596,10 +596,15 @@ namespace rw { namespace math {
                 static_cast<Q>(quaternion(3)));
         }
 
+        /**
+         * @brief Convert to an Eigen Quaternion.
+         * @return Eigen Quaternion representation.
+         */
 		Eigen::Quaternion<T>& e() {
 			return _q;
 		}
 
+		//! @copydoc e()
 		const Eigen::Quaternion<T>& e() const {
 			return _q;
 		}
@@ -635,14 +640,29 @@ private:
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-	template<>
-    void write(const rw::math::Quaternion<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<>
-	void write(const rw::math::Quaternion<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<>
-	void read(rw::math::Quaternion<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-	template<>
-	void read(rw::math::Quaternion<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Quaternion
+	 */
+	template<> void write(const rw::math::Quaternion<double>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Quaternion
+	 */
+	template<> void write(const rw::math::Quaternion<float>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Quaternion
+	 */
+	template<> void read(rw::math::Quaternion<double>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Quaternion
+	 */
+	template<> void read(rw::math::Quaternion<float>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 }}} // end namespaces
 
 #endif // end include guard

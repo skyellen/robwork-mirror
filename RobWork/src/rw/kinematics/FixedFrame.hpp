@@ -59,12 +59,18 @@ namespace rw { namespace kinematics {
         /**
          * @brief Sets the fixed transform of this frame.
          * @param transform [in] the new transformation of this frame
-         * @notice THIS IS NOT THREAD SAFE. If you need thread safety then use
+         * @note THIS IS NOT THREAD SAFE. If you need thread safety then use
          * MovableFrame instead or make sure multiple threads are not using this
          * frame when changing the transformation.
          */
 		void setTransform(const rw::math::Transform3D<>& transform);
 
+		/**
+		 * @brief Move the frame such that it is located with a relative transform \b refTtarget relative to \b refframe.
+		 * @param refTtarget [in] the transform relative to \b refframe .
+		 * @param refframe [in] the reference frame.
+		 * @param state [in] the state giving the current poses.
+		 */
 		void moveTo(const rw::math::Transform3D<>& refTtarget, Frame* refframe, State& state);
 
         /**

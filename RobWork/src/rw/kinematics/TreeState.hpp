@@ -61,6 +61,10 @@ namespace rw { namespace kinematics {
          */
         explicit TreeState(boost::shared_ptr<StateSetup> setup);
 
+        /**
+         * @brief Copy constructor.
+         * @param [in] other TreeState to copy.
+         */
         explicit TreeState(const TreeState &);
 
         /**

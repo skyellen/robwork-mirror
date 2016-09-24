@@ -325,34 +325,44 @@ namespace rw { namespace math {
         }
 
         /**
-           @brief Compares \b a and \b b for equality.
-
-           @relates Vector3D
-
-           @param a [in]
-           @param b [in]
+           @brief Compare with \b b for equality.
+           @param b [in] other vector.
            @return True if a equals b, false otherwise.
         */
         bool operator==(const Vector3D<T>& b) const
         { return _vec[0] == b[0] && _vec[1] == b[1] && _vec[2] == b[2]; }
 
         /**
-           @brief Compares \b a and \b b for inequality.
-
-           @relates Vector3D
-
-           @param a [in]
-           @param b [in]
+           @brief Compare with \b b for inequality.
+           @param b [in] other vector.
            @return True if a and b are different, false otherwise.
         */
         bool operator!=(const Vector3D<T>& b) const {
             return !(*this == b);
         }
 
-
+        /**
+         * @brief Get zero vector.
+         * @return vector.
+         */
         static Vector3D<T> zero(){ return Vector3D<T>(0,0,0); }
+
+        /**
+         * @brief Get x vector (1,0,0)
+         * @return vector.
+         */
         static Vector3D<T> x(){ return Vector3D<T>(1.0,0,0); }
+
+        /**
+         * @brief Get y vector (0,1,0)
+         * @return vector.
+         */
         static Vector3D<T> y(){ return Vector3D<T>(0,1.0,0); }
+
+        /**
+         * @brief Get z vector (0,0,1)
+         * @return vector.
+         */
         static Vector3D<T> z(){ return Vector3D<T>(0,0,1.0); }
     private:
         T _vec[3];
@@ -385,6 +395,23 @@ namespace rw { namespace math {
             v1[0] * v2[1] - v1[1] * v2[0]);
     }
 
+    /**
+     * @brief Calculates the 3D vector cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
+     * @param v1 [in] @f$ \mathbf{v1} @f$
+     * @param v2 [in] @f$ \mathbf{v2} @f$
+     * @param dst [out] the 3D vector cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
+     *
+     * The 3D vector cross product is defined as:
+     * @f$
+     * \mathbf{v1} \times \mathbf{v2} = \left[\begin{array}{c}
+     *  v1_y * v2_z - v1_z * v2_y \\
+     *  v1_z * v2_x - v1_x * v2_z \\
+     *  v1_x * v2_y - v1_y * v2_x
+     * \end{array}\right]
+     * @f$
+     *
+     * @relates Vector3D
+     */
     template <class T>
     void cross(const Vector3D<T>& v1, const Vector3D<T>& v2, Vector3D<T>& dst)
     {
@@ -489,10 +516,29 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-    template<> void write(const rw::math::Vector3D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    template<> void write(const rw::math::Vector3D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    template<> void read(rw::math::Vector3D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    template<> void read(rw::math::Vector3D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Vector3D
+	 */
+    template<> void write(const rw::math::Vector3D<double>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Vector3D
+	 */
+    template<> void write(const rw::math::Vector3D<float>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Vector3D
+	 */
+    template<> void read(rw::math::Vector3D<double>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Vector3D
+	 */
+    template<> void read(rw::math::Vector3D<float>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 }}} // end namespaces
 
 #endif // end include guard

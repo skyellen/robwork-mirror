@@ -43,6 +43,10 @@ namespace kinematics {
             _sdata = boost::shared_ptr<StateData>(new StateData((sizeof(DATA)*dN)/sizeof(double)+1, rw::common::StringUtil::ranName("sdata")));
         }
 
+    	/**
+    	 * @copydoc StatelessData(int)
+    	 * @param cache [in] data cache.
+    	 */
     	StatelessData(int dN, rw::common::Ptr<StateCache> cache):
             _N(dN)
         {
@@ -95,6 +99,7 @@ namespace kinematics {
 
     	/**
     	 * @brief get the data from the \b state
+    	 * @param i [in] the index of the data.
     	 * @param state [in] the state in which the data is saved
     	 * @return reference to data
     	 */
@@ -106,6 +111,7 @@ namespace kinematics {
 
     	/**
     	 * @brief get the data from the \b state
+    	 * @param i [in] the index of the data.
     	 * @param state [in] the state in which the data is saved
     	 * @return reference to data
     	 */
@@ -125,6 +131,7 @@ namespace kinematics {
         /**
          * @brief set data element in state
          * @param data [in] data to copy into state
+    	 * @param i [in] the index of the data.
          * @param state [in] the state in which to change data
          */
         void set(const DATA& data, int i, rw::kinematics::State& state) {
@@ -147,11 +154,17 @@ namespace kinematics {
         CACHE_TYPE* getStateCache(rw::kinematics::State& state) const {
         	return static_cast<CACHE_TYPE*>(_sdata->getCache(state).get());
         }
+
+        //! @copydoc getStateCache(rw::kinematics::State&) const
         template<class CACHE_TYPE>
         CACHE_TYPE* getStateCache(const rw::kinematics::State& state) const {
         	return static_cast<CACHE_TYPE*>(_sdata->getCache(state).get());
         }
 
+        /**
+         * @brief Get the state data.
+         * @return state data.
+         */
         boost::shared_ptr<StateData> getStateData(){return _sdata;}
 
 

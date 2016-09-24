@@ -44,9 +44,13 @@ namespace rw { namespace math {
     class InertiaMatrix
     {
     public:
-        //! The type of the internal Boost matrix implementation.
+    	/**
+    	 * @brief Legacy type for Boost matrix implementation.
+    	 * @deprecated Users should migrate to the Base type based on Eigen.
+    	 */
         typedef boost::numeric::ublas::bounded_matrix<T, 3, 3> BoostBase;
 
+        //! @brief The type of the internal Eigen matrix implementation.
 		typedef Eigen::Matrix<T, 3, 3> Base;
 
         /**
@@ -144,12 +148,14 @@ namespace rw { namespace math {
 
 
         /**
-           @brief Construct a rotation matrix from a Boost matrix expression.
-
-           The matrix expression must be convertible to a 3x3 bounded matrix.
-
-           It is the responsibility of the user that 3x3 matrix is indeed an
-           inertia matrix.
+         * @brief Construct a rotation matrix from a Boost matrix expression.
+         *
+         * The matrix expression must be convertible to a 3x3 bounded matrix.
+         *
+         * It is the responsibility of the user that 3x3 matrix is indeed an
+         * inertia matrix.
+         *
+         * @deprecated Please consider using Eigen matrices instead.
          */
         template <class R>
         explicit InertiaMatrix(
@@ -320,9 +326,12 @@ namespace rw { namespace math {
             return res;
         }
 
-
-
-
+        /**
+         * @brief Make inertia matrix for a solid sphere.
+         * @param mass [in] mass of solid sphere.
+         * @param radi [in] radius of sphere.
+         * @return the inertia matrix.
+         */
         static InertiaMatrix<T> makeSolidSphereInertia(T mass, T radi){
             T tmpV = (T)(2.0/5.0)*mass*radi*radi;
             return InertiaMatrix<T>(
@@ -332,7 +341,12 @@ namespace rw { namespace math {
                 );
         }
 
-
+        /**
+         * @brief Make inertia matrix for a hollow sphere.
+         * @param mass [in] mass of hollow sphere.
+         * @param radi [in] radius of sphere.
+         * @return the inertia matrix.
+         */
         static InertiaMatrix<T> makeHollowSphereInertia(T mass, T radi){
             T tmpV = (T)(2.0/3.0)*mass*radi*radi;
             return InertiaMatrix<T>(
@@ -373,10 +387,29 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-	template<> void write(const rw::math::InertiaMatrix<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<> void write(const rw::math::InertiaMatrix<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<> void read(rw::math::InertiaMatrix<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-	template<> void read(rw::math::InertiaMatrix<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::InertiaMatrix
+	 */
+	template<> void write(const rw::math::InertiaMatrix<double>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::InertiaMatrix
+	 */
+	template<> void write(const rw::math::InertiaMatrix<float>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::InertiaMatrix
+	 */
+	template<> void read(rw::math::InertiaMatrix<double>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::InertiaMatrix
+	 */
+	template<> void read(rw::math::InertiaMatrix<float>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 }}} // end namespaces
 
 #endif // end include guard

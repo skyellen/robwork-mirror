@@ -270,6 +270,12 @@ namespace rw { namespace math {
 		EigenMatrix3x3 _matrix;
 	};
 
+	/**
+	 * @brief Take the inverse of a PerspectiveTransform2D.
+	 * @param aRb [in] a PerspectiveTransform2D.
+	 * @return the inverse of \b aRb .
+	 * @relates rw::math::PerspectiveTransform2D
+	 */
 	template <class T>
     PerspectiveTransform2D<T> inverse(const PerspectiveTransform2D<T>& aRb)
     {
@@ -284,10 +290,29 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-	template<> void write(const rw::math::PerspectiveTransform2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<> void write(const rw::math::PerspectiveTransform2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<> void read(rw::math::PerspectiveTransform2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-	template<> void read(rw::math::PerspectiveTransform2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::PerspectiveTransform2D
+	 */
+	template<> void write(const rw::math::PerspectiveTransform2D<double>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::PerspectiveTransform2D
+	 */
+	template<> void write(const rw::math::PerspectiveTransform2D<float>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::PerspectiveTransform2D
+	 */
+	template<> void read(rw::math::PerspectiveTransform2D<double>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::PerspectiveTransform2D
+	 */
+	template<> void read(rw::math::PerspectiveTransform2D<float>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 }}} // end namespaces
 
 

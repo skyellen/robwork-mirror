@@ -729,6 +729,8 @@ namespace rw { namespace math {
          * the operator (i,j) in order to use this function.
          * @param data [in] the input
          * @param tmp [out] the output
+         * @param size1 [in] the size of the first dimension of the matrix.
+         * @param size2 [in] the size of the second dimension of the matrix.
          * @return reference to tmp
          */
         template <class T, class MAT>
@@ -748,6 +750,13 @@ namespace rw { namespace math {
 		 */
 		static bool isNaN(double d);
 
+		/**
+		 * @brief Get a value for NaN.
+		 *
+		 * Use to make sure code is independent of specific compile specific implementations
+		 *
+		 * @return a double representation of NaN.
+		 */
 		static double NaN();
     };
 

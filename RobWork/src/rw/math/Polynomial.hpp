@@ -408,7 +408,7 @@ public:
 	/**
 	 * @brief Scalar multiplication
 	 * @param s [in] scalar to multiply with.
-	 * @param v [in] polynomial to multiply with.
+	 * @param p [in] polynomial to multiply with.
 	 * @return new polynomial after multiplication.
 	 */
 	friend const Polynomial<T> operator*(T s, const Polynomial<T>& p)
@@ -571,10 +571,30 @@ private:
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-	template<> void write(const rw::math::Polynomial<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<> void write(const rw::math::Polynomial<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<> void read(rw::math::Polynomial<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-	template<> void read(rw::math::Polynomial<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Polynomial
+	 */
+	template<> void write(const rw::math::Polynomial<double>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::write
+	 * @relatedalso rw::math::Polynomial
+	 */
+	template<> void write(const rw::math::Polynomial<float>& sobject, rw::common::OutputArchive& oarchive, const std::string& id);
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Polynomial
+	 */
+	template<> void read(rw::math::Polynomial<double>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
+
+
+	/**
+	 * @copydoc rw::common::serialization::read
+	 * @relatedalso rw::math::Polynomial
+	 */
+	template<> void read(rw::math::Polynomial<float>& sobject, rw::common::InputArchive& iarchive, const std::string& id);
 }}} // end namespaces
 
 #endif /* RW_MATH_POLYNOMIAL_HPP_ */

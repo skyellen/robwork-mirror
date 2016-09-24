@@ -254,8 +254,19 @@ namespace rw { namespace kinematics {
          */
         bool isDAF();
 
-
+        /**
+         * @brief Get the transform relative to world.
+         * @param state [in] the state.
+         * @return transform relative to world.
+         */
         rw::math::Transform3D<> wTf(const rw::kinematics::State& state) const;
+
+        /**
+         * @brief Get the transform of other frame relative to this frame.
+         * @param to [in] the other frame
+         * @param state [in] the state.
+         * @return transform of frame \b to relative to this frame.
+         */
         rw::math::Transform3D<> fTf(Frame* to, const rw::kinematics::State& state) const;
 
     protected:
