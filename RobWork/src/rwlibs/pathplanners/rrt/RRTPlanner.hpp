@@ -43,6 +43,7 @@ namespace rwlibs { namespace pathplanners {
     class RRTPlanner
     {
     public:
+    	//! @brief Smart pointer type for a RRTPlanner.
         typedef rw::common::Ptr<RRTPlanner> Ptr;
 
         //! The type of RRT planner to construct.

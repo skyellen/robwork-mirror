@@ -43,6 +43,7 @@ namespace rwlibs { namespace pathplanners {
     class SBLPlanner
     {
     public:
+    	//! @brief Smart pointer type for SBLPlanner.
         typedef rw::common::Ptr<SBLPlanner> Ptr;
 
         /**

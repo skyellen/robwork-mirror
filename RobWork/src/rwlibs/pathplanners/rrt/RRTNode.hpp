@@ -38,10 +38,22 @@ namespace rwlibs { namespace pathplanners {
     class RRTNode
     {
     public:
+    	//! @brief The type of the node.
         typedef RRTNode<X> node_type;
+
+        //! @brief The type of the value.
         typedef X value_type;
 
+        /**
+         * @brief Get the parent node.
+         * @return the parent node.
+         */
         node_type* getParent() const { return _parent; }
+
+        /**
+         * @brief Get the value of the node.
+         * @return the value.
+         */
         const value_type& getValue() const { return _value; }
 
     private:

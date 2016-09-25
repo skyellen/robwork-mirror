@@ -32,19 +32,32 @@ namespace rwlibs { namespace pathplanners {
     /** @addtogroup pathplanners */
     /*@{*/
 
-
+	//! @brief A SBL planner constraint.
 	class SBLPlannerConstraint {
 	public:
+		/**
+		 * @brief Constructor for a planner constrinct.
+		 * @param qconstraint [in] a constraint giving the valid (collision free) configurations.
+		 * @param edgeconstraint [in] a constraint for checking the edges in-between valid configurations.
+		 */
 		SBLPlannerConstraint(rw::pathplanning::QConstraint::Ptr qconstraint, 
 			rw::pathplanning::QEdgeConstraintIncremental::Ptr edgeconstraint):
 		_qconstraint(qconstraint),
 		_edgeConstraint(edgeconstraint)
 		{}
 
+		/**
+		 * @brief Get the part that checks for valid configurations.
+		 * @return a reference to the constraint.
+		 */
 		const rw::pathplanning::QConstraint& getQConstraint() const {
 			return *_qconstraint;
 		}
 
+		/**
+		 * @brief Get the part that checks edges in-between valid configurations.
+		 * @return a reference to the edge constraint.
+		 */
 		const rw::pathplanning::QEdgeConstraintIncremental& getEdgeConstraint() const {
 			return *_edgeConstraint;
 		}
@@ -67,6 +80,14 @@ namespace rwlibs { namespace pathplanners {
     class SBLOptions
     {
     public:
+		/**
+		 * @brief Construct a new set of options for the internal algorithms.
+		 * @param constraint [in] a constraint on the valid configurations.
+		 * @param edgeConstraint [in] a constraint on the edges between valid configurations.
+		 * @param expansion [in] the policy for how to sample new configurations in the vicinity.
+		 * @param metric [in] the distance metric for nearest neighbor searching.
+		 * @param connectRadius [in] connect trees if the distance to the nearest neighbor is below this threshold.
+		 */
         SBLOptions(
 			rw::pathplanning::QConstraint::Ptr& constraint,
 			rw::pathplanning::QEdgeConstraintIncremental::Ptr& edgeConstraint,
@@ -74,35 +95,48 @@ namespace rwlibs { namespace pathplanners {
 			rw::math::QMetric::Ptr metric,
             double connectRadius);
 
-        SBLPlannerConstraint constraint;		
+        //! @brief The constraint that determined if a path or configuration is valid (collision free) or not.
+        SBLPlannerConstraint constraint;
+        //! @brief The expand policy used to sample new configurations in the vicinity.
         SBLExpandPtr expansion;
+        //! @brief the distance metric for nearest neighbor searching.
 		rw::math::QMetric::Ptr metric;
+		//! @brief Attempt connection of the trees if the distance to the nearest neighbor is below this threshold.
         double connectRadius;
 
+        //! @brief Policy for choosing a node in the vicinity of a given node, \b n.
         enum NearNodeSelection {
-            UniformSelect,
-            UniformFromCell,
-            NearestFromCell,
-            NearestNode
+            UniformSelect,  //!< take a random node.
+            UniformFromCell,//!< take a random node within the cell where node \b n lies.
+            NearestFromCell,//!< take the nearest node from the cell where node \b n lies.
+            NearestNode     //!< search for the nearest node (default)
         };
 
+        //! @brief Policy for selecting a tree.
         enum TreeSelection {
-            UniformTree,
-            WeightedTree,
-            SmallestTree,
-            LargestTree
+            UniformTree, //!< randomly select one of the two trees (default)
+            WeightedTree,//!< choose the tree randomly, but weighted according to the size of the tree.
+            SmallestTree,//!< choose the smallest tree.
+            LargestTree  //!< choose the largest tree.
         };
 
+        //! @brief Policy for how often to connect trees.
         enum ConnectFrequency {
-            ConnectAlways,
-            ConnectAtReset
+            ConnectAlways,//!< always connect (default)
+            ConnectAtReset//!< connect only at reset.
         };
 
+        //! @brief (default is 20).
         int resetCount;
+        //! @brief (default is 25).
         int rootSampleInterval;
+        //! @brief (default is 10).
         double nodesPerCell;
+        //! @brief (default is NearestNode).
         NearNodeSelection nearNodeSelection;
+        //! @brief (default is UniformTree).
         TreeSelection treeSelection;
+        //! @brief (default is ConnectAlways).
         ConnectFrequency connectAt;
     };
 

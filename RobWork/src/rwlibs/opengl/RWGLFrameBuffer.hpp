@@ -83,38 +83,88 @@ typedef void (* PFNGLGENERATEMIPMAPEXTPROC) (GLenum target);
 namespace rwlibs {
 namespace opengl {
 
+/**
+ * @brief Class for off-screen GL rendering.
+ *
+ * This class provides platform-independent names for GL functions related to framebuffers.
+ *
+ * The user MUST call initialize() before using any static members of this class.
+ */
 class RWGLFrameBuffer
 {
 public:
+	/**
+	 * @brief Try to initialize frame buffers.
+	 * @return true if initialization succeeded.
+	 */
     static bool initialize();
+
+    /**
+     * @brief Print some information about the frame buffers to the log.
+     * @param log [in/out] the log to write to.
+     */
     static void test(rw::common::LogWriter& log);
 
+    /**
+     * @brief Check if frame buffers are available.
+     *
+     * This function will always return false, if initialize() has not been called.
+     *
+     * @return true if frame buffers are available, false otherwise.
+     */
     static bool hasFrameBuffers();
+
+    /**
+     * @brief Check if frame buffers has been initialized.
+     * @return true if initialized, false otherwise.
+     */
     static bool isFrameBuffersInitialized();
+
+    /**
+     * @brief Check for framebuffer completeness. Only use the framebuffer if this succeeds.
+     * @return true if framebuffer is complete.
+     */
     static bool testFrameBufferCompleteness();
 
     // Framebuffer object
+    //! @brief Please refer to OpenGL documentation on framebuffers.
     static PFNGLGENFRAMEBUFFERSEXTPROC                     glGenFramebuffersEXT;                      // FBO name generation procedure
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLDELETEFRAMEBUFFERSEXTPROC                  glDeleteFramebuffersEXT;                   // FBO deletion procedure
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLBINDFRAMEBUFFEREXTPROC                     glBindFramebufferEXT;                      // FBO bind procedure
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC              glCheckFramebufferStatusEXT;               // FBO completeness test procedure
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;  // return various FBO parameters
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLGENERATEMIPMAPEXTPROC                      glGenerateMipmapEXT;                       // FBO automatic mipmap generation procedure
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLFRAMEBUFFERTEXTURE2DEXTPROC                glFramebufferTexture2DEXT;                 // FBO texdture attachement procedure
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC             glFramebufferRenderbufferEXT;              // FBO renderbuffer attachement procedure
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLBLITFRAMEBUFFEREXTPROC                     glBlitFrameBufferEXT;
 
     // Renderbuffer object
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLGENRENDERBUFFERSEXTPROC                    glGenRenderbuffersEXT;                     // renderbuffer generation procedure
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLDELETERENDERBUFFERSEXTPROC                 glDeleteRenderbuffersEXT;                  // renderbuffer deletion procedure
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLBINDRENDERBUFFEREXTPROC                    glBindRenderbufferEXT;                     // renderbuffer bind procedure
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLRENDERBUFFERSTORAGEEXTPROC                 glRenderbufferStorageEXT;                  // renderbuffer memory allocation procedure
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC          glGetRenderbufferParameterivEXT;           // return various renderbuffer parameters
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLISRENDERBUFFEREXTPROC                      glIsRenderbufferEXT;                       // determine renderbuffer object type
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC      glRenderbufferStorageMultisampleEXT;
 
 
 
+    //! @copydoc glGenFramebuffersEXT
     static PFNGLTEXIMAGE2DMULTISAMPLEPROC                  glTexImage2DMultisample;
 
 

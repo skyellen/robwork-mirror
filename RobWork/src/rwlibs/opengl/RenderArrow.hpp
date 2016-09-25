@@ -46,7 +46,6 @@ namespace rwlibs { namespace opengl {
 
         /**
          * @brief Constructs a RenderFrame
-         * @param size [in] size of the frame coordinate system
          */
         RenderArrow():_size(1.0),
                 _quadratic(NULL)
@@ -60,6 +59,10 @@ namespace rwlibs { namespace opengl {
                 gluDeleteQuadric(_quadratic);
         }
 
+        /**
+         * @brief Set the size.
+         * @param size [in] size of the frame coordinate system
+         */
         void setSize(float size){
             _size = size;
         }

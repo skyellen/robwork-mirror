@@ -8,7 +8,7 @@ QT_BEGIN_NAMESPACE
 class QProcess;
 QT_END_NAMESPACE
 
-
+//! @brief Help assistant for RobWorkStudio.
 class HelpAssistant
 {
 public:

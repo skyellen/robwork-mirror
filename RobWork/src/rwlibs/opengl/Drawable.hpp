@@ -178,7 +178,12 @@ namespace rwlibs { namespace opengl {
          * @brief the group(s) that this drawable belong to
          * @param mask [in] drawable mask
          */
-        void setMask(unsigned int mask){ _dmask = mask; };
+        void setMask(unsigned int mask){ _dmask = mask; }
+
+        /**
+         * @brief Get the rendering groups that this drawable belongs to.
+         * @return the drawable type mask (see DrawableNode::DrawableTypeMask).
+         */
         unsigned int getMask() const { return _dmask;}
 
         /**
@@ -188,6 +193,10 @@ namespace rwlibs { namespace opengl {
         	return _renders;
         }
 
+        /**
+         * @brief Add a render to this drawable.
+         * @param render [in] the render.
+         */
         void addRender( rw::common::Ptr<rw::graphics::Render> render ){
             _renders.push_back(render);
         }

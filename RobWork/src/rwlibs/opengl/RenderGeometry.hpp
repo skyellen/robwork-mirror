@@ -76,6 +76,10 @@ namespace opengl {
          */
 		void setGeometry(rw::geometry::Geometry::Ptr geom);
 
+		/**
+		 * @brief Get the geometry that is being rendered.
+		 * @return the geometry.
+		 */
 		rw::geometry::Geometry::Ptr getGeometry() const { return _geometry; }
 
         //! @copydoc rw::graphics::Render::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
@@ -84,6 +88,7 @@ namespace opengl {
                   double alpha) const;
 
     protected:
+        //! @brief Do the actual rendering of the triangles.
         void render() const;
     private:
         rw::geometry::Geometry::Ptr _geometry;

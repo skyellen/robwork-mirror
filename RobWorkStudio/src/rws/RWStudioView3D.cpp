@@ -401,10 +401,10 @@ void RWStudioView3D::mouseDoubleClickEvent(QMouseEvent* event){
     }
 }
 
-void RWStudioView3D::contextMenuEvent ( QContextMenuEvent * event ){
+//void RWStudioView3D::contextMenuEvent ( QContextMenuEvent * event ){
     //std::cout << "Menu event ;)" << std::endl;
 
-}
+//}
 
 void RWStudioView3D::keyPressEvent(QKeyEvent *e)
 {
@@ -899,13 +899,3 @@ void RWStudioView3D::saveBufferToFileDialog()
         }
     }
 }
-
-void RWStudioView3D::saveSettings(){
-
-}
-
-void RWStudioView3D::restoreSettings(){
-
-}
-
-

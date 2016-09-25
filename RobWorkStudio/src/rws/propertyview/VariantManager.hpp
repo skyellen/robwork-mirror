@@ -22,24 +22,66 @@
 #include <QObject>
 #include "qtvariantproperty.h"
 
+/**
+ * @brief Specialization of QtVariantPropertyManager - not currently in implemented/in use.
+ * @deprecated This class is marked for removal.
+ */
 class VariantManager : public QtVariantPropertyManager
 {
     Q_OBJECT
 public:
+	/**
+	 * @brief Constructor.
+	 * @param parent [in] owner of this widget.
+	 * @deprecated This class is marked for removal.
+	 */
     VariantManager(QObject *parent = 0);
+
+    //! @brief Destructor.
     ~VariantManager();
 
+    /**
+     * @brief Not documented.
+     * @deprecated This class is marked for removal.
+     */
     virtual QVariant value(const QtProperty *property) const;
+
+    /**
+     * @brief Not documented.
+     * @deprecated This class is marked for removal.
+     */
     virtual int valueType(int propertyType) const;
+
+    /**
+     * @brief Not documented.
+     * @deprecated This class is marked for removal.
+     */
     virtual bool isPropertyTypeSupported(int propertyType) const;
 
+    /**
+     * @brief Not documented.
+     * @deprecated This class is marked for removal.
+     */
     QString valueText(const QtProperty *property) const;
 
 public slots:
+	/**
+	 * @brief Not documented.
+	 * @deprecated This class is marked for removal.
+	 */
     virtual void setValue(QtProperty *property, const QVariant &val);
 
 protected:
+	/**
+	 * @brief Not documented.
+	 * @deprecated This class is marked for removal.
+	 */
     virtual void initializeProperty(QtProperty *property);
+
+    /**
+     * @brief Not documented.
+     * @deprecated This class is marked for removal.
+     */
     virtual void uninitializeProperty(QtProperty *property);
 
 private slots:

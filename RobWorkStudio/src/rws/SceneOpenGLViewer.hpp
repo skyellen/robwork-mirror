@@ -170,19 +170,8 @@ public:
     //! @copydoc SceneViewer::pickDrawable(rw::graphics::SceneGraph::RenderInfo&,int,int)
     rw::graphics::DrawableNode::Ptr pickDrawable(rw::graphics::SceneGraph::RenderInfo& info, int x, int y);
 
-    /**
-     * @brief Saves the current 3D view to disk as either jpg, bmp or png.
-     *
-     * If failing a std::string is thrown with a detailed description of what
-     * when wrong.
-     *
-     * @param filename [in] Path and name of the file. The filename extension
-     * should be either ".jpg", ".bmp" or ".png" to specify which format to use.
-     * @param fillR [in] Fill color if viewport is smaller than image, red component [0,255]
-     * @param fillG [in] Fill color if viewport is smaller than image, green component [0,255]
-     * @param fillB [in] Fill color if viewport is smaller than image, blue component [0,255]
-     */
-    void saveBufferToFile(const std::string& stdfilename,
+    //! @copydoc rw::graphics::SceneViewer::saveBufferToFile
+    void saveBufferToFile(const std::string& filename,
                           const int fillR, const int fillG, const int fillB);
 
     //! @brief Clears the list of Drawables and WorkCells

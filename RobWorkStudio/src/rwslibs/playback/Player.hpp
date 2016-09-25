@@ -35,32 +35,46 @@ class Player : public QObject
     Q_OBJECT
 
 public:
-    // We will need a player that is not parameterized by just a sequence of
-    // states but by a sequence of states together with the instant in time of
-    // each state. We will take care of that later.
+	//! @brief Smart pointer type for Player.
+	typedef rw::common::Ptr<Player> Ptr;
+
+	/**
+	 * @brief Construct a new player.
+	 * @param statePath [in] the path of timed states.
+	 * @param drawer [in] the drawer to invoke for displaying a new state in the path.
+	 * @param tickInterval [in] the rendering rate.
+	 * @param rwstudio [in] the RobWorkStudio instance (used for saving to file during recordings).
+	 */
     Player(rw::trajectory::TimedStatePath statePath,
            rw::common::Ptr<StateDraw> drawer,
            double tickInterval,
            rws::RobWorkStudio* rwstudio);
 
-    // used for recording only
+    /**
+     * @brief Construct a new player that can be used only for recording.
+     *
+     * Notice that the state in RobWorkStudio must be updated through other means, for instance by the user.
+     *
+	 * @param tickInterval [in] the recording rate.
+	 * @param rwstudio [in] the RobWorkStudio instance (used for saving to file during recordings).
+     */
     Player(
            double tickInterval,
            rws::RobWorkStudio* rwstudio);
 
-    // Start the playback in forward direction.
+    //! @brief Start the playback in forward direction.
     void forward();
 
-    // Start the playback in backward direction.
+    //! @brief Start the playback in backward direction.
     void backward();
 
-    // Pause or resume the playback.
+    //! @brief Pause or resume the playback.
     void pauseOrResume();
 
-    // Move to start of path.
+    //! @brief Move to start of path.
     void toStart();
 
-    // Move to end of path.
+    //! @brief Move to end of path.
     void toEnd();
 
     /**
@@ -69,46 +83,78 @@ public:
      */
     void step(bool forward);
 
-    // Move to a relative position.
+    /**
+     * @brief Move to a relative position.
+     * @param relative [in] a value between 0 and 1.
+     */
     void setRelativePosition(double relative);
 
-    // Scale the speed.
+    /**
+     * @brief Scale the speed.
+     * @param speed [in] the velocity scale.
+     */
     void setRelativeSpeed(double speed);
 
-    // Something to write in an info label.
+    /**
+     * @brief Get the current status of the player.
+     * @return a status string.
+     */
     std::string getInfoLabel() const;
 
-    // Whether to loop the playback or not.
+    /**
+     * @brief Whether to loop the playback or not.
+     * @param loop [in] true will loop the playback.
+     */
     void setLoopPlayback(bool loop);
 
-    //Set up the interval between ticks
+    /**
+     * @brief Set up the interval between ticks
+     * @param interval [in] the interval.
+     */
     void setTickInterval(double interval);
 
-
-    /**
-     * @brief Starts recording.
-     */
+    //! @brief Starts recording.
     void startRecording();
 
     /**
-     * @brief Sets up recording to save files as \b filename of type \b type
+     * @brief Sets up recording to save files as \b filename of type \b type.
+     * @param filename [in] the filename to save to.
+     * @param type [in] the filetype.
      */
     void setupRecording(const QString filename, const QString& type);
 
-    /**
-     * @brief Stops recording
-     */
+    //! @brief Stops recording
     void stopRecording();
 
+    /**
+     * @brief Enable/disable interpolation for a more smooth playback.
+     * @param interpolate [in] true to do interpolation.
+     */
     void setInterpolate(bool interpolate){
         _interpolate = interpolate;
     }
+
+    /**
+     * @brief Construct an empty player.
+     * @return empty player.
+     */
+    static Player::Ptr makeEmptyPlayer();
+
+    //! @copydoc Player
+    static Player::Ptr makePlayer(const rw::trajectory::TimedStatePath& path,
+    					rw::common::Ptr<StateDraw> drawer,
+                         double tickInterval,
+                         rws::RobWorkStudio* rwstudio);
 
 private slots:
     // Increment the current time by tickInterval.
     void tick();
 
 signals:
+	/**
+	 * @brief Emitted during playback.
+	 * @param val [in] the current playback position as a value between 0 and 1.
+	 */
     void relativePositionChanged(double val);
 
 private:
@@ -121,8 +167,9 @@ private:
     void draw();
 
 public:
-    // Where to do the drawing.
+    //! @brief The interpolated trajectory.
 	rw::trajectory::StateTrajectory::Ptr _trajectory;
+    //! @brief The original trajectory.
 	rw::trajectory::TimedStatePath _path;
 private:
     // How to do the drawing.
@@ -149,21 +196,10 @@ private:
 
     bool _interpolate;
 public:
+    //! @brief Indicates whether a trajectory is loaded, or the Player is in recording-only mode.
     bool _recordingOnly;
 private:
     Player(const Player&);
     Player& operator=(const Player&);
 };
-
-typedef rw::common::Ptr<Player> PlayerPtr;
-
-PlayerPtr makeEmptyPlayer();
-
-PlayerPtr makePlayer(const rw::trajectory::TimedStatePath& path,
-					rw::common::Ptr<StateDraw> drawer,
-                     double tickInterval,
-                     rws::RobWorkStudio* rwstudio);
-
-
-
 #endif

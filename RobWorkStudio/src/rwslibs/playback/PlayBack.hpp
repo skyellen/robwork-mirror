@@ -33,6 +33,7 @@ class QSlider;
 
 namespace rws {
 
+//! @brief Playback plugin for animation of a rw::trajectory::TimedStatePath .
 class PlayBack : public RobWorkStudioPlugin
 {
     Q_OBJECT
@@ -43,14 +44,19 @@ class PlayBack : public RobWorkStudioPlugin
 	#endif
 #endif
 public:
+	//! @brief Constructor.
     PlayBack();
 
+	//! @brief Destructor.
     virtual ~PlayBack();
 
+    //! @copydoc RobWorkStudioPlugin::open
     virtual void open(rw::models::WorkCell* workcell);
 
+    //! @copydoc RobWorkStudioPlugin::close
     virtual void close();
 
+    //! @copydoc RobWorkStudioPlugin::initialize
     void initialize();
 
 private:

@@ -83,7 +83,14 @@ public:
 	 */
     void frameSelectedListener(rw::kinematics::Frame* frame);
     
-    void workcellChangedListener(int);
+    /**
+     * @brief Listen for change in workcell.
+     *
+     * This method can be safely called from non-qt threads.
+     *
+     * @param notUsed [in] not used.
+     */
+    void workcellChangedListener(int notUsed);
     
     /**
      * @brief Listen for generic events:
@@ -92,6 +99,10 @@ public:
     void genericEventListener(const std::string& event);
 
 protected:
+    /**
+     * @brief Update the widget when it is shown.
+     * @param event [in] the event (not used).
+     */
     void showEvent ( QShowEvent * event );
 
 private slots:

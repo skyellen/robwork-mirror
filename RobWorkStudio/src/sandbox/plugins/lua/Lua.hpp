@@ -30,20 +30,29 @@
 
 struct lua_State;
 
+/**
+ * @brief Initial Lua plugig for RobWorkStudio. This class is marked for removal - please use rws::Lua instead!
+ * @deprecated This class is marked for removal.
+ */
 class Lua : public RobWorkStudioPlugin
 {
     Q_OBJECT
     Q_INTERFACES(RobWorkStudioPlugin)
 
 public:
+    //! @brief Constructor.
     Lua();
 
+    //! @brief Destructor.
     ~Lua();
 
+    //! @copydoc RobWorkStudioPlugin::initialize
     void initialize();
 
+    //! @copydoc RobWorkStudioPlugin::open
     void open(rw::models::WorkCell* workcell);
 
+    //! @copydoc RobWorkStudioPlugin::close
     void close();
 
     //void setupToolBar(QToolBar* toolbar);

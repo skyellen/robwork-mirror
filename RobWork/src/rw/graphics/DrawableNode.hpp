@@ -43,7 +43,7 @@ namespace rw { namespace graphics {
 	 * The drawable class use a draw mask to distinguish between different
 	 * groups to draw. E.g. when taking snapshots with a simulated camera
 	 * virtual objects such as the red laser vector or the lines showing
-	 * the camera view angle is should not be renered. Hence objects that
+	 * the camera view angle is should not be rendered. Hence objects that
 	 * are virtual should be set to virtual.
 	 *
 	 * A call to draw enabling Physical and User1 defined objects look like:
@@ -81,19 +81,30 @@ namespace rw { namespace graphics {
             OUTLINE //! Render both solid and wireframe
         };
 
-    	//! information for rendering
+    	//! @brief Information for rendering.
     	struct RenderInfo {
+        	/**
+        	 * @brief Construct new rendering information.
+        	 * @param mask [in] (optional) the draw type mask. Default is DrawableObject.
+        	 */
     	    RenderInfo(unsigned int mask=DrawableNode::DrawableObject):
-    	        _mask(mask),_drawType(SOLID),_state(NULL){};
+    	        _mask(mask),_drawType(SOLID),_state(NULL),_renderTransparent(false), _renderSolid(false), _disableNormalRender(false){}
 
-    	    unsigned int _mask; // DrawableTypeMask
+    	    //! @brief The DrawableTypeMask.
+    	    unsigned int _mask;
+    	    //! @brief The DrawType.
     	    DrawType _drawType;
+    	    //! @brief Pointer to the state.
     	    rw::kinematics::State *_state;
+    	    //! @brief Render transparently.
     	    bool _renderTransparent;
+    	    //! @brief Render as a solid.
     	    bool _renderSolid;
-    	    // global disabling of rendering of normals
+    	    //! @brief Disabling rendering of normals.
     	    bool _disableNormalRender;
     	};
+
+    	//! @brief Destructor.
     	virtual ~DrawableNode(){}
 
         /**
@@ -136,6 +147,10 @@ namespace rw { namespace graphics {
          */
         virtual float getTransparency() = 0;
 
+        /**
+         * @brief Check if node is transparent.
+         * @return true if transparent, false otherwise.
+         */
         bool isTransparent(){ return getTransparency()<(1.0-0.00001);}
 
         /**
@@ -178,8 +193,14 @@ namespace rw { namespace graphics {
          * @param mask [in] drawable mask
          */
         virtual void setMask(unsigned int mask) = 0;
+
+        /**
+         * @brief Get the DrawableTypeMask for the node.
+         * @return the type mask.
+         */
         virtual unsigned int getMask() const = 0;
 
+        //! @copydoc SceneNode::asDrawableNode
         DrawableNode* asDrawableNode(){ return this; }
 
     protected:

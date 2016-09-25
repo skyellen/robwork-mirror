@@ -33,9 +33,11 @@ namespace rw { namespace pathplanning { class QSampler; } }
 
 namespace rwlibs { namespace pathplanners {
 
+	//! @brief Internal algorithms used by the SBLPlanner.
     class SBLInternal
     {
     public:
+    	//! @brief Type of a motion.
         typedef std::vector<rw::math::Q> Motion;
 
         /**
@@ -67,9 +69,7 @@ namespace rwlibs { namespace pathplanners {
 
            @param toSampler [in] Sampler (possibly empty) for goal region.
 
-           @param constraint [in] The collision constraint for which planning is done.
-
-           @param options [in] Options for the SBL planner.
+           @param setup [in] Options for the SBL planner.
 
            @param stop [in] Stop the planner when this function object returns true.
         */

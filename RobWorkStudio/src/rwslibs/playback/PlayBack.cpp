@@ -63,7 +63,7 @@ PlayBack::PlayBack()
     :
     RobWorkStudioPlugin("PlayBack", QIcon(":/playback.png")),
     _workcell(0),
-    _player(makeEmptyPlayer()),
+    _player(Player::makeEmptyPlayer()),
     _inSliderSet(false),
     _inRelativePositionChanged(false)
 {
@@ -231,7 +231,7 @@ void PlayBack::close()
     _workcell = 0;
     //_workcellGLDrawer = 0;
 
-    _player = makeEmptyPlayer();
+    _player = Player::makeEmptyPlayer();
     _file = "";
 
     setInfoLabel();
@@ -406,7 +406,7 @@ void PlayBack::stateTrajectoryChangedListener(const TimedStatePath& path)
 
     if (!path.empty()) {
         // Reset the player.
-        _player = makePlayer(
+        _player = Player::makePlayer(
             path,
             makeMyStateDraw(),
             timerInterval,
@@ -439,7 +439,7 @@ void PlayBack::stateTrajectoryChangedListener(const TimedStatePath& path)
         interpolateChanged(_interpolate->checkState());
 
     } else {
-        _player = makeEmptyPlayer();
+        _player = Player::makeEmptyPlayer();
         setInfoLabel();
     }
 }

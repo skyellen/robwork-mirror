@@ -39,13 +39,16 @@ namespace rwlibs { namespace opengl {
 	 *
 	 * The transformation of each vertice is weighted against the transformation of each attached bone. Such
 	 * that the vertice position is defined by
-	 * $v' = \Sum w_i v . M_{[i]}
+	 * \f$ v' = \sum w_i v . M_{[i]} \f$
 	 * where M is the transform from \b Base frame to the the i'th attached bone (which is not the i'th bone).
 	 *
 	 * @note The number of attached bones to a single vertice should not be too large <5.
 	 */
 	class RenderSmoothSkin: public rw::graphics::Render {
+		//! @brief Type for vertice weights.
 	    typedef std::pair<int, float> VerticeWeight;
+
+	    //! @brief Type for bone weights.
 	    typedef std::vector<VerticeWeight> BoneWeights;
 
 	    //! @brief constructor
@@ -57,6 +60,7 @@ namespace rwlibs { namespace opengl {
 		//! @brief destructor	
 		virtual ~RenderSmoothSkin();
 
+		//! @copydoc RenderSmoothSkin()
 		void init(rw::geometry::IndexedTriMesh<>::Ptr mesh,
 		     rw::kinematics::Frame* base,
 		     std::vector<rw::kinematics::Frame*>& bones,
@@ -67,8 +71,12 @@ namespace rwlibs { namespace opengl {
                   rw::graphics::DrawableNode::DrawType type,
                   double alpha) const;
 
-
+		/**
+		 * @brief Update the mesh.
+		 * @param state [in] new state.
+		 */
         void update(const rw::kinematics::State& state);
+
 	private:
 		struct VerticeWeightINL {
 		    uint8_t boneIdx;

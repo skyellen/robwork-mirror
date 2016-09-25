@@ -34,13 +34,15 @@ namespace graphics {
      */
     class SceneCamera: public SceneNode {
     public:
+    	//! @brief Smart pointer type for SceneCamera.
         typedef rw::common::Ptr<SceneCamera> Ptr;
 
-        typedef enum{Auto, //! The aspect is automatically adjusted to fit entire viewport
-                    Scale, //! the aspect ratio is fixed and the scaling is performed such that the largest picure is obtained
-                    ScaleX,//! the apect ratio is fixed and the scaling is performed along x-axis
-                    ScaleY,//! the apect ratio is fixed and the scaling is performed along y-axis
-                    Fixed
+        //! @brief Mode for aspect ratio control.
+        typedef enum{Auto, //!< The aspect is automatically adjusted to fit entire viewport
+                    Scale, //!< the aspect ratio is fixed and the scaling is performed such that the largest picure is obtained
+                    ScaleX,//!< the apect ratio is fixed and the scaling is performed along x-axis
+                    ScaleY,//!< the apect ratio is fixed and the scaling is performed along y-axis
+                    Fixed  //!< the aspect ratio is fixed.
         } AspectRatioControl;
 
         /**
@@ -120,8 +122,17 @@ namespace graphics {
         //! @brief get the camera transform
         rw::math::Transform3D<> getTransform(){ return _t3d; }
 
-        void setAspectRatioControl(AspectRatioControl control){ _ratioControl = control; };
-        AspectRatioControl getAspectRatioControl(){ return _ratioControl; };
+        /**
+         * @brief Change the mode for aspect ratio control.
+         * @param control [in] new mode.
+         */
+        void setAspectRatioControl(AspectRatioControl control){ _ratioControl = control; }
+
+        /**
+         * @brief Get current mode of aspect ratio control.
+         * @return the current mode.
+         */
+        AspectRatioControl getAspectRatioControl(){ return _ratioControl; }
 
 
         /**
@@ -142,61 +153,170 @@ namespace graphics {
          */
         const std::string& getName(){ return _name; }
 
+        /**
+         * @brief Attach camera to scene node.
+         * @param snode [in] node to attach to.
+         */
         void attachTo(rw::graphics::SceneNode::Ptr snode){
             _attachedTo = snode;
         }
 
+        /**
+         * @brief Get the node attached to.
+         * @return the node.
+         */
         rw::graphics::SceneNode::Ptr getAttachedNode(){
             return _attachedTo;
         }
 
+        /**
+         * @brief Get the aspect ratio.
+         * @return the aspect ratio.
+         */
         double getAspectRatio(){ return _aspectRatio; }
 
     protected:
+        //! @brief Projection matrix for camera.
         rw::math::ProjectionMatrix _pmatrix;
-        //rw::math::Transform3D<> _t3d;
-        int _x,_y,_w,_h;
-        int _drawMask, _clearMask;
-        //! reference frame
+        //! @brief Viewport x.
+        int _x;
+        //! @brief Viewport y.
+        int _y
+        //! @brief Viewport width.
+		int _w;
+        //! @brief Viewport height.
+        int _h;
+        //! @brief Mask for what to draw.
+        int _drawMask;
+        //! @brief Mask for what should be cleared.
+        int _clearMask;
 
+        //! @brief Enable/disable depth test.
         bool _depthTestEnabled;
+        //! @brief Enable/disable light.
         bool _lightningEnabled;
-        bool _clearBufferEnabled, _enabled;
+        //! @brief Enable/disable clear buffer.
+        bool _clearBufferEnabled;
+        //! @brief Enable/disable camera.
+        bool _enabled;
+
+        //! @brief Rendering info used by the camera.
         rw::graphics::DrawableNode::RenderInfo _renderInfo;
-        SceneNode::Ptr _subGraph, _attachedTo;
+        //! @brief The reference node of the camera.
+        SceneNode::Ptr _subGraph;
+        //! @brief Node that the camera is attached to.
+        SceneNode::Ptr _attachedTo;
+        //! @brief Name of the camera.
         std::string _name;
 
+        //! @brief Transform of the camera.
         rw::math::Transform3D<> _t3d;
 
+        //! @brief The aspect ratio.
         double _aspectRatio;
+        //! @brief Mode of aspect ratio control.
         AspectRatioControl _ratioControl;
     };
 
-    /**
-     * @brief
-     */
+    //! @brief A group of cameras.
     class CameraGroup {
     public:
+    	//! @brief Smart pointer type for CameraGroup.
         typedef rw::common::Ptr<CameraGroup> Ptr;
 
-        virtual ~CameraGroup(){};
+        //! @brief Destructor.
+        virtual ~CameraGroup(){}
 
+        /**
+         * @brief Get name of group.
+         * @return the name.
+         */
         virtual std::string getName() = 0;
+
+        /**
+         * @brief Check if group is enabled.
+         * @return true if enabled.
+         */
         virtual bool isEnabled() = 0;
+
+        /**
+         * @brief Enable/disable group.
+         * @param enabled [in] true to enable, false to disable.
+         */
         virtual void setEnabled(bool enabled) = 0;
+
+        /**
+         * @brief Insert a camera in group.
+         * @param cam [in] camera.
+         * @param index [in] the index to insert at.
+         */
         virtual void insertCamera(SceneCamera::Ptr cam, int index) = 0;
+
+        /**
+         * @brief Remove camera.
+         * @param index [in] the index of the camera to remove.
+         */
         virtual void removeCamera(int index) = 0;
+
+        /**
+         * @brief Get all cameras in group.
+         * @return list of cameras.
+         */
         virtual std::list<SceneCamera::Ptr> getCameras() = 0;
+
+        /**
+         * @brief Set the main camera.
+         * @param cam [in] main camera.
+         */
         virtual void setMainCamera(SceneCamera::Ptr cam) = 0;
+
+        /**
+         * @brief Get the main camera.
+         * @return the main camera.
+         */
         virtual SceneCamera::Ptr getMainCamera() = 0;
 
+        /**
+         * @brief Enable/disable offscreen rendering.
+         * @param enable [in] true to enable, false to disable.
+         */
         virtual void setOffscreenRenderEnabled( bool enable ) = 0;
+
+        /**
+         * @brief Check if offscreen rendering is enabled.
+         * @return true if enabled, false otherwise.
+         */
         virtual bool isOffscreenRenderEnabled() = 0;
+
+        /**
+         * @brief Set size for offscreen rendering.
+         * @param width [in]
+         * @param height [in]
+         */
         virtual void setOffscreenRenderSize(int width, int height) = 0;
+
+        /**
+         * @brief Set color space for offscreen rendering.
+         * @param color [in] the color space to use.
+         */
         virtual void setOffscreenRenderColor(rw::sensor::Image::ColorCode color) = 0;
 
+        /**
+         * @brief Copy to image.
+         * @param img [out] image to copy to.
+         */
         virtual void setCopyToImage( rw::sensor::Image::Ptr img ) = 0;
+
+        /**
+         * @brief Copy to point cloud.
+         * @param img [out] point cloud to copy to.
+         */
         virtual void setCopyToScan25D( rw::common::Ptr<rw::geometry::PointCloud> img ) = 0;
+
+        /**
+         * @brief Enable multi-sampling.
+         * @param samples [in] number of samples.
+         */
         virtual void setMultiSample(int samples) = 0;
 
 

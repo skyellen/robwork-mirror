@@ -265,7 +265,7 @@ namespace graphics {
          * @param drawable [in] the drawable
          * @param frame [in] the frame where the drawable is to be placed
          */
-        void addDrawable(DrawableNode::Ptr drawable, rw::kinematics::Frame*);
+        void addDrawable(DrawableNode::Ptr drawable, rw::kinematics::Frame* frame);
 
         /**
          * @brief get all drawables of the WorkCellScene
@@ -299,6 +299,7 @@ namespace graphics {
         /**
          * @brief find a drawable by name \b name that is attached to frame \b frame
          * @param name [in] the name of the drawable
+         * @param frame [in] search only the subtree beginning from this frame.
          * @return a drawable with name \b name or NULL if no such drawable exist in the scene
          */
         DrawableNode::Ptr findDrawable(const std::string& name, const rw::kinematics::Frame* frame);
@@ -361,6 +362,11 @@ namespace graphics {
          */
         rw::kinematics::Frame* getFrame(DrawableNode::Ptr d) const;
 
+        /**
+         * @brief Get the GroupNode corresponding to the given \b frame.
+         * @param frame [in] the frame.
+         * @return group node.
+         */
         rw::graphics::GroupNode::Ptr getNode(const rw::kinematics::Frame* frame) const;
 
     private:

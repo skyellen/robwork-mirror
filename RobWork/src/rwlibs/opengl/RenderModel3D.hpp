@@ -70,8 +70,9 @@ namespace rwlibs { namespace opengl {
          * @brief Fast drawing of model using drawelements array. This draw method require that
          * textured objects use texture coordinates that are mapped to vertices and not
          * faces. Also this method only works on triangle meshes
-         * @param type [in]
-         * @param alpha [in]
+         * @param info [in] state and rendering specific info
+         * @param type [in] the drawtype which is being used
+         * @param alpha [in] the alpha value to render with
          */
         void drawUsingArrays(const rw::graphics::DrawableNode::RenderInfo& info, DrawType type, double alpha) const;
 
@@ -79,8 +80,9 @@ namespace rwlibs { namespace opengl {
          * @brief Slower drawing of model using simple opengl draw calls. This draw
          * method is slower than the array method but it is more general and does not
          * requre texture coordinates to be ordered specifically
-         * @param type [in]
-         * @param alpha [in]
+         * @param info [in] state and rendering specific info
+         * @param type [in] the drawtype which is being used
+         * @param alpha [in] the alpha value to render with
          */
         void drawUsingSimple(const rw::graphics::DrawableNode::RenderInfo& info, DrawType type, double alpha) const;
 

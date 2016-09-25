@@ -18,8 +18,10 @@ namespace rw { namespace geometry { class Line; } }
 namespace rw {
 namespace graphics {
 
+//! @brief A specific type of DrawableNode that is able to draw a rw::geometry::Geometry.
 class DrawableGeometryNode: public rw::graphics::DrawableNode {
 public:
+	//! @brief Smart pointer type for DrawableGeometryNode.
     typedef rw::common::Ptr<DrawableGeometryNode> Ptr;
 
     /**
@@ -81,6 +83,10 @@ public:
     virtual void addFrameAxis(double size) = 0;
 
 protected:
+    /**
+     * @brief Construct new drawable geometry node.
+     * @param name [in] name of the node.
+     */
     DrawableGeometryNode(const std::string& name):DrawableNode(name){}
 };
 

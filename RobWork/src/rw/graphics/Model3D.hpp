@@ -64,7 +64,17 @@ namespace graphics {
          */
         struct Material {
             //! @brief default constructor
-            Material():name(""), simplergb(true), texId(-1){};
+            Material():name(""), simplergb(true), texId(-1) {
+                for (unsigned int i = 0; i < 4; i++) {
+                	rgb[i] = 0;
+                	ambient[i] = 0;
+                	emissive[i] = 0;
+                	specular[i] = 0;
+                }
+                shininess = 0;
+                transparency = 0;
+            }
+
             //! @brief constructor for simple material
             Material(const std::string& nam, float r, float g, float b, float a=1.0):
                 name(nam), simplergb(true), texId(-1)
@@ -73,10 +83,27 @@ namespace graphics {
                 rgb[1] = g;
                 rgb[2] = b;
                 rgb[3] = a;
+                for (unsigned int i = 0; i < 4; i++) {
+                	ambient[i] = 0;
+                	emissive[i] = 0;
+                	specular[i] = 0;
+                }
+                shininess = 0;
+                transparency = 0;
             }
 
-            bool hasTexture() const { return texId>=0; };
-            int getTextureID() const { return texId; };
+            /**
+             * @brief Check if material has texture.
+             * @return true if material has texture.
+             */
+            bool hasTexture() const { return texId>=0; }
+
+            /**
+             * @brief Get id of the texture for this material.
+             * @return the texture id.
+             */
+            int getTextureID() const { return texId; }
+
             //! @brief material name, not necesarily unique
             std::string name;
             //! @brief true if this material is a simple material
@@ -103,6 +130,7 @@ namespace graphics {
          * textures. All indices \b _subFaces share material \b _matIndex.
          */
         struct MaterialFaces {
+        	//! @brief Smart pointer type for MaterialFaces.
             typedef rw::common::Ptr<MaterialFaces> Ptr;
             /**
              *  @brief  Index into the vertice array of the Object3D.
@@ -118,6 +146,7 @@ namespace graphics {
          * textures. All indices \b _subFaces share material \b _matIndex.
          */
         struct MaterialPolys {
+        	//! @brief Smart pointer type for MaterialPolys.
             typedef rw::common::Ptr<MaterialPolys> Ptr;
 
             /**
@@ -129,12 +158,11 @@ namespace graphics {
             int _matIndex;
         };
 
-        /**
-         * @brief
-         */
+        //! @brief A 3d object consisting of geometry information, material and texture.
         struct Object3D {
-
+        	//! @brief Smart pointer type for Object3D.
             typedef rw::common::Ptr<Object3D> Ptr;
+
             /**
              * @brief constructor
              * @param name [in] name of object
@@ -234,13 +262,23 @@ namespace graphics {
              */
             std::vector<rw::geometry::IndexedTriangle<uint16_t> > _faces;
 
+            //! @brief Mapping from triangles to materials.
             struct MaterialMapData {
+            	/**
+            	 * @brief Constructor.
+            	 * @param m [in] material id.
+            	 * @param sidx [in] start index of triangles.
+            	 * @param s [in] number of triangles that use the material.
+            	 */
                 MaterialMapData(uint16_t m, uint16_t sidx, uint16_t s):
                     matId(m), startIdx(sidx), size(s)
                 {};
-                uint16_t matId; // material that is used for these triangles
-                uint16_t startIdx;// the start index of the triangles
-                uint16_t size;    // number of triangles from startIdx that use this material
+                //! @brief material that is used for these triangles
+                uint16_t matId;
+                //! @brief the start index of the triangles
+                uint16_t startIdx;
+                //! @brief number of triangles from startIdx that use this material
+                uint16_t size;
             };
 
 
@@ -252,9 +290,14 @@ namespace graphics {
              */
             std::vector<rw::geometry::IndexedPolygonN<uint16_t> > _polys;
 
+            //! @brief Transform of the object.
             rw::math::Transform3D<float> _transform;
+            //! @brief Child objects.
             std::vector<Object3D::Ptr> _kids;
-            rw::math::Vector2D<float> _texOffset, _texRepeat;
+            //! @brief Offset of texture.
+            rw::math::Vector2D<float> _texOffset;
+            //! @brief Repeat texture.
+            rw::math::Vector2D<float> _texRepeat;
 
             /**
              * @brief maps material into a range of triangles.
@@ -263,11 +306,13 @@ namespace graphics {
 
             // these should be compiled
             //std::vector<MaterialFaces::Ptr> _matFaces;
+            //! @brief Polygons ordered according to material.
             std::vector<MaterialPolys::Ptr> _matPolys;
             // parameter that define if geometry is rigid (static) or if it changes
         };
 
     public:
+        //! @brief Method to do smoothing.
         typedef enum{
             AVERAGED_NORMALS //! vertex normal is determine as an avarage of all adjacent face normals
             ,WEIGHTED_NORMALS //! vertex normal is determined as AVARAGED_NORMALS, but with the face normals scaled by the face area
@@ -292,23 +337,22 @@ namespace graphics {
 
         /**
          * @brief add geometry to this model3d
-         * @param mat [in] the material properties to use for
-         * @param obj
-         * @return
+         * @param mat [in] the material properties to use for the geometry.
+         * @param geom [in] the geometry to add.
          */
         void addGeometry(const Material& mat, rw::common::Ptr<class rw::geometry::Geometry> geom);
 
         /**
-         * add a triangle mesh to this model3d
-         * @param mat
-         * @param mesh
+         * @brief add a triangle mesh to this model3d
+         * @param mat [in] the material properties to use for the mesh.
+         * @param mesh [in] the mesh geometry.
          */
         void addTriMesh(const Material& mat, const rw::geometry::TriMesh& mesh);
 
         /**
          * @brief all objects in a model use the materials defined on the model
-         * @param mat
-         * @return
+         * @param mat [in] material to add.
+         * @return id of the newly added material.
          */
         int addMaterial(const Material& mat);
 
@@ -367,16 +411,25 @@ namespace graphics {
         void setDynamic(bool dynamic) { _isDynamic = dynamic;}
 
         // todo make these availabkle through proper interfaces
-        std::vector<Material> _materials; // The array of materials
-        std::vector<Object3D::Ptr> _objects; // The array of objects in the model
+        //! @brief The array of materials.
+        std::vector<Material> _materials;
+        //! @brief The array of objects in the model
+        std::vector<Object3D::Ptr> _objects;
+        //! @brief The array of textures.
         std::vector<TextureData> _textures;
 
     protected:
+        //! @brief The transform of the model.
         rw::math::Transform3D<> _transform;
+        //! @brief Name of the model.
         std::string _name;
+        //! @brief The DrawableNode::DrawableTypeMask
         int _mask;
-        int totalVerts;			// Total number of vertices in the model
-        int totalFaces;			// Total number of faces in the model
+        //! @brief Total number of vertices in the model
+        int totalVerts;
+        //! @brief Total number of faces in the model
+        int totalFaces;
+        //! @brief If the data can be expected to change.
         bool _isDynamic;
     };
     //! @}

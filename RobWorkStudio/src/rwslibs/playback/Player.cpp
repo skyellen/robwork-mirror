@@ -351,7 +351,7 @@ std::string Player::getInfoLabel() const
 
 // Constructors.
 
-PlayerPtr makeEmptyPlayer()
+Player::Ptr Player::makeEmptyPlayer()
 {
     return ownedPtr(new Player(
                                TimedStatePath(),
@@ -360,7 +360,7 @@ PlayerPtr makeEmptyPlayer()
                                (RobWorkStudio*)NULL));
 }
 
-PlayerPtr makePlayer(const TimedStatePath& path,
+Player::Ptr Player::makePlayer(const TimedStatePath& path,
                      StateDrawPtr drawer,
                      double tickInterval,
                      RobWorkStudio* rwstudio)

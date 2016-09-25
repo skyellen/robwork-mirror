@@ -88,7 +88,7 @@ namespace graphics {
          * @brief remove node with name \b name from the children list of this node AND removes this
          * node from the parent list of \b node.
 		 *
-		 * @param node [in] child node that is to be removed
+		 * @param name [in] child node that is to be removed
          */
         void removeChild(const std::string& name);
 
@@ -98,8 +98,10 @@ namespace graphics {
         //! @brief get transform
         rw::math::Transform3D<> getTransform();
 
-
+        //! @brief The transform.
         rw::math::Transform3D<> _t3d;
+
+        //! @brief List of child nodes.
         std::list<SceneNode::Ptr> _childNodes;
     };
 

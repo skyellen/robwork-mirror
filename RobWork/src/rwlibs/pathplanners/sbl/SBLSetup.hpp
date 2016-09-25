@@ -58,6 +58,8 @@ class SBLExpand;
 
            @param constraint [in] Planning constraint.
 
+           @param edgeConstraint [in] Planning constraint for edges.
+
            @param expansion [in] Expansion strategy for insertion of new nodes.
            The nodes returned by the expansion strategy must be collision free
            or empty. If an empty configuration is returned, the planner tries to
@@ -96,6 +98,8 @@ class SBLExpand;
 
            @param constraint [in] Planning constraint.
 
+           @param edgeConstraint [in] Planning constraint for edges.
+
            @param device [in] Device for which planning is done.
 
            @param expandRadius [in] Node expansion radius.
@@ -115,6 +119,7 @@ class SBLExpand;
         SBLSetup(const SBLOptions& options) : options(options) {}
 
     public:
+        //! @brief Internal options to use.
         SBLOptions options;
         friend class SBLInternal;
     };

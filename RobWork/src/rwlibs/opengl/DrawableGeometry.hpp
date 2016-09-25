@@ -134,10 +134,14 @@ namespace rwlibs { namespace opengl {
 
 
     protected:
+        //! @brief The drawable that controls the rendering of the geometry, frame axes and more.
         rw::common::Ptr<Drawable> _drawable;
 
+        //! @brief Linear to render.
         rw::common::Ptr<RenderLines> _rlines;
+        //! @brief Renders for frames.
         std::vector<rw::common::Ptr<RenderFrame> > _rframes;
+        //! @brief Renders for geometries.
         std::vector<rw::common::Ptr<RenderGeometry> > _rgeoms;
     private:
         double _alpha;

@@ -82,6 +82,10 @@ class RWGLTexture;
         rw::common::Ptr<RWGLTexture> _tex;
     };
 
+    /**
+     * @brief Legacy type of a smart pointer for RenderImage.
+     * @deprecated Use RenderImage::Ptr instead. This type will be removed sometime in the future.
+     */
     typedef rw::common::Ptr<RenderImage> RenderImagePtr;
 
     /*@}*/

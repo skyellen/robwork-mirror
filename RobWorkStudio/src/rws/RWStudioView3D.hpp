@@ -159,11 +159,32 @@ public:
     }
 
     //// events inherited from QtWidget
-    void keyPressEvent(QKeyEvent *e);
-    void mouseDoubleClickEvent(QMouseEvent* event);
 
-    void saveSettings();
-    void restoreSettings();
+    /**
+     * @brief Handle key press events.
+     *
+     * The following is supported:
+     *
+     * | Keys       | Function                                          |
+     * |------------|---------------------------------------------------|
+     * | CTRL+G     | Save current view to file (file dialog is opened) |
+     * | CTRL+Left  | Switch to previous scene camera                   |
+     * | CTRL+Right | Switch to next scene camera                       |
+     * | CTRL+1...9 | Switch to scene camera number n                   |
+     *
+     * @param e [in] the event.
+     */
+    void keyPressEvent(QKeyEvent *e);
+
+    /**
+     * @brief Handle double mouse click events.
+     *
+     * If CTRL key is pressed while double clicking the left mouse button,
+     * a frame can be selected.
+     *
+     * @param event [in] the event.
+     */
+    void mouseDoubleClickEvent(QMouseEvent* event);
 
     //! get current draw mask
     int getDrawMask();
@@ -207,11 +228,10 @@ private:
 
     SensorCameraView makeCameraView(const std::string& name,double fovy, double w, double h, double n, double f, rw::kinematics::Frame* frame);
 
-protected:
+//protected:
+    //void contextMenuEvent ( QContextMenuEvent * event );
 
-    void contextMenuEvent ( QContextMenuEvent * event );
-
-protected:
+private:
     rws::SceneViewerWidget* _viewWidget;
     rw::graphics::SceneViewer* _view;
     rw::graphics::WorkCellScene::Ptr _wcscene;

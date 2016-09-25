@@ -136,6 +136,10 @@ namespace rwlibs { namespace opengl {
         float _pointSize;
     };
 
+    /**
+     * @brief Legacy type of a smart pointer for RenderPointCloud.
+     * @deprecated Use RenderPointCloud::Ptr instead. This type will be removed sometime in the future.
+     */
     typedef rw::common::Ptr<RenderPointCloud> RenderPointCloudPtr;
 //! @}
 }} // end namespaces

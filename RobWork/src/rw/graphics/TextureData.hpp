@@ -30,6 +30,7 @@ namespace graphics {
 	 */
 	class TextureData {
 	public:
+		//! @brief Smart pointer type for TextureData.
 		rw::common::Ptr<TextureData> Ptr;
 
 		//! constructor
