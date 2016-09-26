@@ -206,7 +206,7 @@ namespace graphics {
         void setTransparency(double alpha, rw::kinematics::Frame* f);
 
         //******************************** interface for adding drawables  ***/
-        /**
+        /*
          * @brief create and add a drawable geometry node of line geometry to the scene
          * @param name [in] name of drawable node
          * @param lines [in] the line geometry
@@ -292,7 +292,7 @@ namespace graphics {
          * @param drawable [in] the drawable
          * @param frame [in] the frame where the drawable is to be placed
          */
-        DrawableProxy::Ptr addDrawable(DrawableNode::Ptr drawable, rw::kinematics::Frame*);
+        DrawableProxy::Ptr addDrawable(DrawableNode::Ptr drawable, rw::kinematics::Frame* frame);
 
         /**
          * @brief get all drawables of a specific frame in the WorkCellScene

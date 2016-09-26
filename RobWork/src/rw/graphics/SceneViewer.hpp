@@ -213,13 +213,13 @@ namespace graphics {
             return _positionSelectedEvent;
         }
 
-        /// ----------------- ABSTRACT view manipulation Functions, use getViewCamera()
+        // ----------------- ABSTRACT view manipulation Functions, use getViewCamera()
         /**
          * @brief set the orientation of the view. The view will look in the
          * positive direction of the z-axis, with x-axis as the width and
          * the y-axis as the height. Origin of view is in the center of the
          * image.
-         * @param rot [in] rotation relative to world
+         * @param t3d [in] transform relative to world
          */
         virtual void setTransform(const rw::math::Transform3D<>& t3d){ getViewCamera()->setTransform(t3d); };
 

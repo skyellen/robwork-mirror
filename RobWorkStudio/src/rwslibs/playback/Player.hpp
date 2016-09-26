@@ -29,7 +29,7 @@ class StateDraw;
 
 namespace rws { class RobWorkStudio; }
 
-// The controls of the playback interface are forwarded to this utility.
+//! @brief This is the core functionality of the playback plugin. The controls in PlayBack is forwarded to this utility.
 class Player : public QObject
 {
     Q_OBJECT
@@ -141,7 +141,7 @@ public:
     static Player::Ptr makeEmptyPlayer();
 
     //! @copydoc Player
-    static Player::Ptr makePlayer(const rw::trajectory::TimedStatePath& path,
+    static Player::Ptr makePlayer(const rw::trajectory::TimedStatePath& statePath,
     					rw::common::Ptr<StateDraw> drawer,
                          double tickInterval,
                          rws::RobWorkStudio* rwstudio);

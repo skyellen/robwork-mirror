@@ -110,8 +110,8 @@ namespace dynamics {
     protected:
         /**
          * @brief Construct a new dynamic body.
-         * @param dof [in] general information about the dynamic properties of this body.
-         * @param object [in] information about the body reference frame and geometry.
+         * @param info [in] general information about the dynamic properties of this body.
+         * @param obj [in] information about the body reference frame and geometry.
          */
         Body(const BodyInfo& info, rw::models::Object::Ptr obj);
 

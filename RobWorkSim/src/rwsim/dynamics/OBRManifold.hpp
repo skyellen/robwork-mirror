@@ -23,10 +23,11 @@ namespace dynamics {
     class OBRManifold {
     public:
         /**
-         * @brief
-         * @param thres [in] the angle threshold in radians. Threshold of angle between
-         * contact normals
-         * @param sepThres [in] the max seperating distance in meter between contacting points
+         * @brief Constructor.
+         * @param thres [in] (optional) the angle threshold in radians. Threshold of angle between
+         * contact normals. Default is 0.03 radians.
+         * @param sepThres [in] (optional) the max seperating distance in meter between contacting points.
+         * Default is 0.01 meter.
          */
         OBRManifold(double thres = 0.03, double sepThres = 0.01):
             _threshold(thres),
@@ -34,9 +35,10 @@ namespace dynamics {
             _sepThreshold(sepThres),
             _deepestIdx(0),
             _nrOfContacts(0)
-        {};
+        {}
 
-        virtual ~OBRManifold(){};
+        //! @brief Destructor.
+        virtual ~OBRManifold(){}
 
         /**
          * @brief adds and updates the manifold with a new point
@@ -44,10 +46,19 @@ namespace dynamics {
          */
         bool addPoint(ContactPoint& p);
 
+        /**
+         * @brief Get the deepest point in manifold.
+         * @return the deepest point.
+         */
         ContactPoint& getDeepestPoint(){
             return _points[_deepestIdx];
         }
 
+        /**
+         * @brief Update the position of the contacts.
+         * @param aT [in] transform of the first object.
+         * @param bT [in] transform of the second object.
+         */
         void update(const rw::math::Transform3D<> &aT, const rw::math::Transform3D<> &bT){
             using namespace rw::math;
             // update the position of the contact points
@@ -65,8 +76,17 @@ namespace dynamics {
             }
         }
 
-        int getNrOfContacts(){ return _nrOfContacts; };
+        /**
+         * @brief Get number of contacts in manifold.
+         * @return the number of contacts.
+         */
+        int getNrOfContacts(){ return _nrOfContacts; }
 
+        /**
+         * @brief Check if a point lies within manifold.
+         * @param p [in] point to check.
+         * @return true if inside manifold, false otherwise.
+         */
         bool inManifold(ContactPoint& p){
             using namespace rw::math;
             if( _nrOfContacts==0 ){
@@ -108,17 +128,34 @@ namespace dynamics {
          */
         void fit(ContactPoint& p);
 
+        /**
+         * @brief Get the normal.
+         * @return the normal.
+         */
         rw::math::Vector3D<> getNormal(){
             return _normal;
         }
 
+        /**
+         * @brief Get contact.
+         * @param i [in] contact index.
+         * @return the contact at index \b i.
+         */
         ContactPoint& getContact(int i){
             return _points[i];
         }
 
-        rw::math::Transform3D<> getTransform(){ return _t3d;};
+        /**
+         * @brief Get the transform.
+         * @return the transform.
+         */
+        rw::math::Transform3D<> getTransform(){ return _t3d;}
 
-        rw::math::Vector3D<> getHalfLengths(){ return _h; };
+        /**
+         * @brief Get half lengths of the manifold.
+         * @return half lengths.
+         */
+        rw::math::Vector3D<> getHalfLengths(){ return _h; }
 
     private:
         void updateDeepestPoint(){

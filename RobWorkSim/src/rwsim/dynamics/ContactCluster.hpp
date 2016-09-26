@@ -31,7 +31,7 @@ namespace dynamics {
 
 	public:
 
-		/**
+		/*
 		 * @brief
 		 * @param points
 		 * @param clusters
@@ -39,6 +39,27 @@ namespace dynamics {
 		//static void calcClusters(const std::vector<ContactPoint>& points,
 		//                         std::vector<ContactCluster>& clusters);
 
+		/**
+		 * @brief Cluster together contacts using a simple distance threshold.
+		 *
+		 * The method takes the point with the deepest penetration first, then takes the points
+		 * within the distance threshold and creates a cluster. Then the process is repeated
+		 * for the remaining contacts until all contacts have been treated.
+		 *
+		 * The resulting contacts in \b dst is one contact from each cluster, and it is that one
+		 * contact within each cluster with the largest penetration.
+		 *
+		 * The first elements in \b cIdxSrc gives the index of the deepest point in each cluster in
+		 * the original \b src list.
+		 *
+		 * @param src [in] the list of input contact points.
+		 * @param srcCnt [in] the number of contacts in \b src.
+		 * @param cIdxSrc [out] a vector of indices where \b srcCnt elements must be reserved.
+		 * @param cIdxDst [out] a vector of indices where \b srcCnt elements must be reserved.
+		 * @param dst [out] the result of clustering.
+		 * @param maxDist [in] the norm-2 distance threshold for the contact positions.
+		 * @return the number of clusters (the number of contacts in \b dst).
+		 */
 		static int thresClustering(
 						ContactPoint src[], int srcCnt,
 						int *cIdxSrc, int *cIdxDst,
@@ -47,14 +68,25 @@ namespace dynamics {
 
 
 		/**
-		 * @brief this method cluster together contacts that have equal/close normals.
-		 * @param src
-		 * @param srcCnt
-		 * @param cIdxSrc
-		 * @param cIdxDst
-		 * @param dst
-		 * @param maxDist
-		 * @return
+		 * @brief Cluster together contacts that have equal/close normals.
+		 *
+		 * The method takes the point with the deepest penetration first, then takes the contacts
+		 * with normals within the threshold and creates a cluster. Then the process is repeated
+		 * for the remaining contacts until all contacts have been treated.
+		 *
+		 * The resulting contacts in \b dst is one contact from each cluster, and it is that one
+		 * contact within each cluster with the largest penetration.
+		 *
+		 * The first elements in \b cIdxSrc gives the index of the deepest point in each cluster in
+		 * the original \b src list.
+		 *
+		 * @param src [in] the list of input contact points.
+		 * @param srcCnt [in] the number of contacts in \b src.
+		 * @param cIdxSrc [out] a vector of indices where \b srcCnt elements must be reserved.
+		 * @param cIdxDst [out] a vector of indices where \b srcCnt elements must be reserved.
+		 * @param dst [out] the result of clustering.
+		 * @param maxDist [in] the norm-2 distance threshold for the contact normals.
+		 * @return the number of clusters (the number of contacts in \b dst).
 		 */
 		static int normalThresClustering(ContactPoint src[],
 		                                 int srcCnt,

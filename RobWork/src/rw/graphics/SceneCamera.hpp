@@ -137,13 +137,13 @@ namespace graphics {
 
         /**
          * @brief set the mask used when drawing in the scene
-         * @param mask
+         * @param mask [in] The draw mask - see DrawableNode::DrawableTypeMask.
          */
         virtual void setDrawMask(int mask);
 
         /**
          * @brief Get the mask used when drawing in the scene
-         * @param mask
+         * @return the draw mask - see DrawableNode::DrawableTypeMask.
          */
         int getDrawMask();
 
@@ -181,12 +181,12 @@ namespace graphics {
         //! @brief Viewport x.
         int _x;
         //! @brief Viewport y.
-        int _y
+        int _y;
         //! @brief Viewport width.
 		int _w;
         //! @brief Viewport height.
         int _h;
-        //! @brief Mask for what to draw.
+        //! @brief Mask for what to draw. See DrawableNode::DrawableTypeMask.
         int _drawMask;
         //! @brief Mask for what should be cleared.
         int _clearMask;

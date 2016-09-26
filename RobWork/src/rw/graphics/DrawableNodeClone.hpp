@@ -65,7 +65,6 @@ namespace rw { namespace graphics {
             _highlighted = _drawable->isHighlighted();
             _visibleState = false;
             _visible = _drawable->isVisible();
-            _transformState = Transform3D<>::identity();
             _transform = _drawable->getTransform();
             _scaleState = 0;
             _scale = _drawable->getScale();

@@ -33,25 +33,27 @@ namespace dynamics {
     class ContactDataMap
     {
     public:
-
+    	//! @brief Data required for the Newton collision model.
         struct NewtonData {
+        	//! @brief Coefficient of restitution.
             double cr;
         };
 
+        //! @brief Data required for the Chatterjee collision model.
         struct ChatterjeeData {
+        	//! @brief crN
             double crN;
+            //! @brief crT
             double crT;
         };
 
-
+        //! @brief Constructor.
     	ContactDataMap();
 
+    	//! @brief Destructor.
     	virtual ~ContactDataMap();
 
-    	/**
-    	 * @brief
-    	 */
-    	double getContactMargin();
+    	//double getContactMargin();
 
         /**
           * @brief add an object type to the contact data map and associates it with
@@ -73,20 +75,33 @@ namespace dynamics {
 
          /**
            * @brief converts a string of object type name to an int identifier.
-           * @param material [in] name of material
-           * @return
+           * @param objType [in] name of object type.
+           * @return integer id.
            */
          int getDataID( const std::string& objType ) const;
 
+         /**
+          * @brief Get name of object type with \b id.
+          * @param id [in] the id.
+          * @return the name of the object type.
+          */
          const std::string& getObjectTypeName( int id ) const {
              return _objectNames[id];
          }
 
-         const std::vector<std::string>& getObjecTypes(){
+         /**
+          * @brief Get a list of all object types.
+          * @return vector of names.
+          */
+         const std::vector<std::string>& getObjectTypes(){
              return _objectNames;
          }
 
-         int getMaxID() const {return _objectCnt;};
+         /**
+          * @brief Get the maximum id.
+          * @return the maximum id.
+          */
+         int getMaxID() const {return _objectCnt;}
 
 
     	/**
@@ -103,15 +118,29 @@ namespace dynamics {
                            const std::string &nameB,
                            const ChatterjeeData& data);
 
+        /**
+         * @brief Get Newton data for a pair of object types.
+         * @param nameA [in] name of first type.
+         * @param nameB [in] name of second type.
+         * @return the NewtonData.
+         */
         const NewtonData& getNewtonData(const std::string &nameA,
                                         const std::string &nameB) const;
 
+        /**
+         * @brief Get Newton data for a pair of object type ids.
+         * @param idA [in] id of first type.
+         * @param idB [in] id of second type.
+         * @return the NewtonData.
+         */
         const NewtonData& getNewtonData(int idA, int idB) const ;
 
-
-    	/**
-    	 *
-    	 */
+        /**
+         * @brief Get Chatterjee data for a pair of object types.
+         * @param nameA [in] name of first type.
+         * @param nameB [in] name of second type.
+         * @return the Chatterjee data.
+         */
     	const ChatterjeeData& getChatterjeeData(const std::string &nameA,
     	                                        const std::string nameB) const;
 

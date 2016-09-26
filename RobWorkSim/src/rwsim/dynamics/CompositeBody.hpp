@@ -28,13 +28,20 @@ namespace dynamics {
      * @brief The composite body allow multiple objects to be grouped together in
      * a fixed configuration.
      *
+     * @deprecated This class is marked for removal as it has never been implemented and is not used.
      */
     class CompositeBody : public Body
     {
     public:
+    	/**
+    	 * @brief Constructor.
+    	 * @param base
+    	 * @param b1
+    	 */
         CompositeBody(Body* base, Body* b1);
-        virtual ~CompositeBody(){};
 
+        //! @brief Destructor.
+        virtual ~CompositeBody(){}
 
     private:
         Body* _base;

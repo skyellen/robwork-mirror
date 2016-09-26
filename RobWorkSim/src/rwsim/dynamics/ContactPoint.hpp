@@ -35,56 +35,78 @@ namespace dynamics {
 	class ContactPoint
 	{
 	public:
-
+		//! @brief Construct empty contact point.
 		ContactPoint():
 			isFirstContact(true),
 			nImpulse(0.0),
 			tImpulse(0.0),
 			dist(100),
+			bias(0),
 			penetrationA(0.0),
 			penetrationB(0.0),
+			nForce(0),
+			tForce(0),
 			penetration(0.0),
 			K(1.0,1.0,1.0),
 			KInv(1.0,1.0,1.0),
+			userdata(0),
 			mu(0.4)
 		{};
 
-		virtual ~ContactPoint(){};
+		//! @brief Destructor.
+		virtual ~ContactPoint(){}
 
-		// following is the default and minimum requirements for a
-		// contact point description
+		//! @brief true if first contact
+		bool isFirstContact;
 
-		bool isFirstContact; // true if first contact
+		//! @brief normal impulse
+		double nImpulse;
+		//! @brief tangential impulse
+		double tImpulse;
 
-		double nImpulse, // normal impulse
-			   tImpulse; // tangential impulse
-
-		double dist; // distance between pA and pB
+		//! @brief distance between pA and pB
+		double dist;
+		//! @brief bias
 		double bias;
-		double penetrationA; // the penetration depth of A into B
-		double penetrationB; // the penetration depth of B into A
+		//! @brief the penetration depth of A into B
+		double penetrationA;
+		//! @brief the penetration depth of B into A
+		double penetrationB;
 
-		double nForce,
-			   tForce;
+		//! @brief the normal force
+		double nForce;
+		//! @brief the normal torque
+		double tForce;
 
-		// the penetration of the contact point
+		//! @brief the penetration of the contact point
 		double penetration;
 
-		rw::math::Vector3D<> p, // the contact position
-							 n, // the contact normal
-							 t; // the tangential unit velocity
+		//! @brief the contact position
+		rw::math::Vector3D<> p;
+		//! @brief the contact normal
+		rw::math::Vector3D<> n;
+		//! @brief the tangential unit velocity
+		rw::math::Vector3D<> t;
 
-		rw::math::Vector3D<> pA,    // position of contact point on core of A
-							 pAInit,// position pA recorded on first contact
-							 pB,    // position of contact point on core of B
-							 pBInit;// position pB recorded on first contact
+		//! @brief position of contact point on core of A
+		rw::math::Vector3D<> pA;
+		//! @brief position pA recorded on first contact
+		rw::math::Vector3D<> pAInit;
+		//! @brief position of contact point on core of B
+		rw::math::Vector3D<> pB;
+		//! @brief position pB recorded on first contact
+		rw::math::Vector3D<> pBInit;
 
 		// these variables are not generel and therefore should not be here
-		rw::math::InertiaMatrix<> K,KInv; //
+		//! @brief K
+		rw::math::InertiaMatrix<> K;
+		//! @brief KInv
+		rw::math::InertiaMatrix<> KInv;
 
-		// user specific data
+		//! @brief user specific data
 		void *userdata;
 
+		//! @brief friction
 		double mu;
 
 

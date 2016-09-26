@@ -42,9 +42,17 @@ namespace dynamics {
      */
     struct WorkCellDimension {
     public:
+    	/**
+    	 * @brief Constructor.
+    	 * @param c [in] center.
+    	 * @param box [in] the halflengths of the workspace.
+    	 */
         WorkCellDimension(const rw::math::Vector3D<>& c, const rw::math::Vector3D<>& box):
             center(c),boxDim(box){}
-        rw::math::Vector3D<> center, boxDim;
+        //! @brief The center of the workspace.
+        rw::math::Vector3D<> center;
+        //! @brief The halftlengths of the workspace.
+        rw::math::Vector3D<> boxDim;
 
     };
 
@@ -63,12 +71,17 @@ namespace dynamics {
     class DynamicWorkCell
     {
     public:
+        //! @brief Type for the collection of bodies.
         typedef std::vector<Body::Ptr> BodyList;
-        //! @brief Type for the list of constraints
+        //! @brief Type for the collection of constraints.
         typedef std::vector<Constraint::Ptr> ConstraintList;
+        //! @brief Type for the collection of devices.
         typedef std::vector<DynamicDevice::Ptr> DeviceList;
+        //! @brief Type for the collection of simulated controllers.
         typedef std::vector<rwlibs::simulation::SimulatedController::Ptr> ControllerList;
+        //! @brief Type for the collection of simulated sensors.
         typedef std::vector<rwlibs::simulation::SimulatedSensor::Ptr> SensorList;
+        //! @brief Smart pointer type for DynamicWorkCell.
         typedef rw::common::Ptr<DynamicWorkCell> Ptr;
 
         /**
@@ -162,8 +175,8 @@ namespace dynamics {
     	const DeviceList& getDynamicDevices() const { return _devices; };
 
         /**
-         * @brief add a sensor to the dynamic workcell
-         * @param sensor [in] a simulated sensor
+         * @brief add a device to the dynamic workcell
+         * @param device [in] a device
          */
         void addDevice(DynamicDevice::Ptr device){
         	device->registerIn( _workcell->getStateStructure() );
@@ -255,8 +268,18 @@ namespace dynamics {
     		_changedEvent.fire(ControllerAddedEvent, boost::any(manipulator) );
     	}
 
+    	/**
+    	 * @brief Find a simulated controller.
+    	 * @param name [in] name of the controller.
+    	 * @return the simulated controller if found, NULL otherwise.
+    	 */
     	rwlibs::simulation::SimulatedController::Ptr findController(const std::string& name);
 
+    	/**
+    	 * @brief Find a simulated controller.
+    	 * @param name [in] name of the controller.
+    	 * @return the simulated controller if found, NULL otherwise.
+    	 */
     	template<class T>
     	rw::common::Ptr<T> findController(const std::string& name){
     	    rwlibs::simulation::SimulatedController::Ptr controller = findController(name);
@@ -312,17 +335,25 @@ namespace dynamics {
     	    return _collisionMargin;
     	}
 
+    	/**
+    	 * @brief Set the collision margin.
+    	 * @param margin [in] the new margin.
+    	 */
         void setCollisionMargin(double margin){
             _collisionMargin = margin;
         }
 
+        /**
+         * @brief Get dimensions of workspace.
+         * @return the dimensions.
+         */
         WorkCellDimension getWorldDimension(){
             return _worldDimension;
         }
 
         /**
          * @brief tests if a body is part of a device
-         * @param [in] the body to test for.
+         * @param body [in] the body to test for.
          * @return true if body is part of the device.
          */
         bool inDevice(rw::common::Ptr<const Body> body) const;
@@ -360,15 +391,18 @@ namespace dynamics {
         	return _engineSettings;
         }
 
-        typedef enum{GravityChangedEvent,
-                    ConstraintAddedEvent,
-                    BodyAddedEvent,
-                    DeviceAddedEvent,
-                    ControllerAddedEvent,
-                    SensorAddedEvent
+        //! @brief Types of events a DynamicWorkCell can emit.
+        typedef enum{GravityChangedEvent,//!< If the gravity is changed.
+                    ConstraintAddedEvent,//!< When a constraint is added.
+                    BodyAddedEvent,      //!< When a body is added.
+                    DeviceAddedEvent,    //!< When a device is added.
+                    ControllerAddedEvent,//!< When a controller is added.
+                    SensorAddedEvent     //!< When a sensor is added.
         } DWCEventType;
 
+        //! @brief Type for an event listener.
         typedef boost::function<void(DWCEventType, boost::any)> DWCChangedListener;
+        //! @brief Type for the event.
         typedef rw::common::Event<DWCChangedListener, DWCEventType, boost::any> DWCChangedEvent;
 
         /**
