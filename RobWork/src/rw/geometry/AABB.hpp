@@ -68,7 +68,10 @@ namespace geometry {
 
 } // geometry
 //! define traits of the AABB
-template<typename T> struct Traits<rw::geometry::AABB<T> >{ typedef T value_type; };
+template<typename T> struct Traits<rw::geometry::AABB<T> >{
+	//! @brief define traits of the AABB
+	typedef T value_type;
+};
 
 
 } // rw

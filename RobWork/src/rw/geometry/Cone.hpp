@@ -72,9 +72,16 @@ namespace geometry {
 		virtual void setParameters(const rw::math::Q& q);
 
 		//! @copydoc GeometryData::getType
-		GeometryType getType() const { return ConePrim; };
+		GeometryType getType() const { return ConePrim; }
+
 	protected:
+		/**
+		 * @brief Check if point lies inside geometry.
+		 * @param point [in] point to check.
+		 * @return true if inside geometry, false otherwise.
+		 */
 		bool doIsInside(const rw::math::Vector3D<>& point);
+
 	private:
 		double _radiusTop, _radiusBottom, _height;
 	};

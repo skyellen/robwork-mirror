@@ -56,8 +56,16 @@ namespace geometry {
 		//! @brief destructor
 		virtual ~Cylinder();
 
+		/**
+		 * @brief Get the radius of the cylinder.
+		 * @return the radius.
+		 */
 		double getRadius() const { return _radius;}
 
+		/**
+		 * @brief Get the height of the cylinder.
+		 * @return the height.
+		 */
 		double getHeight() const { return _height;}
 		// inherited from Primitive
 

@@ -222,7 +222,8 @@ namespace geometry {
 
 	    /**
 	     * @brief extracts the outer contour of a contour
-	     * @param contour
+	     * @param contour [in] contour to find outer contour of.
+	     * @param resolution [in] the resolution.
 	     * @return new contour
 	     */
 	    static Contour2D::Ptr getOuterContour(const Contour2D& contour, double resolution);

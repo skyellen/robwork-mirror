@@ -18,6 +18,7 @@ namespace geometry {
     template<class T=double>
     class TriTriToleranceIntersect: public BVCollider<TriTriToleranceIntersect<T>, rw::geometry::Triangle<T> > {
     public:
+    	//! @brief Type for internal values.
         typedef T value_type;
 
         /**

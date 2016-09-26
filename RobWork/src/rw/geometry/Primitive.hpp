@@ -76,14 +76,19 @@ namespace geometry {
         //! test if a point is on the border or inside this primitive
         bool isInside(const rw::math::Vector3D<>& point ) { return doIsInside(point); };
     protected:
-
+		/**
+		 * @brief Check if point lies inside geometry.
+		 * @param point [in] point to check.
+		 * @return true if inside geometry, false otherwise.
+		 */
         virtual bool doIsInside(const rw::math::Vector3D<>& point)
         {
             RW_THROW("Current primitive " << GeometryData::toString(getType()) << " does not implement isInside method!" );
             return false;
-        };
+        }
 
-        Primitive(){};
+        //! @brief Constructor.
+        Primitive(){}
 
     };
     //! @}

@@ -50,7 +50,7 @@ namespace dynamics {
          * @param state [in/out] update state with new controller.
          */
         void setController(rwlibs::simulation::SimulatedController::Ptr controller, rw::kinematics::State& state){
-            _controllerStateMap[state.getUniqueId()] = sensor;
+            _controllerStateMap[state.getUniqueId()] = controller;
         }
 
     private:

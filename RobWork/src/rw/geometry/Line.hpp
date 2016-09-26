@@ -38,6 +38,7 @@ namespace geometry {
 			//! @brief Smart pointer to Line.
 			typedef rw::common::Ptr<Line> Ptr;
 		
+			//! @brief Type of internal values.
 			typedef double value_type;
 			
 			/**
@@ -164,6 +165,10 @@ namespace geometry {
 	 */
 	class LineMetric: public rw::math::Metric<Line> {
 		public:
+			/**
+			 * @brief Construct new metric.
+			 * @param angToDistWeight [in] (optional) weighting of the angle to distance. Default is 1.
+			 */
 			LineMetric(double angToDistWeight = 1.0) :
 				_angToDistWeight(angToDistWeight)
 			{}
@@ -194,8 +199,10 @@ namespace geometry {
 				return 0.5*ang*_angToDistWeight + 0.5*a.distance(b);
 			}
 
+			//! @copydoc Metric::doSize
 			int doSize() const { return -1; }
 
+			//! @brief The weighting of the angle to the distance.
 			double _angToDistWeight;
 	};
 	// @}

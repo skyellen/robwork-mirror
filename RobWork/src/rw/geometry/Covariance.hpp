@@ -28,19 +28,28 @@ namespace geometry {
 	template<class T=double>
 	class Covariance {
 	public:
+		//! @brief Default constructor.
+		Covariance() {}
 
-		Covariance()
-		{
-		}
+		/**
+		 * @brief Constructor.
+		 * @param matrix [in] Eigen matrix.
+		 */
+        Covariance(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& matrix):_covar(matrix) {}
 
-        Covariance(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& matrix):_covar(matrix)
-        {
-        }
+        //! @brief Destructor.
+		virtual ~Covariance(){}
 
-		virtual ~Covariance(){};
+		/**
+		 * @brief Get the covariance matrix.
+		 * @return Eigen matrix.
+		 */
+		const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& getMatrix(){ return _covar;}
 
-		const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& getMatrix(){ return _covar;};
-
+		/**
+		 * @brief Do eigen decomposition.
+		 * @return the EigenDecomposition.
+		 */
 		rw::math::EigenDecomposition<T> eigenDecompose(){
 			typedef std::pair<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<T, Eigen::Dynamic, 1> > ResultType;
 			//std::cout << "Covar: " << _covar << std::endl;
@@ -52,7 +61,7 @@ namespace geometry {
 
         /**
          * @brief initialize covariance using a geometry object.
-         * @param geom
+         * @param geom [in] the geometry.
          */
         void initialize(rw::geometry::Geometry& geom){
             using namespace rw::geometry;
@@ -68,12 +77,20 @@ namespace geometry {
             }
         }
 
-
+        /**
+         * @brief Initialize covariance from points.
+         * @param points [in] the points.
+         */
 		void initialize(const std::vector<rw::math::Vector3D<T> >& points){
 			//_covar = boost::numeric::ublas::zero_matrix<T>(3, 3);
 			doInitialize<typename std::vector<rw::math::Vector3D<T> >::const_iterator, 3>( points.begin(), points.end() );
 		}
 
+		/**
+		 * @brief Initialization method.
+		 * @param first [in] iterator for first element.
+		 * @param last [in] iterator for last element.
+		 */
 		template<class RandomAccessIterator, int DIM>
 		void doInitialize(RandomAccessIterator first, RandomAccessIterator last){
 			using namespace rw::math;
