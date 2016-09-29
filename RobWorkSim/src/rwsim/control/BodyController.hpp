@@ -19,7 +19,7 @@
 #define RWSIM_CONTROL_BODYCONTROLLER_HPP_
 
 /**
- * @file BodyController.hpp
+ * @file control/BodyController.hpp
  *
  * \copydoc rwsim::control::BodyController
  */
@@ -63,8 +63,20 @@ namespace control {
 		 * @param body [in] the body to set target for.
 		 * @param target [in] the target transformation in world frame.
 		 * @param state [in] the state giving the current position.
+		 * @param maxLinVel [in] (optional) maximum linear velocity of the body in \f$\frac{m}{s}\f$.
+		 * @param maxLinAcc [in] (optional) maximum linear acceleration of the body in \f$\frac{m}{s^2}\f$.
+		 * @param maxAngVel [in] (optional) maximum angular velocity of the body in \f$\frac{rad}{s}\f$.
+		 * @param maxAngAcc [in] (optional) maximum angular acceleration of the body in \f$\frac{rad}{s^2}\f$.
 		 */
-		void setTarget(rw::common::Ptr<rwsim::dynamics::Body> body, const rw::math::Transform3D<>& target, const rw::kinematics::State& state);
+		void setTarget(
+				rw::common::Ptr<rwsim::dynamics::Body> body,
+				const rw::math::Transform3D<>& target,
+				const rw::kinematics::State& state,
+				double maxLinVel = 0.5,
+				double maxLinAcc = 1.0,
+				double maxAngVel = 0.4,
+				double maxAngAcc = 1.0
+		);
 
 		/**
 		 * @brief Set a target trajectory of a body. The initial configuration of the trajectory must match

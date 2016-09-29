@@ -61,24 +61,22 @@ namespace simulator {
 	    typedef rw::common::Ptr<DynamicSimulator> Ptr;
 
 	    /**
-	     * @brief constructor
-	     * @param dworkcell
-	     * @param pengine
-	     * @return
+	     * @brief Constructor.
+	     * @param dworkcell [in] the dynamic workcell.
+	     * @param pengine [in] the physics engine to use.
 	     */
 	    DynamicSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dworkcell, rw::common::Ptr<PhysicsEngine> pengine);
 
 	    /**
-	     * @brief constructor
-	     * @param dworkcell
-	     * @return
+	     * @brief Constructor for a DynamicSimulator using a default PhysicsEngine.
+	     * @param dworkcell [in] the dynamic workcell.
 	     */
         DynamicSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dworkcell);
 
 		/**
 		 * @brief destructor
 		 */
-		virtual ~DynamicSimulator(){};
+		virtual ~DynamicSimulator(){}
 
 		/**
 		 * @brief cleans up the allocated storage
@@ -87,13 +85,14 @@ namespace simulator {
 
 		/**
 		 * @brief gets the the current simulated time
+		 * @return current simulated time.
 		 */
 		double getTime();
 
 		/**
-		 * Enables or disables a body
-		 * @param body
-		 * @param enabled
+		 * @brief Enables or disables a body
+		 * @param body [in] the body.
+		 * @param enabled [in] boolean indicating whether body should be enabled or disabled.
 		 */
 		void setEnabled(dynamics::Body::Ptr body, bool enabled);
 
@@ -104,41 +103,68 @@ namespace simulator {
 		drawable::SimulatorDebugRender::Ptr createDebugRender();
 
 		/**
-		 * @brief
+		 * @brief Get the properties used by the simulator.
+		 * @return a reference to the properties.
 		 */
 		rw::common::PropertyMap& getPropertyMap();
 
 		/**
 		 * @brief add a simulated controller to this simulator
+		 * @param controller [in] the controller to add.
 		 */
 		void addController(rw::common::Ptr<rwlibs::simulation::SimulatedController> controller);
 
 		/**
 		 * @brief removes a simulated controller from this simulator
-		 * @param controller
+		 * @param controller [in] the controller to remove.
 		 */
 		void removeController(rw::common::Ptr<rwlibs::simulation::SimulatedController> controller);
 
+		/**
+		 * @copydoc addBody(rwsim::dynamics::Body::Ptr)
+		 * @param state [in] the state giving the initial pose of the body.
+		 */
 		void addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State &state);
-		void addBody(rwsim::dynamics::Body::Ptr body){ addBody(body,_state); };
-
-		void addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State &state);
-		void addDevice(rwsim::dynamics::DynamicDevice::Ptr dev){ addDevice(dev,_state);};
 
 		/**
-		 * @brief add a simulated sensor to this simulator
+		 * @brief Add a body to the simulator.
+		 * @param body [in] the body to add.
+		 */
+		void addBody(rwsim::dynamics::Body::Ptr body){ addBody(body,_state); }
+
+		/**
+		 * @copydoc addDevice(rwsim::dynamics::DynamicDevice::Ptr)
+		 * @param state [in/out] the state giving the initial configuration of the device, which might be changed.
+		 */
+		void addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State &state);
+
+		/**
+		 * @brief Add a device to the simulator.
+		 * @param dev [in] the device to add.
+		 */
+		void addDevice(rwsim::dynamics::DynamicDevice::Ptr dev){ addDevice(dev,_state);}
+
+		/**
+		 * @copydoc addSensor(rwlibs::simulation::SimulatedSensor::Ptr)
+		 * @param state [in/out] if the sensor is not registered in the state, it will be registered.
 		 */
 		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State &state);
-		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){ addSensor(sensor,_state);};
 
 		/**
-		 * @brief add a simulated sensor to this simulator
+		 * @brief Add a simulated sensor to the simulator.
+		 * @param sensor [in] the sensor to add.
+		 */
+		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){ addSensor(sensor,_state);}
+
+		/**
+		 * @brief Remove a simulated sensor from the simulator.
+		 * @param sensor [in] the sensor to remove.
 		 */
 		void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor);
 
 		/**
 		 * @brief get the list of simulated sensors
-		 * @return
+		 * @return vector of sensors.
 		 */
 		 std::vector<rwlibs::simulation::SimulatedSensor::Ptr> getSensors();
 
@@ -149,6 +175,7 @@ namespace simulator {
           */
          void step(double dt);
 
+         //! @copydoc Simulator::getState
          rw::kinematics::State& getState();
 
          /**
@@ -172,20 +199,63 @@ namespace simulator {
 		  */
 		 void setEnabled(rw::kinematics::Frame* f, bool);
 
+		 /**
+		  * @brief Enable or disable a body in the simulation.
+		  * @param body [in] the body.
+		  * @param enabled [in] boolean indicating if body should be enabled or not.
+		  */
 		 void setDynamicsEnabled(rwsim::dynamics::Body::Ptr body, bool enabled);
 		 // interfaces for manipulating/controlling bodies
 
 		 /**
-		  * @brief set a target position of a body. This will add forces/velocities to a body such that it
+		  * @brief Set a target position of a body. This will add forces/velocities to a body such that it
 		  * moves toward the target pose.
 		  * @param body [in] the body to control
-		  * @param t3d [in] the target pose
-		  * @param state [in] current state
+		  * @param target [in] the target pose
+		  * @param state [in] the current state.
+		  * @param maxLinVel [in] (optional) maximum linear velocity of the body in \f$\frac{m}{s}\f$.
+		  * @param maxLinAcc [in] (optional) maximum linear acceleration of the body in \f$\frac{m}{s^2}\f$.
+		  * @param maxAngVel [in] (optional) maximum angular velocity of the body in \f$\frac{rad}{s}\f$.
+		  * @param maxAngAcc [in] (optional) maximum angular acceleration of the body in \f$\frac{rad}{s^2}\f$.
 		  */
-		 void setTarget(dynamics::Body::Ptr body, const rw::math::Transform3D<>& t3d, rw::kinematics::State& state);
-		 void setTarget(dynamics::Body::Ptr body, const rw::math::Transform3D<>& t3d){ setTarget(body,t3d,_state);}
+		 void setTarget(
+				 rwsim::dynamics::Body::Ptr body,
+				 const rw::math::Transform3D<>& target,
+				 rw::kinematics::State& state,
+				 double maxLinVel = 0.5,
+				 double maxLinAcc = 1.0,
+				 double maxAngVel = 0.4,
+				 double maxAngAcc = 1.0
+		 );
 
+		 /**
+		  * @brief Set a target position of a body. This will add forces/velocities to a body such that it
+		  * moves toward the target pose.
+		  * @param body [in] the body to control
+		  * @param target [in] the target pose
+		  * @param maxLinVel [in] (optional) maximum linear velocity of the body in \f$\frac{m}{s}\f$.
+		  * @param maxLinAcc [in] (optional) maximum linear acceleration of the body in \f$\frac{m}{s^2}\f$.
+		  * @param maxAngVel [in] (optional) maximum angular velocity of the body in \f$\frac{rad}{s}\f$.
+		  * @param maxAngAcc [in] (optional) maximum angular acceleration of the body in \f$\frac{rad}{s^2}\f$.
+		  */
+		 void setTarget(
+				 rwsim::dynamics::Body::Ptr body,
+				 const rw::math::Transform3D<>& target,
+				 double maxLinVel = 0.5,
+				 double maxLinAcc = 1.0,
+				 double maxAngVel = 0.4,
+				 double maxAngAcc = 1.0)
+		 {
+			 setTarget(body,target,_state,maxLinVel,maxLinAcc,maxAngVel,maxAngAcc);
+		 }
+
+		 /**
+		  * @brief Set a target trajectory for a body.
+		  * @param body [in] the body.
+		  * @param traj [in] the trajectory.
+		  */
 		 void setTarget(dynamics::Body::Ptr body, rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj);
+
 		 /**
 		  * @brief Set a velocity target.
 		  * @param body [in] the body that should move.
@@ -195,19 +265,39 @@ namespace simulator {
 
 		 /**
 		  * @brief disables the target control of body \b body.
-		  * @param body
+		  * @param body [in] the body.
 		  */
 		 void disableBodyControl( dynamics::Body::Ptr body );
 
+		 //! @brief Disable all control for all bodies.
 		 void disableBodyControl( );
 
+		 /**
+		  * @brief Get the body controller.
+		  * @return the controller.
+		  */
 		 rwsim::control::BodyController::Ptr getBodyController(){ return _bodyController; }
 
+		 /**
+		  * @brief Attach bodies.
+		  * @param b1 [in] first body.
+		  * @param b2 [in] second body.
+		  */
 		 void attach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
 
+		 /**
+		  * @brief Detach bodies.
+		  * @param b1 [in] first body.
+		  * @param b2 [in] second body.
+		  */
 		 void detach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
 
+		 /**
+		  * @brief Get the dynamic workcell used by the simulator.
+		  * @return the dynamic workcell.
+		  */
 		 rwsim::dynamics::DynamicWorkCell::Ptr getDynamicWorkCell(){ return _dwc; }
+
 	private:
 		 rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
 		 rw::common::Ptr<PhysicsEngine> _pengine;

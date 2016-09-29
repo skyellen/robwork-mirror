@@ -252,6 +252,36 @@ namespace geometry {
 		    return minDist;
 		}*/
 
+        //! @copydoc ConvexHullND::getClosestPoint
+        virtual rw::math::VectorND<N> getClosestPoint(const rw::math::VectorND<N>& vertex) {
+        	using namespace rw::math;
+
+        	if (_faceIdxs.size() == 0) {
+        		return VectorND<N>();
+        	}
+
+        	double min_dist = DBL_MAX;
+        	VectorND<N> closest_point;
+
+        	for (size_t i = 0; i < _faceIdxs.size() / N; i++) {
+
+        		RW_ASSERT(_faceIdxs.size() > i*N);
+        		RW_ASSERT(i < _faceNormals.size());
+
+        		double dist = _faceOffsets[i] + dot(vertex, _faceNormals[i]);
+
+        		// dist will be negative if point is inside, and positive if point is outside
+        		dist = -dist;
+
+        		if (dist < min_dist) {
+        			min_dist = dist;
+        			closest_point = fabs(dist) * _faceNormals[i];
+        		}
+        	}
+
+        	return closest_point;
+        }
+
 		const std::vector<rw::math::VectorND<N> >& getHullVertices(){ return _hullVertices; }
 
 		const std::vector<int>& getFaceIndices(){ return _faceIdxs; }
