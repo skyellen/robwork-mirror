@@ -36,6 +36,10 @@ namespace common {
 		//! @brief constructor
 		BINArchive():_ofs(NULL),_ifs(NULL),_fstr(NULL),_iostr(NULL),_isopen(false){}
 
+		/**
+		 * @brief Constructor.
+		 * @param ofs [out] output stream to write to.
+		 */
 		BINArchive(std::ostream& ofs):_ofs(NULL),_ifs(NULL),_fstr(NULL),_iostr(NULL),_isopen(false)
         {
             open(ofs);
@@ -66,16 +70,16 @@ namespace common {
 
 		//////////////////// SCOPE
 			// utils to handle arrays
-			//! \copydoc OutputArchive::writeEnterScope
+			//! \copydoc OutputArchive::doWriteEnterScope
 			void doWriteEnterScope(const std::string& id);
 
-			//! \copydoc OutputArchive::writeLeaveScope
+			//! \copydoc OutputArchive::doWriteLeaveScope
 			void doWriteLeaveScope(const std::string& id);
 
-			//! \copydoc InputArchive::readEnterScope
+			//! \copydoc InputArchive::doReadEnterScope
 			void doReadEnterScope(const std::string& id);
 
-			//! \copydoc OutputArchive::readLeaveScope
+			//! \copydoc InputArchive::doReadLeaveScope
 			void doReadLeaveScope(const std::string& id);
 
 		///////////////////////// WRITING
@@ -118,6 +122,7 @@ namespace common {
 		//template<class T>
 		//void write(const T& data, const std::string& id){ OutputArchive::write<T>(data,id); }
 
+		//! @copydoc OutputArchive::doWrite(const std::vector<bool>&,const std::string&)
 		template<class T>
 		void writeValue( const std::vector<T>& val, const std::string& id ){
 		    boost::uint32_t s = static_cast<boost::uint32_t>(val.size());
@@ -130,6 +135,7 @@ namespace common {
 			}
 		}
 
+		//! @copydoc OutputArchive::doWrite(bool,const std::string&)
 		template<class T>
 		void writeValue( const T&  val, const std::string& id ){
 		    _ofs->write((char*)&val, sizeof(val) );
@@ -202,6 +208,7 @@ namespace common {
         //    ((InputArchive*)this)->read<T>(object, id);
         //}
 
+	     //! @copydoc InputArchive::doRead(std::vector<bool>&,const std::string&)
 		 template<class T>
 		 void readValue(std::vector<T>& val, const std::string& id){
             boost::uint32_t s = 0;
@@ -214,7 +221,7 @@ namespace common {
 			}
 		 }
 
-
+		 //! @copydoc InputArchive::doRead(bool&,const std::string&)
 		 template<class T>
 		 void readValue(T& val, const std::string& id){
 		     _ifs->read((char*)&val, sizeof(val) );

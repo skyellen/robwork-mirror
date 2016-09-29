@@ -109,9 +109,9 @@ namespace common {
 	public:
 
 		//! @copydoc DOMElem::isName
-		bool isName(const std::string& name) const { return _name == name; }
+		bool isName(const std::string& elemname) const { return _name == name; }
 		//! @copydoc DOMElem::setName
-		void setName(const std::string& name);
+		void setName(const std::string& val);
 
 		//! @copydoc DOMElem::getName
 		const std::string& getName() const { return _name; }

@@ -131,27 +131,27 @@ protected:
      * @param id [in] the identifier.
      */
     virtual void doRead(bool& val, const std::string& id) = 0;
-    //! @copydoc(bool&,const std::string&)
+    //! @copydoc doRead(bool&,const std::string&)
     virtual void doRead(boost::int8_t& val, const std::string& id) = 0;
-    //! @copydoc(bool&,const std::string&)
+    //! @copydoc doRead(bool&,const std::string&)
     virtual void doRead(boost::uint8_t& val, const std::string& id) = 0;
-    //! @copydoc(bool&,const std::string&)
+    //! @copydoc doRead(bool&,const std::string&)
     virtual void doRead(boost::int16_t& val, const std::string& id) = 0;
-    //! @copydoc(bool&,const std::string&)
+    //! @copydoc doRead(bool&,const std::string&)
     virtual void doRead(boost::uint16_t& val, const std::string& id) = 0;
-    //! @copydoc(bool&,const std::string&)
+    //! @copydoc doRead(bool&,const std::string&)
     virtual void doRead(boost::int32_t& val, const std::string& id) = 0;
-    //! @copydoc(bool&,const std::string&)
+    //! @copydoc doRead(bool&,const std::string&)
     virtual void doRead(boost::uint32_t& val, const std::string& id) = 0;
-    //! @copydoc(bool&,const std::string&)
+    //! @copydoc doRead(bool&,const std::string&)
     virtual void doRead(boost::int64_t& val, const std::string& id) = 0;
-    //! @copydoc(bool&,const std::string&)
+    //! @copydoc doRead(bool&,const std::string&)
     virtual void doRead(boost::uint64_t& val, const std::string& id) = 0;
-    //! @copydoc(bool&,const std::string&)
+    //! @copydoc doRead(bool&,const std::string&)
     virtual void doRead(float& val, const std::string& id) = 0;
-    //! @copydoc(bool&,const std::string&)
+    //! @copydoc doRead(bool&,const std::string&)
     virtual void doRead(double& val, const std::string& id) = 0;
-    //! @copydoc(bool&,const std::string&)
+    //! @copydoc doRead(bool&,const std::string&)
     virtual void doRead(std::string& val, const std::string& id) = 0;
 
     /**
@@ -160,27 +160,27 @@ protected:
      * @param id [in] the identifier.
      */
     virtual void doRead(std::vector<bool>& val, const std::string& id) = 0;
-    //! @copydoc(std::vector<bool>&,const std::string&)
+    //! @copydoc doRead(std::vector<bool>&,const std::string&)
     virtual void doRead(std::vector<boost::int8_t>& val, const std::string& id) = 0;
-    //! @copydoc(std::vector<bool>&,const std::string&)
+    //! @copydoc doRead(std::vector<bool>&,const std::string&)
     virtual void doRead(std::vector<boost::uint8_t>& val, const std::string& id) = 0;
-    //! @copydoc(std::vector<bool>&,const std::string&)
+    //! @copydoc doRead(std::vector<bool>&,const std::string&)
     virtual void doRead(std::vector<boost::int16_t>& val, const std::string& id) = 0;
-    //! @copydoc(std::vector<bool>&,const std::string&)
+    //! @copydoc doRead(std::vector<bool>&,const std::string&)
     virtual void doRead(std::vector<boost::uint16_t>& val, const std::string& id) = 0;
-    //! @copydoc(std::vector<bool>&,const std::string&)
+    //! @copydoc doRead(std::vector<bool>&,const std::string&)
     virtual void doRead(std::vector<boost::int32_t>& val, const std::string& id) = 0;
-    //! @copydoc(std::vector<bool>&,const std::string&)
+    //! @copydoc doRead(std::vector<bool>&,const std::string&)
     virtual void doRead(std::vector<boost::uint32_t>& val, const std::string& id) = 0;
-    //! @copydoc(std::vector<bool>&,const std::string&)
+    //! @copydoc doRead(std::vector<bool>&,const std::string&)
     virtual void doRead(std::vector<boost::int64_t>& val, const std::string& id) = 0;
-    //! @copydoc(std::vector<bool>&,const std::string&)
+    //! @copydoc doRead(std::vector<bool>&,const std::string&)
     virtual void doRead(std::vector<boost::uint64_t>& val, const std::string& id) = 0;
-    //! @copydoc(std::vector<bool>&,const std::string&)
+    //! @copydoc doRead(std::vector<bool>&,const std::string&)
     virtual void doRead(std::vector<float>& val, const std::string& id) = 0;
-    //! @copydoc(std::vector<bool>&,const std::string&)
+    //! @copydoc doRead(std::vector<bool>&,const std::string&)
     virtual void doRead(std::vector<double>& val, const std::string& id) = 0;
-    //! @copydoc(std::vector<bool>&,const std::string&)
+    //! @copydoc doRead(std::vector<bool>&,const std::string&)
     virtual void doRead(std::vector<std::string>& val, const std::string& id) = 0;
 
 	/**

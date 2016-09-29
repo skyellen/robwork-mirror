@@ -111,47 +111,47 @@ namespace rw { namespace common {
          * @param value [in] the value to deduct type for.
          * @return the PropertyType corresponding to the type of the given \b value.
          */
-        static PropertyType getType(const rw::common::PropertyMap&) { return PropertyType(PropertyMap); }
+        static PropertyType getType(const rw::common::PropertyMap& value) { return PropertyType(PropertyMap); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const std::string&) { return PropertyType(String); }
+        static PropertyType getType(const std::string& value) { return PropertyType(String); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(float) { return PropertyType(Float); }
+        static PropertyType getType(float value) { return PropertyType(Float); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(double) { return PropertyType(Double); }
+        static PropertyType getType(double value) { return PropertyType(Double); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(int) { return PropertyType(Int); }
+        static PropertyType getType(int value) { return PropertyType(Int); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(bool) { return PropertyType(Bool); }
+        static PropertyType getType(bool value) { return PropertyType(Bool); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const rw::math::Vector3D<double>&) { return PropertyType(Vector3D); }
+        static PropertyType getType(const rw::math::Vector3D<double>& value) { return PropertyType(Vector3D); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const rw::math::Vector2D<double>&) { return PropertyType(Vector2D); }
+        static PropertyType getType(const rw::math::Vector2D<double>& value) { return PropertyType(Vector2D); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const rw::math::Q&) { return PropertyType(Q); }
+        static PropertyType getType(const rw::math::Q& value) { return PropertyType(Q); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const rw::math::Transform3D<double>&) { return PropertyType(Transform3D); }
+        static PropertyType getType(const rw::math::Transform3D<double>& value) { return PropertyType(Transform3D); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const rw::math::Rotation3D<double>&) { return PropertyType(Rotation3D); }
+        static PropertyType getType(const rw::math::Rotation3D<double>& value) { return PropertyType(Rotation3D); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const rw::math::RPY<double>&) { return PropertyType(RPY); }
+        static PropertyType getType(const rw::math::RPY<double>& value) { return PropertyType(RPY); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const rw::math::EAA<double>&) { return PropertyType(EAA); }
+        static PropertyType getType(const rw::math::EAA<double>& value) { return PropertyType(EAA); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const rw::math::Quaternion<double>&) { return PropertyType(Quaternion); }
+        static PropertyType getType(const rw::math::Quaternion<double>& value) { return PropertyType(Quaternion); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const rw::math::Rotation2D<double>&) { return PropertyType(Rotation2D); }
+        static PropertyType getType(const rw::math::Rotation2D<double>& value) { return PropertyType(Rotation2D); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const rw::math::VelocityScrew6D<double>&) { return PropertyType(VelocityScrew6D); }
+        static PropertyType getType(const rw::math::VelocityScrew6D<double>& value) { return PropertyType(VelocityScrew6D); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const rw::trajectory::QPath&) { return PropertyType(QPath); }
+        static PropertyType getType(const rw::trajectory::QPath& value) { return PropertyType(QPath); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const rw::trajectory::Transform3DPath&) { return PropertyType(Transform3DPath); }
+        static PropertyType getType(const rw::trajectory::Transform3DPath& value) { return PropertyType(Transform3DPath); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const std::vector<std::string>&) { return PropertyType(StringList); }
+        static PropertyType getType(const std::vector<std::string>& value) { return PropertyType(StringList); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const std::vector<int>&) { return PropertyType(IntList); }
+        static PropertyType getType(const std::vector<int>& value) { return PropertyType(IntList); }
         //! @copydoc getType(const rw::common::PropertyMap&)
-        static PropertyType getType(const std::vector<double>&) { return PropertyType(DoubleList); }
+        static PropertyType getType(const std::vector<double>& value) { return PropertyType(DoubleList); }
 
         /**
          * @brief Get the type of a generic value T resolved at compile time.

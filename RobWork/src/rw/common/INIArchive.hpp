@@ -68,20 +68,20 @@ namespace common {
 		void flush();
 
 protected:
-
+		//! @brief Maximum number of characters in one line.
 		static const int MAX_LINE_WIDTH = 1000;
 
 		//////////////////// SCOPE
-		//! @copydoc OutputArchive::writeEnterScope
+		//! @copydoc OutputArchive::doWriteEnterScope
 		void doWriteEnterScope(const std::string& id);
 
-		//! @copydoc OutputArchive::writeLeaveScope
+		//! @copydoc OutputArchive::doWriteLeaveScope
 		void doWriteLeaveScope(const std::string& id);
 
-		//! @copydoc InputArchive::readEnterScope
+		//! @copydoc InputArchive::doReadEnterScope
 		void doReadEnterScope(const std::string& id);
 
-		//! @copydoc InputArchive::readLeaveScope
+		//! @copydoc InputArchive::doReadLeaveScope
 		void doReadLeaveScope(const std::string& id);
 
 		void doOpenArchive(const std::string& filename);
@@ -129,6 +129,7 @@ protected:
 		//template<class T>
 		//void doWrite(const T& data, const std::string& id){ OutputArchive::write<T>(data,id); }
 
+		//! @copydoc OutputArchive::doWrite(const std::vector<bool>&,const std::string&)
 		template<class T>
 		void writeValue( const std::vector<T>& val, const std::string& id ){
 			(*_ofs) << id << "=";
@@ -136,6 +137,7 @@ protected:
 			(*_ofs) << "\n";
 		}
 
+		//! @copydoc OutputArchive::doWrite(bool,const std::string&)
 		template<class T>
 		void writeValue( const T&  val, const std::string& id ){
 			(*_ofs) << id << "=" << val << "\n";
@@ -184,6 +186,10 @@ protected:
 		//}
 		///////////////// READING
 
+		/**
+		 * @brief Split a line in a name and a value.
+		 * @return a pair of strings. First is name, second is the value.
+		 */
 		std::pair<std::string, std::string> getNameValue(){
 			std::string line(_line);
 			for(size_t i=0;i<line.size();i++){
@@ -240,6 +246,7 @@ protected:
         //    ((InputArchive*)this)->read<T>(object, id);
         //}
 
+	     //! @copydoc InputArchive::doRead(std::vector<bool>&,const std::string&)
 		 template<class T>
 		 void readValue(std::vector<T>& val, const std::string& id){
 		     getLine();
@@ -258,7 +265,7 @@ protected:
 			}
 		 }
 
-
+		 //! @copydoc InputArchive::doRead(bool&,const std::string&)
 		 template<class T>
 		 void readValue(T& val, const std::string& id){
 		     getLine();
@@ -308,6 +315,13 @@ protected:
 			 }
 		 }
 
+		 /**
+		  * @brief Read one line from input.
+		  *
+		  * Line length is maximum MAX_LINE_WIDTH.
+		  *
+		  * @return true if success.
+		  */
 		 bool getLine();
 
 	private:
