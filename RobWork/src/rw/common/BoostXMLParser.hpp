@@ -109,7 +109,7 @@ namespace common {
 	public:
 
 		//! @copydoc DOMElem::isName
-		bool isName(const std::string& elemname) const { return _name == name; }
+		bool isName(const std::string& elemname) const { return _name == elemname; }
 		//! @copydoc DOMElem::setName
 		void setName(const std::string& val);
 
@@ -126,7 +126,7 @@ namespace common {
 		std::vector<std::string> getValueAsStringList(char stringseperator = ';') const ;
 		//! @copydoc DOMElem::getValueAsDoubleList()
 		std::vector<double> getValueAsDoubleList() const ;
-		//! @copydoc DOMElem::getValueAsDoubleList(int)
+		//! @copydoc DOMElem::getValueAsDoubleList(int) const
 		std::vector<double> getValueAsDoubleList(int size) const ;
 
 		// get elements that searches a specific key
