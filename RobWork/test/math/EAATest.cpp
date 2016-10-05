@@ -21,6 +21,8 @@
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
+#include <rw/math/Transform3D.hpp>
+#include <rw/math/Math.hpp>
 #include <rw/math/Constants.hpp>
 
 using namespace rw::math;
@@ -111,4 +113,49 @@ BOOST_AUTO_TEST_CASE( EAATest ){
     BOOST_CHECK(comp1 != comp3);
     BOOST_CHECK(!(comp1 == comp3));
     
+
+	/** Test different "problematic setups which previously has resulted in NaN errors */
+
+	Transform3D<>t0(Vector3D<>(0.0004406670, 0.1325120000, 0.0236778000), Rotation3D<>(0.9990961814, -0.0003891806, -0.0425144844, 0.0004163897, 0.9999992493, 0.0006269312, 0.0425143000, -0.0006440670, 0.9990960000));
+	Transform3D<>t1(Vector3D<>(0.0004406670, 0.1325120000, 0.0236778000), Rotation3D<>(-0.0000000000, -0.0000000000, 1.0000000000, 0.0000000000, -1.0000000000, -0.0000000000, 1.0000000000, 0.0000000000, 0.0000000000));
+	Rotation3D<>r0((inverse(t0)*t1).R());
+	r0.normalize();
+	EAA<> eaa0(r0);
+	BOOST_CHECK(Math::isNaN(eaa0.angle()) == false);
+	
+
+
+	Transform3D<>t2(Vector3D<>(0.0004406670, 0.1325120000, 0.0236778000), Rotation3D<>(-1.0000000000, -0.0000000000, 0.0000000000, 0.0000000000, -1.0000000000, 0.0000000000, -0.0000000000, 0.0000000000, 1.0000000000));
+	Rotation3D<>r1((inverse(t0)*t2).R());
+	r1.normalize();
+	EAA<> eaa1(r1);
+	BOOST_CHECK(Math::isNaN(eaa1.angle()) == false);
+
+	Transform3D<>t3(Vector3D<>(0.0004406670, 0.1325120000, 0.0236778000), Rotation3D<>(1.0000000000, -0.0000000000, -0.0000000000, -0.0000000000, -1.0000000000, 0.0000000000, -0.0000000000, -0.0000000000, -1.0000000000));
+	Rotation3D<>r2((inverse(t0)*t3).R());
+	r2.normalize();
+	EAA<> eaa2(r2);
+	BOOST_CHECK(Math::isNaN(eaa2.angle()) == false);
+
+	Transform3D<>t4(Vector3D<>(0.0004406670, 0.1325120000, 0.0236778000), Rotation3D<>(-0.9993793864, -0.0352195084, -0.0004122380, -0.0004294999, 0.0004964944, 0.9999993429, -0.0352193000, 0.9993790000, -0.0005113220));
+	Transform3D<>t5(Vector3D<>(0.0004406670, 0.1325120000, 0.0236778000), Rotation3D<>(0.0000000000, -1.0000000000, -0.0000000000, 0.0000000000, 0.0000000000, -1.0000000000, 1.0000000000, 0.0000000000, 0.0000000000));
+	Rotation3D<>r3((inverse(t4)*t5).R());
+	r3.normalize();
+	EAA<> eaa3(r3);
+	BOOST_CHECK(Math::isNaN(eaa3.angle()) == false);
+
+
+	Transform3D<>t6(Vector3D<>(0.0004406670, 0.1325120000, 0.0236778000), Rotation3D<>(0.0000000000, 1.0000000000, 0.0000000000, 0.0000000000, 0.0000000000, -1.0000000000, -1.0000000000, 0.0000000000, 0.0000000000));
+	Rotation3D<>r4((inverse(t4)*t6).R());
+	r4.normalize();
+	EAA<> eaa4(r4);
+	BOOST_CHECK(Math::isNaN(eaa4.angle()) == false);
+
+	Transform3D<>t7(Vector3D<>(0.0004406670, 0.1325120000, 0.0236778000), Rotation3D<>(-1.0000000000, 0.0000000000, 0.0000000000, -0.0000000000, 0.0000000000, -1.0000000000, -0.0000000000, -1.0000000000, -0.0000000000));
+	Rotation3D<>r5((inverse(t4)*t7).R());
+	r5.normalize();
+	EAA<> eaa5(r5);
+	BOOST_CHECK(Math::isNaN(eaa5.angle()) == false);
+
+
 }
