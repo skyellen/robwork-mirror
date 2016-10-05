@@ -84,6 +84,16 @@ void Rotation3D<T>::normalize() {
     _m[0][2]+=eps02*_m[0][0]+ eps12*_m[0][1]+ eps22*_m[0][2];
     _m[1][2]+=eps02*_m[1][0]+ eps12*_m[1][1]+ eps22*_m[1][2];
     _m[2][2]+=eps02*_m[2][0]+ eps12*_m[2][1]+ eps22*_m[2][2];
+
+	for (size_t i = 0; i < 3; i++) {
+		for (size_t j = 0; j < 3; j++) {
+			if (_m[i][j] > 1) 
+				_m[i][j] = 1;
+			else if (_m[i][j] < -1) 
+				_m[i][j] = -1;
+		}
+	}
+	
 }
 
 template<class T>
