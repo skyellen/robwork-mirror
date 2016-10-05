@@ -61,7 +61,7 @@ SET(ASSIMP_PACKAGE_VERSION "0" CACHE STRING "the package-specific version used f
 
 # Needed for openddl_parser config, no use of c++11 at this moment
 add_definitions( -DOPENDDL_NO_USE_CPP11 )
-set_property( GLOBAL PROPERTY CXX_STANDARD 11 )
+#set_property( GLOBAL PROPERTY CXX_STANDARD 11 )
 
 include_directories(
     ./

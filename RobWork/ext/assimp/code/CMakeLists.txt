@@ -702,7 +702,7 @@ if(MSVC10)
   endif( VC10_STDINT_FIX )
 endif(MSVC10)
 
-IF(NOT BUILD_STATIC_LIB)
+IF(BUILD_SHARED_LIBS)
 	ADD_DEFINITIONS( -DASSIMP_BUILD_DLL_EXPORT )
 ENDIF()
 
@@ -746,7 +746,7 @@ INCLUDE_DIRECTORIES(
   ../contrib/openddlparser/include
 )
 
-IF (BUILD_STATIC_LIB)
+IF (NOT BUILD_SHARED_LIBS)
 	ADD_LIBRARY( rw_assimp STATIC ${assimp_src} )
 ELSE()
 	ADD_LIBRARY( rw_assimp SHARED ${assimp_src} )
