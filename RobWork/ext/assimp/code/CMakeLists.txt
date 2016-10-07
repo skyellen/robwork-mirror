@@ -774,6 +774,9 @@ if( MSVC )
     set(MSVC_PREFIX "vc150")
   endif()
   set(LIBRARY_SUFFIX "${ASSIMP_LIBRARY_SUFFIX}-${MSVC_PREFIX}-mt" CACHE STRING "the suffix for the assimp windows library")
+  TARGET_COMPILE_OPTIONS(rw_assimp PRIVATE /wd4267) # Disable the Windows warnings for conversion of size_t to a smaller integer type.
+  TARGET_COMPILE_OPTIONS(rw_assimp PRIVATE /wd4244) # Disable the Windows warnings for conversion to integer types with possible loss of data.
+  TARGET_COMPILE_OPTIONS(rw_assimp PRIVATE /wd4477) # Disable the Windows warnings for sprintf argument of type size_t instead of int.
 endif()
 
 SET_TARGET_PROPERTIES( rw_assimp PROPERTIES
