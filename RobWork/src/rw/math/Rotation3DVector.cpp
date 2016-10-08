@@ -18,9 +18,7 @@
 
 #include "Rotation3DVector.hpp"
 
-using namespace rw::math;
-
 // some explicit template specifications
-template class Rotation3DVector<double>;
-template class Rotation3DVector<float>;
+template class rw::math::Rotation3DVector<double>;
+template class rw::math::Rotation3DVector<float>;
 

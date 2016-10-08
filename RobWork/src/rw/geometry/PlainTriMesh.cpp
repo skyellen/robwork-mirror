@@ -20,10 +20,10 @@
 
 using namespace rw::geometry;
 
-template class PlainTriMesh<Triangle<double> >;
-template class PlainTriMesh<TriangleN1<double> >;
-template class PlainTriMesh<TriangleN3<double> >;
+template class rw::geometry::PlainTriMesh<Triangle<double> >;
+template class rw::geometry::PlainTriMesh<TriangleN1<double> >;
+template class rw::geometry::PlainTriMesh<TriangleN3<double> >;
 
-template class PlainTriMesh<Triangle<float> >;
-template class PlainTriMesh<TriangleN1<float> >;
-template class PlainTriMesh<TriangleN3<float> >;
+template class rw::geometry::PlainTriMesh<Triangle<float> >;
+template class rw::geometry::PlainTriMesh<TriangleN1<float> >;
+template class rw::geometry::PlainTriMesh<TriangleN3<float> >;

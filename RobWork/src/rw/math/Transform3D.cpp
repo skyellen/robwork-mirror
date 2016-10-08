@@ -73,8 +73,8 @@ typename Transform3D<T>::EigenMatrix4x4 Transform3D<T>::e() const
 }
 
 // Explicit template instantiations.
-template class Transform3D<double>;
-template class Transform3D<float>;
+template class rw::math::Transform3D<double>;
+template class rw::math::Transform3D<float>;
 
 
 namespace rw{ namespace common { namespace serialization {

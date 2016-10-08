@@ -62,8 +62,8 @@ VelocityScrew6D<T>::VelocityScrew6D(const Vector3D<T>& linear, const EAA<T>& ang
   _screw[5] = angular[2];
 }
 
-template class VelocityScrew6D<double>;
-template class VelocityScrew6D<float>;
+template class rw::math::VelocityScrew6D<double>;
+template class rw::math::VelocityScrew6D<float>;
 
 
 

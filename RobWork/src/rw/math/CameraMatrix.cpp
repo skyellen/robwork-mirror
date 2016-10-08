@@ -25,8 +25,8 @@ using namespace rw::common;
 using namespace rw::math;
 
 // Explicit template instantiations.
-template class CameraMatrix<double>;
-template class CameraMatrix<float>;
+template class rw::math::CameraMatrix<double>;
+template class rw::math::CameraMatrix<float>;
 
 namespace rw{ namespace common { namespace serialization {
 

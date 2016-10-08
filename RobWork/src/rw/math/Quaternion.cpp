@@ -24,8 +24,8 @@
 using namespace rw::common;
 using namespace rw::math;
 
-template class Quaternion<double>;
-template class Quaternion<float>;
+template class rw::math::Quaternion<double>;
+template class rw::math::Quaternion<float>;
 
 template<>
 void rw::common::serialization::write(const Quaternion<double>& tmp, OutputArchive& oar, const std::string& id)

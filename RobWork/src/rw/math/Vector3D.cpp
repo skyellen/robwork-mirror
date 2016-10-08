@@ -26,8 +26,8 @@ using namespace rw::common;
 using namespace rw::math;
 
 // Explicit template specifications.
-template class Vector3D<double>;
-template class Vector3D<float>;
+template class rw::math::Vector3D<double>;
+template class rw::math::Vector3D<float>;
 
 
 namespace rw{ namespace common { namespace serialization {

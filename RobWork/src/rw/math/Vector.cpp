@@ -17,8 +17,6 @@
 
 #include "Vector.hpp"
 
-using namespace rw::math;
-
 // Explicit template specifications.
-template class Vector<double>;
-template class Vector<float>;
+template class rw::math::Vector<double>;
+template class rw::math::Vector<float>;

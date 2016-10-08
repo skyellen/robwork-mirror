@@ -25,8 +25,8 @@ using namespace rw::common;
 using namespace rw::math;
 
 // some explicit template specifications
-template class Polynomial<double>;
-template class Polynomial<float>;
+template class rw::math::Polynomial<double>;
+template class rw::math::Polynomial<float>;
 
 namespace rw{ namespace common { namespace serialization {
 

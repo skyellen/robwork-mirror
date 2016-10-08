@@ -110,8 +110,8 @@ const Rotation3D<T> EAA<T>::toRotation3D() const
 }
 
 // some explicit template specifications
-template class EAA<double>;
-template class EAA<float>;
+template class rw::math::EAA<double>;
+template class rw::math::EAA<float>;
 
 template<>
 void rw::common::serialization::write(const EAA<double>& tmp, rw::common::OutputArchive& oar, const std::string& id)

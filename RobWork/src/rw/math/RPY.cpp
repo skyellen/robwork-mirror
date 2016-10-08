@@ -99,8 +99,8 @@ const Rotation3D<T> RPY<T>::toRotation3D() const
         cb * cc);
 }
 
-template class RPY<double>;
-template class RPY<float>;
+template class rw::math::RPY<double>;
+template class rw::math::RPY<float>;
 
 namespace rw{ namespace common { namespace serialization {
 

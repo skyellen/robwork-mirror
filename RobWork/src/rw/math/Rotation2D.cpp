@@ -25,8 +25,8 @@ using namespace rw::common;
 using namespace rw::math;
 
 // Explicit template specifications.
-template class Rotation2D<double>;
-template class Rotation2D<float>;
+template class rw::math::Rotation2D<double>;
+template class rw::math::Rotation2D<float>;
 
 
 namespace rw{ namespace common { namespace serialization {

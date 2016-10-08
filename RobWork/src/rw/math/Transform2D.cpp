@@ -26,8 +26,8 @@ using namespace rw::common;
 using namespace rw::math;
 
 // Explicit template instantiations.
-template class Transform2D<double>;
-template class Transform2D<float>;
+template class rw::math::Transform2D<double>;
+template class rw::math::Transform2D<float>;
 
 namespace rw{ namespace common { namespace serialization {
 

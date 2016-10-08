@@ -18,12 +18,10 @@
 
 #include "Triangle.hpp"
 
-using namespace rw::geometry;
+template class rw::geometry::Triangle<double>;
+template class rw::geometry::TriangleN1<double>;
+template class rw::geometry::TriangleN3<double>;
 
-template class Triangle<double>;
-template class TriangleN1<double>;
-template class TriangleN3<double>;
- 
-template class Triangle<float>;
-template class TriangleN1<float>;
-template class TriangleN3<float>;
+template class rw::geometry::Triangle<float>;
+template class rw::geometry::TriangleN1<float>;
+template class rw::geometry::TriangleN3<float>;

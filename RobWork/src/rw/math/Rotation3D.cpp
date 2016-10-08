@@ -262,8 +262,8 @@ void Rotation3D<T>::multiply(const Rotation3D<T>& a,
 
 
 // Explicit template specifications.
-template class Rotation3D<double>;
-template class Rotation3D<float>;
+template class rw::math::Rotation3D<double>;
+template class rw::math::Rotation3D<float>;
 
 
 namespace rw{ namespace common { namespace serialization {

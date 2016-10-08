@@ -7,8 +7,8 @@ using namespace rw::common;
 using namespace rw::math;
 
 // some explicit template specifications
-template class Pose2D<double>;
-template class Pose2D<float>;
+template class rw::math::Pose2D<double>;
+template class rw::math::Pose2D<float>;
 
 namespace rw{ namespace common {namespace serialization {
 

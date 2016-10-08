@@ -27,8 +27,8 @@ using namespace rw::math;
 using namespace rw::common;
 
 // Explicit template specifications.
-template class Vector2D<double>;
-template class Vector2D<float>;
+template class rw::math::Vector2D<double>;
+template class rw::math::Vector2D<float>;
 
 
 

@@ -21,6 +21,5 @@
 #include <rw/math/Transform3D.hpp>
 
 using namespace rw::math;
-using namespace rw::kinematics;
 
-template class FrameMap<Transform3D<> >;
+template class rw::kinematics::FrameMap<Transform3D<> >;

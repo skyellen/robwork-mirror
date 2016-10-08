@@ -23,8 +23,8 @@
 
 using namespace rw::math;
 
-template class Pose6D<double>;
-template class Pose6D<float>;
+template class rw::math::Pose6D<double>;
+template class rw::math::Pose6D<float>;
 
 
 namespace rw{ namespace common {namespace serialization {

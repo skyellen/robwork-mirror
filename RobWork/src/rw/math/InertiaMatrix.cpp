@@ -26,8 +26,8 @@ using namespace rw::math;
 
 
 // some explicit template specifications
-template class InertiaMatrix<double>;
-template class InertiaMatrix<float>;
+template class rw::math::InertiaMatrix<double>;
+template class rw::math::InertiaMatrix<float>;
 
 
 

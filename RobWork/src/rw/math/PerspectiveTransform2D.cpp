@@ -92,8 +92,8 @@ PerspectiveTransform2D<T>::calcTransform(
 }
 
 // some explicit template specifications
-template class PerspectiveTransform2D<double>;
-template class PerspectiveTransform2D<float>;
+template class rw::math::PerspectiveTransform2D<double>;
+template class rw::math::PerspectiveTransform2D<float>;
 
 
 namespace rw{ namespace common {

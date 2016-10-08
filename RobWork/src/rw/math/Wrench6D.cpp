@@ -45,8 +45,8 @@ Wrench6D<T>::Wrench6D(const Vector3D<T>& force, const Vector3D<T>& torque) {
 }
 
 
-template class Wrench6D<double>;
-template class Wrench6D<float>;
+template class rw::math::Wrench6D<double>;
+template class rw::math::Wrench6D<float>;
 
 
 

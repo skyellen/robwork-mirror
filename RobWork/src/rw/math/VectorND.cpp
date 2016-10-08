@@ -17,8 +17,6 @@
 
 #include "VectorND.hpp"
 
-using namespace rw::math;
-
 // Explicit template specifications.
-template class VectorND<3,double>;
-template class VectorND<3,float>;
+template class rw::math::VectorND<3,double>;
+template class rw::math::VectorND<3,float>;

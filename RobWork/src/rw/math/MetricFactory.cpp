@@ -55,99 +55,99 @@ namespace
 
 // --
 
-template class ManhattanMetric<Q>;
-template class WeightedManhattanMetric<Q>;
+template class rw::math::ManhattanMetric<Q>;
+template class rw::math::WeightedManhattanMetric<Q>;
 
-template class EuclideanMetric<Q>;
-template class WeightedEuclideanMetric<Q>;
+template class rw::math::EuclideanMetric<Q>;
+template class rw::math::WeightedEuclideanMetric<Q>;
 
-template class InfinityMetric<Q>;
-template class WeightedInfinityMetric<Q>;
+template class rw::math::InfinityMetric<Q>;
+template class rw::math::WeightedInfinityMetric<Q>;
 
 // --
 #include "Vector2D.hpp"
 
-template class ManhattanMetric<Vector2D<> >;
-template class WeightedManhattanMetric<Vector2D<> >;
+template class rw::math::ManhattanMetric<Vector2D<> >;
+template class rw::math::WeightedManhattanMetric<Vector2D<> >;
 
-template class EuclideanMetric<Vector2D<> >;
-template class WeightedEuclideanMetric<Vector2D<> >;
+template class rw::math::EuclideanMetric<Vector2D<> >;
+template class rw::math::WeightedEuclideanMetric<Vector2D<> >;
 
-template class InfinityMetric<Vector2D<> >;
-template class WeightedInfinityMetric<Vector2D<> >;
+template class rw::math::InfinityMetric<Vector2D<> >;
+template class rw::math::WeightedInfinityMetric<Vector2D<> >;
 
-template class ManhattanMetric<Vector2D<float> >;
-template class WeightedManhattanMetric<Vector2D<float> >;
+template class rw::math::ManhattanMetric<Vector2D<float> >;
+template class rw::math::WeightedManhattanMetric<Vector2D<float> >;
 
-template class EuclideanMetric<Vector2D<float> >;
-template class WeightedEuclideanMetric<Vector2D<float> >;
+template class rw::math::EuclideanMetric<Vector2D<float> >;
+template class rw::math::WeightedEuclideanMetric<Vector2D<float> >;
 
-template class InfinityMetric<Vector2D<float> >;
-template class WeightedInfinityMetric<Vector2D<float> >;
+template class rw::math::InfinityMetric<Vector2D<float> >;
+template class rw::math::WeightedInfinityMetric<Vector2D<float> >;
 
 // --
 #include "Vector3D.hpp"
 
-template class ManhattanMetric<Vector3D<> >;
-template class WeightedManhattanMetric<Vector3D<> >;
+template class rw::math::ManhattanMetric<Vector3D<> >;
+template class rw::math::WeightedManhattanMetric<Vector3D<> >;
 
-template class EuclideanMetric<Vector3D<> >;
-template class WeightedEuclideanMetric<Vector3D<> >;
+template class rw::math::EuclideanMetric<Vector3D<> >;
+template class rw::math::WeightedEuclideanMetric<Vector3D<> >;
 
-template class InfinityMetric<Vector3D<> >;
-template class WeightedInfinityMetric<Vector3D<> >;
+template class rw::math::InfinityMetric<Vector3D<> >;
+template class rw::math::WeightedInfinityMetric<Vector3D<> >;
 
-template class ManhattanMetric<Vector3D<float> >;
-template class WeightedManhattanMetric<Vector3D<float> >;
+template class rw::math::ManhattanMetric<Vector3D<float> >;
+template class rw::math::WeightedManhattanMetric<Vector3D<float> >;
 
-template class EuclideanMetric<Vector3D<float> >;
-template class WeightedEuclideanMetric<Vector3D<float> >;
+template class rw::math::EuclideanMetric<Vector3D<float> >;
+template class rw::math::WeightedEuclideanMetric<Vector3D<float> >;
 
-template class InfinityMetric<Vector3D<float> >;
-template class WeightedInfinityMetric<Vector3D<float> >;
+template class rw::math::InfinityMetric<Vector3D<float> >;
+template class rw::math::WeightedInfinityMetric<Vector3D<float> >;
 
 // --
 #include <boost/numeric/ublas/vector.hpp>
 
-template class ManhattanMetric<boost::numeric::ublas::vector<double> >;
-template class WeightedManhattanMetric<boost::numeric::ublas::vector<double> >;
+template class rw::math::ManhattanMetric<boost::numeric::ublas::vector<double> >;
+template class rw::math::WeightedManhattanMetric<boost::numeric::ublas::vector<double> >;
 
-template class EuclideanMetric<boost::numeric::ublas::vector<double> >;
-template class WeightedEuclideanMetric<boost::numeric::ublas::vector<double> >;
+template class rw::math::EuclideanMetric<boost::numeric::ublas::vector<double> >;
+template class rw::math::WeightedEuclideanMetric<boost::numeric::ublas::vector<double> >;
 
-template class InfinityMetric<boost::numeric::ublas::vector<double> >;
-template class WeightedInfinityMetric<boost::numeric::ublas::vector<double> >;
+template class rw::math::InfinityMetric<boost::numeric::ublas::vector<double> >;
+template class rw::math::WeightedInfinityMetric<boost::numeric::ublas::vector<double> >;
 
-template class ManhattanMetric<boost::numeric::ublas::vector<float> >;
-template class WeightedManhattanMetric<boost::numeric::ublas::vector<float> >;
+template class rw::math::ManhattanMetric<boost::numeric::ublas::vector<float> >;
+template class rw::math::WeightedManhattanMetric<boost::numeric::ublas::vector<float> >;
 
-template class EuclideanMetric<boost::numeric::ublas::vector<float> >;
-template class WeightedEuclideanMetric<boost::numeric::ublas::vector<float> >;
+template class rw::math::EuclideanMetric<boost::numeric::ublas::vector<float> >;
+template class rw::math::WeightedEuclideanMetric<boost::numeric::ublas::vector<float> >;
 
-template class InfinityMetric<boost::numeric::ublas::vector<float> >;
-template class WeightedInfinityMetric<boost::numeric::ublas::vector<float> >;
+template class rw::math::InfinityMetric<boost::numeric::ublas::vector<float> >;
+template class rw::math::WeightedInfinityMetric<boost::numeric::ublas::vector<float> >;
 
 // --
 
 #include <vector>
 
-template class ManhattanMetric<std::vector<double> >;
-template class WeightedManhattanMetric<std::vector<double> >;
+template class rw::math::ManhattanMetric<std::vector<double> >;
+template class rw::math::WeightedManhattanMetric<std::vector<double> >;
 
-template class EuclideanMetric<std::vector<double> >;
-template class WeightedEuclideanMetric<std::vector<double> >;
+template class rw::math::EuclideanMetric<std::vector<double> >;
+template class rw::math::WeightedEuclideanMetric<std::vector<double> >;
 
-template class InfinityMetric<std::vector<double> >;
-template class WeightedInfinityMetric<std::vector<double> >;
+template class rw::math::InfinityMetric<std::vector<double> >;
+template class rw::math::WeightedInfinityMetric<std::vector<double> >;
 
-template class ManhattanMetric<std::vector<float> >;
-template class WeightedManhattanMetric<std::vector<float> >;
+template class rw::math::ManhattanMetric<std::vector<float> >;
+template class rw::math::WeightedManhattanMetric<std::vector<float> >;
 
-template class EuclideanMetric<std::vector<float> >;
-template class WeightedEuclideanMetric<std::vector<float> >;
+template class rw::math::EuclideanMetric<std::vector<float> >;
+template class rw::math::WeightedEuclideanMetric<std::vector<float> >;
 
-template class InfinityMetric<std::vector<float> >;
-template class WeightedInfinityMetric<std::vector<float> >;
+template class rw::math::InfinityMetric<std::vector<float> >;
+template class rw::math::WeightedInfinityMetric<std::vector<float> >;
 
 // --
 
@@ -157,11 +157,11 @@ template class WeightedInfinityMetric<std::vector<float> >;
 #include <rw/kinematics/State.hpp>
 using namespace rw::kinematics;
 
-template class ManhattanMetric<State>;
-template class WeightedManhattanMetric<State>;
+template class rw::math::ManhattanMetric<State>;
+template class rw::math::WeightedManhattanMetric<State>;
 
-template class EuclideanMetric<State>;
-template class WeightedEuclideanMetric<State>;
+template class rw::math::EuclideanMetric<State>;
+template class rw::math::WeightedEuclideanMetric<State>;
 
-template class InfinityMetric<State>;
-template class WeightedInfinityMetric<State>;
+template class rw::math::InfinityMetric<State>;
+template class rw::math::WeightedInfinityMetric<State>;

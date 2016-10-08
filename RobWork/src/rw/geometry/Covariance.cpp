@@ -1,9 +1,5 @@
 
 #include "Covariance.hpp"
 
-using namespace rw::geometry;
-using namespace rw::math;
-
-
-template class Covariance<double>;
-template class Covariance<float>;
+template class rw::geometry::Covariance<double>;
+template class rw::geometry::Covariance<float>;
