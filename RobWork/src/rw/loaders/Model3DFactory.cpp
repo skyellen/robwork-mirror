@@ -178,7 +178,6 @@ Model3D::Ptr Model3DFactory::loadModel(const std::string &raw_filename, const st
         return getCache().get(filename);
     } else if (filetype == ".OBJ") {
 #if RW_HAVE_ASSIMP
-        std::cout << "Using ASSIMP" << std::endl;
         LoaderAssimp loader;
         Model3D::Ptr model = loader.load(filename);
         getCache().add(filename, model, moddate);

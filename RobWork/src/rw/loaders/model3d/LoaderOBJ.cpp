@@ -133,6 +133,7 @@ public:
 		Vec4 _Ka;
 		Vec4 _Kd;
 		Vec4 _Ks;
+		float _Ns;
 		Vec4 _Tf;
 		float _d;
 
@@ -140,6 +141,7 @@ public:
 		: _Ka(0.2f, 0.2f, 0.2f, 1.0f),
 		  _Kd(0.8f, 0.8f, 0.8f, 1.0f),
 		  _Ks(1.0f, 1.0f, 1.0f, 1.0f),
+		  _Ns(0),
 		  _Tf(0.0f, 0.0f, 0.0f, 1.0f),
 		  _d(1.0f)
 		{}
@@ -152,7 +154,7 @@ public:
 			out << "Ks " << _Ks._v[0] << " " << _Ks._v[1] << " " << _Ks._v[2] << std::endl;
 			out << "Tf " << _Tf._v[0] << " " << _Tf._v[1] << " " << _Tf._v[2] << std::endl;
 			out << "d " << _d << std::endl;
-			//out << "Ns " << _Ns << std::endl;
+			out << "Ns " << _Ns << std::endl;
 		}
 	};
 
@@ -517,6 +519,7 @@ void OBJReader::parse_mtl_Ks(char **next_token, Mtl **material)
 
 void OBJReader::parse_mtl_Ns(char **next_token, Mtl **material)
 {
+    (*material)->_Ns = parseFloat(next_token)/1000*128;
 }
 
 void OBJReader::parse_mtl_d(char **next_token, Mtl **material)
@@ -782,7 +785,14 @@ Model3D::Ptr LoaderOBJ::load(const std::string& name){
         	float r = matobj->_material->_Kd._v[0];
         	float g = matobj->_material->_Kd._v[1];
         	float b = matobj->_material->_Kd._v[2];
-            Model3D::Material mat(matobj->_material->_name, r, g, b);
+        	Model3D::Material mat(matobj->_material->_name, r, g, b);
+        	for (unsigned int i = 0; i < 3; i++) {
+        		mat.ambient[i] = matobj->_material->_Ka._v[i];
+        		mat.specular[i] = matobj->_material->_Ks._v[i];
+        	}
+    		mat.shininess = matobj->_material->_Ns;
+    		mat.transparency = matobj->_material->_d;
+    		mat.simplergb = false;
             currentMatIdx = model->addMaterial(mat);
             obj->setMaterial( currentMatIdx );
             //mface->_matIndex = currentMatIdx;

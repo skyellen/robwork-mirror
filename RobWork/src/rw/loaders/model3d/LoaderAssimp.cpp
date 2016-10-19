@@ -134,6 +134,7 @@ Model3D::Ptr LoaderAssimp::load(const std::string& filename) {
 				}
 
 				material->Get(AI_MATKEY_SHININESS,rwmaterial.shininess);
+				rwmaterial.shininess = rwmaterial.shininess/4000*128; // Might need to be adjusted. Scaled to match range in obj format.
 				material->Get(AI_MATKEY_OPACITY,rwmaterial.transparency);
 			}
 		}
