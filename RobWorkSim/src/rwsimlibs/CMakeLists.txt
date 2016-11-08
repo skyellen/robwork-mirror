@@ -18,4 +18,5 @@ add_subdirectory(swig)
 # the plugins may use all of the above 
 add_subdirectory(plugins)
 
+add_subdirectory(tools)
 add_subdirectory(test)

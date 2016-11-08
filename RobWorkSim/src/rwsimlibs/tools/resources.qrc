@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/" >
+        <file alias="close.png">../../../../RobWorkStudio/src/images/close.png</file>
+        <file alias="open.png">../../../../RobWorkStudio/src/images/open.png</file>
+    </qresource>
+</RCC>
