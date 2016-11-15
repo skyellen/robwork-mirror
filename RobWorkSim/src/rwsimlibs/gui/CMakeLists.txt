@@ -124,5 +124,5 @@ ENDIF()
 
 #set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 
-# The static library to build:
 ADD_LIBRARY(rwsim_gui ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_OUT_H})
+TARGET_LINK_LIBRARIES(rwsim_gui ${ROBWORKSTUDIO_LIBRARIES})
