@@ -282,11 +282,30 @@ namespace geometry {
         	return closest_point;
         }
 
+		
+		/**
+		* @brief Returns the list hull vertices
+		* @return Reference to the internal vector with hull vertices
+		*/
 		const std::vector<rw::math::VectorND<N> >& getHullVertices(){ return _hullVertices; }
 
+		/**
+		* @brief Returns the list with face indices
+		* @return Reference to the internal vector with face normals
+		*/
 		const std::vector<int>& getFaceIndices(){ return _faceIdxs; }
 
+		/**
+		* @brief Returns the face normals
+		* @return Reference to the internal vector with face normals
+		*/
 		const std::vector<rw::math::VectorND<N> >& getFaceNormals(){ return _faceNormals; }
+
+		/**
+		 * @brief Returns the offsets (distance from origin to surface in direction of the normal) of the faces
+		 * @return Reference to the internal list face offsets
+		 */
+        const std::vector<double>& getFaceOffsets() { return _faceOffsets; }
 
 	private:
 		std::vector<rw::math::VectorND<N> > _hullVertices, _faceNormals;
