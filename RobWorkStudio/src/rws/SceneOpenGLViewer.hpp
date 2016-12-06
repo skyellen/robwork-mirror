@@ -140,7 +140,7 @@ public:
 
     //! @copydoc SceneViewer::updateView
     void updateView(){
-        updateGL();
+        update();
     }
 
     //! @copydoc SceneViewer::getViewCenter
@@ -151,7 +151,7 @@ public:
     //! @copydoc SceneViewer::setLogo
     void setLogo(const std::string& string) {
         _viewLogo = string;
-        updateGL();
+        update();
     }
 
     //! @copydoc SceneViewer::getLogo

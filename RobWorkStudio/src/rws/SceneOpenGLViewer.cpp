@@ -758,7 +758,7 @@ void SceneOpenGLViewer::mouseDoubleClickEvent(QMouseEvent* event)
 			} else {
                 _cameraCtrl->setCenter(pos, Vector2D<>(event->x(), event->y()));
                 _pivotDrawable->setTransform( Transform3D<>(pos, Rotation3D<>::identity()) );
-                updateGL();
+                update();
             }
         }
 
@@ -792,7 +792,7 @@ void SceneOpenGLViewer::mouseMoveEvent(QMouseEvent* event)
     _cameraCtrl->handleEvent(event);
 
     //std::cout<<"Event Time"<<eventTimer.getTime()<<std::endl;
-    updateGL();
+    update();
 
     //event->ignore();
     QGLWidget::mouseMoveEvent(event);
@@ -801,7 +801,7 @@ void SceneOpenGLViewer::mouseMoveEvent(QMouseEvent* event)
 void SceneOpenGLViewer::wheelEvent(QWheelEvent* event)
 {
     _cameraCtrl->handleEvent( event );
-    updateGL();
+    update();
     QGLWidget::wheelEvent(event);
 }
 
