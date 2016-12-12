@@ -712,11 +712,18 @@ namespace {
                     ( XMLAttElem_p("PosLimit",
                         !(XMLAtt_p("refjoint", attrstr_p
                             [ var(_limit._refjoint) = arg1 ])) >>
-                        XMLAtt_p("min",real_p
+                        (XMLAtt_p("min",real_p
                             [ var( _limit._min ) = arg1 ]) >>
                         XMLAtt_p("max",real_p
                             [ var( _limit._max ) = arg1 ]
-                            [ var( _limit._type ) = PosLimitType ]),
+                            [ var( _limit._type ) = PosLimitType ]))
+						|
+						(XMLAtt_p("max", real_p
+							[var(_limit._max) = arg1]) >>
+						XMLAtt_p("min", real_p
+							[var(_limit._min) = arg1]
+							[var(_limit._type) = PosLimitType]))
+						,
                         eps_p
                      )
                     | XMLAttElem_p("VelLimit",
