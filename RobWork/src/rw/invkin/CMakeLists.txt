@@ -11,6 +11,7 @@ SET(FILES_CPP
   JacobianIKSolver.cpp
   JacobianIKSolverM.cpp
   ClosedFormIKSolverUR.cpp
+  ClosedFormIKSolverKukaIIWA.cpp
 )
 
 SET(FILES_HPP
@@ -25,6 +26,7 @@ SET(FILES_HPP
   JacobianIKSolver.hpp
   JacobianIKSolverM.hpp
   ClosedFormIKSolverUR.hpp
+  ClosedFormIKSolverKukaIIWA.hpp
 )
 
 SOURCE_GROUP(invkin FILES ${FILES_CPP} ${FILES_HPP})
