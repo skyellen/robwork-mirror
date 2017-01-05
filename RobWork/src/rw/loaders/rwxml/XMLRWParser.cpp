@@ -259,6 +259,7 @@ namespace {
                         eps_p
                      ) // save position of file
 
+					| XMLAttElem_p("Plane",eps_p[ var( _geo._type ) = PlaneType ],eps_p)
                     | XMLAttElem_p("Sphere",
                         XMLAtt_p("radius",real_p
                           [ var( _geo._radius ) = arg1 ]

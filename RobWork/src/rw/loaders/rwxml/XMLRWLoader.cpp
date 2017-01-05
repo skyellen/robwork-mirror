@@ -233,6 +233,9 @@ Frame* addModelToFrame(DummyModel& model, Frame *parent, StateStructure *tree, D
 			}
 			val << model._geo[i]._filename;
 			break;
+		case PlaneType:
+			val << "#Plane";
+			break;
 		case CubeType:
 			val << "#Box " << model._geo[i]._x << " " << model._geo[i]._y << " " << model._geo[i]._z;
 			break;
