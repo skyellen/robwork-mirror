@@ -118,17 +118,24 @@ DOMPathLoader::DOMPathLoader(const std::string& filename, rw::models::WorkCell::
     parser->setSchema(schemaFileName);
     parser->load(filename);
     DOMElem::Ptr elementRoot = parser->getRootElement();
-    readPath(elementRoot);
+	DOMElem::IteratorPair itpair = elementRoot->getChildren();
+	for (DOMElem::Iterator it = itpair.first; it != itpair.second; ++it) {
+		readPath(*it);
+	}
+	//	readPath(elementRoot);
 }
 
 
 DOMPathLoader::DOMPathLoader(std::istream& instream, rw::models::WorkCell::Ptr workcell, const std::string& schemaFileName) {
-    _workcell = workcell;
-    DOMParser::Ptr parser = DOMParser::make();
-    parser->setSchema(schemaFileName);
-    parser->load(instream);
-    DOMElem::Ptr elementRoot = parser->getRootElement();
-    readPath(elementRoot);
+	_workcell = workcell;
+	DOMParser::Ptr parser = DOMParser::make();
+	parser->setSchema(schemaFileName);
+	parser->load(instream);
+	DOMElem::Ptr elementRoot = parser->getRootElement();
+	DOMElem::IteratorPair itpair = elementRoot->getChildren();
+	for (DOMElem::Iterator it = itpair.first; it != itpair.second; ++it) {
+		readPath(*it);
+	}
 }
 
 
@@ -276,9 +283,11 @@ rw::trajectory::TimedStatePath::Ptr DOMPathLoader::getTimedStatePath() {
 
 
 void DOMPathLoader::readPath(DOMElem::Ptr element) {
+	std::cout << "Element Name = " << element->getName() << std::endl;
     if (element->isName(idQPath())) {
         _qPath = ownedPtr(new QPath());
 		read<Q, QPath::Ptr>(element, _qPath);
+		std::cout << "Read QPath " << _qPath->size() << std::endl;
         _type = QType;
     } else if (element->isName(idV3DPath())) {
         _v3dPath = ownedPtr(new Vector3DPath());
