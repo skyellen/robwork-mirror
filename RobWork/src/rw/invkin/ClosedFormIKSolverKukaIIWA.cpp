@@ -67,6 +67,13 @@ ClosedFormIKSolverKukaIIWA::~ClosedFormIKSolverKukaIIWA() {
 }
 
 std::vector<Q> ClosedFormIKSolverKukaIIWA::solve(const Transform3D<>& baseTend, const State& stateArg) const {
+	const Vector3D<> tcpZ = baseTend.R().getCol(2);
+	const Vector3D<> baseP6 = baseTend.P()-tcpZ*_lTcp; // equal to baseP7
+	const Vector3D<> n = normalize(baseP6-_baseP2);
+	return solve(baseTend,stateArg,randomPerpendicularVector(n));
+}
+
+std::vector<Q> ClosedFormIKSolverKukaIIWA::solve(const Transform3D<>& baseTend, const State& stateArg, const Vector3D<>& dir4) const {
 	State state = stateArg;
 	std::vector<Q> results;
 
@@ -76,14 +83,15 @@ std::vector<Q> ClosedFormIKSolverKukaIIWA::solve(const Transform3D<>& baseTend, 
 
 	// Find circle where joint 4 must be (in base reference system)
 	const Vector3D<> circleCenter4 = (baseP6+_baseP2)/2;
-	const Vector3D<> circleNormal4 = normalize(baseP6-_baseP2);
+	const Vector3D<> n = normalize(baseP6-_baseP2);
 	const double dist = (baseP6-_baseP2).norm2();
 	if (dist > _lJ2J4*2) { // no possible solutions
 		return results;
 	}
 	const double radius4 = std::sqrt(4*dist*dist*_lJ2J4*_lJ2J4-dist*dist*dist*dist)/(2*dist);
 
-	const Vector3D<> targetP4 = circleCenter4 + randomPerpendicularVector(circleNormal4)*radius4;
+	const Vector3D<> dir = normalize(dir4-dot(dir4,n)*n);
+	const Vector3D<> targetP4 = circleCenter4 + dir*radius4;
 
 	const std::pair<double,double> baseAngles = findBaseAngles(Vector2D<>(targetP4[0],targetP4[1]), state);
 

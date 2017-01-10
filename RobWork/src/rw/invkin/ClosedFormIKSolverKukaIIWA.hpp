@@ -60,6 +60,15 @@ public:
 	//! @copydoc InvKinSolver::solve
     std::vector<rw::math::Q> solve(const rw::math::Transform3D<>& baseTend, const rw::kinematics::State& state) const;
 
+    /**
+     * @brief Find inverse kinematic solutions deterministically by pulling joint 4 as much in the given direction as possible.
+     * @param baseTend [in] Desired base to end transformation \f$\robabx{}{desired}{\mathbf{T}}\f$.
+     * @param state [in] State of the device from which to start the iterations.
+     * @param dir4 [in] unit vector giving the direction to pull joint 4 in (given in base coordinate system).
+     * @return List of up to 8 solutions. Notice that the list may be empty.
+     */
+    std::vector<rw::math::Q> solve(const rw::math::Transform3D<>& baseTend, const rw::kinematics::State& state, const rw::math::Vector3D<>& dir4) const;
+
 	//! @copydoc InvKinSolver::setCheckJointLimits
     void setCheckJointLimits(bool check);
 
