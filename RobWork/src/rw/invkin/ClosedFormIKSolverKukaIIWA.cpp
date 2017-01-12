@@ -115,7 +115,7 @@ void ClosedFormIKSolverKukaIIWA::setCheckJointLimits(bool check) {
 
 std::pair<double,double> ClosedFormIKSolverKukaIIWA::findBaseAngles(const Vector2D<> &pos, const State& state) const {
 	std::pair<double,double> res;
-	if (pos[0] > 0 || pos[1] > 0) {
+	if (pos[0] != 0 || pos[1] != 0) {
 		res.first = std::atan2(pos[1],pos[0]);
 	} else {
 		const Q qcurrent = _device->getQ(state);
