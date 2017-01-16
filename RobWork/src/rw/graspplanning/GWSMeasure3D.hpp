@@ -15,10 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-
-#ifndef RW_GRASPPLANNING_SANDBOX_GWSMeasure3D_HPP_
-#define RW_GRASPPLANNING_SANDBOX_GWSMeasure3D_HPP_
-
+#ifndef RW_GRASPPLANNING_GWSMEASURE3D_HPP_
+#define RW_GRASPPLANNING_GWSMEASURE3D_HPP_
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/graspplanning/GraspQualityMeasure3D.hpp>
@@ -30,49 +28,45 @@ namespace graspplanning {
 /**
  * @brief Represents the grasp wrench space as a 3D force space and a
  * 3D torque space.
- *
- *
  */
 class GWSMeasure3D: public GraspQualityMeasure3D {
 public:
     /**
      * @brief constructor
-     * @param chull [in] a convex hull factory
      * @param resolution [in] the number of vertices to use in the approximation
      * of the friction cone.
      * @param useUnitVectors [in] true if the unit wrench should be used, false otherwise
      */
     GWSMeasure3D(int resolution=8, bool useUnitVectors=false);
 
-	/**
-	 * @brief destructor
-	 */
-    virtual ~GWSMeasure3D(){};
+	//! @brief destructor
+    virtual ~GWSMeasure3D(){}
 
     //// inherited from quality measure
+    //! @copydoc GraspQualityMeasure3D::quality
     double quality(const rw::graspplanning::Grasp3D& grasp) const;
 
     //// member functions
     /**
      * @brief set the center of the object
-     * @param center
+     * @param center [in] center of object.
      */
-    void setObjectCenter( const rw::math::Vector3D<>& center){ _objCenter = center; };
+    void setObjectCenter( const rw::math::Vector3D<>& center){ _objCenter = center; }
 
     /**
      * @brief tests if center of object is inside wrench space
      * @return true if center is inside both force and torque space
      */
-    bool isGraspStable(){ return _isInside;};
+    bool isGraspStable(){ return _isInside;}
 
     /**
      * @brief get the minimum force that will break the grasp
      * 
-     * Returns the minimum distance from the cener of the object to the wall of the wrench space.
+     * Returns the minimum distance from the center of the object to the wall of the wrench space.
      * 
      * @return minimum breaking force
      */
-    double getMinWrench(){ return _minWrench; };
+    double getMinWrench(){ return _minWrench; }
 
 	/**
 	 * @brief get the force that will break the grasp
@@ -82,18 +76,24 @@ public:
 	 * 
 	 * @return minimum breaking force
 	 */
-    double getAvgWrench(){ return _avgWrench; };
+    double getAvgWrench(){ return _avgWrench; }
     
     /**
      * @brief get average wrench in relation to the origin
+	 * @return average wrench in relation to the origin.
      */
     double getAverageOriginWrench() { return _avgOriginWrench; }
     
     /**
      * @brief get average wrench in relation to center of the convex hull
+	 * @return average wrench in relation to center of convex hull.
      */
     double getAverageCenterWrench() { return _avgCenterWrench; }
 
+    /**
+     * @brief Set scaling of the torque.
+     * @param lambda [in] new scaling coefficient.
+     */
     void setLambda(double lambda){ _lambda = lambda;}
 
 private:
@@ -112,4 +112,4 @@ private:
 }
 }
 
-#endif /* FORCECLOSURE3D_HPP_ */
+#endif /* RW_GRASPPLANNING_GWSMEASURE3D_HPP_ */
