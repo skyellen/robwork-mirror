@@ -173,8 +173,12 @@ SET(BOOST_LIBRARYDIR ${RWS_BUILD_WITH_BOOST_LIBRARY_DIR})
 SET(RWS_CXX_FLAGS ${RWS_BUILD_WITH_CXX_FLAGS} 
     CACHE STRING "Change this to force using your own 
                   flags and not those of RobWorkStudio")
-ADD_DEFINITIONS(${RWS_CXX_FLAGS})
-#MESSAGE(STATUS "RobWorkStudio: Using CXX flags: ${RWS_CXX_FLAGS}")
+SET(RWS_DEFINITIONS ${RWS_BUILD_WITH_DEFINITIONS} 
+    CACHE STRING "Change this to force using your own 
+                  definitions and not those of RobWork"
+)
+ADD_DEFINITIONS(${RWS_DEFINITIONS})
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RWS_CXX_FLAGS}")
 
 # Set extra linker flags. The user should be able to change this
 SET(RWS_LINKER_FLAGS ${RWS_BUILD_WITH_LINKER_FLAGS} 

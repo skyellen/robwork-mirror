@@ -472,33 +472,89 @@ RW_IS_RELEASE(IS_RELEASE)
 # Set extra compiler flags. The user should be able to change this
 # 
 
+IF( "${RW_C_FLAGS}" STREQUAL "")
+    # GCC and MinGW
+    IF ( (CMAKE_COMPILER_IS_GNUCC) OR (CMAKE_C_COMPILER_ID STREQUAL "Clang") )
+      # Necessary Linux-GCC flag
+      IF(DEFINED UNIX)
+        SET(RW_C_FLAGS_TMP "${RW_C_FLAGS_TMP} -fPIC")
+      ENDIF()
+    ENDIF ()
+
+	IF(DEFINED RW_C_FLAGS_EXTRA)
+	  SET(RW_C_FLAGS_TMP "${RW_C_FLAGS_TMP} ${RW_C_FLAGS_EXTRA}")
+	ENDIF()
+        
+	SET(RW_C_FLAGS "${RW_C_FLAGS_TMP}"
+		CACHE STRING "Change this to force using your own 
+					  flags and not those of RobWork" FORCE
+	)
+ENDIF()
+
 IF( "${RW_CXX_FLAGS}" STREQUAL "")
     # GCC and MinGW
     IF ( (CMAKE_COMPILER_IS_GNUCXX) OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang") )
       # Turn off annoying GCC warnings
-      SET(RW_CXX_FLAGS_TMP "-Wall" "-Wno-strict-aliasing" "-Wno-unused-function" "-Wno-pragmas")
+      SET(RW_CXX_FLAGS_TMP "-Wall -Wno-strict-aliasing -Wno-unused-function -Wno-pragmas")
       IF ( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
-      	SET(RW_CXX_FLAGS_TMP "-Wall" "-Wno-strict-aliasing" "-Wno-unused-function")
+      	SET(RW_CXX_FLAGS_TMP "-Wall -Wno-strict-aliasing -Wno-unused-function")
       ENDIF()
-
-      MESSAGE("GNUCXX ${RW_CXX_FLAGS_TMP}")
-      IF(IS_RELEASE)
-          LIST(APPEND RW_CXX_FLAGS_TMP "-DBOOST_DISABLE_ASSERTS")
-      ENDIF() 
       
       # Necessary Linux-GCC flag
       IF(DEFINED UNIX)
-        LIST(APPEND RW_CXX_FLAGS_TMP "-fPIC")
-      ENDIF()
-	  
-      IF(DEFINED MINGW AND AMD64)
-        LIST(APPEND RW_CXX_FLAGS_TMP "-DBOOST_USE_WINDOWS_H")
+        SET(RW_CXX_FLAGS_TMP "${RW_CXX_FLAGS_TMP} -fPIC")
       ENDIF()
     ENDIF ()
     
     # Setup crucial MSVC flags, without these RobWork does not compile
     IF (DEFINED MSVC)
-      SET(RW_CXX_FLAGS_TMP # Remove the min()/max() macros or else RobWork won't compile.
+      SET(RW_CXX_FLAGS_TMP "-EHa -bigobj /MP")
+    ENDIF ()
+
+	# Set C++11 standard (except if user has specified this explicitly in the RW_CXX_FLAGS_EXTRA variable).
+	SET(RW_CXX_FLAGS_SET_STD FALSE)
+	IF(CMAKE_COMPILER_IS_GNUCXX)
+		IF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "6.1.0") # from GNU 6.1 gnu++14 should be the default
+			SET(RW_CXX_FLAGS_SET_STD TRUE)
+			FOREACH(flag ${RW_CXX_FLAGS_EXTRA})
+				STRING(REGEX MATCH ".*-std=.*" flag ${flag})
+				IF(flag)
+					SET(RW_CXX_FLAGS_SET_STD FALSE)
+				ENDIF()
+			ENDFOREACH()
+		ENDIF()
+	ENDIF()
+	IF(RW_CXX_FLAGS_SET_STD)
+		SET(RW_CXX_FLAGS_TMP "${RW_CXX_FLAGS_TMP} -std=c++11")
+	ENDIF()
+
+	IF(DEFINED RW_CXX_FLAGS_EXTRA)
+	  SET(RW_CXX_FLAGS_TMP "${RW_CXX_FLAGS_TMP} ${RW_CXX_FLAGS_EXTRA}")
+	ENDIF()
+        
+	SET(RW_CXX_FLAGS "${RW_CXX_FLAGS_TMP}"
+		CACHE STRING "Change this to force using your own 
+					  flags and not those of RobWork" FORCE
+	)
+ENDIF()
+
+IF( "${RW_DEFINITIONS}" STREQUAL "")
+    # GCC and MinGW
+    IF ( (CMAKE_COMPILER_IS_GNUCXX) OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang") )
+      SET(RW_DEFINITIONS_TMP)
+
+      IF(IS_RELEASE)
+          LIST(APPEND RW_DEFINITIONS_TMP "-DBOOST_DISABLE_ASSERTS")
+      ENDIF()
+
+      IF(DEFINED MINGW AND AMD64)
+        LIST(APPEND RW_DEFINITIONS_TMP "-DBOOST_USE_WINDOWS_H")
+      ENDIF()
+    ENDIF ()
+    
+    # Setup crucial MSVC flags, without these RobWork does not compile
+    IF (DEFINED MSVC)
+      SET(RW_DEFINITIONS_TMP # Remove the min()/max() macros or else RobWork won't compile.
                            "-DNOMINMAX" 
                            # Without this define for boost-bindings we can't link with lapack.
                            "-DBIND_FORTRAN_LOWERCASE_UNDERSCORE"
@@ -507,33 +563,30 @@ IF( "${RW_CXX_FLAGS}" STREQUAL "")
                            "-D_SCL_SECURE_NO_WARNINGS"
                            "-D_CRT_SECURE_NO_WARNINGS"
                            "-D_CRT_SECURE_NO_DEPRECATE"
-                           "-EHa"
-                           "-bigobj"
-                           "/MP"
       )
-      
+
       IF(BOOST_TEST_NO_LIB)
-        LIST(APPEND RW_CXX_FLAGS_TMP "-DBOOST_TEST_NO_LIB")
+        LIST(APPEND RW_DEFINITIONS_TMP "-DBOOST_TEST_NO_LIB")
       ENDIF()
 
       # Current issues addressed for MSVC 64 bit:
       # 	- MSVC 64-bit does not support __asm keyword which is used by default in Yaobi.
       # 	  Therefore, we only define YAOBI_USE_FCOMI in ext/yaobi/yaobi_settings.h for 32 bit architectures.
       IF(AMD64)
-        LIST(APPEND RW_CXX_FLAGS_TMP "-DMSVC_AMD64")
+        LIST(APPEND RW_DEFINITIONS_TMP "-DMSVC_AMD64")
       ENDIF()
     ENDIF ()
 
 	# Set necessary options for Win32 environments if static version of Xerces is used
 	IF(XERCES_USE_STATIC_LIBS)
-		LIST(APPEND RW_CXX_FLAGS_TMP "-DXERCES_STATIC_LIBRARY")
+		LIST(APPEND RW_DEFINITIONS_TMP "-DXERCES_STATIC_LIBRARY")
 	ENDIF()
 
-	IF(DEFINED RW_CXX_FLAGS_EXTRA)
-	  LIST(APPEND RW_CXX_FLAGS_TMP ${RW_CXX_FLAGS_EXTRA})
+	IF(DEFINED RW_DEFINITIONS_EXTRA)
+	  SET(RW_DEFINITIONS_EXTRA_TMP "${RW_DEFINITIONS_EXTRA_TMP} ${RW_DEFINITIONS_EXTRA_EXTRA}")
 	ENDIF()
 
-	SET(RW_CXX_FLAGS "${RW_CXX_FLAGS_TMP}"
+	SET(RW_DEFINITIONS "${RW_DEFINITIONS_TMP}"
 		CACHE STRING "Change this to force using your own 
 					  flags and not those of RobWork" FORCE
 	)
@@ -543,8 +596,12 @@ IF( "${RW_CXX_FLAGS}" STREQUAL "")
 	MESSAGE(WARNING "Something might be wrong. No CXX FLAGS have been specified. You may be using an unsupported compiler!!")
 ENDIF()
 
-ADD_DEFINITIONS(${RW_CXX_FLAGS})
+ADD_DEFINITIONS(${RW_DEFINITIONS})
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RW_CXX_FLAGS}")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${RW_C_FLAGS}")
+MESSAGE(STATUS "RobWork: RW C flags: ${RW_C_FLAGS}")
 MESSAGE(STATUS "RobWork: RW CXX flags: ${RW_CXX_FLAGS}")
+MESSAGE(STATUS "RobWork: RW definitions: ${RW_DEFINITIONS}")
 
 #
 # Set extra linker flags. The user should be able to change this

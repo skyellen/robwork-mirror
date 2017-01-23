@@ -177,12 +177,11 @@ ENDIF()
 # The compiler flags from RobWork are automatically set 
 #
 IF(NOT DEFINED RWSIM_CXX_FLAGS)
-  
-	SET(RWSIM_CXX_FLAGS ${RWSIM_CXX_FLAGS_TMP} 
+	SET(RWSIM_CXX_FLAGS "${RW_BUILD_WITH_CXX_FLAGS} ${RWSIM_CXX_FLAGS_TMP}" 
 		CACHE STRING "Change this to force using your own flags and not those of RobWorkSim"
 	)
 ENDIF()
-ADD_DEFINITIONS(${RWSIM_CXX_FLAGS})
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RWSIM_CXX_FLAGS}")
 MESSAGE(STATUS "RobWorkSim: Adding RWSIM CXX flags: ${RWSIM_CXX_FLAGS}")
 
 #

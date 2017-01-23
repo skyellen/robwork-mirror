@@ -131,19 +131,29 @@ ENDIF()
 # The compiler flags from RobWork are automatically set 
 #
 RW_IS_RELEASE(IS_RELEASE)
+
 IF(NOT DEFINED RWS_CXX_FLAGS)
-	IF( ${IS_RELEASE} )
-		SET(RWS_CXX_FLAGS_TMP "-DQT_NO_DEBUG")
-	ELSE ()
-		SET(RWS_CXX_FLAGS_TMP "-DQT_DEBUG") 
-	ENDIF()
-  
-	SET(RWS_CXX_FLAGS "${RW_BUILD_WITH_CXX_FLAGS};${RWS_CXX_FLAGS_TMP}" 
+	SET(RWS_CXX_FLAGS "${RW_BUILD_WITH_CXX_FLAGS} ${RWS_CXX_FLAGS_TMP}" 
 		CACHE STRING "Change this to force using your own flags and not those of RobWorkSutdio"
 	)
 ENDIF()
-ADD_DEFINITIONS(${RWS_CXX_FLAGS})
+
+IF(NOT DEFINED RWS_DEFINITIONS)
+	IF( ${IS_RELEASE} )
+		SET(RWS_DEFINITIONS_TMP "-DQT_NO_DEBUG")
+	ELSE ()
+		SET(RWS_DEFINITIONS_TMP "-DQT_DEBUG") 
+	ENDIF()
+  
+	SET(RWS_DEFINITIONS "${RW_BUILD_WITH_DEFINITIONS};${RWS_DEFINITIONS_TMP}" 
+		CACHE STRING "Change this to force using your own definitions and not those of RobWorkSutdio"
+	)
+ENDIF()
+
+ADD_DEFINITIONS(${RWS_DEFINITIONS})
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RWS_CXX_FLAGS}")
 MESSAGE(STATUS "RobWorkStudio: Adding RWS CXX flags: ${RWS_CXX_FLAGS}")
+MESSAGE(STATUS "RobWorkStudio: Addubg RWS definitions: ${RWS_DEFINITIONS}")
 
 #
 # Set extra linker flags. The user should be able to change this. 
