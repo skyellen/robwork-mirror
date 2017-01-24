@@ -1,5 +1,5 @@
 # Test CMake version
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.12)
 
 CMAKE_POLICY(SET CMP0011 NEW)
 CMAKE_POLICY(SET CMP0012 NEW) 
