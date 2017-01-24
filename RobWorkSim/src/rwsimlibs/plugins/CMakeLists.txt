@@ -82,6 +82,7 @@ TARGET_LINK_LIBRARIES(SimUtilityPlugin rwsim_gui ${ROBWORKSIM_LIBRARIES} ${ROBWO
 ################################################################
 # next compile GraspTableGeneratorPlugin 
 #
+SET(UIS_OUT_H)
 IF(RWS_USE_QT5)
 	QT5_WRAP_UI(UIS_OUT_H GraspTableGeneratorPlugin.ui)
 ELSE()
@@ -115,6 +116,7 @@ TARGET_LINK_LIBRARIES(GraspTableGeneratorPlugin ${ROBWORKSIM_LIBRARIES} ${ROBWOR
 ################################################################
 # The RW Simulation 
 #
+SET(UIS_OUT_H)
 IF(RWS_USE_QT5)
 	QT5_WRAP_UI(UIS_OUT_H RWSimPlugin.ui)
 ELSE()
@@ -154,6 +156,7 @@ ADD_DEPENDENCIES( RWSimPlugin ${RWSIM_LUA_LIB} rwsim_gui)
 ################################################################
 # The SimTaskPlugin
 #
+SET(UIS_OUT_H)
 IF(RWS_USE_QT5)
 	QT5_WRAP_UI(UIS_OUT_H SimTaskPlugin.ui)
 ELSE()
@@ -187,6 +190,7 @@ TARGET_LINK_LIBRARIES(SimTaskPlugin rwsim_gui rw_task ${ROBWORKSIM_LIBRARIES} ${
 ################################################################
 # The SimTaskVisPlugin -- has been moved to RobWorkStudio now named gtaskplugin
 #
+SET(UIS_OUT_H)
 IF(RWS_USE_QT5)
 	QT5_WRAP_UI(UIS_OUT_H SimTaskVisPlugin.ui)
 ELSE()
@@ -210,7 +214,7 @@ ENDIF()
 ################################################################
 # next compile EngineTestPlugin
 #
-
+SET(UIS_OUT_H)
 IF(RWS_USE_QT5)
 	QT5_WRAP_UI(UIS_OUT_H EngineTestPlugin.ui)
 ELSE()
