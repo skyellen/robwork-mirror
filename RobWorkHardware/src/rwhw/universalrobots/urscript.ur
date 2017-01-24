@@ -262,6 +262,22 @@ $CB3    end_teach_mode()
 		set_payload(mass, center_of_gravity) 
     end
 
+	def set_tcp_transform():
+		textmsg("Setting TCP Transform")
+    	cnt = 0
+		mass = receive_buffer[cnt+2]*FLOAT_SCALE
+		enter_critical
+        while cnt < 6:
+            posetarget[cnt] = receive_buffer[cnt+2]*FLOAT_SCALE
+            cnt = cnt + 1
+        end
+		exit_critical
+		
+		textmsg("New TCP Transform: ")
+		textmsg(posetarget)
+
+		set_tcp(posetarget) 
+    end
 	
 #
 # The main loop is running below
@@ -311,7 +327,6 @@ $CB3    end_teach_mode()
 			isStopped = 0
             moveT()
         elif receive_buffer[1] == 3: #3: Servo to T
-			textmsg("servo")
 			isStopped = 0
             servoQ()
         elif receive_buffer[1] == 4: #4: Start Force Mode Base
@@ -331,6 +346,8 @@ $CB3    end_teach_mode()
 			set_io()
 		elif receive_buffer[1] == 10: #10: Set Payload
 			set_tcp_payload()	
+		elif receive_buffer[1] == 11: #11: Set TCP Transform
+			set_tcp_transform()
         elif receive_buffer[1] == 9999: #1: Do nothing
         	isStopped = 0
             #Right motion already taken

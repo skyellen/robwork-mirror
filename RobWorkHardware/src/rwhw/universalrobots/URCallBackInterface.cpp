@@ -30,7 +30,7 @@ URCallBackInterface::URCallBackInterface():
 
 
 bool URCallBackInterface::isMoving() const {
-    return _isMoving;
+	return _isMoving || _commands.size() != 0;
 }
 
 double URCallBackInterface::driverTime() const {
@@ -133,7 +133,7 @@ void URCallBackInterface::startCommunication(const std::string& callbackIP, cons
 			script.erase(n, 4);
 		}
 		n = script.find("$");
-	}
+	} 
 
     // send script to robot
     RW_LOG_DEBUG("Sending script to the robot");
@@ -151,6 +151,11 @@ void URCallBackInterface::startCommunication(const std::string& callbackIP, cons
 
 void URCallBackInterface::stopCommunication() {
     _stopServer = true;
+	_isConnected = false;
+}
+
+bool URCallBackInterface::isConnected() const {
+	return _isConnected;
 }
 
 
@@ -211,23 +216,23 @@ void URCallBackInterface::sendStop(tcp::socket& socket) {
 }
  
 void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
-    RW_LOG_DEBUG("Handling command request - obtaining lock...");
+    //RW_LOG_DEBUG("Handling command request - obtaining lock...");
     boost::mutex::scoped_lock lock(_mutex);
-    RW_LOG_DEBUG("Obtained lock");
+    //RW_LOG_DEBUG("Obtained lock");
 
     std::vector<int> integers(8);
 
     if (_commands.size() == 0 || (_isMoving && !_isServoing)) {		
         integers[0] = URScriptCommand::DO_NOTHING;
         URCommon::send(&socket, integers);
-        RW_LOG_DEBUG("Do nothing");
+      //  RW_LOG_DEBUG("Do nothing");
         return;
     }
 
 	//std::cout<<"Handle Cmd Request ="<<_commands.size()<<std::endl;
 
     URScriptCommand cmd = _commands.front();
-    RW_LOG_DEBUG("Command type: " << cmd._type);
+    //RW_LOG_DEBUG("Command type: " << cmd._type);
     _isServoing = false;
     integers[0] = cmd._type;
     switch (cmd._type) {
@@ -277,14 +282,17 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
 		integers[1] = cmd._mass*FLOAT_TO_INT_SCALE;
 		vector3d2intVector(cmd._centerOfGravity, integers, 2);
         break;    
+	case URScriptCommand::SET_TCPTRANSFORM:
+		t2intVector(cmd._transform, integers, 1);		
+		break;
 	default:
         RW_LOG_DEBUG("Unsupported command: " << cmd._type);
         RW_THROW("Unsupported command type: " << cmd._type);
         break;
     }
-    RW_LOG_DEBUG("Sending command to robot...");
+    //RW_LOG_DEBUG("Sending command to robot...");
     URCommon::send(&socket, integers);
-    RW_LOG_DEBUG("Command to robot sent");
+    //RW_LOG_DEBUG("Command to robot sent");
 
     if (cmd._type != URScriptCommand::SERVOQ) {                
         RW_LOG_DEBUG("Popping commands as the command type was not SERVOQ");
@@ -307,6 +315,7 @@ void URCallBackInterface::run() {
             RW_LOG_DEBUG("Ready to accept incoming connections on port '" << _callbackPort << "'");
             acceptor.accept(socket);
             RW_LOG_DEBUG("Incoming connection accepted");
+			_isConnected = true;
             //std::cout<<"Incoming accepted"<<std::endl;
             //Timer timer;
 			//Timer timer2;
@@ -343,10 +352,10 @@ void URCallBackInterface::run() {
 					//timer2.resetAndResume();
 
                
-                    RW_LOG_DEBUG("Received the byte/char '" << ch << "' from the connection.");
+                    //RW_LOG_DEBUG("Received the byte/char '" << ch << "' from the connection.");
 
                     if (_robotStopped) {
-                        RW_LOG_DEBUG("Robot is stopped, going to send stop.");
+                        //RW_LOG_DEBUG("Robot is stopped, going to send stop.");
                         sendStop(socket);
                     } else {
                         if (ch == 0) {
@@ -370,6 +379,7 @@ void URCallBackInterface::run() {
     catch (std::exception& e)
     {
 		std::cerr << e.what() << std::endl;
+		_isConnected = false;
     }
 }
 
@@ -489,4 +499,17 @@ void URCallBackInterface::setPayload(double mass, const Vector3D<>& centerOfGrav
 
     _commands.push(URScriptCommand(URScriptCommand::SET_PAYLOAD, mass, centerOfGravity));
     _robotStopped = false;
+}
+
+
+
+void URCallBackInterface::setTCPTransform(const rw::math::Transform3D<>& endTtcp)
+{
+	RW_LOG_DEBUG("rwhw::URCallBackInterface::setTCPTransform(" << endTtcp << ")");
+	boost::mutex::scoped_lock lock(_mutex);
+	popAllUpdateCommands();
+
+	_commands.push(URScriptCommand(URScriptCommand::SET_TCPTRANSFORM, endTtcp));
+	_robotStopped = false;
+
 }

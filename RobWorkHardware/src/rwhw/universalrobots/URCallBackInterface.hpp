@@ -169,8 +169,20 @@ public:
 	 */
 	void setPayload(double mass, const rw::math::Vector3D<>& centerOfGravity);
 	 
+
+	/**
+	 * @brief Sets the transformation of the TCP relative to end flange of the robot
+	 * @param endTtcp [in] Transform from end to TCP. The translation should be in meter as standard in RobWork.	
+	 */
+	void setTCPTransform(const rw::math::Transform3D<>& endTtcp);
+
+	/**
+	 * @brief Returns true if the call back is connected
+	 *
+	 */
+	bool isConnected() const;
 private:
-    private:
+    
     void run();
 
 	URPrimaryInterface _urPrimary;
@@ -179,18 +191,31 @@ private:
 
 
 	unsigned int _callbackPort;
-        boost::asio::ip::address _callbackIP;
+    boost::asio::ip::address _callbackIP;
+
+	bool _isConnected;
 
 	bool _stopServer;
 	bool _robotStopped;
 
 	bool _isMoving;
-        bool _isServoing;
+    bool _isServoing;
 
 	class URScriptCommand {
 	public:
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-		enum CmdType { STOP = 0, MOVEQ = 1, MOVET = 2, SERVOQ = 3, FORCE_MODE_START = 4, FORCE_MODE_UPDATE = 5, FORCE_MODE_END = 6, TEACH_MODE_START = 7, TEACH_MODE_END = 8, SET_DIGOUT = 9, SET_PAYLOAD = 10, DO_NOTHING = 9999 };
+		enum CmdType { STOP = 0, MOVEQ = 1, 
+			MOVET = 2, 
+			SERVOQ = 3, 
+			FORCE_MODE_START = 4, 
+			FORCE_MODE_UPDATE = 5, 
+			FORCE_MODE_END = 6, 
+			TEACH_MODE_START = 7, 
+			TEACH_MODE_END = 8, 
+			SET_DIGOUT = 9, 
+			SET_PAYLOAD = 10, 
+			SET_TCPTRANSFORM = 11, 
+			DO_NOTHING = 9999 };
 
             URScriptCommand(CmdType type, const rw::math::Q& q, float speed):
                 _type(type),

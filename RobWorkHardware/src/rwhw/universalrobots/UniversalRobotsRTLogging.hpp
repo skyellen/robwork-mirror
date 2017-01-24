@@ -8,17 +8,35 @@
 #include <boost/thread.hpp>
 
 namespace rwhw {
+	
 
+/**
+ * @brief Class for holding the log information provided by the UR on the 125Hz interface.
+ *
+ * The 125Hz interface is sometime referred to as the real-time interface, hence "RT" in the name
+ */
 class URRTData {
 public:
+	/**
+	 * @brief Construct empty URRTData object
+	 */
 	URRTData():
 		digIn(0)
 	{
 
 	}
 
+	/**
+	 * @brief Timestamp of when data arrived on the PC
+	 */
 	double driverTimeStamp;
+
+	/**
+	 * @bruef Timestamp given to data by the UR controller
+	 */
 	double controllerTimeStamp;
+
+
 	rw::math::Q qTarget;
 	rw::math::Q dqTarget;
 	rw::math::Q ddqTarget;
@@ -29,10 +47,12 @@ public:
 	rw::math::Q dqActual;
 	rw::math::Q iActual;
 
-	rw::math::Q accValues;
+
 	rw::math::Q tcpForce;
 	rw::math::Q toolPose;
 	rw::math::Q tcpSpeed;
+	rw::math::Q toolTargetPose;
+	rw::math::Q toolTargetSpeed;
 
 	int64_t digIn;
 	rw::math::Q motorTemperatures;
@@ -67,7 +87,7 @@ class UniversalRobotsRTLogging {
 
     	double driverTime();
     	bool _lostConnection;
-    	long _lastPackageTime;
+    	long long _lastPackageTime;
 	private:
 		boost::asio::ip::tcp::socket* _socket;
 		boost::asio::io_service _ioService;
@@ -79,6 +99,10 @@ class UniversalRobotsRTLogging {
 
 		bool _hasData;
 		URRTData _data;
+
+		std::string _host;
+		unsigned int _port;
+		bool _reestablishConnection;
 
 
 };

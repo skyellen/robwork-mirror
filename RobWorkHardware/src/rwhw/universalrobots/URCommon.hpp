@@ -270,7 +270,7 @@ public:
                         bytesTransfered = boost::asio::write(*socket, boost::asio::buffer(buffer, n));
                         if (static_cast<int>(bytesTransfered) == n) {
                             /* Successful send */
-                            RW_LOG_DEBUG("Sent all of the '" << bytesTransfered << "' bytes.");
+                            //RW_LOG_DEBUG("Sent all of the '" << bytesTransfered << "' bytes.");
                         } else {
                             /* Unsuccessful send */
                             RW_LOG_ERROR("Unable to send all the '" << n << "' bytes - only sent '" << bytesTransfered << "' bytes");
