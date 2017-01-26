@@ -82,7 +82,6 @@ INSTANTIATE_TEST_CASE_P(PredefinedParameters, PhysicsEngineTest, ::testing::Valu
 
 TEST_P(PhysicsEngineTest, TestEngineParameterTest) {
 	ASSERT_TRUE(GetParam().test != NULL);
-	ASSERT_TRUE(!GetParam().test.isNull());
 	GetParam().test->run(handle, GetParam().engine, *GetParam().parameters);
 	EXPECT_EQ(handle->getError(),"");
 	BOOST_FOREACH(const EngineTest::Result& result, handle->getResults()) {
