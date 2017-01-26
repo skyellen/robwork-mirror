@@ -41,7 +41,7 @@ TEST(PhysicsEngineTest, EnginesInFactory) {
 }
 
 struct TestParam {
-	TestParam(EngineTest* test, const std::string& testName, const std::string& engine, int id, PropertyMap::Ptr parameters):
+	TestParam(EngineTest::Ptr test, const std::string& testName, const std::string& engine, int id, PropertyMap::Ptr parameters):
 		testName(testName),
 		test(test),
 		engine(engine),
@@ -50,16 +50,13 @@ struct TestParam {
 	{
 	}
 	std::string testName;
-	// Notice that the test variable must be a raw pointer!
-	// - it will otherwise be destructed after the main loop ends by the google test framework
-	// - this might cause segmentation fault if the plugin that provided the test has already been unloaded
-	EngineTest* test;
+	EngineTest::Ptr test;
 	std::string engine;
 	int id;
 	PropertyMap::Ptr parameters;
 };
 
-class PhysicsEngineTest : public ::testing::TestWithParam<TestParam> {
+class PhysicsEngineTest : public ::testing::TestWithParam<TestParam*> {
 protected:
 	PhysicsEngineTest(): handle(ownedPtr(new EngineTest::TestHandle())) {
 	}
@@ -75,14 +72,14 @@ protected:
     return os;
 }
 
-std::list<TestParam> defaultTests;
-std::list<TestParam> predefinedTests;
+std::list<TestParam*> defaultTests;
+std::list<TestParam*> predefinedTests;
 INSTANTIATE_TEST_CASE_P(DefaultParameter, PhysicsEngineTest, ::testing::ValuesIn(defaultTests));
 INSTANTIATE_TEST_CASE_P(PredefinedParameters, PhysicsEngineTest, ::testing::ValuesIn(predefinedTests));
 
 TEST_P(PhysicsEngineTest, TestEngineParameterTest) {
-	ASSERT_TRUE(GetParam().test != NULL);
-	GetParam().test->run(handle, GetParam().engine, *GetParam().parameters);
+	ASSERT_TRUE(!GetParam()->test.isNull());
+	GetParam()->test->run(handle, GetParam()->engine, *GetParam()->parameters);
 	EXPECT_EQ(handle->getError(),"");
 	BOOST_FOREACH(const EngineTest::Result& result, handle->getResults()) {
 		BOOST_FOREACH(const EngineTest::Failure& failure, result.failures) {
@@ -92,26 +89,27 @@ TEST_P(PhysicsEngineTest, TestEngineParameterTest) {
 }
 
 int main(int argc, char **argv) {
-	std::vector<EngineTest::Ptr> ownedTests; // we need to control the lifetime in the main loop!
+	std::vector<TestParam> ownedParams; // we need to control the lifetime in the main loop!
 
 	// Construct list of engine-test pairs to test
 	const std::vector<std::string> engines = PhysicsEngine::Factory::getEngineIDs();
 	BOOST_FOREACH(const std::string& testName, EngineTest::Factory::getTests()) {
-		ownedTests.push_back(EngineTest::Factory::getTest(testName));
-		EngineTest* const etest = ownedTests.back().get();
+		const EngineTest::Ptr etest = EngineTest::Factory::getTest(testName);
 		BOOST_FOREACH(const std::string& engineName, engines) {
 			if (etest->isEngineSupported(engineName)) {
 				const PropertyMap::Ptr def = etest->getDefaultParameters();
-				defaultTests.push_back(TestParam(etest,testName,engineName,-1,def));
+				ownedParams.push_back(TestParam(etest,testName,engineName,-1,def));
+				defaultTests.push_back(&ownedParams.back());
 				const std::vector<PropertyMap::Ptr> predefined = etest->getPredefinedParameters();
 				for (std::size_t i = 0; i < predefined.size(); i++) {
-					predefinedTests.push_back(TestParam(etest,testName,engineName,static_cast<int>(i),predefined[i]));
+					ownedParams.push_back(TestParam(etest,testName,engineName,static_cast<int>(i),predefined[i]));
+					predefinedTests.push_back(&ownedParams.back());
 				}
 			}
 		}
 	}
 	testing::InitGoogleTest(&argc, argv);
 	const int res = RUN_ALL_TESTS();
-	ownedTests.clear(); // important! - we must destruct the EngineTest instances explicitly before the main loop ends
+	ownedParams.clear(); // important! - we must destruct the instances explicitly before the main loop ends
 	return res;
 }
