@@ -64,11 +64,11 @@ protected:
 	const EngineTest::TestHandle::Ptr handle;
 };
 
-::std::ostream& operator<<(::std::ostream& os, const TestParam& combo) {
-	if (combo.id < 0)
-		os << "(" << combo.testName << ", " << combo.engine << ") default";
+::std::ostream& operator<<(::std::ostream& os, const TestParam* combo) {
+	if (combo->id < 0)
+		os << "(" << combo->testName << ", " << combo->engine << ") default";
 	else
-		os << "(" << combo.testName << ", " << combo.engine << ") predefined #" << combo.id;
+		os << "(" << combo->testName << ", " << combo->engine << ") predefined #" << combo->id;
     return os;
 }
 
@@ -89,7 +89,7 @@ TEST_P(PhysicsEngineTest, TestEngineParameterTest) {
 }
 
 int main(int argc, char **argv) {
-	std::vector<TestParam> ownedParams; // we need to control the lifetime in the main loop!
+	std::vector<TestParam*> ownedParams; // we need to control the lifetime in the main loop!
 
 	// Construct list of engine-test pairs to test
 	const std::vector<std::string> engines = PhysicsEngine::Factory::getEngineIDs();
@@ -98,18 +98,20 @@ int main(int argc, char **argv) {
 		BOOST_FOREACH(const std::string& engineName, engines) {
 			if (etest->isEngineSupported(engineName)) {
 				const PropertyMap::Ptr def = etest->getDefaultParameters();
-				ownedParams.push_back(TestParam(etest,testName,engineName,-1,def));
-				defaultTests.push_back(&ownedParams.back());
+				ownedParams.push_back(new TestParam(etest,testName,engineName,-1,def));
+				defaultTests.push_back(ownedParams.back());
 				const std::vector<PropertyMap::Ptr> predefined = etest->getPredefinedParameters();
 				for (std::size_t i = 0; i < predefined.size(); i++) {
-					ownedParams.push_back(TestParam(etest,testName,engineName,static_cast<int>(i),predefined[i]));
-					predefinedTests.push_back(&ownedParams.back());
+					ownedParams.push_back(new TestParam(etest,testName,engineName,static_cast<int>(i),predefined[i]));
+					predefinedTests.push_back(ownedParams.back());
 				}
 			}
 		}
 	}
 	testing::InitGoogleTest(&argc, argv);
 	const int res = RUN_ALL_TESTS();
-	ownedParams.clear(); // important! - we must destruct the instances explicitly before the main loop ends
+	for (std::size_t i = 0; i < ownedParams.size(); i++) {
+		delete ownedParams[i]; // important! - we must destruct the instances explicitly before the main loop ends
+	}
 	return res;
 }
