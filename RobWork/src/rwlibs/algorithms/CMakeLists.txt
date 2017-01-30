@@ -19,7 +19,7 @@ IF(build)
       ./xqpcontroller/NullSpaceProjection.cpp
       ./gpm/BasicGPM.cpp
       BFGS.cpp
-      
+       
       MovingAverage.cpp
       #StablePlanePose.cpp
       RANSACModel.cpp
@@ -29,6 +29,7 @@ IF(build)
       PlaneModel.cpp
       StablePose1DModel.cpp
       StablePose0DModel.cpp
+	  PointPairsRegistration.cpp
     )
     
     SET(SRC_FILES_HPP
@@ -51,7 +52,8 @@ IF(build)
       StructuredLineModel.hpp
       PlaneModel.hpp
       StablePose1DModel.hpp
-      StablePose0DModel.cpp
+      StablePose0DModel.hpp
+	  PointPairsRegistration.hpp
     )
     
     RW_ADD_LIBRARY(${SUBSYS_NAME} algorithms ${SRC_FILES} ${SRC_FILES_HPP})
