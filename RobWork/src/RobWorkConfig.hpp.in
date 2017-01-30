@@ -15,6 +15,7 @@
 
 #cmakedefine RW_HAVE_PQP 1
 #cmakedefine RW_HAVE_YAOBI 1
+#cmakedefine RW_HAVE_FCL 1
 #cmakedefine RW_HAVE_BULLET 1
 #cmakedefine RW_HAVE_EIGEN 1
 #cmakedefine RW_HAVE_ASSIMP 1

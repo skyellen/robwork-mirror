@@ -30,9 +30,15 @@ IF(build)
       LIST(APPEND OptionalFiles "./ProximityStrategyBullet.cpp")
       LIST(APPEND OptionalFiles_hpp "./ProximityStrategyBullet.hpp")
     ELSE ()
-      MESSAGE(STATUS "rw_proximitystrategies: Not building Yaobi interface since Yaobi is disabled!")
+      MESSAGE(STATUS "rw_proximitystrategies: Not building Bullet interface since Bullet is disabled!")
     ENDIF ()
 
+    IF (RW_HAVE_FCL)
+      LIST(APPEND OptionalFiles "./ProximityStrategyFCL.cpp")
+      LIST(APPEND OptionalFiles_hpp "./ProximityStrategyFCL.hpp")
+    ELSE ()
+      MESSAGE(STATUS "rw_proximitystrategies: Not building FCL interface since FCL is disabled!")
+    ENDIF ()
     
     SET(SRC_FILES
       ${RW_PROXIMITYSTRATEGIES_USER_FILES}
@@ -47,7 +53,8 @@ IF(build)
     
     RW_ADD_LIBRARY(${SUBSYS_NAME} proximitystrategies ${SRC_FILES} ${SRC_FILES_HPP})
     RW_ADD_INCLUDES(proximitystrategies "rwlibs/proximitystrategies" ${SRC_FILES_HPP}) 
-    TARGET_LINK_LIBRARIES(${SUBSYS_NAME} ${SUBSYS_DEPS} ${YAOBI_LIBRARIES} ${PQP_LIBRARIES} ${BULLET_LIBRARIES})
+    TARGET_LINK_LIBRARIES(${SUBSYS_NAME} ${SUBSYS_DEPS} ${YAOBI_LIBRARIES} ${PQP_LIBRARIES} ${BULLET_LIBRARIES} ${FCL_LIBRARIES})
+    TARGET_INCLUDE_DIRECTORIES(${SUBSYS_NAME} PRIVATE ${FCL_INCLUDE_DIRS})
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
     
 ENDIF()

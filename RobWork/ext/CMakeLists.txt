@@ -121,3 +121,6 @@ ENDIF()
 
 add_subdirectory(csgjs)
 
+IF(RW_ENABLE_INTERNAL_FCL_TARGET)
+	add_subdirectory(fcl)
+ENDIF()
