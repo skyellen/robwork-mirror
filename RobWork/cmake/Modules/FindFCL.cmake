@@ -2,7 +2,7 @@
 include(FindPackageHandleStandardArgs)
 find_package(PkgConfig)
 if(PKGCONFIG_FOUND)
-    pkg_check_modules(FCL fcl>=0.5.0)
+    pkg_check_modules(FCL fcl)
 endif()
 IF(FCL_FOUND)
     SET(FCL_INCLUDE_DIRS ${FCL_INCLUDEDIR})
