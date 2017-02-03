@@ -5,6 +5,16 @@ LINK_DIRECTORIES( ${ROBWORKSTUDIO_LIBRARY_DIRS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR}) 
 
 ################################################################
+# Rcc shared for all plugins
+# 
+SET(RccSrcFiles )
+IF( RWS_USE_QT5 )
+	QT5_ADD_RESOURCES(RccSrcFiles resources.qrc)
+ELSE()
+	QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+ENDIF()
+
+################################################################
 # next compile RWSimulatorPlugin
 #
 SET(SrcFiles RWSimulatorPlugin.cpp )
@@ -16,15 +26,6 @@ ELSE()
 QT4_WRAP_CPP(MocSrcFiles RWSimulatorPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
 ENDIF()
 
-# Rcc the files:
-SET(RccSrcFiles )
-
-IF( RWS_USE_QT5 )
-QT5_ADD_RESOURCES(RccSrcFiles resources.qrc)
-ELSE()
-QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
-
-ENDIF()
 # The shared library to build:
 ADD_LIBRARY(RWSimulatorPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 TARGET_LINK_LIBRARIES(RWSimulatorPlugin ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
@@ -64,14 +65,6 @@ ELSE()
 QT4_WRAP_CPP(MocSrcFiles SimUtilityPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
 ENDIF()
 
-# Rcc the files:
-SET(RccSrcFiles )
-IF(RWS_USE_QT5)
-	QT5_ADD_RESOURCES(RccSrcFiles resources.qrc)
-ELSE()
-	QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
-ENDIF()
-
 # The shared library to build:
 ADD_LIBRARY(SimUtilityPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 TARGET_LINK_LIBRARIES(SimUtilityPlugin rwsim_gui ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
@@ -96,14 +89,6 @@ IF(RWS_USE_QT5)
 	QT5_WRAP_CPP(MocSrcFiles GraspTableGeneratorPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
 ELSE()
 	QT4_WRAP_CPP(MocSrcFiles GraspTableGeneratorPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
-ENDIF()
-
-# Rcc the files:
-SET(RccSrcFiles )
-IF(RWS_USE_QT5)
-	QT5_ADD_RESOURCES(RccSrcFiles resources.qrc)
-ELSE()
-	QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 ENDIF()
 
 # The shared library to build:
@@ -134,19 +119,19 @@ ELSE()
 ENDIF()
 
 # Rcc the files:
-SET(RccSrcFiles )
+SET(RccSrcFiles_RWSimPlugin )
 IF(RWS_USE_QT5)
-	QT5_ADD_RESOURCES(RccSrcFiles ${RWSIM_ROOT}/src/gfx/RWSimPlugin.qrc)
+	QT5_ADD_RESOURCES(RccSrcFiles_RWSimPlugin ${RWSIM_ROOT}/src/gfx/RWSimPlugin.qrc)
 ELSE()
-	QT4_ADD_RESOURCES(RccSrcFiles ${RWSIM_ROOT}/src/gfx/RWSimPlugin.qrc)
+	QT4_ADD_RESOURCES(RccSrcFiles_RWSimPlugin ${RWSIM_ROOT}/src/gfx/RWSimPlugin.qrc)
 ENDIF()
 IF(RWSIM_HAVE_LUA)
     SET(RWSIM_LUA_LIB rwsim_lua_s)
     SET(RWS_LUAPL_LIBRARIES rws_luapl rws_sensors rws_planning rws_propertyview rws_playback rws_treeview rws_jog rws_log rws_rwstudioapp)
 ENDIF()
 
-ADD_LIBRARY(RWSimPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles} ${UIS_OUT_H})
-#ADD_LIBRARY(RWSimPluginStatic STATIC ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
+ADD_LIBRARY(RWSimPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles_RWSimPlugin} ${UIS_OUT_H})
+#ADD_LIBRARY(RWSimPluginStatic STATIC ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles_RWSimPlugin})
 TARGET_LINK_LIBRARIES(RWSimPlugin ${RWS_LUAPL_LIBRARIES} rwsim_gui ${RWSIM_LUA_LIB} ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
 ADD_DEPENDENCIES( RWSimPlugin ${RWSIM_LUA_LIB} rwsim_gui)
 #Message(" LIBS :  ${ROBWORKSIM_LIBRARIES} ")
@@ -173,15 +158,15 @@ ELSE()
 	QT4_WRAP_CPP(MocSrcFiles SimTaskPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
 ENDIF()
 # Rcc the files:
-SET(RccSrcFiles )
+SET(RccSrcFiles_SimTaskPlugin )
 IF(RWS_USE_QT5)
-	QT5_ADD_RESOURCES(RccSrcFiles ${RWSIM_ROOT}/src/gfx/SimTaskPlugin.qrc)
+	QT5_ADD_RESOURCES(RccSrcFiles_SimTaskPlugin ${RWSIM_ROOT}/src/gfx/SimTaskPlugin.qrc)
 ELSE()
-	QT4_ADD_RESOURCES(RccSrcFiles ${RWSIM_ROOT}/src/gfx/SimTaskPlugin.qrc)
+	QT4_ADD_RESOURCES(RccSrcFiles_SimTaskPlugin ${RWSIM_ROOT}/src/gfx/SimTaskPlugin.qrc)
 ENDIF()
 
-ADD_LIBRARY(SimTaskPlugin MODULE ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_OUT_H})
-#ADD_LIBRARY(SimTaskPluginStatic STATIC ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
+ADD_LIBRARY(SimTaskPlugin MODULE ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles_SimTaskPlugin} ${UIS_OUT_H})
+#ADD_LIBRARY(SimTaskPluginStatic STATIC ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles_SimTaskPlugin})
 TARGET_LINK_LIBRARIES(SimTaskPlugin rwsim_gui rw_task ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
 
 
@@ -230,14 +215,6 @@ IF(RWS_USE_QT5)
 QT5_WRAP_CPP(MocSrcFiles EngineTestPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
 ELSE()
 QT4_WRAP_CPP(MocSrcFiles EngineTestPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
-ENDIF()
-
-# Rcc the files:
-SET(RccSrcFiles )
-IF(RWS_USE_QT5)
-	QT5_ADD_RESOURCES(RccSrcFiles resources.qrc)
-ELSE()
-	QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 ENDIF()
 
 # The shared library to build:
