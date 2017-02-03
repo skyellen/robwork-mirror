@@ -50,15 +50,17 @@ typedef std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > Wrench3D;
     	bool updateData();
        	bool connect(const std::string& port, SerialPort::Baudrate baudrate);
     	SerialPort _serialPort;
-		char _dataIn[];
+		char* _dataIn;
 
 		bool _isRunning;
 		Wrench3D _data;
-		char _dataOut[];
+		char* _dataOut;
     	// Thread function
     	void runReceive();
     	double _timestamp;
     	int _sensors;
+
+		bool _dataInit; // if _dataIn and _dataOut is initialized
 
     	// Thread members
 		boost::thread _receiveThread;

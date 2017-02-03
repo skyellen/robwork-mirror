@@ -47,8 +47,8 @@ FanucVirtual::FanucVirtual(
     const State& state)
     :
     _model(fanucModel), _state(state), _isConnected(false),
-    _qCurrent(Q::ZeroBase(6)),
-    _dqCurrent(Q::ZeroBase(6)),
+    _qCurrent(Q::zero(6)),
+    _dqCurrent(Q::zero(6)),
     _timeStamp(currentTimeMs()),
     _nextCmd(IdleCMD), _lastCmd(IdleCMD),
     _accCnt(100), _accFine(100), _speedCnt(100), _speedFine(100), _globalSpeed(10),
@@ -64,12 +64,12 @@ FanucVirtual::FanucVirtual(
     int dof = _model->getDOF();
 
     for(int i=0;i<dof;i++){
-        posLimit.push_back( _model->getActiveJoint(i)->getBounds() );
+        posLimit.push_back(std::make_pair(_model->getBounds().first[i], _model->getBounds().second[i]));
         std::pair<double, double> tmp;
-        tmp.first = _model->getActiveJoint(i)->getMaxVelocity();
+        tmp.first = _model->getVelocityLimits()[i];
         tmp.second = -tmp.first;
         velLimit.push_back( tmp );
-        tmp.first = _model->getActiveJoint(i)->getMaxAcceleration();
+        tmp.first = _model->getAccelerationLimits()[i];
         tmp.second = -tmp.first;
         accLimit.push_back( tmp );
     }

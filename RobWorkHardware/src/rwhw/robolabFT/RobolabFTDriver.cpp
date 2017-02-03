@@ -7,6 +7,9 @@
 
 
 #include "RobolabFTDriver.hpp"
+
+#include <rw/common/TimerUtil.hpp>
+
 #include <iostream>
 #include <string>
 #include <stdlib.h>     /* strtol */
@@ -15,21 +18,28 @@ using namespace rw::common;
 
 using namespace rwhw;
 
-RobolabFT::RobolabFT(){
-
-	//char testchar[] = "test";
-	_isRunning =false;
-
+RobolabFT::RobolabFT():
+	_isRunning(false),
+	_dataInit(false)
+{
 }
 RobolabFT::~RobolabFT(){
 	_serialPort.close();
-
+	if (_dataInit) {
+		delete[] _dataIn;
+		delete[] _dataOut;
+	}
 }
 bool RobolabFT::init(const std::string& port, SerialPort::Baudrate baudrate, int sensors){
 	 if(connect(port,baudrate)){
-			//_dataIn[7*sensors+1];
-			//_dataOut[7*sensors+1];
-			_sensors=sensors;
+		 if (_dataInit) {
+			 delete[] _dataIn;
+			 delete[] _dataOut;
+		 }
+		 _dataIn = new char[7*sensors+1];
+		 _dataOut = new char[7*sensors+1];
+		 _dataInit = true;
+		 _sensors=sensors;
 		 _receiveThread = boost::thread(&RobolabFT::runReceive, this);
 		 _stopThread=false;
 
@@ -107,7 +117,7 @@ void RobolabFT::run(){
 	do{
 
 		read();
-		sleep(1);
+		TimerUtil::sleepMs(1000);
 	}while(_isRunning);
 
 }

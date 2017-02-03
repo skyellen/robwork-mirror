@@ -55,8 +55,8 @@ FanucDriver::FanucDriver(std::string ipNr, size_t updateRate)
     _ipNr(ipNr),
     _isLibraryOpen(false),
     _isConnected(false),
-    _qCurrent(Q::ZeroBase(6)),
-    _qdCurrent(Q::ZeroBase(6)),
+    _qCurrent(Q::zero(6)),
+    _qdCurrent(Q::zero(6)),
     _timeStamp(CurrentTimeMs()),
     _nextCmd(IdleCMD),
     _lastCmd(IdleCMD),
@@ -77,7 +77,7 @@ FanucDriver::FanucDriver(std::string ipNr, size_t updateRate)
     _updateCnt(0),
     _resetError(false)
 {
-    _qValCntLast = Q(Q::ZeroBase(6));
+    _qValCntLast = Q(Q::zero(6));
 }
 
 FanucDriver::~FanucDriver()
