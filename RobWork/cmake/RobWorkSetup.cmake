@@ -80,6 +80,7 @@ IF(DEFINED UNIX)
   
 ELSEIF(DEFINED WIN32)
   SET(Boost_USE_STATIC_LIBS ON)
+  SET(BOOST_ALL_DYN_LINK OFF)
   FIND_PACKAGE(Boost COMPONENTS filesystem regex serialization system thread program_options)
   SET(Boost_LIBRARIES_TMP ${Boost_LIBRARIES_TMP} ${Boost_LIBRARIES})
   # If static libraries for Windows were not found, try searching again for the shared ones
@@ -88,6 +89,7 @@ ELSEIF(DEFINED WIN32)
     SET(Boost_USE_STATIC_LIBS OFF)
     FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread program_options)
     SET(Boost_LIBRARIES_TMP ${Boost_LIBRARIES_TMP} ${Boost_LIBRARIES})
+    SET(BOOST_ALL_DYN_LINK ON)
   ENDIF()
   
   # Test libraries are optional
@@ -590,6 +592,9 @@ IF( "${RW_DEFINITIONS}" STREQUAL "")
 
       IF(BOOST_TEST_NO_LIB)
         LIST(APPEND RW_DEFINITIONS_TMP "-DBOOST_TEST_NO_LIB")
+      ENDIF()
+      IF(BOOST_ALL_DYN_LINK)
+        LIST(APPEND RW_DEFINITIONS_TMP "-DBOOST_ALL_DYN_LINK")
       ENDIF()
 
       # Current issues addressed for MSVC 64 bit:

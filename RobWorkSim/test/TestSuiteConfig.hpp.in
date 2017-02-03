@@ -7,6 +7,12 @@
 
 #cmakedefine RW_USE_BOOST_STATIC_TEST_LIBS
 
+#ifndef RW_USE_BOOST_STATIC_TEST_LIBS
+// Boost test framework is compiled from header in test-main.cpp
+// define BOOST_TEST_INCLUDED to let boost now that the test implementation is
+// compiled as part of the program, and not linked in externally.
+#define BOOST_TEST_INCLUDED
+#endif
 #include <boost/test/unit_test.hpp>
 
 #include <boost/test/floating_point_comparison.hpp>
