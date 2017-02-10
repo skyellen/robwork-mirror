@@ -49,16 +49,16 @@ double Line2D::calcDist(const rw::math::Vector2D<> &v) const
     return std::fabs( cross(_p2-_p1,_p1-v) )/((_p2-_p1).norm2());
 }
 
-double Line2D::calcAngle(const Line2D &l){
-    Vector2D<> v1 = _p2-_p1;
-    Vector2D<> v2 = l._p2-l._p1;
+double Line2D::calcAngle(const Line2D &l) const {
+    const Vector2D<> v1 = _p2-_p1;
+    const Vector2D<> v2 = l._p2-l._p1;
     const double angle = std::acos( std::fabs( dot(v1,v2)/(v1.norm2()+v1.norm2()) ) );
     //if(v1(0) )
 
     return angle;
 }
 
-double Line2D::calcAngle(){
+double Line2D::calcAngle() const {
     const Vector2D<> v1 = _p2-_p1;
     const double angle = std::acos( v1(0)/v1.norm2() );
     if( v1(1)>0 ) return angle;
@@ -66,20 +66,20 @@ double Line2D::calcAngle(){
 }
 
 
-Line2D::IntersectResult Line2D::getIntersect(Line2D &b, rw::math::Vector2D<> &res)
+Line2D::IntersectResult Line2D::getIntersect(const Line2D &b, rw::math::Vector2D<> &res) const
 {
-	double vx = _p2(0)-_p1(0); //_x2-_x1;
-	double vy = _p2(1)-_p1(1); //_y2-_y1;
+	const double vx = _p2(0)-_p1(0); //_x2-_x1;
+	const double vy = _p2(1)-_p1(1); //_y2-_y1;
 
-	double ux = b._p2(0)-b._p1(0); //b._x2-b._x1;
-	double uy = b._p2(1)-b._p1(1); // b._y2-b._y1;
+	const double ux = b._p2(0)-b._p1(0); //b._x2-b._x1;
+	const double uy = b._p2(1)-b._p1(1); // b._y2-b._y1;
 
-	double px = _p1(0)-b._p1(0); //_x1-b._x1;
-	double py = _p1(1)-b._p1(1); //_y1-b._y1;
+	const double px = _p1(0)-b._p1(0); //_x1-b._x1;
+	const double py = _p1(1)-b._p1(1); //_y1-b._y1;
 
-	double num_a = ux*py-uy*px; // (x4-x3)*(y1-y3)-(y4-y3)*(x1-x3);
-	double num_b = vx*py-vy*px; // (x2-x1)*(y1-y3)-(y2-y1)*(x1-x3);
-	double den = uy*vx-ux*vy; // (y4-y3)*(x2-x1)-(x4-x3)*(y2-y1);
+	const double num_a = ux*py-uy*px; // (x4-x3)*(y1-y3)-(y4-y3)*(x1-x3);
+	const double num_b = vx*py-vy*px; // (x2-x1)*(y1-y3)-(y2-y1)*(x1-x3);
+	const double den = uy*vx-ux*vy; // (y4-y3)*(x2-x1)-(x4-x3)*(y2-y1);
 	//std::cout << a.x1 << " " << a.y1 << " " << a.x2 << " " << a.y2 << std::endl;
 	//std::cout << b.x1 << " " << b.y1 << " " << b.x2 << " " << b.y2 << std::endl;
 	//std::cout << "den: " << fabs(den) << " num: " << fabs(num_a)<<" "  << fabs(num_b) << std::endl;
@@ -90,7 +90,7 @@ Line2D::IntersectResult Line2D::getIntersect(Line2D &b, rw::math::Vector2D<> &re
 			return COINCIDENT; // COINCIDENT
 		return PARALLEL; // Parralel
 	}
-	double k = num_a/den;
+	const double k = num_a/den;
 	res(0) = _p1(0)+k*vx;
 	res(1) = _p1(1)+k*vy;
 

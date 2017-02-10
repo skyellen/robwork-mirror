@@ -80,21 +80,21 @@ public:
 	 * @param res [out] the point of intersection
 	 * @return the intersection type
 	 */
-	IntersectResult getIntersect(Line2D &line, rw::math::Vector2D<> &res);
+	IntersectResult getIntersect(const Line2D &line, rw::math::Vector2D<> &res) const;
 
 	/**
 	 * @brief calculates the angle between this line and \b line
 	 * @param line [in] a line
 	 * @return the angle from this line to \b line
 	 */
-	double calcAngle(const Line2D &line);
+	double calcAngle(const Line2D &line) const;
 
     /**
      * @brief calculates the angle between the projection of this line onto
      * yz-plane and the x-axis
      * @return the angle
      */
-	double calcAngle();
+	double calcAngle() const;
 
 	/**
 	 * @brief calculates the shortest distance between point v and the infinite
@@ -107,8 +107,8 @@ public:
 	 * @brief gets the length of thi line segment.
 	 * @return line segment length
 	 */
-	double getLength(){
-		rw::math::Vector2D<> diff = _p1-_p2;
+	double getLength() const {
+		const rw::math::Vector2D<> diff = _p1-_p2;
 		return diff.norm2();
 	}
 
@@ -131,8 +131,8 @@ public:
 	/**
 	 * @brief calculates the unit normal of the line
 	 */
-    rw::math::Vector2D<> calcUnitNormal(){
-        rw::math::Vector2D<> u = (_p2-_p1)/getLength();
+    rw::math::Vector2D<> calcUnitNormal() const {
+        const rw::math::Vector2D<> u = (_p2-_p1)/getLength();
         return rw::math::Vector2D<>(-u(1),u(0));
     }
 
