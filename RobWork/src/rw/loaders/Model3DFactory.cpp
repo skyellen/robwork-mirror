@@ -177,17 +177,21 @@ Model3D::Ptr Model3DFactory::loadModel(const std::string &raw_filename, const st
         getCache().add(filename, model, moddate);
         return getCache().get(filename);
     } else if (filetype == ".OBJ") {
+        Model3D::Ptr model;
 #if RW_HAVE_ASSIMP
         LoaderAssimp loader;
-        Model3D::Ptr model = loader.load(filename);
-        getCache().add(filename, model, moddate);
-        return getCache().get(filename);
-#else
-        LoaderOBJ loader;
-        Model3D::Ptr model = loader.load(filename);
-        getCache().add(filename, model, moddate);
-        return getCache().get(filename);
+        try {
+        	model = loader.load(filename);
+        } catch(const Exception&) {
+        	RW_WARN("Assimp loader for .obj file failed. Trying internal RobWork loader instead.");
 #endif
+            LoaderOBJ loader;
+            model = loader.load(filename);
+#if RW_HAVE_ASSIMP
+        }
+#endif
+        getCache().add(filename, model, moddate);
+        return getCache().get(filename);
     /*
     } else if (filetype == ".IVG") {
     	LoaderIVG loader;
