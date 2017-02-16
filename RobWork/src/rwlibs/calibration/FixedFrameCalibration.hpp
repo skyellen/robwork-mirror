@@ -15,10 +15,10 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWLIBS_CALIBRATION_FIXEDFRAMECALIBRATION_HPP_
-#define RWLIBS_CALIBRATION_FIXEDFRAMECALIBRATION_HPP_
+#ifndef RWLIBS_CALIBRATION_FIXEDFRAMECALIBRATION_HPP
+#define RWLIBS_CALIBRATION_FIXEDFRAMECALIBRATION_HPP
 
-#include "CalibrationBase.hpp"
+#include "Calibration.hpp"
 #include <rw/kinematics/FixedFrame.hpp>
 
 namespace rwlibs {
@@ -31,38 +31,24 @@ namespace calibration {
  *
  * A fixed frame has 6dof which are to be calibrated.
  */
-class FixedFrameCalibration: public CalibrationBase {
+class FixedFrameCalibration: public Calibration {
 public:
-	/*static int PARAMETER_X;
-	static int PARAMETER_Y;
-	static int PARAMETER_Z;
-	static int PARAMETER_ROLL;
-	static int PARAMETER_PITCH;
-	static int PARAMETER_YAW;
-*/
-	enum ParameterTypes {PARAMETER_X = 0 //! X coordinate
-		, PARAMETER_Y = 1 //! Y coordinate
-		, PARAMETER_Z = 2 //! Z coordinate
-		, PARAMETER_ROLL = 3 //! Roll rotation (z-axis in RPY)
-		, PARAMETER_PITCH = 4 //! Pitch rotation (y-axis in RPY)
-		, PARAMETER_YAW = 5 //! Yaw rotation (x-axis in RPY)
-	};
 
 	/** @brief Typedef for pointer to FixedFrameCalibration */
 	typedef rw::common::Ptr<FixedFrameCalibration> Ptr;
 
 	/** 
-	* @brief Constructs FixedFrameCalibration for \bframe. Initializes correction to the identity matrix.
+	* @brief Constructs FixedFrameCalibration for \bframe. Initializes correction to the current transformation of the frame.
 	* @param frame [in] Frame to correct with the FixedFrameCalibration
 	*/
 	FixedFrameCalibration(rw::kinematics::FixedFrame::Ptr frame);
 
 	/**
-	 * @brief Construct FixedFrameCalibration for \bframe, with \bcorrectionTransform as the initial correction
+	 * @brief Construct FixedFrameCalibration for \bframe, with \bcorrectedTransform as the calibrated transform
 	 * @param frame [in] Frame to correct with the FixedFrameCalibration
 	 * @param correctionTransform [in] Initial correction.
 	 */
-	FixedFrameCalibration(rw::kinematics::FixedFrame::Ptr frame, const rw::math::Transform3D<>& correctionTransform);
+	FixedFrameCalibration(rw::kinematics::FixedFrame::Ptr frame, const rw::math::Transform3D<>& correctedTransform);
 
 	/**
 	 * @brief Destructor
@@ -77,13 +63,13 @@ public:
 	/**
 	 * @brief Returns the correction transform.
 	 */
-	rw::math::Transform3D<> getCorrectionTransform() const;
+	rw::math::Transform3D<> getCorrectedTransform() const;
 
 	/**
-	 * @brief Sets the correction transform
-	 * @param transform [in] The new correction transform
+	 * @brief Sets the corrected transform
+	 * @param transform [in] The new corrected transform
 	 */
-	void setCorrectionTransform(const rw::math::Transform3D<>& transform);
+	void setCorrectedTransform(const rw::math::Transform3D<>& transform);
 
 private:
 	virtual void doApply();
@@ -92,6 +78,7 @@ private:
 
 private:
 	rw::kinematics::FixedFrame::Ptr _frame;
+	rw::math::Transform3D<> _correctedTransform;
 	rw::math::Transform3D<> _originalTransform;
 };
 

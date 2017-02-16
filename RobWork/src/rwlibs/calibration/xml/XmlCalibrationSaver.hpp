@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Copyright 2017 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
  * Faculty of Engineering, University of Southern Denmark
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWLIBS_CALIBRATION_XMLCALIBRATIONSAVER_HPP_
-#define RWLIBS_CALIBRATION_XMLCALIBRATIONSAVER_HPP_
+#ifndef RWLIBS_CALIBRATION_XMLCALIBRATIONSAVER_HPP
+#define RWLIBS_CALIBRATION_XMLCALIBRATIONSAVER_HPP
 
 #include <rw/common/Ptr.hpp>
 
@@ -55,4 +55,4 @@ public:
 }
 }
 
-#endif /* RWLIBS_CALIBRATION_XMLCALIBRATIONSAVER_HPP_ */
+#endif /* RWLIBS_CALIBRATION_XMLCALIBRATIONSAVER_HPP */

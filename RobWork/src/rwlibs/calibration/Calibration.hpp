@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
+ * Copyright 2017 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
  * Faculty of Engineering, University of Southern Denmark 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWLIBS_CALIBRATION_CALIBRATION_HPP_
-#define RWLIBS_CALIBRATION_CALIBRATION_HPP_
-
-#include "CalibrationParameterSet.hpp"
+#ifndef RWLIBS_CALIBRATION_CALIBRATION_HPP
+#define RWLIBS_CALIBRATION_CALIBRATION_HPP
 
 #include <rw/common/Ptr.hpp>
 #include <rw/common/macros.hpp>
@@ -38,36 +36,20 @@ namespace rwlibs {
 			typedef rw::common::Ptr<Calibration> Ptr;
 
 			/**
+			 * @brief Default constructor
+			 */
+			Calibration();
+
+			/**
 			* @brief Destructor.
 			*/ 
 			virtual ~Calibration();
-
-			/** 
-			 * @brief Returns true if the calibraiton is enabled
-			 */
-			virtual bool isEnabled() const = 0;
-
-			/** 
-			 * @brief Sets whether the calibration is enabled
-			 */
-			virtual void setEnabled(bool isEnabled) = 0;
-
-			/**
-			 * @brief Returns the parameter set for the calibration
-			 */
-			virtual CalibrationParameterSet getParameterSet() const = 0;
-
-			/** 
-			 * @brief Sets the parameter set for the calibration
-			 */
-
-			virtual void setParameterSet(const CalibrationParameterSet& parameterSet) = 0;
 
 			/**
 			* @brief Test if calibration is applied.
 			* @return True if applied, false otherwise
 			*/
-			virtual bool isApplied() const = 0;
+			bool isApplied() const;
 
 
 			/**
@@ -75,18 +57,25 @@ namespace rwlibs {
 			*
 			* Exception is thrown if calibration is already applied.
 			*/
-			virtual void apply() = 0;
+			void apply();
 
 			/**
 			* @brief Revert calibration.
 			*
 			* Exception is thrown if calibration is not applied.
 			*/
-			virtual void revert() = 0;
+			void revert();
+
+		protected:
+			virtual void doApply() = 0;
+			virtual void doRevert() = 0;
+		private:
+			bool _isApplied;
 		};
+	
 
 		/*@}*/
 	}
 }
 
-#endif /* RWLIBS_CALIBRATION_CALIBRATION_HPP_ */
+#endif /* RWLIBS_CALIBRATION_CALIBRATION_HPP */

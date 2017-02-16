@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
+ * Copyright 2017 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
  * Faculty of Engineering, University of Southern Denmark 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,7 @@
 #ifndef RWLIBS_CALIBRATION_WORKCELLCALIBRATION_HPP
 #define RWLIBS_CALIBRATION_WORKCELLCALIBRATION_HPP
 
-#include "CompositeCalibration.hpp"
-#include "ParallelAxisDHCalibration.hpp"
-#include "JointEncoderCalibration.hpp"
-#include "FixedFrameCalibration.hpp"
+#include "Calibration.hpp"
 
 namespace rw { namespace kinematics { class Frame; } }
 namespace rw { namespace models { class SerialDevice; } }
@@ -34,38 +31,17 @@ namespace calibration {
 /*@{*/
 
 /** 
- * @brief Calibration for a workcell which may consist of multiple devices and sensors
+ * @brief Calibration for a workcell which consists of a set of calibrations for different frames
  */
-class WorkCellCalibration: public CompositeCalibration<CalibrationBase> {
+class WorkCellCalibration: public Calibration {
 public:
-	/** @brief Declaration of smart pointer */
-	 
+	/** @brief Declaration of smart pointer */	 
 	typedef rw::common::Ptr<WorkCellCalibration> Ptr;
 
-	/** @brief Pair consisting of a device and the associated marker frame */
-	typedef std::pair<rw::common::Ptr<rw::models::SerialDevice>, rw::kinematics::Frame*> DeviceMarkerPair;
-
 	/**
-	 * @brief Construct a calibration for the specified device/marker pairs and sensor frames.
-	 *
-	 * @param deviceMarkerPairs [in] Vector with the pairs of devices and markers. 
-	 * @param sensorFrames [in] The sensor frames from which the markers are observed
-	 * @param encoderCorrectionFunctions [in] The correction functions to be used for the encoder corrections.
+	 * @brief Construct an empty work cell calibration 
 	 */
-	WorkCellCalibration(std::vector<DeviceMarkerPair> deviceMarkerPairs,
-			const std::vector<rw::kinematics::Frame*>& sensorFrames);
-
-	/**
-	 * @brief Constructs a workcell calibration consisting of the elements specified
-	 * Primarily to be used when loading in a calibration from file
-	 *
-	 * @param fixedFrameCalibrations [in] The fixed frame calibrations used
-	 * @param compositeLinkCalibration [in] The link calibrations for the robot(s).
-	 * @param compositeJointEncoderCalibration [in] The joint encoder calibrations.
-	 */
-	WorkCellCalibration(CompositeCalibration<FixedFrameCalibration>::Ptr fixedFrameCalibrations,
-			CompositeCalibration<ParallelAxisDHCalibration>::Ptr compositeLinkCalibration,
-			CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointEncoderCalibration);
+	WorkCellCalibration();
 
 	/** 
 	 * @brief Destructor
@@ -73,81 +49,29 @@ public:
 	virtual ~WorkCellCalibration();
 
 	/**
-	 * @brief Returns the fixed frame calibrations
+	 * @brief Adds a calibration
+	 * @param calibration [in] Calibration to add
 	 */
-	CompositeCalibration<FixedFrameCalibration>::Ptr getFixedFrameCalibrations() const;
+	void addCalibration(Calibration::Ptr calibration);
 
 	/**
-	 * @brief Returns the link calibrations
+	 * @brief Returns all calibrations
+	 * @return List with all calibrations
 	 */
-	CompositeCalibration<ParallelAxisDHCalibration>::Ptr getCompositeLinkCalibration() const;
+	const std::vector<Calibration::Ptr>& getCalibrations() const;
 
+protected:
 	/**
-	 * @brief eturns the joint encoder calibrations
+	 * @brief Implementation of the apply method
 	 */
-	CompositeCalibration<JointEncoderCalibration>::Ptr getCompositeJointEncoderCalibration() const;
-
+	virtual void doApply();
 	/**
-	 * @brief Construct a workcell calibration for a single device
-	 */
-	//static WorkCellCalibration::Ptr make(rw::models::SerialDevice::Ptr device);
-
-	/** 
-	 * @brief Returns the calibration for the specified device
-	 */
-	//static WorkCellCalibration::Ptr get(rw::models::SerialDevice::Ptr device);
-
-	/**
-	 * @brief Returns
-	 */
-	//static WorkCellCalibration::Ptr get(const rw::common::PropertyMap& propertyMap);
-
-	//static void set(WorkCellCalibration::Ptr calibration, rw::models::SerialDevice::Ptr device);
-
-	//static void set(WorkCellCalibration::Ptr calibration, rw::common::PropertyMap& propertyMap);
-
-	/**
-	 * @brief Returns the calibration for the sensor with name \bsensor
-	 */
-	FixedFrameCalibration::Ptr getFixedFrameCalibrationForSensor(const std::string& sensor);
-
-	/**
-	 * @brief Returns the calibration for the calibration with name \bmarker
-	 */
-	FixedFrameCalibration::Ptr getFixedFrameCalibrationForMarker(const std::string& marker);
-
-	/**
-	 * @brief Returns the calibration for the calibration with name \bmarker
-	 */
-	FixedFrameCalibration::Ptr getFixedFrameCalibrationForDevice(const std::string& deviceName);
-
-
-	/** 
-	 * @brief Returns the device/marker pairs
-	 */
-	std::vector<DeviceMarkerPair> getDeviceMarkerPairs() const {
-		return _deviceMarkerPairs;
-	}
-
-	/**
-	 * @brief Prepend a calibration.
-	 *
-	 * Use prepend calibration to combine two calibrations. The calibration given is assumed to
-	 * be a pre-calibration to the current calibration.
-	 *
-	 * @param calibration [in] Calibration to prepend
-	 */
-	void prependCalibration(WorkCellCalibration::Ptr calibration);
+	* @brief Implementation of the revert method
+	*/
+	virtual void doRevert();
 
 private:
-	rw::common::Ptr<rw::models::SerialDevice> _primaryDevice;
-	std::vector<DeviceMarkerPair> _deviceMarkerPairs;
-	std::map<std::string, FixedFrameCalibration::Ptr> _sensorFrameCalibrations;
-	std::map<std::string, FixedFrameCalibration::Ptr> _markerCalibrations;
-	std::map<std::string, FixedFrameCalibration::Ptr> _baseCalibrations;
-	CompositeCalibration<FixedFrameCalibration>::Ptr _fixedFrameCalibrations;
-	CompositeCalibration<ParallelAxisDHCalibration>::Ptr _compositeLinkCalibration;
-	CompositeCalibration<JointEncoderCalibration>::Ptr _compositeJointEncoderCalibration;
+	std::vector<Calibration::Ptr> _calibrations;
 };
 
 /* @} */
