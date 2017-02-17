@@ -22,7 +22,6 @@
 #include <rw/loaders/rwxml/XMLRWLoader.hpp>
 
 
-using namespace rwlibs::calibration;
 using namespace rw::math;
 using namespace rw::kinematics;
 using rw::models::SerialDevice;
