@@ -20,7 +20,7 @@
 #include <rw/models/SerialDevice.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/loaders/rwxml/XMLRWLoader.hpp>
-#include <rwlibs/calibration.hpp>
+
 
 using namespace rwlibs::calibration;
 using namespace rw::math;
