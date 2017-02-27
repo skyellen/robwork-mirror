@@ -52,8 +52,6 @@
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/RigidJoint.hpp>
-#include <rwsim/dynamics/ControllerModel.hpp>
-#include <rwsim/dynamics/SensorModel.hpp>
 
 #include <rwsim/dynamics/KinematicDevice.hpp>
 #include <rwsim/dynamics/RigidDevice.hpp>

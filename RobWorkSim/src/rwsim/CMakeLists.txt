@@ -121,7 +121,6 @@ SET(FILES_CPP
 	rwphysics/RWDebugRender.cpp
 	rwphysics/BodyIntegrator.cpp
 	rwphysics/ContactModel.cpp
-	rwphysics/ChatterjeeContactModel.cpp
 	rwphysics/CNodePairMap.cpp
 	rwphysics/CNodePool.cpp
 	rwphysics/ConstantForceManipulator.cpp
@@ -257,7 +256,6 @@ SET(FILES_HPP
 	rwphysics/RWDebugRender.hpp
 	rwphysics/BodyIntegrator.hpp
 	rwphysics/ContactModel.hpp
-	rwphysics/ChatterjeeContactModel.hpp
 	rwphysics/CNodePairMap.hpp
 	rwphysics/CNodePool.hpp
 	rwphysics/ConstantForceManipulator.hpp

@@ -90,7 +90,6 @@
 #include "./rwphysics/RWDebugRender.hpp"
 #include "./rwphysics/BodyIntegrator.hpp"
 #include "./rwphysics/ContactModel.hpp"
-#include "./rwphysics/ChatterjeeContactModel.hpp"
 #include "./rwphysics/CNodePairMap.hpp"
 #include "./rwphysics/CNodePool.hpp"
 #include "./rwphysics/ConstantForceManipulator.hpp"

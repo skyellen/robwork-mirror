@@ -15,7 +15,6 @@ SET(FILES_UI
 	CreateEngineDialog.ui
 	SimCfgDialog.ui
 	ODESimCfgForm.ui
-	SensorOutputGui.ui
 	SDHPlugin.ui
 	TactileSensorDialog.ui
 	#GraspTableGeneratorPlugin.ui
@@ -52,7 +51,6 @@ SET(SrcFiles_HPP
 	SimCfgDialog.hpp 
 	ODESimCfgDialog.hpp
 	BodyControllerWidget.hpp
-	#SensorOutputGui.hpp
 	TactileSensorDialog.hpp
 	
 	log/SimulatorLogWidget.hpp
@@ -98,7 +96,6 @@ SET(SrcFiles
 	GLViewRW.cpp
 	CreateEngineDialog.cpp 
 	SimCfgDialog.cpp 
-	#SensorOutputGui.cpp
 	#TactilePadItem.cpp
 	TactileSensorDialog.cpp
 	
