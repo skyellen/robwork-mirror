@@ -22,8 +22,7 @@ SET(SRC_FILES_CPP
   HelpAssistant.cpp
   ImageView.cpp
   propertyview/PropertyViewEditor.cpp
-  propertyview/PropertyViewDialog.cpp 
-  propertyview/VariantManager.cpp)
+  propertyview/PropertyViewDialog.cpp)
 
 SET(SRC_FILES_HPP
   ArcBallController.hpp
@@ -39,7 +38,6 @@ SET(SRC_FILES_HPP
   ImageView.hpp
   propertyview/PropertyViewEditor.hpp
   propertyview/PropertyViewDialog.hpp 
-  propertyview/VariantManager.hpp
   )
 
 # Files to moc and compile:

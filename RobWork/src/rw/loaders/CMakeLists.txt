@@ -10,7 +10,6 @@ SET(FILES_CPP
   Model3DFactory.cpp
   Model3DLoader.cpp
   GeometryFactory.cpp
-  GeometryLoader.cpp
 
   path/PathLoader.cpp
   tul/Tag.cpp
