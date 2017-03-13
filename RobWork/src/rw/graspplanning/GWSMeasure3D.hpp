@@ -44,7 +44,7 @@ public:
 
     //// inherited from quality measure
     //! @copydoc GraspQualityMeasure3D::quality
-    double quality(const rw::graspplanning::Grasp3D& grasp) const;
+    virtual double quality(const rw::graspplanning::Grasp3D& grasp) const;
 
     //// member functions
     /**
@@ -96,7 +96,7 @@ public:
      */
     void setLambda(double lambda){ _lambda = lambda;}
 
-private:
+protected:
     rw::common::Ptr<rw::geometry::QHullND<6> > _chullCalculator;
     rw::math::Vector3D<> _objCenter;
     int _resolution;
