@@ -63,19 +63,11 @@ namespace geometry {
     template <std::size_t N>
 	class QHullND: public ConvexHullND<N> {
 	public:
-        //static const std::size_t dimension = N;
-	    //typedef boost::numeric::ublas::bounded_vector<double, N> VectorND;
-	    //typedef int[N] FaceIdxND;
+		//! @brief constructor
+		QHullND(){}
 
-		/**
-		 * @brief constructor
-		 */
-		QHullND(){};
-
-		/**
-		 * @brief destructor
-		 */
-		virtual ~QHullND(){};
+		//! @brief destructor
+		virtual ~QHullND(){}
 
 		//! @copydoc ConvexHullND::rebuild
 		void rebuild(const std::vector<rw::math::VectorND<N> >& vertices){
@@ -110,6 +102,11 @@ namespace geometry {
             }
 		}
 
+		/**
+		 * @brief Check if a point is inside the hull.
+		 * @param vertex [in] the vertex to check.
+		 * @return true if \b vertex lies on hull or inside, false otherwise.
+		 */
 		virtual bool isInside(const rw::math::VectorND<N>& vertex){
 		    using namespace rw::math;
             //const static double EPSILON = 0.0000001;
@@ -134,10 +131,57 @@ namespace geometry {
             return minDist>=0;
 		}
 
-		//! @copydoc ConvexHullND::getMinDistOutside
-		double getMinDistOutside(const rw::math::VectorND<N>& vertex){ return 0; }
-		
-        //! @copydoc ConvexHullND::getMinDistInside
+		/**
+		 * @brief Calculates the minimum distance to the hull.
+		 * @param vertex [in] vertex to calculate minimum distance for.
+		 * @return the minimum distance to the hull if \b vertex is outside, otherwise zero is returned.
+		 */
+		virtual double getMinDistOutside(const rw::math::VectorND<N>& vertex){
+			double min, max;
+			if(!getDistOutside(vertex, min, max)){
+				return 0;
+			}
+			return min;
+		}
+
+		/**
+		 * @brief Calculates the distance from a vertex to the points on the hull that are the closest and farthest.
+		 * @param vertex [in] vertex to calculate distances for.
+		 * @param min [out] the minimum distance to the hull when \b vertex is outside the hull, zero otherwise.
+		 * @param max [out] the maximum distance to the hull when \b vertex is outside the hull, zero otherwise.
+		 * @return true if \b vertex is outside, false otherwise.
+		 */
+		virtual bool getDistOutside(const rw::math::VectorND<N>& vertex, double &min, double &max){
+			if( _faceIdxs.size()==0 ){
+				return 0;
+			}
+			double minDist = DBL_MAX;
+			min = max = 0;
+			bool isOutside = false;
+			for(size_t i=0; i<_faceIdxs.size()/N; i++){
+				RW_ASSERT(_faceIdxs.size()> i*N);
+				RW_ASSERT(i<_faceNormals.size());
+				// dist will be negative if point is inside, and positive if point is outside
+				const double dist =  _faceOffsets[i] + rw::math::dot(vertex, _faceNormals[i]);
+				if(dist > 0){
+					isOutside = true;
+					minDist = std::min(dist, minDist);
+					max = std::max(max, dist);
+				}
+			}
+			min = (isOutside?minDist:0);
+			return isOutside;
+		}
+
+		/**
+		 * @brief Calculates the minimum distance to the hull. WARNING: Read full description.
+		 * @warning This function will NOT currently return 0 for the case where \b vertex is outside the hull.
+		 * This might be changed in the future.
+		 * @param vertex [in] vertex to calculate distance for.
+		 * @return the minimum distance if \b vertex is inside the hull (as a positive value).
+		 * Currently, the maximum distance is returned if \b vertex is outside the hull (as a negative value).
+		 * This is subject to change, so do not rely on this behaviour.
+		 */
         virtual double getMinDistInside(const rw::math::VectorND<N>& vertex){
             using namespace rw::math;
             if( _faceIdxs.size()==0 ){
@@ -151,16 +195,19 @@ namespace geometry {
                 // dist will be negative if point is inside, and positive if point is outside
                 minDist = std::min( -dist, minDist );
             }
+			// this returns +ive if inside and -ive if outside
+			// fix this with ..., but what if this bug was intentional?
+			// return (minDist>0?minDist:0)
             return minDist;
         }
-        
+
         //! @copydoc ConvexHullND::getAvgDistOutside
         virtual double getAvgDistInside(const rw::math::VectorND<N>& vertex) {
 			using namespace rw::math;
-			
+
 			// check if we have any faces
 			RW_ASSERT(_faceNormals.size() > 0);
-			
+
 			// loop over all 'faces' and calculate their areas
 			int nOfFaces = (int)(_faceIdxs.size()/N);
 
@@ -187,7 +234,7 @@ namespace geometry {
 			
 			return avgDist;
 		}
-        
+
         //! @copydoc ConvexHullND::getCentroid
         virtual rw::math::VectorND<N> getCentroid() {
 			using namespace rw::math;
