@@ -25,6 +25,7 @@
 
 #include <string>
 
+#include <rw/common/ExtensionPoint.hpp>
 #include <rw/kinematics/FrameMap.hpp>
 
 #include "ProximityModel.hpp"
@@ -133,8 +134,6 @@ namespace rw { namespace proximity {
          */
         ProximityModel::Ptr getModel(const rw::kinematics::Frame* frame);
 
-        rw::kinematics::Frame* getFrame(ProximityModel::Ptr);
-
         //// this is the new interface based on CollisionModelInfo
         /**
          * @brief creates an empty ProximityModel
@@ -182,6 +181,45 @@ namespace rw { namespace proximity {
          * @brief Clears any stored model information
          */
         virtual void clear() = 0;
+
+    	/**
+    	 * @brief A factory for a ProximityStrategy. This factory also defines an ExtensionPoint.
+    	 *
+    	 * Extensions providing a ProximityStrategy implementation can extend this factory by registering
+    	 * the extension using the id "rw.proximity.ProximityStrategy".
+    	 *
+    	 * Typically one or more of the following ProximityStrategy types will be available:
+    	 *  - RW - rw::proximity::ProximityStrategyRW - Internal RobWork proximity strategy
+    	 *  - Bullet - rwlibs::proximitystrategies::ProximityStrategyBullet - Bullet Physics
+    	 *  - PQP - rwlibs::proximitystrategies::ProximityStrategyPQP - Proximity Query Package
+    	 *  - FCL - rwlibs::proximitystrategies::ProximityStrategyFCL - Flexible Collision Library
+    	 *  - Yaobi - rwlibs::proximitystrategies::ProximityStrategyYaobi - Yaobi
+    	 */
+    	class Factory: public rw::common::ExtensionPoint<ProximityStrategy> {
+    	public:
+    		/**
+    		 * @brief Get the available strategies.
+    		 * @return a vector of identifiers for strategies.
+    		 */
+    		static std::vector<std::string> getStrategies();
+
+    		/**
+    		 * @brief Check if strategy is available.
+    		 * @param strategy [in] the name of the strategy.
+    		 * @return true if available, false otherwise.
+    		 */
+    		static bool hasStrategy(const std::string& strategy);
+
+    		/**
+    		 * @brief Create a new strategy.
+    		 * @param strategy [in] the name of the strategy.
+    		 * @return a pointer to a new CollisionStrategy.
+    		 */
+    		static ProximityStrategy::Ptr makeStrategy(const std::string& strategy);
+
+    	private:
+    		Factory();
+    	};
 
     private:
         ProximityStrategy(const ProximityStrategy&);

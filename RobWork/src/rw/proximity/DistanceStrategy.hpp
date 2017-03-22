@@ -22,8 +22,9 @@
  * @file DistanceStrategy.hpp
  */
 
-#include <rw/math/Transform3D.hpp>
+#include <rw/common/ExtensionPoint.hpp>
 #include <rw/common/Ptr.hpp>
+#include <rw/math/Transform3D.hpp>
 
 #include "ProximityStrategy.hpp"
 
@@ -49,6 +50,8 @@ namespace rw { namespace proximity {
          * result between two sets of geometries. These geometry sets
          */
         struct Result {
+			Result(): f1(NULL), f2(NULL), distance(0), geoIdxA(-1), geoIdxB(-1), idx1(0), idx2(0) {}
+
              //! @brief reference to the first frame
             const kinematics::Frame* f1;
 
@@ -86,7 +89,7 @@ namespace rw { namespace proximity {
             //! @brief index to the second face/triangle that is the closest feature
             unsigned int idx2;
 
-            void clear(){ };
+            void clear(){ }
             
            /**
            @brief Streaming operator.
@@ -235,6 +238,49 @@ namespace rw { namespace proximity {
                 ProximityStrategyData& data){
             return doDistanceThreshold(a, wTa, b, wTb, threshold, data);
         }
+
+    	/**
+    	 * @addtogroup extensionpoints
+    	 * @extensionpoint{rw::proximity::DistanceStrategy::Factory,rw::proximity::DistanceStrategy,rw.proximity.DistanceStrategy}
+    	 */
+
+    	/**
+    	 * @brief A factory for a DistanceStrategy. This factory also defines an ExtensionPoint.
+    	 *
+    	 * Extensions providing a DistanceStrategy implementation can extend this factory by registering
+    	 * the extension using the id "rw.proximity.DistanceStrategy".
+    	 *
+    	 * Typically one or more of the following DistanceStrategy types will be available:
+    	 *  - RW - rw::proximity::ProximityStrategyRW - Internal RobWork proximity strategy
+    	 *  - Bullet - rwlibs::proximitystrategies::ProximityStrategyBullet - Bullet Physics
+    	 *  - PQP - rwlibs::proximitystrategies::ProximityStrategyPQP - Proximity Query Package
+    	 *  - FCL - rwlibs::proximitystrategies::ProximityStrategyFCL - Flexible Collision Library
+    	 */
+    	class Factory: public rw::common::ExtensionPoint<DistanceStrategy> {
+    	public:
+    		/**
+    		 * @brief Get the available strategies.
+    		 * @return a vector of identifiers for strategies.
+    		 */
+    		static std::vector<std::string> getStrategies();
+
+    		/**
+    		 * @brief Check if strategy is available.
+    		 * @param strategy [in] the name of the strategy.
+    		 * @return true if available, false otherwise.
+    		 */
+    		static bool hasStrategy(const std::string& strategy);
+
+    		/**
+    		 * @brief Create a new strategy.
+    		 * @param strategy [in] the name of the strategy.
+    		 * @return a pointer to a new DistanceStrategy.
+    		 */
+    		static DistanceStrategy::Ptr makeStrategy(const std::string& strategy);
+
+    	private:
+    		Factory();
+    	};
 
     protected:
 

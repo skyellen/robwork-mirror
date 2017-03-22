@@ -20,6 +20,8 @@
 #include "CollisionToleranceStrategy.hpp"
 #include "ProximityStrategyData.hpp"
 
+#include <rw/proximity/rwstrategy/ProximityStrategyRW.hpp>
+
 using namespace rw::proximity;
 using namespace rw::common;
 using namespace rw::kinematics;
@@ -141,4 +143,53 @@ bool CollisionStrategy::inCollision(
     if( getModel(a)==NULL || getModel(b)==NULL)
         return false;
     return inCollision(getModel(a), wTa, getModel(b), wTb, data);
+}
+
+CollisionStrategy::Factory::Factory():
+	ExtensionPoint<CollisionStrategy>("rw.proximity.CollisionStrategy", "Extensions to create collision strategies")
+{
+}
+
+std::vector<std::string> CollisionStrategy::Factory::getStrategies() {
+    std::vector<std::string> ids;
+    CollisionStrategy::Factory ep;
+    std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
+    ids.push_back("RW");
+    BOOST_FOREACH(Extension::Descriptor& ext, exts){
+        ids.push_back( ext.getProperties().get("strategyID",ext.name) );
+    }
+    return ids;
+}
+
+bool CollisionStrategy::Factory::hasStrategy(const std::string& strategy) {
+	std::string upper = strategy;
+	std::transform(upper.begin(),upper.end(),upper.begin(),::toupper);
+    if( upper == "RW")
+        return true;
+    CollisionStrategy::Factory ep;
+    std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
+    BOOST_FOREACH(Extension::Descriptor& ext, exts){
+    	std::string id = ext.getProperties().get("strategyID",ext.name);
+    	std::transform(id.begin(),id.end(),id.begin(),::toupper);
+        if(id == upper)
+            return true;
+    }
+    return false;
+}
+
+CollisionStrategy::Ptr CollisionStrategy::Factory::makeStrategy(const std::string& strategy) {
+	std::string upper = strategy;
+	std::transform(upper.begin(),upper.end(),upper.begin(),::toupper);
+    if( upper == "RW")
+        return ownedPtr(new ProximityStrategyRW());
+	CollisionStrategy::Factory ep;
+	std::vector<Extension::Ptr> exts = ep.getExtensions();
+	BOOST_FOREACH(Extension::Ptr& ext, exts){
+    	std::string id = ext->getProperties().get("strategyID",ext->getName() );
+    	std::transform(id.begin(),id.end(),id.begin(),::toupper);
+		if(id == upper){
+			return ext->getObject().cast<CollisionStrategy>();
+		}
+	}
+	return NULL;
 }

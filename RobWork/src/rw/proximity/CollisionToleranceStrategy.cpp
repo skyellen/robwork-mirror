@@ -20,6 +20,7 @@
 
 #include "ProximityStrategyData.hpp"
 
+using namespace rw::common;
 using namespace rw::proximity;
 using namespace rw::kinematics;
 using namespace rw::math;
@@ -50,4 +51,48 @@ bool CollisionToleranceStrategy::isWithinDistance(
         return false;
 
     return isWithinDistance(getModel(a),wTa,getModel(b),wTb,tolerance,data);
+}
+
+CollisionToleranceStrategy::Factory::Factory():
+	ExtensionPoint<CollisionToleranceStrategy>("rw.proximity.CollisionToleranceStrategy", "Extensions to create collision tolerance strategies")
+{
+}
+
+std::vector<std::string> CollisionToleranceStrategy::Factory::getStrategies() {
+    std::vector<std::string> ids;
+    CollisionToleranceStrategy::Factory ep;
+    std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
+    BOOST_FOREACH(Extension::Descriptor& ext, exts){
+        ids.push_back( ext.getProperties().get("strategyID",ext.name) );
+    }
+    return ids;
+}
+
+bool CollisionToleranceStrategy::Factory::hasStrategy(const std::string& strategy) {
+	std::string upper = strategy;
+	std::transform(upper.begin(),upper.end(),upper.begin(),::toupper);
+	CollisionToleranceStrategy::Factory ep;
+    std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
+    BOOST_FOREACH(Extension::Descriptor& ext, exts){
+    	std::string id = ext.getProperties().get("strategyID",ext.name);
+    	std::transform(id.begin(),id.end(),id.begin(),::toupper);
+        if(id == upper)
+            return true;
+    }
+    return false;
+}
+
+CollisionToleranceStrategy::Ptr CollisionToleranceStrategy::Factory::makeStrategy(const std::string& strategy) {
+	std::string upper = strategy;
+	std::transform(upper.begin(),upper.end(),upper.begin(),::toupper);
+	CollisionToleranceStrategy::Factory ep;
+	std::vector<Extension::Ptr> exts = ep.getExtensions();
+	BOOST_FOREACH(Extension::Ptr& ext, exts){
+    	std::string id = ext->getProperties().get("strategyID",ext->getName() );
+    	std::transform(id.begin(),id.end(),id.begin(),::toupper);
+		if(id == upper){
+			return ext->getObject().cast<CollisionToleranceStrategy>();
+		}
+	}
+	return NULL;
 }

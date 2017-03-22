@@ -20,70 +20,112 @@
 
 #include "ProximityStrategyData.hpp"
 
-namespace rw { namespace proximity {
+using namespace rw::common;
+using rw::proximity::DistanceStrategy;
 
-	DistanceStrategy::DistanceStrategy() {}
-	DistanceStrategy::~DistanceStrategy() {}
+DistanceStrategy::DistanceStrategy() {}
+DistanceStrategy::~DistanceStrategy() {}
 
-	DistanceStrategy::Result DistanceStrategy::distance(
-                          const kinematics::Frame* a,
-                          const math::Transform3D<>& wTa,
-                          const kinematics::Frame* b,
-                          const math::Transform3D<>& wTb)
-    {
-        if(getModel(a)==NULL)			
-			RW_THROW("Frame "<<a->getName()<<" has no Collision model attached!");
+DistanceStrategy::Result DistanceStrategy::distance(
+		const kinematics::Frame* a,
+		const math::Transform3D<>& wTa,
+		const kinematics::Frame* b,
+		const math::Transform3D<>& wTb)
+{
+	if(getModel(a)==NULL)
+		RW_THROW("Frame "<<a->getName()<<" has no Collision model attached!");
 
-        if(getModel(b)==NULL)			
-			RW_THROW("Frame "<<b->getName()<<" has no Collision model attached!");
+	if(getModel(b)==NULL)
+		RW_THROW("Frame "<<b->getName()<<" has no Collision model attached!");
 
-        ProximityStrategyData data;
-	    return distance(getModel(a), wTa, getModel(b), wTb, data);
+	ProximityStrategyData data;
+	return distance(getModel(a), wTa, getModel(b), wTb, data);
+}
+
+DistanceStrategy::Result& DistanceStrategy::distance(
+		const kinematics::Frame* a,
+		const math::Transform3D<>& wTa,
+		const kinematics::Frame* b,
+		const math::Transform3D<>& wTb,
+		ProximityStrategyData &data)
+{
+	if(getModel(a)==NULL)
+		RW_THROW("Frame "<<a->getName()<<" has no Collision model attached!");
+
+	if(getModel(b)==NULL)
+		RW_THROW("Frame "<<b->getName()<<" has no Collision model attached!");
+
+	return distance(getModel(a), wTa, getModel(b), wTb, data);
+}
+
+
+
+DistanceStrategy::Result DistanceStrategy::distance(
+		const kinematics::Frame* a,
+		const math::Transform3D<>& wTa,
+		const kinematics::Frame* b,
+		const math::Transform3D<>& wTb,
+		double threshold)
+{
+	if(getModel(a)==NULL || getModel(b)==NULL)
+		RW_THROW("Frame must have a Collision model attached!");
+	ProximityStrategyData data;
+	return distance(getModel(a), wTa, getModel(b), wTb, threshold, data);
+}
+
+DistanceStrategy::Result& DistanceStrategy::distance(
+		const kinematics::Frame* a,
+		const math::Transform3D<>& wTa,
+		const kinematics::Frame* b,
+		const math::Transform3D<>& wTb,
+		double threshold,
+		ProximityStrategyData &data)
+{
+	if(getModel(a)==NULL || getModel(b)==NULL)
+		RW_THROW("Frame must have a Collision model attached!");
+	return distance(getModel(a), wTa, getModel(b), wTb, threshold, data);
+}
+
+DistanceStrategy::Factory::Factory():
+	ExtensionPoint<DistanceStrategy>("rw.proximity.DistanceStrategy", "Extensions to create distance strategies")
+{
+}
+
+std::vector<std::string> DistanceStrategy::Factory::getStrategies() {
+    std::vector<std::string> ids;
+    DistanceStrategy::Factory ep;
+    std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
+    BOOST_FOREACH(Extension::Descriptor& ext, exts){
+        ids.push_back( ext.getProperties().get("strategyID",ext.name) );
     }
+    return ids;
+}
 
-    DistanceStrategy::Result& DistanceStrategy::distance(
-                          const kinematics::Frame* a,
-                          const math::Transform3D<>& wTa,
-                          const kinematics::Frame* b,
-                          const math::Transform3D<>& wTb,
-                          ProximityStrategyData &data)
-    {
-        if(getModel(a)==NULL)			
-			RW_THROW("Frame "<<a->getName()<<" has no Collision model attached!");
-
-        if(getModel(b)==NULL)			
-			RW_THROW("Frame "<<b->getName()<<" has no Collision model attached!");
-
-        return distance(getModel(a), wTa, getModel(b), wTb, data);
+bool DistanceStrategy::Factory::hasStrategy(const std::string& strategy) {
+	std::string upper = strategy;
+	std::transform(upper.begin(),upper.end(),upper.begin(),::toupper);
+	DistanceStrategy::Factory ep;
+    std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
+    BOOST_FOREACH(Extension::Descriptor& ext, exts){
+    	std::string id = ext.getProperties().get("strategyID",ext.name);
+    	std::transform(id.begin(),id.end(),id.begin(),::toupper);
+        if(id == upper)
+            return true;
     }
+    return false;
+}
 
-
-
-    DistanceStrategy::Result DistanceStrategy::distance(
-                          const kinematics::Frame* a,
-                          const math::Transform3D<>& wTa,
-                          const kinematics::Frame* b,
-                          const math::Transform3D<>& wTb,
-                          double threshold)
-    {
-        if(getModel(a)==NULL || getModel(b)==NULL)
-            RW_THROW("Frame must have a Collision model attached!");
-        ProximityStrategyData data;
-        return distance(getModel(a), wTa, getModel(b), wTb, threshold, data);
-    }
-
-    DistanceStrategy::Result& DistanceStrategy::distance(
-                          const kinematics::Frame* a,
-                          const math::Transform3D<>& wTa,
-                          const kinematics::Frame* b,
-                          const math::Transform3D<>& wTb,
-                          double threshold,
-                          ProximityStrategyData &data)
-    {
-        if(getModel(a)==NULL || getModel(b)==NULL)
-            RW_THROW("Frame must have a Collision model attached!");
-        return distance(getModel(a), wTa, getModel(b), wTb, threshold, data);
-    }
-
-
-} }
+DistanceStrategy::Ptr DistanceStrategy::Factory::makeStrategy(const std::string& strategy) {
+	std::string upper = strategy;
+	std::transform(upper.begin(),upper.end(),upper.begin(),::toupper);
+	DistanceStrategy::Factory ep;
+	std::vector<Extension::Ptr> exts = ep.getExtensions();
+	BOOST_FOREACH(Extension::Ptr& ext, exts){
+    	std::string id = ext->getProperties().get("strategyID",ext->getName() );
+    	std::transform(id.begin(),id.end(),id.begin(),::toupper);
+		if(id == upper){
+			return ext->getObject().cast<DistanceStrategy>();
+		}
+	}
+	return NULL;
+}

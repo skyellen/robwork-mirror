@@ -15,8 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 
-
-#include "CollisionStrategy.hpp"
+#include <rw/proximity/rwstrategy/ProximityStrategyRW.hpp>
 
 #include <vector>
 
@@ -144,7 +143,6 @@ void ProximityStrategy::clearFrame(const rw::kinematics::Frame* frame){
     if( !_frameToModel.has( *frame ) || _frameToModel[*frame]==NULL )
         return;
 	ProximityModel::Ptr model = _frameToModel[*frame];
-    std::cout << "clear frame" << std::endl;
     if( model == NULL )
     	return;
     _frameToModel[*frame] = NULL;
@@ -153,4 +151,53 @@ void ProximityStrategy::clearFrame(const rw::kinematics::Frame* frame){
 
 void ProximityStrategy::clearFrames(){
     _frameToModel.clear();
+}
+
+ProximityStrategy::Factory::Factory():
+	ExtensionPoint<ProximityStrategy>("rw.proximity.ProximityStrategy", "Extensions to create proximity strategies")
+{
+}
+
+std::vector<std::string> ProximityStrategy::Factory::getStrategies() {
+	std::vector<std::string> ids;
+    ProximityStrategy::Factory ep;
+    std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
+    ids.push_back("RW");
+    BOOST_FOREACH(Extension::Descriptor& ext, exts){
+        ids.push_back( ext.getProperties().get("strategyID",ext.name) );
+    }
+	return ids;
+}
+
+bool ProximityStrategy::Factory::hasStrategy(const std::string& strategy) {
+	std::string upper = strategy;
+	std::transform(upper.begin(),upper.end(),upper.begin(),::toupper);
+    if( upper == "RW")
+        return true;
+    ProximityStrategy::Factory ep;
+    std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
+    BOOST_FOREACH(Extension::Descriptor& ext, exts){
+    	std::string id = ext.getProperties().get("strategyID",ext.name);
+    	std::transform(id.begin(),id.end(),id.begin(),::toupper);
+        if(id == upper)
+            return true;
+    }
+	return false;
+}
+
+ProximityStrategy::Ptr ProximityStrategy::Factory::makeStrategy(const std::string& strategy) {
+	std::string upper = strategy;
+	std::transform(upper.begin(),upper.end(),upper.begin(),::toupper);
+    if( upper == "RW")
+        return ownedPtr(new ProximityStrategyRW());
+    ProximityStrategy::Factory ep;
+	std::vector<Extension::Ptr> exts = ep.getExtensions();
+	BOOST_FOREACH(Extension::Ptr& ext, exts){
+    	std::string id = ext->getProperties().get("strategyID",ext->getName() );
+    	std::transform(id.begin(),id.end(),id.begin(),::toupper);
+		if(id == upper){
+			return ext->getObject().cast<ProximityStrategy>();
+		}
+	}
+	return NULL;
 }

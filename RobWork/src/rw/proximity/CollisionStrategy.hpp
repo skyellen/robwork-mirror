@@ -233,32 +233,49 @@ namespace rw { namespace proximity {
                          const rw::kinematics::FrameMap<double>& frameToTolerance,
                          double defaultTolerance);
 
-
-
-
     	/**
     	 * @addtogroup extensionpoints
-    	 * @extensionpoint{rw::loaders::WorkCellSaver::Factory, rw::loaders::WorkCellSaver, rw.loaders.WorkCellSaver}
- 	 	 */
+    	 * @extensionpoint{rw::proximity::CollisionStrategy::Factory,rw::proximity::CollisionStrategy,rw.proximity.CollisionStrategy}
+    	 */
 
-		/**
-		 * @brief a factory for WorkCellSaver. This factory also defines an
-		 * extension point for workcell savers.
-		 */
-        class Factory: public rw::common::ExtensionPoint<CollisionStrategy> {
-	    public:
-	    	//! constructor
-	        Factory():rw::common::ExtensionPoint<CollisionStrategy>("rw.proximity.CollisionStrategy",
-	        														 "Extensions to create collision strategies"){};
+    	/**
+    	 * @brief A factory for a CollisionStrategy. This factory also defines an ExtensionPoint.
+    	 *
+    	 * Extensions providing a CollisionStrategy implementation can extend this factory by registering
+    	 * the extension using the id "rw.proximity.CollisionStrategy".
+    	 *
+    	 * Typically one or more of the following CollisionStrategy types will be available:
+    	 *  - RW - rw::proximity::ProximityStrategyRW - Internal RobWork proximity strategy
+    	 *  - Bullet - rwlibs::proximitystrategies::ProximityStrategyBullet - Bullet Physics
+    	 *  - PQP - rwlibs::proximitystrategies::ProximityStrategyPQP - Proximity Query Package
+    	 *  - FCL - rwlibs::proximitystrategies::ProximityStrategyFCL - Flexible Collision Library
+    	 *  - Yaobi - rwlibs::proximitystrategies::ProximityStrategyYaobi - Yaobi
+    	 */
+    	class Factory: public rw::common::ExtensionPoint<CollisionStrategy> {
+    	public:
+    		//! @brief Constructor.
+    		Factory();
 
-	        /**
-	         * @brief create
-	         * @return
-	         */
-	        //static rw::common::Ptr<CollisionStrategy> getCollisionStrategy(const std::string& strategy_hint);
+    		/**
+    		 * @brief Get the available strategies.
+    		 * @return a vector of identifiers for strategies.
+    		 */
+    		static std::vector<std::string> getStrategies();
 
-	    };
+    		/**
+    		 * @brief Check if strategy is available.
+    		 * @param strategy [in] the name of the strategy.
+    		 * @return true if available, false otherwise.
+    		 */
+    		static bool hasStrategy(const std::string& strategy);
 
+    		/**
+    		 * @brief Create a new strategy.
+    		 * @param strategy [in] the name of the strategy.
+    		 * @return a pointer to a new CollisionStrategy.
+    		 */
+    		static CollisionStrategy::Ptr makeStrategy(const std::string& strategy);
+    	};
 
     protected:
 

@@ -25,8 +25,9 @@
 
 #include <string>
 
-#include <rw/math/Transform3D.hpp>
+#include <rw/common/ExtensionPoint.hpp>
 #include <rw/common/Ptr.hpp>
+#include <rw/math/Transform3D.hpp>
 
 #include "ProximityStrategy.hpp"
 //#include "ProximityStrategyData.hpp"
@@ -116,6 +117,47 @@ namespace rw { namespace proximity {
         {
             return doIsWithinDistance(a,wTa,b,wTb,tolerance,data);
         }
+
+    	/**
+    	 * @addtogroup extensionpoints
+    	 * @extensionpoint{rw::proximity::CollisionToleranceStrategy::Factory,rw::proximity::CollisionToleranceStrategy,rw.proximity.CollisionToleranceStrategy}
+    	 */
+
+    	/**
+    	 * @brief A factory for a CollisionToleranceStrategy. This factory also defines an ExtensionPoint.
+    	 *
+    	 * Extensions providing a CollisionToleranceStrategy implementation can extend this factory by registering
+    	 * the extension using the id "rw.proximity.CollisionToleranceStrategy".
+    	 *
+    	 * Typically one or more of the following CollisionToleranceStrategy types will be available:
+    	 *  - Bullet - rwlibs::proximitystrategies::ProximityStrategyBullet - Bullet Physics
+    	 *  - PQP - rwlibs::proximitystrategies::ProximityStrategyPQP - Proximity Query Package
+    	 */
+    	class Factory: public rw::common::ExtensionPoint<CollisionToleranceStrategy> {
+    	public:
+    		/**
+    		 * @brief Get the available strategies.
+    		 * @return a vector of identifiers for strategies.
+    		 */
+    		static std::vector<std::string> getStrategies();
+
+    		/**
+    		 * @brief Check if strategy is available.
+    		 * @param strategy [in] the name of the strategy.
+    		 * @return true if available, false otherwise.
+    		 */
+    		static bool hasStrategy(const std::string& strategy);
+
+    		/**
+    		 * @brief Create a new strategy.
+    		 * @param strategy [in] the name of the strategy.
+    		 * @return a pointer to a new CollisionToleranceStrategy.
+    		 */
+    		static CollisionToleranceStrategy::Ptr makeStrategy(const std::string& strategy);
+
+    	private:
+    		Factory();
+    	};
 
     protected:
 
