@@ -422,9 +422,13 @@ void RestingPoseDialog::calcColFreeRandomCfg(rw::kinematics::State& state){
             RigidBody::Ptr body1 = _frameToBody[*pair.first];
             RigidBody::Ptr body2 = _frameToBody[*pair.second];
             // calc new configuration
-            bodies.push_back(body1);
-            bodies.push_back(body2);
+            if (!body1.isNull())
+            	bodies.push_back(body1);
+            if (!body2.isNull())
+            	bodies.push_back(body2);
         }
+        if (bodies.size() == 0)
+        	RW_THROW("Collision between non-rigid bodies.");
         calcRandomCfg(bodies, state);
         result.collidingFrames.clear();
         bodies.clear();

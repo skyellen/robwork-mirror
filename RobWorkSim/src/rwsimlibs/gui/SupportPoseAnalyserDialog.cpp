@@ -652,7 +652,7 @@ void SupportPoseAnalyserDialog::changedEvent(){
 
 			// now add everything else
 			std::size_t pidx = 0;
-			for(std::size_t i=0;i<_startTransforms[bodyIdx].size(); i++){
+			for(std::size_t i = 0; i < (_startTransforms.size() > 0)? _startTransforms[bodyIdx].size() : 0; i++){
 			    if( pidx<poseIdxList.size() && (int)i==poseIdxList[pidx] ){
 			        pidx++;
 			        continue;
