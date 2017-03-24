@@ -469,7 +469,7 @@ void Planning::optimize() {
             boost::shared_ptr<DistanceCalculator> distanceCalculator(
                 new DistanceCalculator(
                     _workcell->getWorldFrame(),
-                    CollisionSetup::get(_workcell),
+					_workcell,
                         strat,
                     _state));
 
@@ -553,7 +553,7 @@ void Planning::performStatistics() {
 
     DistanceCalculator distanceCalculator(
         _workcell->getWorldFrame(),
-        CollisionSetup::get(_workcell),
+        _workcell,
         strat,
         _state);
 

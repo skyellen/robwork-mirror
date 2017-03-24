@@ -39,7 +39,7 @@ namespace
         if(strat==NULL)
             RW_THROW("Requires a valid distance strategy!");
         return ownedPtr(new DistanceCalculator(workcell->getWorldFrame(),
-                                               CollisionSetup::get(*workcell),
+                                               workcell,
                                                strat,
                                                state));
     }

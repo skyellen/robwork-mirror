@@ -22,6 +22,7 @@
 #include "DistanceStrategy.hpp"
 #include <rw/common/Timer.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
+#include <rw/models/WorkCell.hpp>
 
 /**
  * @file DistanceCalculator.hpp
@@ -53,7 +54,7 @@ namespace rw { namespace proximity {
 
         /**
          * @brief Distance calculations for a given tree, collision setup and
-         * primitive distance calculator.
+         * primitive distance calculator. Uses proximity strategy given by the workcell.
          *
          * \b strategy must be non-NULL.
          *
@@ -63,7 +64,7 @@ namespace rw { namespace proximity {
          *
          * @param root [in] - the root of the Frame tree.
          *
-         * @param setup [in] - the setup of the distance calculations (CollisionSetup).
+         * @param workcell [in] - the workcell to do the distance calculations in.
          *
          * @param strategy [in] - the primitive strategy of distance calculations.
          *
@@ -71,7 +72,7 @@ namespace rw { namespace proximity {
          * initial traversal of the tree.
          */
         DistanceCalculator(rw::kinematics::Frame *root,
-        				   const CollisionSetup& setup,
+                           rw::common::Ptr<rw::models::WorkCell> workcell,
 						   DistanceStrategy::Ptr strategy,
         				   const rw::kinematics::State& initial_state);
 
@@ -219,7 +220,16 @@ namespace rw { namespace proximity {
         DistanceCalculator(const DistanceCalculator&);
         DistanceCalculator& operator=(const DistanceCalculator&);
 
-        void initialize();
+        /**
+         * @brief Initializes the geometry of the workcell. The geometry is added to the used strategy
+         * @param wc [in] Pointer to workcell to import geometry from.
+         */
+        void initializeGeometry(rw::common::Ptr<const rw::models::WorkCell> wc);
+        /**
+         * @brief Initializes the distance pairs to collision check based on
+         * collision setup of the workcell.
+         */
+        void initializeDistancePairs();
     };
 
 #ifdef RW_USE_DEPRECATED

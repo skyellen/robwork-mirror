@@ -76,24 +76,32 @@ DistanceCalculator::DistanceCalculator(WorkCell::Ptr workcell,
     } catch (const Exception& exp) {
         RW_WARN(exp.what());
     }
-    initialize();
+    initializeGeometry(workcell);
+    initializeDistancePairs();
 }
 
 DistanceCalculator::DistanceCalculator(Frame* root,
-                                       const CollisionSetup& setup,
-									   DistanceStrategy::Ptr strategy,
+                                       WorkCell::Ptr workcell,
+                                       DistanceStrategy::Ptr strategy,
                                        const State& initialState):
     _shortestDistance(true),
     _root(root),
-    _setup(setup),
     _strategy(strategy),
     _state(initialState)
 {
     RW_ASSERT(root);
+    RW_ASSERT(workcell);
+
+    try {
+        _setup = CollisionSetup::get(workcell);
+    } catch (const Exception& exp) {
+        RW_WARN(exp.what());
+    }
 
     RW_ASSERT(strategy);
 
-    initialize();
+    initializeGeometry(workcell);
+    initializeDistancePairs();
 }
 
 DistanceCalculator::DistanceCalculator(FramePairList pairs,
@@ -107,7 +115,24 @@ DistanceCalculator::DistanceCalculator(FramePairList pairs,
 	_timer.resetAndPause();
 }
 
-void DistanceCalculator::initialize()
+void DistanceCalculator::initializeGeometry(rw::common::Ptr<const WorkCell> wc)
+{
+
+    // Add all frames+geometries in workcell to distanceStrategy
+    std::vector<Object::Ptr> objects = wc->getObjects();
+    State state = wc->getDefaultState();
+    BOOST_FOREACH(Object::Ptr object, objects) {
+        BOOST_FOREACH(geometry::Geometry::Ptr geom, object->getGeometry( state ) ){
+            Frame* frame = geom->getFrame(); // this is not const - should it be?
+            RW_ASSERT(frame);
+            _strategy->addModel(frame, geom);
+            //_frameToModels[*frame] = _npstrategy->getModel(frame);
+        }
+    }
+
+}
+
+void DistanceCalculator::initializeDistancePairs()
 {
 	_thresholdStrategy = _strategy;
 
@@ -309,12 +334,13 @@ bool DistanceCalculator::addDistanceModel(const Frame* frame,
 {
     bool res = _strategy->addModel(frame, faces);
     if (res)
-        initialize();
+        initializeDistancePairs();
     return res;
 }
 
 void DistanceCalculator::clearCache()
 {
+    // Clear frame pairs list
     _strategy->clear();
-    initialize();
+    initializeDistancePairs();
 }

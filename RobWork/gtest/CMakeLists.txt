@@ -127,6 +127,23 @@ TARGET_LINK_LIBRARIES( rw_loaders-gtest ${LOADERS_TEST_LIBRARIES})
 ADD_RW_GTEST(rw_loaders-gtest)
 
 ########################################################################
+# Proximity
+########################################################################
+
+SET(PROXIMITY_TEST_LIBRARIES
+ rw-gtest-main
+ ${GTEST_LIBRARIES}
+ rw
+ )
+
+SET(PROXIMITY_TEST_SRC
+  proximity/DistanceCalculatorTest.cpp
+)
+ADD_EXECUTABLE( rw_proximity-gtest ${PROXIMITY_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rw_proximity-gtest ${PROXIMITY_TEST_LIBRARIES})
+ADD_RW_GTEST(rw_proximity-gtest)
+
+########################################################################
 # Sensor
 ########################################################################
 
