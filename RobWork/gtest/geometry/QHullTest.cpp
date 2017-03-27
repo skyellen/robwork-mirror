@@ -19,6 +19,7 @@
 
 #include <rw/geometry/QHullND.hpp>
 #include <rw/math/VectorND.hpp>
+#include <rw/math/Math.hpp>
 
 #include <vector>
 #include <cmath>
@@ -96,3 +97,74 @@ TEST(QHullND, distanceFuncs) {
 	// " -- Warning: The following test is expected to fail due to a legacy implementation that is dared not fixed. --"
 	//EXPECT_NEAR(qhull.getMinDistInside(outside_close_to_boarder), 0.0, EPSILON); // Expected to fail - Legacy implementation returns values <0 for outside
 }
+
+
+/* Test the volume algorithm by computing the volume of a 2D square.
+ * The square has lengths 2.
+ * The square is offset along x=y in positive and negative direction.
+ * This is done to test if it works when the point [0,0] is NOT part of the hull.
+ */
+TEST(QHullND, volume_square_2D) {
+    for(int i = 0; i < 5; i++){        
+        rw::geometry::QHullND<2> qhull;
+        std::vector< rw::math::VectorND<2> > vertices(4);
+        const double offset = (i - 2) * std::pow(1.1436,i);
+        vertices[0][0] =  1 + offset;
+        vertices[0][1] =  1 + offset;
+        vertices[1][0] =  1 + offset;
+        vertices[1][1] = -1 + offset;
+        vertices[2][0] = -1 + offset;
+        vertices[2][1] = -1 + offset;
+        vertices[3][0] = -1 + offset;
+        vertices[3][1] =  1 + offset;
+        qhull.rebuild(vertices);
+        const double volume = qhull.getVolume();
+        
+        static const double EPSILON = 0.000000001; // own epsilon is used to account for precision in calculations...
+        EXPECT_NEAR(4.0, volume, EPSILON);
+    }
+}
+
+/* Tests for when the hull includes 0
+ */
+TEST(QHullND, volume_square_2D_zero) {
+    rw::geometry::QHullND<2> qhull;
+    std::vector< rw::math::VectorND<2> > vertices(4);
+    vertices[0][0] = 2;
+    vertices[0][1] = 2;
+    vertices[1][0] = 2;
+    vertices[1][1] = 0;
+    vertices[2][0] = 0;
+    vertices[2][1] = 0;
+    vertices[3][0] = 0;
+    vertices[3][1] = 2;
+    qhull.rebuild(vertices);
+    const double volume = qhull.getVolume();
+    
+    static const double EPSILON = 0.000000001; // own epsilon is used to account for precision in calculations...
+    EXPECT_NEAR(4.0, volume, EPSILON);
+}
+
+/* Tests the volume algorithm for a n-Sphere
+ * Used to test for higher dimensional QHull.
+ * QHull is generated from a random set of unit vectors.
+ * The volume should approximate the volume of the nSphere when enough vertices are included.
+ */
+TEST(QHullND, volume_nSphere) {
+    const size_t dim = 4; // dim must be even number // if 6 or higher it will require large RAM.
+    rw::geometry::QHullND<dim> qhull;
+    std::vector< rw::math::VectorND<dim> > vertices(std::pow(15,dim)); // decrease this for large dimensions...
+    
+    for(size_t v = 0; v < vertices.size(); v++){
+        vertices.at(v) = rw::math::VectorND<dim>(rw::math::Math::ranDir(dim, 1.0).e());
+    }
+    
+    qhull.rebuild(vertices);
+    const double volume = qhull.getVolume();
+    
+    //static const double EPSILON = 0.000000001; // own epsilon is used to account for precision in calculations...
+    const double realVolume = std::pow(rw::math::Pi, dim/2) / rw::math::Math::factorial(dim/2);
+    const double range = realVolume * 0.01;
+    EXPECT_NEAR(realVolume, volume, range);
+}
+

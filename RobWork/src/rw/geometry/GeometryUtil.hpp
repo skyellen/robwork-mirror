@@ -210,6 +210,8 @@ public:
 
     /**
      * @brief calculates volume of k-simplex
+     * @warning What is meant by volume is not really volume, see "actualSimplexVolume" - if you want the volume.
+     *                 Read the documentation (preferably code), to make sure you get what you want.
      * 
      * Volume of k-dimensional simplex (triangle is 2-simplex) is calculated as:
      * \f$ V(S) = \frac{1}{k!} \sqrt{W W^T}\f$, where:
@@ -219,7 +221,7 @@ public:
      \f$w_i = [v_{i,1}-v_{0,1}\:v_{i,2}-v_{0, 2}\:\cdots\:v_{i,k+1}-v_{0,k+1}] \f$
      
      * of i-th vertex coordinates.
-     * (taken from: http://www.math.niu.edu/~rusin/known-math/97/volumes.polyh)
+     * (taken from: http://www.math.niu.edu/~rusin/known-math/97/volumes.polyh) (dead link)
      */
     template<std::size_t N>
     static double simplexVolume(const std::vector<rw::math::VectorND<N> >& vertices) {
@@ -228,7 +230,7 @@ public:
 		
 		// construct W matrix
 		Eigen::Matrix<double, N-1, N> W;
-		for (int idx = 1; idx < (int)vertices.size(); ++idx) {
+		for (int idx = 1; idx < static_cast<int>(vertices.size()); ++idx) {
 			// vector w_i
 			Eigen::Matrix<double, 1, N> wi = (vertices[idx].e() - vertices[0].e()).transpose();
 			//std::cout << wi << std::endl;
@@ -248,8 +250,48 @@ public:
 		
 		return volume;
 	}
+
+    /**
+     * @brief Calculates the volume of a N-simplex.
+     * Volume of a N-simplex is calculated as:
+     * \f$ V_{Simplex} = \frac{|W|}{N!} \f$, where:
+     *
+     * \f$ W \f$ is the N*N matrix \f$ [v_{1}-v_{0} , \:v_{i}-v_{0}\:\cdots\: , v_{N}-v_{0] \f$
+     * Where \f v_{i} \f is the i'th vertic given.
+     * This function can be supplied with N and N+1 vertices.
+     * If only N vertices are given, then the volume is calculated with the origo as the remaining vertex.
+     * (See https://en.wikipedia.org/wiki/Simplex#Volume)
+     */
+    template<std::size_t N>
+    static double actualSimplexVolume(const std::vector<rw::math::VectorND<N> >& vertices) {
+    	RW_ASSERT(vertices.size() != N+1 || vertices.size() != N);
+    	double volume = 0.0;
+
+    	// construct W matrix
+    	Eigen::Matrix< double, N, N > W;
+    	if(vertices.size() == N+1){
+    		for (size_t idx = 0; idx < N; idx++) {
+    			W.col(idx) = (vertices.at(idx+1).e() - vertices.at(0).e());
+    		}
+    	} else {
+    		for (size_t idx = 0; idx < N; idx++) {
+    			W.col(idx) = vertices.at(idx).e();
+    		}
+    	}
+
+    	// calculate volume
+		volume =  std::fabs(W.determinant()) / rw::math::Math::factorial(static_cast<int>(N)); // this sometimes gives NaN
+		// even if matrix has a determinant...
+
+		// now, for a bit of wishful thinking:
+		if (rw::math::Math::isNaN(volume)) {
+			volume = 0.0;
+		}
+		return volume;
+    }
+
 };
 //! @}
 }
 }
-#endif /*DYNAMICUTIL_HPP_*/
+#endif /*RW_GEOMETRY_GEOMETRYUTIL_HPP_*/
