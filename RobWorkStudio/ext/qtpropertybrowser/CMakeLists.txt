@@ -49,7 +49,7 @@ SET(SRC_FILES_HPP
 
 
 IF (RWS_USE_QT5)
-	QT5_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} ${SRC_FILES_CPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)   
+	QT5_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} ${SRC_FILES_CPP})
 
 
 set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser.cpp PROPERTIES 
@@ -71,7 +71,7 @@ set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowseruti
 	       
 
 ELSE()
-	QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)	
+	QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP})
 QT4_CREATE_MOC_COMMAND("${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser.cpp" 
                "${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser.moc" "${moc_flags}" "${moc_options}" "")
 QT4_CREATE_MOC_COMMAND("${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertymanager.cpp" 
