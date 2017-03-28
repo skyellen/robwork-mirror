@@ -168,7 +168,7 @@ bool ProximityStrategyFCL::addGeometry(ProximityModel *model, const Geometry &ge
     }
 
     /* Could use .scast to use static_cast instead of dynamic_cast and avoid the overhead caused by runtime verification that the converted object is complete. */
-    FCLBVHModelPtr fclBVHModelPtr = fclBVHModel.cast<fcl::CollisionGeometry>();
+    FCLBVHModelPtr fclBVHModelPtr = fclBVHModel.template cast<fcl::CollisionGeometry>();
     if (!fclBVHModelPtr) {
         return false;
     }
