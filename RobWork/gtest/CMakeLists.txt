@@ -137,6 +137,11 @@ SET(PROXIMITY_TEST_LIBRARIES
  )
 
 SET(PROXIMITY_TEST_SRC
+  proximity/CollisionStrategy.cpp
+  proximity/CollisionToleranceStrategy.cpp
+  proximity/DistanceMultiStrategy.cpp
+  proximity/DistanceStrategy.cpp
+  proximity/ProximityStrategy.cpp
   proximity/DistanceCalculatorTest.cpp
 )
 ADD_EXECUTABLE( rw_proximity-gtest ${PROXIMITY_TEST_SRC})       

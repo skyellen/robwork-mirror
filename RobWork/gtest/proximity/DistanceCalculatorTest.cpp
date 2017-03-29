@@ -19,8 +19,6 @@
 #include "../TestEnvironment.hpp"
 
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/FixedFrame.hpp>
-#include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/models/WorkCell.hpp>
@@ -28,8 +26,7 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
-#include <cmath>
+//#include <iostream>
 
 using namespace rw::common;
 using namespace rw::kinematics;
@@ -37,7 +34,8 @@ using namespace rw::loaders;
 using namespace rw::proximity;
 using namespace std;
 
-class DistanceCalculatorTest : public ::testing::Test {
+namespace {
+class DistanceCalculatorTest : public ::testing::TestWithParam<std::string> {
 public:
 
     CollisionSetup collisionSetup;
@@ -46,8 +44,8 @@ public:
     rw::kinematics::Frame* initialFrame;
     rw::kinematics::State initialState;
 
-    DistanceStrategy::Ptr strategyPQP;
-    DistanceCalculator::Ptr distCalcPQP;
+    DistanceStrategy::Ptr strategy;
+    DistanceCalculator::Ptr distCalc;
 
 
     virtual void SetUp(){
@@ -58,22 +56,25 @@ public:
         collisionSetup = wc->getCollisionSetup();
 
 
-        strategyPQP = DistanceStrategy::Factory::makeStrategy("PQP");
-        distCalcPQP = new DistanceCalculator(wc, strategyPQP);
+		strategy = DistanceStrategy::Factory::makeStrategy(GetParam());
+		ASSERT_FALSE(strategy.isNull());
+        distCalc = new DistanceCalculator(wc, strategy);
     }
 
 };
+std::vector<std::string> strategies = DistanceStrategy::Factory::getStrategies();
+}
 
+INSTANTIATE_TEST_CASE_P(DistanceCalculator, DistanceCalculatorTest, ::testing::ValuesIn(strategies));
 
-
-TEST_F (DistanceCalculatorTest, SimpleGeometryPQP)
+TEST_P (DistanceCalculatorTest, SimpleGeometry)
 {
     vector<DistanceStrategy::Result> * distances = new vector<DistanceStrategy::Result>;
 
     // distances vector should be empty:
     EXPECT_EQ(distances->size(),0);
 
-    distCalcPQP->distance(initialState, distances);
+    distCalc->distance(initialState, distances);
     // DEBUG: Gives the frame pair names and distance
     /*for (int i = 0; i < distances->size(); i++)
     {

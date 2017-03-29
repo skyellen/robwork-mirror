@@ -22,7 +22,6 @@
 #include "DistanceStrategy.hpp"
 #include <rw/common/Timer.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
-#include <rw/models/WorkCell.hpp>
 
 /**
  * @file DistanceCalculator.hpp

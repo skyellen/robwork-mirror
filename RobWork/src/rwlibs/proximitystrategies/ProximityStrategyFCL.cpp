@@ -269,6 +269,7 @@ bool ProximityStrategyFCL::doInCollision(
 
                 collisionResult.a = a;
                 collisionResult.b = b;
+                collisionResult._aTb = inverse(wTa)*wTb;
 
                 CollisionResult::CollisionPair collisionPair;
                 collisionPair.geoIdxA = static_cast<int>(geoIdxA);

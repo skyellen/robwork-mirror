@@ -51,8 +51,6 @@ namespace proximity {
     public:
     	typedef rw::common::Ptr<ProximityStrategyData> Ptr;
 
-        typedef enum{CollisionData=1, DistanceData=2, MultiDistanceData=4} DataType;
-
         ProximityStrategyData():
             rel_err(0),
             abs_err(0),
@@ -60,45 +58,29 @@ namespace proximity {
             _collides(false)
         {}
 
-        bool has(DataType type){ return _dataType && type;};
         ProximityCache::Ptr& getCache(){ return _cache; }
-        ProximityModel::Ptr& getA(){ return _a; }
-        ProximityModel::Ptr& getB(){ return _b; }
-        rw::math::Transform3D<> aTb(){ return _aTb; }
-
 
         // CollisionData interface
-        CollisionStrategy::Result& getCollisionData(){ return _collisionData;}
+        CollisionStrategy::Result& getCollisionData() { return _collisionData;}
+        const CollisionStrategy::Result& getCollisionData() const { return _collisionData;}
         bool inCollision(){ return _collides; }
         void setCollisionQueryType(CollisionStrategy::QueryType qtype){ _colQueryType = qtype; }
-        CollisionStrategy::QueryType getCollisionQueryType(){ return _colQueryType; };
+        CollisionStrategy::QueryType getCollisionQueryType() const { return _colQueryType; }
 
         // Distance query interfaces
-        DistanceStrategy::Result& getDistanceData(){ return _distanceData;}
-        //double getDistance(){ return _distanceData.distance; }
+        DistanceStrategy::Result& getDistanceData() { return _distanceData;}
+        const DistanceStrategy::Result& getDistanceData() const { return _distanceData;}
 
         // For Multi distance interface
-        DistanceMultiStrategy::Result& getMultiDistanceData(){ return _multiDistanceData;}
-        //double getMultiDistance(){ return _multiDistanceData.distance; }
+        DistanceMultiStrategy::Result& getMultiDistanceData() { return _multiDistanceData;}
+        const DistanceMultiStrategy::Result& getMultiDistanceData() const { return _multiDistanceData;}
 
-
-        DistanceStrategy::Result _distanceData;
-        DistanceMultiStrategy::Result _multiDistanceData;
-
-        /*
-        * @param rel_err [in] relative acceptable error
-        *
-        * @param abs_err [in] absolute acceptable error
-        */
+        //! @brief relative acceptable error
         double rel_err;
+        //! @brief absolute acceptable error
         double abs_err;
 
     private:
-        //! @brief transform from model a to model b
-        rw::math::Transform3D<> _aTb;
-        //! @brief the two models that where tested
-        ProximityModel::Ptr _a, _b;
-
         CollisionStrategy::QueryType _colQueryType;
 
         // Following belongs to CollisionData interface
@@ -106,14 +88,14 @@ namespace proximity {
         bool _collides;
         //! @brief the features that where colliding
         CollisionStrategy::Result _collisionData;
+        DistanceStrategy::Result _distanceData;
+        DistanceMultiStrategy::Result _multiDistanceData;
 
         //! @brief proximity cache
         ProximityCache::Ptr _cache;
-
-        int _dataType;
     };
     // @}
 }
 }
 
-#endif /* COLLISIONDATA_HPP_ */
+#endif /* RW_PROXIMITY_COLLISIONDATA_HPP_ */

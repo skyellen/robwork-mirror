@@ -649,7 +649,7 @@ DistanceResult& ProximityStrategyBullet::distance(
     return rwresult;
 }
 
-MultiDistanceResult& ProximityStrategyBullet::distances(
+MultiDistanceResult& ProximityStrategyBullet::doDistances(
 	ProximityModel::Ptr aModel,
 	const Transform3D<>& wTa,
 	ProximityModel::Ptr bModel,

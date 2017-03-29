@@ -27,8 +27,7 @@
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionToleranceStrategy.hpp>
 #include <rw/proximity/DistanceStrategy.hpp>
-#include <rw/proximity/DistanceToleranceStrategy.hpp>
-#include <rw/proximity/DistanceThresholdStrategy.hpp>
+#include <rw/proximity/DistanceMultiStrategy.hpp>
 #include <rw/proximity/ProximityCache.hpp>
 #include <rw/proximity/ProximityStrategyData.hpp>
 #include <rw/geometry/GeometryData.hpp>
@@ -47,24 +46,6 @@ namespace rwlibs { namespace proximitystrategies {
     /*@{*/
 
     /**
-     * @brief a cache for the PQP proximity strategy
-     */
-/*
-	class BulletCollisionCache: public rw::proximity::ProximityCache {
-	public:
-		BulletCollisionCache(rw::proximity::ProximityStrategy *owner):
-				rw::proximity::ProximityCache(owner){};
-
-		//! @copydoc rw::proximity::ProximityCache::size()
-		size_t size() const{ return 0;}
-
-		//! @copydoc rw::proximity::ProximityCache::clear()
-		void clear() { };
-
-		//PQP::PQP_CollideResult result;
-	};
-*/
-    /**
      * @brief This is a strategy wrapper for the distance and collision library
      * Gimpact from the Bullet physicsengine
      *
@@ -73,7 +54,7 @@ namespace rwlibs { namespace proximitystrategies {
         public rw::proximity::CollisionStrategy,
         public rw::proximity::CollisionToleranceStrategy,
         public rw::proximity::DistanceStrategy,
-        public rw::proximity::DistanceToleranceStrategy
+        public rw::proximity::DistanceMultiStrategy
     {
     public:
 
@@ -81,7 +62,7 @@ namespace rwlibs { namespace proximitystrategies {
         //! @brief cache key
         typedef std::pair<rw::geometry::GeometryData*,double> CacheKey;
 
-        //! @brief cache for any of the queries possible on this PQPStrategy
+        //! @brief cache for any of the queries possible on this BulletStrategy
         struct ProximityCacheBullet: public rw::proximity::ProximityCache{
             ProximityCacheBullet(void *owner):ProximityCache(owner){}
             virtual size_t size() const{ return 0;};
@@ -90,10 +71,6 @@ namespace rwlibs { namespace proximitystrategies {
 
             btCollisionDispatcher *dispatcher;
             btGImpactCollisionAlgorithm *gimpactColAlg;
-            //PQP::PQP_ToleranceResult _toleranceResult;
-            //PQP::PQP_CollideResult _collideResult;
-            //PQP::PQP_DistanceResult _distResult;
-            //PQP::PQP_MultiDistanceResult _multiDistResult;
         };
 
         //! @brief
@@ -166,17 +143,6 @@ namespace rwlibs { namespace proximitystrategies {
             rw::proximity::ProximityStrategyData &data);
 
         /**
-         * @copydoc rw::proximity::CollisionStrategy::collision
-         */
-/*
-        bool collides(
-			rw::proximity::ProximityModel::Ptr a,
-            const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModel::Ptr b,
-            const rw::math::Transform3D<>& wTb,
-            rw::proximity::CollisionData& data);
-*/
-        /**
          * @copydoc rw::proximity::CollisionToleranceStrategy::inCollision
          */
         bool doInCollisionTolerance(
@@ -209,9 +175,9 @@ namespace rwlibs { namespace proximitystrategies {
             rw::proximity::ProximityStrategyData &data);
 
         /**
-         * @copydoc rw::proximity::DistanceToleranceStrategy::getDistances
+         * @copydoc rw::proximity::DistanceMultiStrategy::doDistances
          */
-        rw::proximity::DistanceToleranceStrategy::Result& distances(
+        rw::proximity::DistanceMultiStrategy::Result& doDistances(
 			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel::Ptr b,
@@ -225,7 +191,7 @@ namespace rwlibs { namespace proximitystrategies {
         void clear();
 
         /**
-           @brief A PQP based collision strategy.
+           @brief A Bullet based collision strategy.
         */
 		static rw::proximity::CollisionStrategy::Ptr make();
 
@@ -281,9 +247,6 @@ namespace rwlibs { namespace proximitystrategies {
 		double _threshold;
 
 	};
-
-    //static const bool PQPCollisionStrategyRegistrered = rw::proximity::ProximityStrategyFactory::addCollisionStrategy<ProximityStrategyPQP>("PQP");
-    //static const bool PQPDistanceStrategyRegistrered = rw::proximity::ProximityStrategyFactory::addDistanceStrategy<ProximityStrategyPQP>("PQP");
 
 }} // end namespaces
 
