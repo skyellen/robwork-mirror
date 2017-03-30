@@ -523,15 +523,8 @@ MultiDistanceResult& ProximityStrategyPQP::doDistances(
                 }
             }
 
-            std::vector<bool> used(result.id1s.size(),false);
-            for(IdMap::const_iterator it = idMap.begin();it != idMap.end(); it++) {
-            	used[it->second] = true;
-            }
-
             IdMap idMap1;
             for(size_t j=0; j<result.id2s.size(); j++){
-            	if (used[j])
-            		continue;
                 double dist = result.distances[j];
                 int id = result.id2s[j];
                 IdMap::iterator res = idMap1.find(id);
