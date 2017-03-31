@@ -256,8 +256,8 @@ public:
      * Volume of a N-simplex is calculated as:
      * \f$ V_{Simplex} = \frac{|W|}{N!} \f$, where:
      *
-     * \f$ W \f$ is the N*N matrix \f$ [v_{1}-v_{0} , \:v_{i}-v_{0}\:\cdots\: , v_{N}-v_{0] \f$
-     * Where \f v_{i} \f is the i'th vertic given.
+     * \f$ W \f$ is the N*N matrix \f$ [v_{1}-v_{0} , \:v_{i}-v_{0}\:\cdots\: , v_{N}-v_{0}] \f$
+     * Where \f$ v_{i} \f$ is the i'th vertic given.
      * This function can be supplied with N and N+1 vertices.
      * If only N vertices are given, then the volume is calculated with the origo as the remaining vertex.
      * (See https://en.wikipedia.org/wiki/Simplex#Volume)
