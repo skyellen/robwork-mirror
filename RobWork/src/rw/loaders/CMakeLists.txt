@@ -34,6 +34,7 @@ SET(FILES_CPP
   dom/DOMTrajectoryLoader.cpp
   dom/DOMTrajectorySaver.cpp
   dom/DOMProximitySetupLoader.cpp
+  dom/DOMWorkCellSaver.cpp
   
   colsetup/CollisionSetupLoader.cpp
   

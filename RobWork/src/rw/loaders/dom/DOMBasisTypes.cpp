@@ -868,6 +868,10 @@ DOMElem::Ptr DOMBasisTypes::createQ(const Q& q, DOMElem::Ptr doc) {
     return createElement(idQ(), createStringFromArray(q), doc);
 }
 
+DOMElem::Ptr DOMBasisTypes::createPos(const Vector3D<>& v, DOMElem::Ptr doc) {
+	return createElement(idPos(), createStringFromArray(v), doc);
+}
+
 DOMElem::Ptr DOMBasisTypes::createVector3D(const Vector3D<>& v, DOMElem::Ptr doc) {
     return createElement(idVector3D(), createStringFromArray(v), doc);
 }

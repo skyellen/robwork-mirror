@@ -690,6 +690,19 @@ public:
      * @param doc [in] Document which should contain the element
      * @return Pointer to the newly created DOMElement
      */
+    static rw::common::DOMElem::Ptr createPos(const rw::math::Vector3D<>& v, rw::common::DOMElem::Ptr doc);
+
+    /**
+     * @brief Creates a DOMElement to represent \b v
+     *
+     * Creates a DOMElement owned by \b doc and representing \b v
+     *
+     * This method may throw a rw::common::Exception in case of errors
+     *
+     * @param v [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
     static rw::common::DOMElem::Ptr createVector2D(const rw::math::Vector2D<>& v, rw::common::DOMElem::Ptr doc);
 
     /**
