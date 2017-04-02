@@ -148,8 +148,8 @@ TEST_P(DistanceStrategyTest, Plane_Triangle) {
 	EXPECT_FLOAT_EQ(static_cast<float>(tolerance-eps),static_cast<float>(res.p2[2]));
 	EXPECT_EQ(0,res.geoIdxA); // only one geometry
 	EXPECT_EQ(0,res.geoIdxB); // only one geometry
-	EXPECT_GE(res.idx1,0); // either first triangle on plane
-	EXPECT_LE(res.idx1,1); // ... or second
+	EXPECT_GE(res.idx1,0u); // either first triangle on plane
+	EXPECT_LE(res.idx1,1u); // ... or second
 	EXPECT_EQ(0,res.idx2); // there is only one triangle
 
 	SCOPED_TRACE("Check ProximityStrategyData");
@@ -197,10 +197,10 @@ TEST_P(DistanceStrategyTest, Plane_Cuboid) {
 	EXPECT_NEAR(tolerance-eps,res.p2[2],std::numeric_limits<float>::epsilon());
 	EXPECT_EQ(0,res.geoIdxA); // only one geometry
 	EXPECT_EQ(0,res.geoIdxB); // only one geometry
-	EXPECT_GE(res.idx1,0); // either first triangle on plane
-	EXPECT_LE(res.idx1,1); // ... or second
-	EXPECT_GE(res.idx2,0);
-	EXPECT_LE(res.idx2,12);
+	EXPECT_GE(res.idx1,0u); // either first triangle on plane
+	EXPECT_LE(res.idx1,1u); // ... or second
+	EXPECT_GE(res.idx2,0u);
+	EXPECT_LE(res.idx2,12u);
 
 	SCOPED_TRACE("Check ProximityStrategyData");
 	checkProximityStrategyData(data,res);

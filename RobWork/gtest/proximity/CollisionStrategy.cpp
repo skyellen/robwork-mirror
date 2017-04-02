@@ -182,7 +182,7 @@ TEST_P(CollisionStrategyTest, Cuboid_Cuboid) {
 
 TEST_P(CollisionStrategyTest, Cylinder_Cylinder) {
 	static const double r = 0.12;
-	static const float l = 0.2;
+	static const float l = 0.2f;
 	static const double offset = 0.057;
 	const rw::common::Ptr<Cylinder> cylinder = ownedPtr(new Cylinder(static_cast<float>(r), l));
 	Geometry geomA(cylinder);
@@ -209,7 +209,7 @@ TEST_P(CollisionStrategyTest, Cylinder_Cylinder) {
 	const CollisionStrategy::Result& res = data.getCollisionData();
 	EXPECT_EQ(modelA,res.a);
 	EXPECT_EQ(modelB,res.b);
-	EXPECT_FLOAT_EQ(-r*2-offset+eps,res._aTb.P()[0]);
+	EXPECT_FLOAT_EQ(static_cast<float>(-r*2-offset+eps),static_cast<float>(res._aTb.P()[0]));
 	EXPECT_EQ(0,res._aTb.P()[1]);
 	EXPECT_EQ(0,res._aTb.P()[2]);
 	EXPECT_TRUE(res._aTb.R().equal(Rotation3D<>::identity()));
