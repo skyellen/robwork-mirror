@@ -21,16 +21,18 @@
 #include "ProximityStrategyData.hpp"
 
 using rw::common::Extension;
-using rw::proximity::DistanceMultiStrategy;
+using rw::kinematics::Frame;
+using rw::math::Transform3D;
+using namespace rw::proximity;
 
 DistanceMultiStrategy::DistanceMultiStrategy() {}
 DistanceMultiStrategy::~DistanceMultiStrategy() {}
 
 DistanceMultiStrategy::Result DistanceMultiStrategy::distances(
-		const kinematics::Frame* a,
-		const math::Transform3D<>& wTa,
-		const kinematics::Frame* b,
-		const math::Transform3D<>& wTb,
+		const Frame* a,
+		const Transform3D<>& wTa,
+		const Frame* b,
+		const Transform3D<>& wTb,
 		double tolerance)
 {
 	if(getModel(a)==NULL || getModel(b)==NULL)
@@ -41,10 +43,10 @@ DistanceMultiStrategy::Result DistanceMultiStrategy::distances(
 }
 
 DistanceMultiStrategy::Result& DistanceMultiStrategy::distances(
-		const kinematics::Frame* a,
-		const math::Transform3D<>& wTa,
-		const kinematics::Frame* b,
-		const math::Transform3D<>& wTb,
+		const Frame* a,
+		const Transform3D<>& wTa,
+		const Frame* b,
+		const Transform3D<>& wTb,
 		double tolerance,
 		ProximityStrategyData &data)
 {
