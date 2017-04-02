@@ -122,30 +122,30 @@ TEST_P(DistanceStrategyTest, Plane_Triangle) {
 	strategy->addModel(frameA,geomA);
 	strategy->addModel(frameB,geomB);
 	res = strategy->distance(frameA,wTa,frameB,wTb,tolerance*1.5,data);
-	EXPECT_FLOAT_EQ(tolerance-eps,res.distance);
+	EXPECT_FLOAT_EQ(static_cast<float>(tolerance-eps),static_cast<float>(res.distance));
 	res = strategy->distance(frameA,wTa,frameB,wTb,eps,data);
-	EXPECT_FLOAT_EQ(tolerance-eps,res.distance);
+	EXPECT_FLOAT_EQ(static_cast<float>(tolerance-eps),static_cast<float>(res.distance));
 	res = strategy->distance(frameA,wTa,frameB,wTb,data);
-	EXPECT_FLOAT_EQ(tolerance-eps,res.distance);
+	EXPECT_FLOAT_EQ(static_cast<float>(tolerance-eps),static_cast<float>(res.distance));
 	strategy->clearFrames();
 
 	// Test the interface where models are stored external to the strategy
 	strategy->addGeometry(modelA.get(),geomA);
 	strategy->addGeometry(modelB.get(),geomB);
 	res = strategy->distance(modelA,wTa,modelB,wTb,tolerance*1.5,data);
-	EXPECT_FLOAT_EQ(tolerance-eps,res.distance);
+	EXPECT_FLOAT_EQ(static_cast<float>(tolerance-eps),static_cast<float>(res.distance));
 	res = strategy->distance(modelA,wTa,modelB,wTb,eps,data);
-	EXPECT_FLOAT_EQ(tolerance-eps,res.distance);
+	EXPECT_FLOAT_EQ(static_cast<float>(tolerance-eps),static_cast<float>(res.distance));
 	res = strategy->distance(modelA,wTa,modelB,wTb,data);
-	EXPECT_FLOAT_EQ(tolerance-eps,res.distance);
+	EXPECT_FLOAT_EQ(static_cast<float>(tolerance-eps),static_cast<float>(res.distance));
 
 	// Check result
 	EXPECT_EQ(NULL,res.f1);
 	EXPECT_EQ(NULL,res.f2);
 	EXPECT_EQ(modelA,res.a);
 	EXPECT_EQ(modelB,res.b);
-	EXPECT_FLOAT_EQ(0,res.p1[2]);
-	EXPECT_FLOAT_EQ(tolerance-eps,res.p2[2]);
+	EXPECT_FLOAT_EQ(0.f,static_cast<float>(res.p1[2]));
+	EXPECT_FLOAT_EQ(static_cast<float>(tolerance-eps),static_cast<float>(res.p2[2]));
 	EXPECT_EQ(0,res.geoIdxA); // only one geometry
 	EXPECT_EQ(0,res.geoIdxB); // only one geometry
 	EXPECT_GE(res.idx1,0); // either first triangle on plane
@@ -193,7 +193,7 @@ TEST_P(DistanceStrategyTest, Plane_Cuboid) {
 	EXPECT_EQ(NULL,res.f2);
 	EXPECT_EQ(modelA,res.a);
 	EXPECT_EQ(modelB,res.b);
-	EXPECT_FLOAT_EQ(0,res.p1[2]);
+	EXPECT_FLOAT_EQ(0.f,static_cast<float>(res.p1[2]));
 	EXPECT_NEAR(tolerance-eps,res.p2[2],std::numeric_limits<float>::epsilon());
 	EXPECT_EQ(0,res.geoIdxA); // only one geometry
 	EXPECT_EQ(0,res.geoIdxB); // only one geometry

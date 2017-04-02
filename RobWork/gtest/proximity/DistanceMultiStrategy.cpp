@@ -122,14 +122,14 @@ TEST_P(DistanceMultiStrategyTest, Plane_Triangle) {
 	strategy->addModel(frameA,geomA);
 	strategy->addModel(frameB,geomB);
 	res = strategy->distances(frameA,wTa,frameB,wTb,tolerance,data);
-	EXPECT_FLOAT_EQ(tolerance-eps,res.distance);
+	EXPECT_FLOAT_EQ(static_cast<float>(tolerance-eps),static_cast<float>(res.distance));
 	strategy->clearFrames();
 
 	// Test the interface where models are stored external to the strategy
 	strategy->addGeometry(modelA.get(),geomA);
 	strategy->addGeometry(modelB.get(),geomB);
 	res = strategy->distances(modelA,wTa,modelB,wTb,tolerance,data);
-	EXPECT_FLOAT_EQ(tolerance-eps,res.distance);
+	EXPECT_FLOAT_EQ(static_cast<float>(tolerance-eps),static_cast<float>(res.distance));
 
 	// Check result
 	EXPECT_EQ(modelA,res.a);
@@ -145,12 +145,12 @@ TEST_P(DistanceMultiStrategyTest, Plane_Triangle) {
 	EXPECT_EQ(res.p1[0],res.p2[0]);
 	EXPECT_EQ(res.p1[1],res.p2[1]);
 	// todo check if p1 and p2 is inside their triangles...
-	EXPECT_FLOAT_EQ(0,res.p1[2]);
-	EXPECT_FLOAT_EQ(tolerance-eps,res.p2[2]);
+	EXPECT_FLOAT_EQ(0.f,static_cast<float>(res.p1[2]));
+	EXPECT_FLOAT_EQ(static_cast<float>(tolerance-eps),static_cast<float>(res.p2[2]));
 	EXPECT_GE(res.p1prims[0],0); // either first triangle on plane
 	EXPECT_LE(res.p1prims[0],1); // ... or second
 	EXPECT_EQ(0,res.p2prims[0]); // there is only one triangle
-	EXPECT_FLOAT_EQ(tolerance-eps,res.distances[0]);
+	EXPECT_FLOAT_EQ(static_cast<float>(tolerance-eps),static_cast<float>(res.distances[0]));
 
 	SCOPED_TRACE("Check ProximityStrategyData");
 	checkProximityStrategyData(data,res);
@@ -194,7 +194,7 @@ TEST_P(DistanceMultiStrategyTest, Plane_Cuboid) {
 	EXPECT_EQ(res.p1[0],res.p2[0]);
 	EXPECT_EQ(res.p1[1],res.p2[1]);
 	// todo check if p1 and p2 is inside their triangles...
-	EXPECT_FLOAT_EQ(0,res.p1[2]);
+	EXPECT_FLOAT_EQ(0.f,static_cast<float>(res.p1[2]));
 	EXPECT_NEAR(tolerance-eps,res.p2[2],std::numeric_limits<float>::epsilon());
 	//EXPECT_FLOAT_EQ(tolerance-eps,res.p2[2]);
 	EXPECT_GE(res.p1prims[0],0); // either first triangle on plane

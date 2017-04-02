@@ -153,7 +153,7 @@ TEST(QHullND, volume_square_2D_zero) {
 TEST(QHullND, volume_nSphere) {
     const size_t dim = 4; // dim must be even number // if 6 or higher it will require large RAM.
     rw::geometry::QHullND<dim> qhull;
-    std::vector< rw::math::VectorND<dim> > vertices(std::pow(15,dim)); // decrease this for large dimensions...
+    std::vector<VectorND<dim> > vertices(static_cast<std::vector<VectorND<dim> >::size_type>(std::pow(15,dim))); // decrease this for large dimensions...
     
     for(size_t v = 0; v < vertices.size(); v++){
         vertices.at(v) = rw::math::VectorND<dim>(rw::math::Math::ranDir(dim, 1.0).e());

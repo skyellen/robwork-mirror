@@ -116,7 +116,7 @@ bool ProximityStrategyRW::removeGeometry(rw::proximity::ProximityModel* model, c
     int idx=-1;
     for(size_t i=0;i<pmodel->models.size();i++)
         if(pmodel->models[i]->geoid==geomId){
-            idx = i;
+            idx = static_cast<int>(i);
             break;
         }
     // if the geometry id was not found then it is not located in the model
@@ -180,7 +180,9 @@ bool ProximityStrategyRW::doInCollision(ProximityModel::Ptr aModel,
     data.b = bModel;
     data._aTb = inverse(wTa)*wTb;
 
-    size_t nrOfCollidingGeoms = 0, geoIdxA=0, geoIdxB=0;
+    size_t nrOfCollidingGeoms = 0;
+    int geoIdxA = 0;
+    int geoIdxB = 0;
     bool col_res = false;
     bool firstContact = pdata.getCollisionQueryType() == FirstContact;
 
@@ -188,7 +190,7 @@ bool ProximityStrategyRW::doInCollision(ProximityModel::Ptr aModel,
 
     BOOST_FOREACH(Model::Ptr &ma, qdata.a->models) {
         BOOST_FOREACH(Model::Ptr &mb, qdata.b->models) {
-            int startIdx = data._geomPrimIds.size();
+            int startIdx = static_cast<int>(data._geomPrimIds.size());
             bool res = qdata.cache->tcollider->collides(wTa*ma->t3d, *ma->tree, wTb*mb->t3d, *mb->tree, &data._geomPrimIds);
 
             //std::cout << res << std::endl;
@@ -205,7 +207,7 @@ bool ProximityStrategyRW::doInCollision(ProximityModel::Ptr aModel,
                 data._collisionPairs[nrOfCollidingGeoms-1].startIdx = 0;
                 data._collisionPairs[nrOfCollidingGeoms-1].size = 0;
                 data._collisionPairs[nrOfCollidingGeoms-1].startIdx = startIdx;
-                data._collisionPairs[nrOfCollidingGeoms-1].size = data._geomPrimIds.size()-startIdx;
+                data._collisionPairs[nrOfCollidingGeoms-1].size = static_cast<int>(data._geomPrimIds.size())-startIdx;
 
                 if(firstContact)
                     return true;
