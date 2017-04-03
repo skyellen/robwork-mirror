@@ -74,12 +74,13 @@ SET(FILES_HPP
     Line.hpp
     Ray.hpp
     Plane.hpp
-    ConvexHull2D.hpp
+	ConvexHull2D.hpp
     ConvexHull3D.hpp
     IncrementalHull3D.hpp
     IndexedArray.hpp
 	IndexedPolygon.hpp
-    #GiftWrapHull3D.hpp
+    Polygon.hpp
+	#GiftWrapHull3D.hpp
     Contour2D.hpp
     Contour2DUtil.hpp
     Covariance.hpp
