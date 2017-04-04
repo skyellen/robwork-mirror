@@ -201,7 +201,12 @@ std::vector<Contact> BtContactStrategy::findContacts(
 			const btCollisionObjectWrapper obj0Wrap(0,bodyA->getCollisionShape(),bodyA,transformA);
 			const btCollisionObjectWrapper obj1Wrap(0,bodyB->getCollisionShape(),bodyB,transformB);
 #endif
-			btCollisionAlgorithm* algorithm = _dispatcher->findAlgorithm(&obj0Wrap,&obj1Wrap);
+#if BT_BULLET_VERSION >= 286
+			btPersistentManifold* dummyManifold = 0;
+			btCollisionAlgorithm* algorithm = _dispatcher->findAlgorithm(&obj0Wrap,&obj1Wrap, dummyManifold, ebtDispatcherQueryType::BT_CONTACT_POINT_ALGORITHMS);
+#else
+			btCollisionAlgorithm* algorithm = _dispatcher->findAlgorithm(&obj0Wrap, &obj1Wrap);
+#endif
 			btManifoldArray manifolds;
 			algorithm->getAllContactManifolds(manifolds);
 			for (int i = 0; i < manifolds.size(); i++) {

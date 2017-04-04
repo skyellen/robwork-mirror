@@ -82,6 +82,16 @@ public:
 	 */
 	virtual btCollisionAlgorithmCreateFunc* getCollisionAlgorithmCreateFunc(int proxyType0, int proxyType1);
 
+#if BT_BULLET_VERSION >= 286
+	/**
+	* @brief Get the algorithm allocator to use.
+	* @param proxyType0 [in] the type of first object.
+	* @param proxyType1 [in] the type of second object.
+	* @return the collision algorithm allocator.
+	*/
+	virtual btCollisionAlgorithmCreateFunc* getClosestPointsAlgorithmCreateFunc(int proxyType0, int proxyType1);
+#endif
+
 private:
 	btCollisionAlgorithmCreateFunc*	m_compoundCompoundCreateFunc;
 	btCollisionAlgorithmCreateFunc*	m_compoundCreateFunc;
