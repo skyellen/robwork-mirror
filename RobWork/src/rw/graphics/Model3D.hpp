@@ -390,8 +390,12 @@ namespace graphics {
 
         //! get string identifier of this model3d
         const std::string& getName(){ return _name; };
+        //! get filePath of this model3d
+        const std::string& getFilePath(){ return _filePath; };
         //! set string identifier of this model3d
         void setName(const std::string& name){ _name = name; };
+        //! set filePath this model3d
+        void setFilePath(const std::string& name){ _filePath = name; };
 
         //! get mask of this model3d
         int getMask(){ return _mask; }
@@ -423,6 +427,8 @@ namespace graphics {
         rw::math::Transform3D<> _transform;
         //! @brief Name of the model.
         std::string _name;
+        //! @brief FilePath of the model, if model was constructed from file.
+        std::string _filePath;
         //! @brief The DrawableNode::DrawableTypeMask
         int _mask;
         //! @brief Total number of vertices in the model

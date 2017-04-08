@@ -43,15 +43,14 @@ public:
 	 * @param fileName [in] Name of the file to which to write.
 	 */
 
-    static void save(rw::models::WorkCell::Ptr workcell, std::string fileName);
+    static void save(rw::models::WorkCell::Ptr workcell, const rw::kinematics::State state, std::string fileName);
 
     /**
      * @brief Writes \bworkcellCalibration to stream.
      * @param workcellCalibration [in] workcellCalibration to write
      * @param ostream [in] Stream to write to
      */
-    static void save(rw::models::WorkCell::Ptr workcell, std::ostream& ostream);
-
+    static void save(rw::models::WorkCell::Ptr workcell, const rw::kinematics::State state, std::ostream& ostream);
 };
 
 /** @} */

@@ -276,12 +276,19 @@ Frame* addModelToFrame(DummyModel& model, Frame *parent, StateStructure *tree, D
 			Model3D::Ptr model3d = Model3DFactory::getModel(val.str(), model._name);
 			model3d->setTransform(model._transform);
 			model3d->setName(model._name);
-			//model->setFrame(modelframe);
+            //model->setFrame(modelframe);
 
 			Geometry::Ptr geom = GeometryFactory::load(val.str(), true);
 			geom->setName(model._name);
 			geom->setTransform(model._transform);
 			geom->setFrame(modelframe);
+
+            // For Polytype CAD models, we want to save the filepath for potential serialization later.
+            if(model._geo[i]._type == PolyType)
+            {
+                model3d->setFilePath(model._geo[i]._filename);
+                geom->setFilePath(model._geo[i]._filename);
+            }
 
 			if (object != NULL) {
 				object->addModel(model3d);
@@ -293,9 +300,14 @@ Frame* addModelToFrame(DummyModel& model, Frame *parent, StateStructure *tree, D
 
 			Geometry::Ptr geom = GeometryFactory::load(val.str(), true);
 			geom->setName(model._name);
-
 			geom->setTransform(model._transform);
 			geom->setFrame(modelframe);
+
+            // For Polytype CAD models, we want to save the filepath for potential serialization later.
+            if(model._geo[i]._type == PolyType)
+            {
+                geom->setFilePath(model._geo[i]._filename);
+            }
 
 			if (object != NULL) {
 				object->addGeometry(geom);
@@ -307,8 +319,16 @@ Frame* addModelToFrame(DummyModel& model, Frame *parent, StateStructure *tree, D
 			Model3D::Ptr model3d = Model3DFactory::getModel(val.str(), val.str());
 
 			model3d->setName(model._name);
-
 			model3d->setTransform(model._transform);
+
+            // For Polytype CAD models, we want to save the filepath for potential serialization later.
+            if(model._geo[i]._type == PolyType)
+            {
+                model3d->setFilePath(model._geo[i]._filename);
+            }
+            else {
+                model3d->setFilePath(val.str());
+            }
 
 			if (object != NULL) {
 				object->addModel(model3d);

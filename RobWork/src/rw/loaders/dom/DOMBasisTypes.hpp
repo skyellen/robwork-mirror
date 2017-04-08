@@ -212,7 +212,41 @@ public:
 	 */
     static const std::string& idUnitAttribute();
 
+    /**
+     * @brief Identifier for a Plane
+     * @return the identifier.
+     */
+    static const std::string& idPlane();
 
+    /**
+     * @brief Identifier for a Box
+     * @return the identifier.
+     */
+    static const std::string& idBox();
+
+    /**
+     * @brief Identifier for a Sphere
+     * @return the identifier.
+     */
+    static const std::string& idSphere();
+
+    /**
+     * @brief Identifier for a Cone
+     * @return the identifier.
+     */
+    static const std::string& idCone();
+
+    /**
+     * @brief Identifier for a Cylinder
+     * @return the identifier.
+     */
+    static const std::string& idCylinder();
+
+    /**
+     * @brief Identifier for a Tube
+     * @return the identifier.
+     */
+    static const std::string& idTube();
 
     /**
      * @brief Returns the conversion value for a given unit

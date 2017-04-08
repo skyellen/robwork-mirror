@@ -214,11 +214,12 @@ SceneDescriptor::DrawableProxy::Ptr SceneDescriptor::addRender(const std::string
     return proxy;
 }
 
-/*
+
 std::vector<SceneDescriptor::DrawableProxy::Ptr> SceneDescriptor::getDrawables(rw::kinematics::Frame* f){
     return _frameStateMap[f].drawables;
 }
 
+/*
 void SceneDescriptor::findDrawable(const std::string& name, rw::kinematics::Frame* f){
     if(_frameStateMap.find(f)==_frameStateMap.end())
         return NULL;

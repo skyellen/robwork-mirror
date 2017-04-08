@@ -116,12 +116,18 @@ namespace rw { namespace geometry {
 
 		//! @brief get name of this geometry
 		const std::string& getName() const {return _name; };
+
+        //! @brief get file path of this geometry
+        const std::string& getFilePath() const {return _filePath; };
 		
 		//! @brief get identifier of this geometry
 		const std::string& getId() const {return getName(); };
 
 		//! @brief set name of this geometry
 		void setName(const std::string& name) {_name = name; };
+
+        //! @brief set file path this geometry
+        void setFilePath(const std::string& name) {_filePath = name; };
 
 		//! @brief set identifier of this geometry
 		void setId(const std::string& id) { setName(id); }
@@ -186,6 +192,7 @@ namespace rw { namespace geometry {
 		rw::math::Transform3D<> _transform;
 		double _scale;
 		std::string _name;
+        std::string _filePath;
 		int _mask;
 
 	};

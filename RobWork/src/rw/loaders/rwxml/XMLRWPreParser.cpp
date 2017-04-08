@@ -219,6 +219,14 @@ bool XMLRWPreParser::parse( const std::string& absfilename,
     }*/
     in.unsetf(std::ios::skipws); //  Turn of white space skipping on the stream
 
+    // If the version and encoding is specified in the workcell, skip the first line
+    std::streampos oldpos = in.tellg();  // stores the position
+    std::string line;
+    std::getline(in, line);
+    std::string t("<?");
+    if (line.compare(0, t.length(), t) != 0)
+        in.seekg(oldpos); // get back to the position
+
     std::vector<char> vec;
     std::copy(
         std::istream_iterator<char>(in),
