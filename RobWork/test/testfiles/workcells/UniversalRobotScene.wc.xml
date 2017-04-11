@@ -1,0 +1,11 @@
+<WorkCell name="SceneUR">
+
+
+ <Frame name="Robot" refframe="WORLD">
+    <RPY> 0 0 0 </RPY> <Pos>0 0.0 0</Pos>
+ </Frame>
+ <Include file="UR/UR.wc.xml" />
+
+
+
+</WorkCell>

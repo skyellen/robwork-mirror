@@ -1,0 +1,25 @@
+<SerialDevice name="UR1">
+
+<Frame name="Base">
+	<RPY> 0 0 0 </RPY> <Pos> 0 0 0</Pos>
+</Frame>
+
+<DHJoint name="Joint1" alpha="0" a="0" d="0.0892" offset="0" type="schilling" />
+<DHJoint name="Joint2" alpha="90" a="0" d="0" offset="0" type="schilling" />
+<DHJoint name="Joint3" alpha="0" a="-0.425" b="0" offset="0" type="HGP" />
+<DHJoint name="Joint4" alpha="0" a="-0.39243" b="0" offset="0" type="HGP" />
+<DHJoint name="Joint5" alpha="90" a="0" d="0.109" offset="0" type="schilling" />
+<DHJoint name="Joint6" alpha="-90" a="0" d="0.093" offset="0" type="schilling" />
+
+<Frame name="TCP" refframe="Joint6">
+	<RPY>-180 180 180</RPY><Pos>0 0 0.082</Pos>
+</Frame>
+
+<Frame name="ToolBase" refframe="TCP">
+	<RPY>-90 0 0</RPY><Pos>0.0 -0.058 0.0</Pos>
+</Frame>
+
+ <Include file="Device.xml" />
+
+ <Q name="Home">0 -1.57 0 -1.57 0 0</Q>
+</SerialDevice>
