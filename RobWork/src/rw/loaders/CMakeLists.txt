@@ -12,6 +12,7 @@ SET(FILES_CPP
   GeometryFactory.cpp
 
   path/PathLoader.cpp
+  path/PathLoaderCSV.cpp
   tul/Tag.cpp
   tul/TULLoader.cpp
 
@@ -47,6 +48,7 @@ SET(FILES_HPP
   WorkCellLoader.hpp
   
   path/PathLoader.hpp
+  path/PathLoaderCSV.hpp
   tul/Tag.hpp
   tul/TULLoader.hpp
 
