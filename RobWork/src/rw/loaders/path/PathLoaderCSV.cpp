@@ -73,7 +73,7 @@ public:
         const std::vector<Device::Ptr>& devices = workcell.getDevices();
         for (DevI it = devices.begin(); it != devices.end(); ++it)
         {
-            int n = (*it)->getDOF();
+            int n = static_cast<int>((*it)->getDOF());
             std::string name = (*it)->getName();
             if (n > q_size)
                 RW_THROW(name + " has " + std::to_string(n) +
