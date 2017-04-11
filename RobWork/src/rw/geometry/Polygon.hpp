@@ -15,7 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #ifndef RW_GEOMETRY_POLYGON_HPP_
 #define RW_GEOMETRY_POLYGON_HPP_
 
@@ -25,12 +24,8 @@
  * \copydoc rw::geometry::Polygon
  */
 
-
-//#include <rw/common/macros.hpp>
-//#include <rw/common/types.hpp>
+#include <rw/common/macros.hpp>
 #include <rw/math/Vector3D.hpp>
-
-
 
 namespace rw {
 namespace geometry {
@@ -50,7 +45,6 @@ public:
 	//! @brief value type of the index pointer
 	typedef T value_type;
 
-	
 	/**
 	 * @brief Adds a vertex to the polygon
 	 *
@@ -82,7 +76,7 @@ public:
 	/**
 	 * @brief returns the index of vertex i of the triangle
 	 */
-	const T& getVertex(size_t iddx) const {
+	const T& getVertex(size_t idx) const {
 		RW_ASSERT_MSG(idx<_vertices.size(), "The requested index "<<idx<<" is not less than the number of items: " << _vertices.size());	
 		return _vertices[idx];		
 	}
@@ -105,30 +99,27 @@ public:
 	 * @brief Number of vertices of this polygon
 	 * @return Number of vertices
 	 */
-	virtual size_t size() const {
+	size_t size() const {
 		return _vertices.size(); 
 	}
 
-	
 	/**
 	 * @brief Computes the center of the polygon as the average of all coordinates
 	 * @return Center of the polygon
 	 */
-	rw::math::Vector3D<> computeCenter() {
-		rw::math::Vector3D<> sum;
+	T computeCenter() {
+		T sum;
 		for (size_t i = 0; i<_vertices.size(); i++) {
 			sum += _vertices[i];
 		}
 		return sum / (double) _vertices.size();
 	}
 
-	
-
-	protected:
-		/**
-		 * @brief Vertices making up the polygon
-		*/
-		std::vector<T> _vertices;
+protected:
+	/**
+	 * @brief Vertices making up the polygon
+	 */
+	std::vector<T> _vertices;
 };
 
     // @}
