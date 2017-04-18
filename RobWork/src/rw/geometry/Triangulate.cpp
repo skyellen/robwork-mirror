@@ -95,23 +95,48 @@ bool Triangulate::snip(const std::vector<rw::math::Vector2D<> >& contour,int u,i
 }
 
 
-bool Triangulate::processPoints(const std::vector< Vector3D<> >& contour, std::vector<int>& result, double colinearCriteria) {
+bool Triangulate::processPolygon(Polygon<>::Ptr polygon, std::vector<int>& result, double colinearCriteria, double precision) 
+{
+	std::vector<Vector3D<> > contour;
+	for (size_t i = 0; i<polygon->size(); i++) {
+		contour.push_back(polygon->getVertex(i));
+	}
+
+	return processPoints(contour, result, colinearCriteria, precision);
+}
+
+
+bool Triangulate::processPoints(const std::vector< Vector3D<> >& contour, std::vector<int>& result, double colinearCriteria, double precision) {
 	//Compute plane of the contour 
 	if (contour.size() < 3) {
 		return false;
 	}
 
-	Vector3D<> v1 = normalize(contour[1]-contour[0]);
-	Vector3D<> v2;
-	size_t i = 2;
+	Vector3D<> v1;
+
+	size_t i = 0;
 	do {
-		v2 = normalize(contour[i]-contour[0]);
+		v1 = normalize(contour[i+1]-contour[0]);
 		i++;
-	} while (fabs(dot(v1, v2) - 1) < colinearCriteria && i<contour.size());
-	if (i == contour.size()) {
-		RW_THROW("The points on the contour appears to be colinear");
 	}
+	while (v1.norm2() < precision && i<contour.size());
+
+	if (i == contour.size()) {
+		RW_THROW("All contour points appear to have a distance of less than "<<precision<<".");
+	}
+
+	Vector3D<> v2;
+
+	do {
+		i++;
+
+		if (i == contour.size()) {
+			RW_THROW("The points on the contour appears to be colinear");
+		}
 	
+		v2 = normalize(contour[i]-contour[0]);
+	} while (fabs(dot(v1, v2) - 1) < colinearCriteria);
+
 	Vector3D<> normal = Math::abs(cross(v1, v2));
 	int maxIdx = 0;
 	if (normal[0] > normal[1] && normal[0] > normal[2]) {
