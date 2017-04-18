@@ -26,7 +26,9 @@ file(GLOB qhull_hdr *.h)
 add_library(rw_qhull STATIC ${qhull_src})
 set_property(TARGET rw_qhull PROPERTY OUTPUT_NAME "rw_qhull")
 
-TARGET_COMPILE_OPTIONS(rw_qhull PRIVATE -Wno-unused-variable)
+IF(CMAKE_COMPILER_IS_GNUCXX)
+    TARGET_COMPILE_OPTIONS(rw_qhull PRIVATE -Wno-unused-variable)
+ENDIF()
 
 INSTALL(TARGETS #qhull
     rw_qhull
