@@ -2,22 +2,23 @@
 # Order object files by frequency of execution.  Small files at end.
 set(
     qhull_src
-        libqhull/rboxlib.c
-        libqhull/user.c
-        libqhull/global.c
-        libqhull/stat.c
-        libqhull/io.c
-        libqhull/geom2.c
-        libqhull/poly2.c
-        libqhull/merge.c
-        libqhull/libqhull.c
-        libqhull/geom.c
-        libqhull/poly.c
-        libqhull/qset.c
-        libqhull/mem.c
-        libqhull/usermem.c
-        libqhull/userprintf.c
-        libqhull/random.c
+        libqhull_r/rboxlib_r.c
+        libqhull_r/user_r.c
+        libqhull_r/global_r.c
+        libqhull_r/stat_r.c
+        libqhull_r/io_r.c
+        libqhull_r/geom2_r.c
+        libqhull_r/poly2_r.c
+        libqhull_r/merge_r.c
+        libqhull_r/libqhull_r.c
+        libqhull_r/geom_r.c
+        libqhull_r/poly_r.c
+        libqhull_r/qset_r.c
+        libqhull_r/mem_r.c
+        libqhull_r/usermem_r.c
+        libqhull_r/userprintf_r.c
+        libqhull_r/userprintf_rbox_r.c
+        libqhull_r/random_r.c
 )
 
 file(GLOB qhull_hdr *.h)
@@ -25,11 +26,10 @@ file(GLOB qhull_hdr *.h)
 add_library(rw_qhull STATIC ${qhull_src})
 set_property(TARGET rw_qhull PROPERTY OUTPUT_NAME "rw_qhull")
 
-# this does not compile on some versions of gcc
-#set_property(TARGET rw_qhull PROPERTY COMPILE_FLAGS "-Wunused-but-set-variable")
- 
-INSTALL(TARGETS #qhull 
-    rw_qhull 
+TARGET_COMPILE_OPTIONS(rw_qhull PRIVATE -Wno-unused-variable)
+
+INSTALL(TARGETS #qhull
+    rw_qhull
     #qhullcmd rbox qconvex qdelaunay qvoronoi qhalf
 	RUNTIME DESTINATION ${BIN_INSTALL_DIR}
 	LIBRARY DESTINATION ${LIB_INSTALL_DIR}

@@ -254,21 +254,18 @@ ENDIF ()
 ADD_DEFINITIONS("-DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET=1")
 
 
-
-FIND_PACKAGE(Qhull QUIET)
-IF( QHULL_FOUND )
-    MESSAGE(STATUS "RobWork: QHULL installation FOUND!")
-ELSE ()
+# find package disabled, in order to use reentrant qhull
+#FIND_PACKAGE(Qhull QUIET)
+#IF( QHULL_FOUND )
+#    MESSAGE(STATUS "RobWork: QHULL installation FOUND!")
+#ELSE ()
     SET(RW_ENABLE_INTERNAL_QHULL_TARGET ON)
     MESSAGE(STATUS "RobWork: QHULL installation NOT FOUND! Using RobWork ext QHULL.")
     
     SET(QHULL_INCLUDE_DIRS "${RW_ROOT}/ext/qhull/src")
     SET(QHULL_LIBRARIES "rw_qhull")
     SET(QHULL_DEFINITIONS "")
-
-    SET(HAVE_QHULL_2011 ON)
-    
-ENDIF ()
+#ENDIF ()
 
 # CSGJS
 MESSAGE(STATUS "Using CsgJs.")
