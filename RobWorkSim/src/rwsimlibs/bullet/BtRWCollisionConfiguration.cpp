@@ -131,6 +131,18 @@ btCollisionAlgorithmCreateFunc* BtRWCollisionConfiguration::getCollisionAlgorith
 
 #if BT_BULLET_VERSION >= 286
 btCollisionAlgorithmCreateFunc* BtRWCollisionConfiguration::getClosestPointsAlgorithmCreateFunc(int proxyType0, int proxyType1) {
-	RW_THROW("Bullets getClosestPointsAlgorithmCreateFunc function was added in Bullet 2.86. It is not yet implemented.");
+#if BT_BULLET_VERSION > 281
+	if (btBroadphaseProxy::isCompound(proxyType0) && btBroadphaseProxy::isCompound(proxyType1)) {
+		return m_compoundCompoundCreateFunc;
+	}
+#endif
+
+	if (btBroadphaseProxy::isCompound(proxyType0)) {
+		return m_compoundCreateFunc;
+	} else if (btBroadphaseProxy::isCompound(proxyType1)) {
+		return m_swappedCompoundCreateFunc;
+	}
+
+	return _func;
 }
 #endif
