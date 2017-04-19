@@ -68,7 +68,7 @@ void qhull::build(size_t dim,
     qh_zero(qhT_pointer, stderr);
 
     // Then the object is constructed.
-    exitcode = qh_new_qhull(qhT_pointer, (int)dim, (int)nrCoords, coords, ismalloc, flags, stdout, stderr);
+    exitcode = qh_new_qhull(qhT_pointer, (int)dim, (int)nrCoords, coords, ismalloc, flags, NULL, stderr);
 
 
     if (!exitcode) {
