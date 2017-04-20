@@ -32,7 +32,7 @@ SET(DEPENDS_DIRS
     @QT_PLUGINS_DIR@
 )
 
-SET(target "@rwstudio_executable_name@")
+SET(target "$<TARGET_FILE:RobWorkStudio>")
 SET(EXEPATH "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@")
 
 INCLUDE(InstallRequiredSystemLibraries)

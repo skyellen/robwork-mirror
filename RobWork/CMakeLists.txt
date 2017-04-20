@@ -197,11 +197,15 @@ ENDIF()
 
 # And if possible we would also like to install all the dll's and stuff that we use
 # this will configure the dependency file that will be used if install is invoked
-GET_TARGET_PROPERTY(rw_executable_name loader-test LOCATION)
+#GET_TARGET_PROPERTY(rw_executable_name loader-test LOCATION)
 CONFIGURE_FILE(
    "${RW_ROOT}/cmake/dependencies.cmake.in"
-   "${RW_ROOT}/cmake/dependencies.cmake"
+   "${RW_ROOT}/cmake/dependencies.cmake.gen"
    @ONLY
+)
+FILE(GENERATE
+    OUTPUT "${RW_ROOT}/cmake/dependencies.cmake"
+    INPUT "${RW_ROOT}/cmake/dependencies.cmake.gen"
 )
 
 INSTALL(SCRIPT "${RW_ROOT}/cmake/dependencies.cmake")

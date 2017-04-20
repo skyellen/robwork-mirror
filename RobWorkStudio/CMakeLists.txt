@@ -190,11 +190,15 @@ ENDIF()
 UNSET(QTDIR)
 
 # this will configure the dependency file that will be used if install is invoked
-GET_TARGET_PROPERTY(rwstudio_executable_name RobWorkStudio LOCATION)
+#GET_TARGET_PROPERTY(rwstudio_executable_name RobWorkStudio LOCATION)
 CONFIGURE_FILE(
    "${RWS_ROOT}/cmake/dependencies.cmake.in"
-   "${RWS_ROOT}/cmake/dependencies.cmake"
+   "${RWS_ROOT}/cmake/dependencies.cmake.gen"
    @ONLY
+)
+FILE(GENERATE
+    OUTPUT "${RWS_ROOT}/cmake/dependencies.cmake"
+    INPUT "${RWS_ROOT}/cmake/dependencies.cmake.gen"
 )
 
 INSTALL(SCRIPT "${RWS_ROOT}/cmake/dependencies.cmake")
