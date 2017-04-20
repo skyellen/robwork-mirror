@@ -36,7 +36,11 @@ IF( build )
     # Put java files in different directory suitable for JAR generation later on
     SET(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/java_src/dk/robwork)
     # SWIG
-    SWIG_ADD_MODULE(rws_jni java ../rws.i)
+	IF ((CMAKE_VERSION VERSION_GREATER 3.8) OR (CMAKE_VERSION VERSION_EQUAL 3.8))
+		SWIG_ADD_LIBRARY(rws_jni MODULE LANGUAGE java SOURCES ../rws.i)
+	ELSE()
+		SWIG_ADD_MODULE(rws_jni java ../rws.i)
+	ENDIF()
     SWIG_LINK_LIBRARIES(rws_jni rws rws_rwstudioapp 
         ${RWS_COMPONENT_LIBRARIES} 
         ${RWS_PLUGIN_LIBRARIES} 

@@ -37,7 +37,11 @@ IF( build )
 	# lua interface generation
 	SET(SWIG_MODULE_rw_lua_EXTRA_DEPS ../rwmath.i ../rwplanning.i)
 	STRING(REPLACE "rw_lua" "" LIBS_WITHOUT_RW_LUA ${ROBWORK_LIBRARIES})
-    SWIG_ADD_MODULE(rw_lua lua ../rw.i ../ScriptTypes.cpp Lua.cpp LuaState.cpp)
+	IF ((CMAKE_VERSION VERSION_GREATER 3.8) OR (CMAKE_VERSION VERSION_EQUAL 3.8))
+		SWIG_ADD_LIBRARY(rw_lua MODULE LANGUAGE lua SOURCES ../rw.i ../ScriptTypes.cpp Lua.cpp LuaState.cpp)
+	ELSE()
+		SWIG_ADD_MODULE(rw_lua lua ../rw.i ../ScriptTypes.cpp Lua.cpp LuaState.cpp)
+	ENDIF()
 	
 	SWIG_LINK_LIBRARIES(rw_lua rw_algorithms
                               rw_pathplanners

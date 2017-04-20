@@ -34,7 +34,11 @@ INCLUDE(UseSWIG)
 	SET_SOURCE_FILES_PROPERTIES(../rws.i PROPERTIES SWIG_FLAGS "-includeall")
 	
 	SET(CMAKE_SWIG_OUTDIR ${RWS_CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-    SWIG_ADD_MODULE(rws python ../rws.i ../ScriptTypes.cpp)
+	IF ((CMAKE_VERSION VERSION_GREATER 3.8) OR (CMAKE_VERSION VERSION_EQUAL 3.8))
+		SWIG_ADD_LIBRARY(rws MODULE LANGUAGE python SOURCES ../rws.i ../ScriptTypes.cpp)
+	ELSE()
+		SWIG_ADD_MODULE(rws python ../rws.i ../ScriptTypes.cpp)
+	ENDIF()
     SWIG_LINK_LIBRARIES(rws rws rws_rwstudioapp 
         ${RWS_COMPONENT_LIBRARIES} 
         ${RWS_PLUGIN_LIBRARIES} 
