@@ -122,6 +122,7 @@ SET(LOADERS_TEST_LIBRARIES
 SET(LOADERS_TEST_SRC
   loaders/DOMPropertyMap.cpp
   loaders/ImageLoaderTest.cpp
+  loaders/PathLoaderCSVTest.cpp
 )
 ADD_EXECUTABLE( rw_loaders-gtest ${LOADERS_TEST_SRC})       
 TARGET_LINK_LIBRARIES( rw_loaders-gtest ${LOADERS_TEST_LIBRARIES})
