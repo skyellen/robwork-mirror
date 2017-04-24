@@ -161,11 +161,11 @@ ADD_DEPENDENCIES( rw_calibration-test ${TEST_DEPENDENCIES} )
 SET( CALIBRATION_TEST rw_calibration-test )
 
 # RANSAC fitting
-#ADD_EXECUTABLE( rw_ransac-test ${DO_EXCLUDE} test-main.cpp algorithms/RANSACTest.cpp )
-#TARGET_LINK_LIBRARIES( rw_ransac-test ${TEST_LIBRARIES} )
-#ADD_TEST( rw_ransac-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_ransac-test ${DEFAULT_TEST_ARGS} )
-#ADD_DEPENDENCIES( rw_ransac-test ${TEST_DEPENDENCIES} )
-#SET( RANSAC_TEST rw_ransac-test )
+ADD_EXECUTABLE( rw_ransac-test ${DO_EXCLUDE} test-main.cpp algorithms/RANSACTest.cpp )
+TARGET_LINK_LIBRARIES( rw_ransac-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_ransac-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_ransac-test ${DEFAULT_TEST_ARGS} )
+ADD_DEPENDENCIES( rw_ransac-test ${TEST_DEPENDENCIES} )
+SET( RANSAC_TEST rw_ransac-test )
 
 # Mathematica
 IF ( RW_HAVE_MATHEMATICA )
