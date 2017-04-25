@@ -85,6 +85,7 @@ SET(GEOMETRY_TEST_SRC
   geometry/IndexedTriMeshTest.cpp
   geometry/PolygonTest.cpp
   geometry/QHullTest.cpp
+  geometry/TriangulateTest.cpp
 )
 ADD_EXECUTABLE( rw_geometry-gtest ${GEOMETRY_TEST_SRC})       
 TARGET_LINK_LIBRARIES( rw_geometry-gtest ${GEOMETRY_TEST_LIBRARIES})

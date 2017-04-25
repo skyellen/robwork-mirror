@@ -83,6 +83,7 @@ bool Triangulate::snip(const std::vector<rw::math::Vector2D<> >& contour,int u,i
 
     if ( EPSILON > (((Bx-Ax)*(Cy-Ay)) - ((By-Ay)*(Cx-Ax))) ) return false;
 
+    // Check if any point on the contour is within the triangle
     for (p=0;p<n;p++)
     {
         if( (p == u) || (p == v) || (p == w) ) continue;
@@ -166,7 +167,7 @@ bool Triangulate::processPoints(const std::vector< rw::math::Vector2D<> >& conto
     int n = (int)contour.size();
 
     if ( n < 3 ){
-    	//rw::common::Log::debugLog() << "Triangulate::processPoints has recieved polygon with less than 3 vertices" << std::endl;
+        rw::common::Log::debugLog() << "Triangulate::processPoints has recieved polygon with less than 3 vertices" << std::endl;
     	return false;
     }
 
@@ -215,6 +216,7 @@ bool Triangulate::processPoints(const std::vector< rw::math::Vector2D<> >& conto
 			w = 0;     /* next     */
 		}
 
+        // If no points on the contour is inside the triangle:
         if ( snip(contour,u,v,w,nv,V) )
         {
             int a,b,c,s,t;
@@ -230,12 +232,13 @@ bool Triangulate::processPoints(const std::vector< rw::math::Vector2D<> >& conto
             m++;
 
             /* remove v from remaining polygon */
+            // Todo: simplify this
             for(s=v,t=v+1;t<nv;s++,t++) {
 				V[s] = V[t]; 
 			}
 			nv--;
 
-            /* resest error detection counter */
+            /* reset error detection counter */
             count = 2*nv;
         }
     }
