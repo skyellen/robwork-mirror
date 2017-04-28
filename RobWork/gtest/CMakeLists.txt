@@ -83,6 +83,7 @@ SET(GEOMETRY_TEST_LIBRARIES
 
 SET(GEOMETRY_TEST_SRC
   geometry/IndexedTriMeshTest.cpp
+  geometry/PlaneTest.cpp
   geometry/PolygonTest.cpp
   geometry/QHullTest.cpp
   geometry/TriangulateTest.cpp

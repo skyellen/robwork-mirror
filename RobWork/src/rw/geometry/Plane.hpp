@@ -144,7 +144,7 @@ namespace geometry {
 		 * @param p1 [in] point 1 on the line
 		 * @param p2 [in] point 2 on the line
 		 */
-		rw::math::Vector3D<> intersection(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2) {
+		rw::math::Vector3D<> intersection(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2) const {
 			double denominator = dot(_normal, p2-p1);
 			
 			if (fabs(denominator) < 1e-16) {
