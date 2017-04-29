@@ -30,7 +30,7 @@ using namespace rwlibs::algorithms;
 double PlaneConstraint::fitError(rw::math::Transform3D<> sample) const
 {
 	// return a distance of the sample to the model
-	return _model.distance(sample.P());
+	return std::fabs(_model.distance(sample.P()));
 }
 
 

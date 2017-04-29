@@ -81,7 +81,7 @@ class PlaneModel : public RANSACModel<PlaneModel, rw::math::Vector3D<> >
 		inline rw::math::Vector3D<> normal() const { return _model.normal(); }
 		
 		//! @brief Get plane distance from {0, 0, 0} along normal.
-		inline double d() const { return _model.d(); }
+		inline double d() const { return -_model.d(); }
 		
 		/**
 		 * @brief Streaming operator.

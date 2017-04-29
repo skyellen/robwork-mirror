@@ -19,6 +19,11 @@
 #ifndef RW_GEOMETRY_PLANE_HPP_
 #define RW_GEOMETRY_PLANE_HPP_
 
+/**
+ * @file
+ * @copydoc rw::geometry::Plane
+ */
+
 #include "Primitive.hpp"
 
 #include <rw/math/Metric.hpp>
@@ -38,6 +43,7 @@ namespace geometry {
 		 */
 		typedef rw::common::Ptr<Plane> Ptr;
 
+		//! @brief The value type for a plane (double precision).
 		typedef double value_type;
 		
 		/**
@@ -84,11 +90,11 @@ namespace geometry {
 			  const rw::math::Vector3D<>& p3):
 				  _normal(normalize(cross(p2 - p1, p3 - p1)))
 		{
-			_d = dot(_normal, p1);
+			_d = -dot(_normal, p1);
 		}
 
 		//! @brief destructor
-		virtual ~Plane() {};
+		virtual ~Plane() {}
 
 		//! @brief get plane normal
 		inline rw::math::Vector3D<>& normal(){ return _normal; }
@@ -110,7 +116,7 @@ namespace geometry {
 		 *
 		 * @param point
 		 */
-		double distance(const rw::math::Vector3D<>& point){
+		double distance(const rw::math::Vector3D<>& point) const {
 		    return dot(point, _normal) + _d;
 		}
 
@@ -118,7 +124,7 @@ namespace geometry {
 		 * @brief Default metric for computing the difference between 2 planes
 		 * @param plane [in]
 		 */
-		double distance(const Plane& plane) {
+		double distance(const Plane& plane) const {
 			double ang = angle(_normal, plane.normal());
 			return (ang + fabs(_d - plane.d())) / 2.0;
 		}
@@ -180,15 +186,6 @@ namespace geometry {
 		GeometryType getType() const { return PlanePrim; }
 
 		/**
-		 * @brief Computes the distance from point to plane.
-		 * @param p [in]
-		 */
-		double distance(const rw::math::Vector3D<>& p) const {
-			return fabs(dot(_normal, p) + _d);
-		}
-
-
-		/**
 		 * @brief Create a metric that can be used to compare distance between
 		 * two planes. The distance between two planes is computed as follows:
 		 *
@@ -225,6 +222,10 @@ namespace geometry {
 	 */
 	class PlaneMetric: public rw::math::Metric<Plane> {
 	public: // constructors
+		/**
+		 * @brief Constructor.
+		 * @param angToDistWeight [in] weighting of angle compared to linear distance.
+		 */
 		PlaneMetric(double angToDistWeight = 1.0) :
 			_angToDistWeight(angToDistWeight)
 		{}
@@ -264,8 +265,13 @@ namespace geometry {
 			return 0.5*ang*_angToDistWeight + 0.5*fabs(a.d() - d);
 		}
 
+        /**
+         * @copydoc rw::math::Metric::size
+         * @note this function always return -1.
+         */
         int doSize() const { return -1; }
 
+		//! @param weighting of angle compared to linear distance.
 		double _angToDistWeight;
 	};
 	// @}

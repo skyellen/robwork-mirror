@@ -20,7 +20,65 @@
 #include <rw/geometry/Plane.hpp>
 
 using rw::geometry::Plane;
-using rw::math::Vector3D;
+using namespace rw::math;
+
+TEST(PlaneTest, basics) {
+	static const Vector3D<> n = normalize(Vector3D<>(-1,2,0));
+	{
+		static const Plane plane;
+		EXPECT_DOUBLE_EQ(0.,plane.normal()[0]);
+		EXPECT_DOUBLE_EQ(0.,plane.normal()[1]);
+		EXPECT_DOUBLE_EQ(1.,plane.normal()[2]);
+		EXPECT_DOUBLE_EQ(0.,plane.d());
+		EXPECT_DOUBLE_EQ(0.,plane.distance(Vector3D<>::zero()));
+	}
+	{
+		static const Plane plane(Q(4,n[0],n[1],n[2],4.));
+		EXPECT_DOUBLE_EQ(n[0],plane.normal()[0]);
+		EXPECT_DOUBLE_EQ(n[1],plane.normal()[1]);
+		EXPECT_DOUBLE_EQ(n[2],plane.normal()[2]);
+		EXPECT_DOUBLE_EQ(4.,plane.d());
+		EXPECT_DOUBLE_EQ(4.,plane.distance(Vector3D<>::zero()));
+	}
+	{
+		static const Plane plane(n,4.);
+		EXPECT_DOUBLE_EQ(n[0],plane.normal()[0]);
+		EXPECT_DOUBLE_EQ(n[1],plane.normal()[1]);
+		EXPECT_DOUBLE_EQ(n[2],plane.normal()[2]);
+		EXPECT_DOUBLE_EQ(4.,plane.d());
+		EXPECT_DOUBLE_EQ(4.,plane.distance(Vector3D<>::zero()));
+	}
+	{
+		static const double d = 0.1;
+		static const Vector3D<> dir = normalize(Vector3D<>(2,1,0));
+		static const Vector3D<> p1 = -d*n+0.1*dir;
+		static const Vector3D<> p2 = -d*n+0.1*cross(n,dir);
+		static const Vector3D<> p3 = -d*n-0.1*dir;
+		static const Plane plane(p1,p2,p3);
+		EXPECT_DOUBLE_EQ(n[0],plane.normal()[0]);
+		EXPECT_DOUBLE_EQ(n[1],plane.normal()[1]);
+		EXPECT_NEAR(n[2],plane.normal()[2],std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(d,plane.d(),1e-15);
+		EXPECT_DOUBLE_EQ(d,plane.distance(Vector3D<>::zero()));
+		EXPECT_DOUBLE_EQ(0.,plane.distance(p1));
+		EXPECT_DOUBLE_EQ(0.,plane.distance(p2));
+		EXPECT_DOUBLE_EQ(0.,plane.distance(p3));
+	}
+}
+
+TEST(PlaneTest, refit) {
+	std::vector<Vector3D<> > data;
+	data.push_back(Vector3D<>::x());
+	data.push_back(Vector3D<>::y());
+	data.push_back(Vector3D<>::z());
+	Plane plane;
+	EXPECT_DOUBLE_EQ(0.,plane.refit(data));
+	EXPECT_DOUBLE_EQ(1./std::sqrt(3.),plane.normal()[0]);
+	EXPECT_DOUBLE_EQ(1./std::sqrt(3.),plane.normal()[1]);
+	EXPECT_DOUBLE_EQ(1./std::sqrt(3.),plane.normal()[2]);
+	EXPECT_DOUBLE_EQ(-1./std::sqrt(3.),plane.d());
+	EXPECT_DOUBLE_EQ(-1./std::sqrt(3.),plane.distance(Vector3D<>::zero()));
+}
 
 TEST(PlaneTest, intersection) {
 	const Plane plane(normalize(Vector3D<>(-1,2,0)),-0.1);
