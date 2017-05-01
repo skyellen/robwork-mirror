@@ -29,37 +29,45 @@ RobWork is developed by <a
 href="http://www.sdu.dk/en/Om_SDU/Institutter_centre/SDURobotics">SDURobotics</a> at the <a href="http://www.sdu.dk">University of Southern
 Denmark</a>. The focus is on cognitive and applied robotics.
 
-# Release Notes # {#sec_release_notes}
-Changelog and release notes can be found here [Release Notes](@ref pagereleasenotes)
-
 # Manuals and tutorials # {#sec_index_manual}
-- [Getting Started](@ref page_rw_gettingstarted), [Installation](@ref page_rw_installation), 
-[Manual (C++)](@ref page_rw_manual), [Tutorials](@ref page_rw_tutorials)
+- [Getting Started](@ref page_rw_gettingstarted)
+- [Installation (Ubuntu)](@ref page_rw_installation_ubuntu)
+- [Installation (CentOS)](@ref page_rw_installation_centos)
+- [Installation (Windows)](@ref page_rw_installation_windows)
+- [Manual (C++)](@ref page_rw_manual)
+- [Tutorials](@ref page_rw_tutorials)
 
 Other topics include
-- [Motion Planning](@ref page_rw_motionplanning), [Online Control](@ref page_rw_onlinecontrol), 
-[Grasp Simulation](@ref page_rw_graspsimulation), [Assembly Simulation](@ref page_rw_assemblysimulation),
-[Plugins](@ref page_rw_plugins), [Script Interface](@ref page_rw_scriptinterface),
-[Codeguidelines](@ref page_coding_guidelines), [Softbody Simulation](@ref page_rw_softbodysimulation)
+- [Motion Planning](@ref page_rw_motionplanning)
+- [Online Control](@ref page_rw_onlinecontrol)
+- [Grasp Simulation](@ref page_rw_graspsimulation)
+- [Assembly Simulation](@ref page_rw_assemblysimulation)
+- [Plugins](@ref page_rw_plugins)
+- [Script Interface](@ref page_rw_scriptinterface)
+- [Codeguidelines](@ref page_coding_guidelines)
+- [Softbody Simulation](@ref page_rw_softbodysimulation)
 
 # Download # {#sec_index_download}
 - *RobWork* can be fetched from the SVN repository <a href="https://svnsrv.sdu.dk/svn/RobWork/trunk">https://svnsrv.sdu.dk/svn/RobWork/trunk</a>
 
-## Build Status ##
-The project is being built nightly, and the status can be seen at <a href="http://www.robwork.dk/cdash/index.php">Build status</a>.
+Use the following credentials:
 
-## SDK Packages and Extra ##
-SDK packages and other precompiled things can be found at <a href="http://www.robwork.dk/data">http://www.robwork.dk/data</a>. However, this is now mainly used for legacy things.
+
+- Username: 'Guest'
+- Password: ''
 
 # Installation # {#sec_index_installation}
-- Installation instructions are included in \ref page_rw_installation.
+- Installation instructions are included in \ref page_rw_installation_ubuntu, \ref page_rw_installation_centos and \ref page_rw_installation_windows. 
+An old and deprecated installation guide can still be found at \ref page_rw_installation. 
 
 # License # {#sec_index_license}
 RobWork is distributed under the "Apache License, Version 2.0", [See here](@ref rw_license). For convenience, a number of
 open-source libraries are distributed together with RobWork; the
 RobWork license does not apply to these libraries.
+<!-- Adding a list of these libraries with links would be nice -->
 
 # References #
+<!-- Here we should add reference papers for RobWorkSim and RobWorkHardware - since these were not part of the initial release -->
 If you use RobWork in your research then please support us by referencing to one of the following papers:
 
     @ARTICLE{5756879,
@@ -88,6 +96,7 @@ If you use RobWork in your research then please support us by referencing to one
     }
 
 # Publications #
+<!-- This section should be updated or simply refer to a google scholar/web of science page --> 
 Development of RobWork started summer 2006. The dynamic simulation was added in 2008 and was and still is based on the Open Dynamics Engine.
 The framework has been and is currently used by SDU in several large national and European projects: LearnBip, IntellAct, Xperience, Tailorcrete, MoveBots, Handyman,
 RobWork is being used and developed in cooperation with industrial partners such as Scape Technologies and the Danish Technological Institute.
