@@ -1,5 +1,20 @@
-/* */
-/* */
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
 #ifndef RWHW_URCALLBACKINTERFACE_HPP
 #define RWHW_URCALLBACKINTERFACE_HPP
 
@@ -8,6 +23,7 @@
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Wrench6D.hpp>
+#include <rw/math/VelocityScrew6D.hpp>
 #include <rw/common/Ptr.hpp>
 
 #include <boost/thread.hpp>
@@ -31,7 +47,6 @@ public:
 	 */
 	URCallBackInterface();
 
-
 	/**
 	 * @brief Connect to the UR
 	 * @param host [in] IP address of the UR
@@ -40,37 +55,35 @@ public:
  	 */
 	void connect(const std::string& host, unsigned int port  = 30002);
 	    
-    /**
-    * @brief Starts robot communication thread and sends a script to the controller.
-    * 
-    * Required to start robot communication. Call connect() first, then startCommunication().
-    *  
-    * @param host [in] IP address of the host (to which the robot will connect), e.g. 192.168.100.1.
-    * @param callbackPort [in] port used for communicating with robot. Defaults to 33334.
-	* @param version [in] Controller version to use. Defaults to CB2
-    * @param filename [in] UR script filename; if not specified, a default bundled script is used.
-    */
+	/**
+	 * @brief Starts robot communication thread and sends a script to the controller.
+	 *
+	 * Required to start robot communication. Call connect() first, then startCommunication().
+	 *
+	 * @param host [in] IP address of the host (to which the robot will connect), e.g. 192.168.100.1.
+	 * @param callbackPort [in] port used for communicating with robot. Defaults to 33334.
+ 	 * @param version [in] Controller version to use. Defaults to CB2
+	 * @param filename [in] UR script filename; if not specified, a default bundled script is used.
+	 */
 	void startCommunication(const std::string& callbackIP, const unsigned int callbackPort = 33334, ControllerBox cb = CB2, const std::string& filename="");
 
-    /**
-    * @brief Starts robot communication thread and sends a script to the controller.
-    * 
-    * Required to start robot communication. Call connect() first, then startCommunication().
-	* Selects the local IP as the host for the call back. 
-    * 
-    * @param callbackPort [in] port used for communicating with robot. Defaults to 33334.
-	* @param version [in] Controller version to use. Defaults to CB2
-    * @param filename [in] UR script filename; if not specified, a default bundled script is used.
-    */
+	/**
+	 * @brief Starts robot communication thread and sends a script to the controller.
+	 *
+	 * Required to start robot communication. Call connect() first, then startCommunication().
+ 	 * Selects the local IP as the host for the call back.
+	 *
+	 * @param callbackPort [in] port used for communicating with robot. Defaults to 33334.
+ 	 * @param version [in] Controller version to use. Defaults to CB2
+	 * @param filename [in] UR script filename; if not specified, a default bundled script is used.
+	 */
 	void startCommunication(const unsigned int callbackPort = 33334, ControllerBox cb = CB2, const std::string& filename = "");
 
 
-    /**
-    * @brief Stops the robot communication thread
-    */
-    void stopCommunication();
-
-
+	/**
+	 * @brief Stops the robot communication thread
+	 */
+	void stopCommunication();
 
 	/**	 
 	 * @brief Returns the URPrimaryInterface used to send the script.
@@ -85,17 +98,36 @@ public:
 	/**
 	 * @brief Move to the specified configuration
 	 *
-	 * @param transform [in] Target configuration of the robot
-	 * @param speed [in] NOT USED
+	 * @param q [in] Target configuration of the robot
+	 * @param speed [in] as a percentage, range: 0-100%
+	 * @param blend [in] as a radius given in meters, range: 0 to 2 meters
+	 */
+	void moveQ(const rw::math::Q& q, float speed, float blend);
+
+	/**
+	 * @brief Move to the specified configuration
+	 *
+	 * @param q [in] Target configuration of the robot
+	 * @param speed [in] as a percentage, range: 0-100%
 	 */
 	void moveQ(const rw::math::Q& q, float speed);
+
+	/**
+ 	 * @brief Move to the specified transformation
+ 	 *
+ 	 * The coordinates are send directly to the robot, hence the inverse kinematics is the robots internal model.
+ 	 * @param transform [in] Target of the robot
+ 	 * @param speed [in] as a percentage, range: 0-100%
+	 * @param blend [in] as a radius given in meters, range: 0 to 2 meters
+ 	 */
+	void moveT(const rw::math::Transform3D<>& transform, float speed, float blend);
 
 	/**
 	 * @brief Move to the specified transformation
 	 *
 	 * The coordinates are send directly to the robot, hence the inverse kinematics is the robots internal model.
 	 * @param transform [in] Target of the robot
-	 * @param speed [in] NOT USED
+	 * @param speed [in] as a percentage, range: 0-100%
 	 */
 	void moveT(const rw::math::Transform3D<>& transform, float speed);
 
@@ -136,12 +168,10 @@ public:
 	 */ 
 	void forceModeUpdate(const rw::math::Wrench6D<>& wrench);
 
-
 	/**
 	 * @brief Ends force mode
 	 */ 
 	void forceModeEnd();
-
 
 	/**
 	 * @brief Start teach mode
@@ -169,123 +199,138 @@ public:
 	 */
 	void setPayload(double mass, const rw::math::Vector3D<>& centerOfGravity);
 	 
-
-	/**
-	 * @brief Sets the transformation of the TCP relative to end flange of the robot
-	 * @param endTtcp [in] Transform from end to TCP. The translation should be in meter as standard in RobWork.	
-	 */
-	void setTCPTransform(const rw::math::Transform3D<>& endTtcp);
-
-	/**
-	 * @brief Returns true if the call back is connected
-	 *
-	 */
-	bool isConnected() const;
 private:
-    
     void run();
 
 	URPrimaryInterface _urPrimary;
 	ControllerBox _cb;
 	rw::common::Ptr<boost::thread> _thread;
 
-
 	unsigned int _callbackPort;
     boost::asio::ip::address _callbackIP;
-
-	bool _isConnected;
 
 	bool _stopServer;
 	bool _robotStopped;
 
 	bool _isMoving;
-    bool _isServoing;
+	bool _isServoing;
 
 	class URScriptCommand {
 	public:
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-		enum CmdType { STOP = 0, MOVEQ = 1, 
-			MOVET = 2, 
-			SERVOQ = 3, 
-			FORCE_MODE_START = 4, 
-			FORCE_MODE_UPDATE = 5, 
-			FORCE_MODE_END = 6, 
-			TEACH_MODE_START = 7, 
-			TEACH_MODE_END = 8, 
-			SET_DIGOUT = 9, 
-			SET_PAYLOAD = 10, 
-			SET_TCPTRANSFORM = 11, 
-			DO_NOTHING = 9999 };
+		enum CmdType { STOP = 0, MOVEQ = 1, MOVET = 2, SERVOQ = 3, FORCE_MODE_START = 4, FORCE_MODE_UPDATE = 5, FORCE_MODE_END = 6, TEACH_MODE_START = 7, TEACH_MODE_END = 8, SET_DIGOUT = 9, SET_PAYLOAD = 10, DO_NOTHING = 9999 };
 
-            URScriptCommand(CmdType type, const rw::math::Q& q, float speed):
-                _type(type),
-                _q(q),
-                _speed(speed)
-            {
-            }
+		void initVariables()
+		{
+			_speed = 0;
+			_blend = 0;
+			_id = 0;
+			_bValue = false;
+			_mass = 0;
+		}
 
-            URScriptCommand(CmdType type):
-                _type(type)
-            {
-            }
+		URScriptCommand(CmdType type, const rw::math::Q& q, float speed, float blend):
+			_type(type),
+			_q(q),
+			_speed(speed),
+			_blend(blend)
+		{
+			initVariables();
+		}
 
+		URScriptCommand(CmdType type, const rw::math::Q& q, float speed):
+			_type(type),
+			_q(q),
+			_speed(speed)
+		{
+			initVariables();
+		}
 
-            URScriptCommand(CmdType type, const rw::math::Transform3D<>& transform):
-                _type(type),
-                _transform(transform)
-            {
-            }
+		URScriptCommand(CmdType type):
+			_type(type)
+		{
+			initVariables();
+		}
 
-            URScriptCommand(CmdType type, const rw::math::Transform3D<>& transform, const rw::math::VelocityScrew6D<>& velocity):
-                _type(type),
-                _transform(transform)/*,
-                _velocity(velocity)*/
-            {}
+	    URScriptCommand(CmdType type, const rw::math::Transform3D<>& transform, float speed, float blend):
+			_type(type),
+			_transform(transform),
+			_speed(speed),
+			_blend(blend)
+	    {
+			initVariables();
+		}
 
-            URScriptCommand(CmdType type, const rw::math::Q& selection, const rw::math::Wrench6D<>& wrench, const rw::math::Q& limits):
-                _type(type),
-                _selection(selection),
-                _wrench(wrench),
-                _limits(limits)
-            {}
+		URScriptCommand(CmdType type, const rw::math::Transform3D<>& transform):
+			_type(type),
+			_transform(transform)
+		{
+			initVariables();
+		}
 
-            URScriptCommand(CmdType type, const rw::math::Transform3D<>& base2ref, const rw::math::Q& selection, const rw::math::Wrench6D<>& wrench, const rw::math::Q& limits):
-                _type(type),
-                _transform(base2ref),
-                _selection(selection),
-                _wrench(wrench),
-                _limits(limits)
-            {}
+		URScriptCommand(CmdType type, const rw::math::Transform3D<>& transform, const rw::math::VelocityScrew6D<>& velocity):
+			_type(type),
+			_transform(transform)/*,
+			_velocity(velocity)*/
+		{
+			initVariables();
+		}
 
-            URScriptCommand(CmdType type, const rw::math::Wrench6D<>& wrench):
-                _type(type),
-                _wrench(wrench)
-            {}
+		URScriptCommand(CmdType type, const rw::math::Q& selection, const rw::math::Wrench6D<>& wrench, const rw::math::Q& limits):
+			_type(type),
+			_selection(selection),
+			_wrench(wrench),
+			_limits(limits)
+		{
+			initVariables();
+		}
 
-			URScriptCommand(CmdType type, int id, bool bValue):
-				_type(type),
-				_id(id),
-				_bValue(bValue)
-			{}
+		URScriptCommand(CmdType type, const rw::math::Transform3D<>& base2ref, const rw::math::Q& selection, const rw::math::Wrench6D<>& wrench, const rw::math::Q& limits):
+			_type(type),
+			_transform(base2ref),
+			_selection(selection),
+			_wrench(wrench),
+			_limits(limits)
+		{
+			initVariables();
+		}
 
-			 URScriptCommand(CmdType type, double mass, const rw::math::Vector3D<>& centerOfGravity):
-				_type(type),
-				_mass(mass),
-				_centerOfGravity(centerOfGravity)
-			{}
+		URScriptCommand(CmdType type, const rw::math::Wrench6D<>& wrench):
+			_type(type),
+			_wrench(wrench)
+		{
+			initVariables();
+		}
 
-            CmdType _type;
-            rw::math::Q _q;
-            rw::math::Transform3D<> _transform;
-            //rw::math::VelocityScrew6D<> _velocity;
-            rw::math::Q _selection;
-            rw::math::Wrench6D<> _wrench;
-            rw::math::Q _limits;
-            float _speed;
-			int _id;
-			bool _bValue;
-			float _mass;
-			rw::math::Vector3D<> _centerOfGravity;
+	    URScriptCommand(CmdType type, int id, bool bValue):
+			_type(type),
+			_id(id),
+			_bValue(bValue)
+	    {
+			initVariables();
+		}
+
+	    URScriptCommand(CmdType type, double mass, const rw::math::Vector3D<>& centerOfGravity):
+			_type(type),
+			_mass(mass),
+			_centerOfGravity(centerOfGravity)
+	    {
+			initVariables();
+		}
+
+		CmdType _type;
+		rw::math::Q _q;
+		rw::math::Transform3D<> _transform;
+		//rw::math::VelocityScrew6D<> _velocity;
+		rw::math::Q _selection;
+		rw::math::Wrench6D<> _wrench;
+		rw::math::Q _limits;
+		float _speed;
+		float _blend;
+	    int _id;
+	    bool _bValue;
+	    float _mass;
+	    rw::math::Vector3D<> _centerOfGravity;
 	};
 
 	std::queue<URScriptCommand> _commands;
@@ -293,17 +338,17 @@ private:
 	boost::mutex _mutex;
 
 	void handleCmdRequest(boost::asio::ip::tcp::socket& socket);
-        void sendStop(boost::asio::ip::tcp::socket& socket);
 
-        void popAllUpdateCommands();
+	void sendStop(boost::asio::ip::tcp::socket& socket);
 
+	void popAllUpdateCommands();
 
-	/** Stuff needed for the servoing */
+	/* Stuff needed for the servoing
 	rw::math::Q _qcurrent;
-	/*rw::math::Q _qservo;
-          rw::math::Q _dqservo;
-          double _dt;*/
-//	rwlibs::algorithms::XQPController::Ptr _xqp;
+  	rw::math::Q _qservo;
+  	rw::math::Q _dqservo;
+  	double _dt;
+  	rwlibs::algorithms::XQPController::Ptr _xqp; */
 
     };
 

@@ -1,4 +1,20 @@
-/* */
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
 #ifndef RWHW_URCOMMON_HPP
 #define RWHW_URCOMMON_HPP
 
@@ -87,7 +103,7 @@ public:
 	}
 
 	static inline uint64_t getUInt64(const std::vector<char>& data, uint32_t &messageOffset) {
-		uint64_t output;// = *((uint64_t*)&data[messageOffset]);
+		uint64_t output;// = *((uint64_t*)&data[_messageOffset]);
 
 		((char*)(&output))[7] = data[messageOffset];
 		((char*)(&output))[6] = data[messageOffset+1];
@@ -132,7 +148,7 @@ public:
 	//Extract a double
 
 	static inline double getDouble(const std::vector<char>& data, uint32_t &messageOffset) {
-		double output; //= *((double*)&data[messageOffset]);
+		double output; //= *((double*)&data[_messageOffset]);
 
 		((char*)(&output))[7] = data[messageOffset];
 		((char*)(&output))[6] = data[messageOffset+1];
@@ -148,7 +164,7 @@ public:
 	}
 
 	static inline double getFloat(const std::vector<char>& data, uint32_t &messageOffset) {
-		float output;// = *((float*)&data[messageOffset]);
+		float output;// = *((float*)&data[_messageOffset]);
 		((char*)(&output))[3] = data[messageOffset];
 		((char*)(&output))[2] = data[messageOffset+1];
 		((char*)(&output))[1] = data[messageOffset+2];
@@ -235,26 +251,30 @@ public:
 			for (size_t i = 0; i<integers.size(); i++) {
 				ibuf[i] = integers[i];
 			}
-                        /* TODO:
-                         * This call to memcpy(...) is unnecessary? as the two (not-commented) for-loops are doing the same thing, just flipping the "word order" ?
-                         */
+			/* TODO:
+			 * This call to memcpy(...) is unnecessary? as the two (not-commented) for-loops are doing the same thing,
+			 * just flipping the "word order" ?
+			 */
 			memcpy(buffer, ibuf, n);
         
-	  //      for (size_t i = 0; i<n; i++) {
-		//        std::cout<<"buffer = "<<(int)buffer[i]<<" ibuf = "<<(int)((char*)ibuf)[i]<<std::endl;
-		  //  }
+	  		// for (size_t i = 0; i<n; i++) {
+			// std::cout<<"buffer = "<<(int)buffer[i]<<" ibuf = "<<(int)((char*)ibuf)[i]<<std::endl;
+		  	// }
 
-                        /* TODO:
-                         * Has hardcoded information (ie. 4 and 3 that are dependent on the size of int)
-                         * Rewrite to dynamic sizes using sizeof(int) and verify that the content in buffer will be the same
-                         */
-			for (size_t i = 0; i<integers.size(); i++) {
-				for (size_t j = 0; j < sizeof(int); j++) {
+			/* TODO:
+			 * Has hardcoded information (ie. 4 and 3 that are dependent on the size of int)
+			 * Rewrite to dynamic sizes using sizeof(int) and verify that the content in buffer will be the same
+			 */
+			for (size_t i = 0; i<integers.size(); i++)
+			{
+				for (size_t j = 0; j < sizeof(int); j++)
+				{
 					buffer[4*i+j] = ((char*)(&integers.at(i)))[3-j];
 				}
 			}
 
-			/*for (size_t i = 0; i<integers.size(); ++i) {
+			/*for (size_t i = 0; i<integers.size(); ++i)
+			{
 	//            ibuf[i] = integers.at(i);
 				std::cout<<"Int = "<<integers.at(i)<<" = "<<(unsigned int)ibuf[4*i]<<" "<<(unsigned int)ibuf[4*i+1]<<" "<<(unsigned int)ibuf[4*i+2]<<" "<<(unsigned int)ibuf[4*i+3]<<std::endl;
 				std::cout<<"Int from buffer = "<<*(int*)(&buffer[4*i])<<std::endl;
@@ -266,15 +286,19 @@ public:
 			buffer[0] = 1;
     		socket->send(boost::asio::buffer(buffer, n));*/
                         /*socket->send(boost::asio::buffer(buffer, n));*/
-                        std::size_t bytesTransfered = 0;
-                        bytesTransfered = boost::asio::write(*socket, boost::asio::buffer(buffer, n));
-                        if (static_cast<int>(bytesTransfered) == n) {
-                            /* Successful send */
-                            //RW_LOG_DEBUG("Sent all of the '" << bytesTransfered << "' bytes.");
-                        } else {
-                            /* Unsuccessful send */
-                            RW_LOG_ERROR("Unable to send all the '" << n << "' bytes - only sent '" << bytesTransfered << "' bytes");
-                        }
+			
+			std::size_t bytesTransfered = 0;
+			bytesTransfered = boost::asio::write(*socket, boost::asio::buffer(buffer, n));
+			if (static_cast<int>(bytesTransfered) == n)
+			{
+				/* Successful send */
+				//RW_LOG_DEBUG("Sent all of the '" << bytesTransfered << "' bytes.");
+			}
+			else
+			{
+				/* Unsuccessful send */
+				RW_LOG_ERROR("Unable to send all the '" << n << "' bytes - only sent '" << bytesTransfered << "' bytes");
+			}
 		} catch (std::exception& e) {
 			delete[] buffer;
 			delete[] ibuf;
