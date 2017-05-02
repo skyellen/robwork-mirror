@@ -127,8 +127,7 @@ TEST_F(TriangulateTest, processPoints) {
     result.clear();
 
     // Check that processPoints fails when too few points are used:
-    contour_square.erase(contour_square.end());
-    contour_square.erase(contour_square.end());
+	contour_square.resize(2);
     ASSERT_FALSE(tr.processPoints(contour_square,result));
 
     // Triangulate the octagon:
