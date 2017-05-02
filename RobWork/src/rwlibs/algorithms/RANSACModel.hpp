@@ -127,7 +127,7 @@ public:
 			// if consensus set size is large enough, we have a model
 			if (consensusSet.size() > static_cast<size_t>(dataRequired)) {
 				models.push_back(
-						std::pair<MODEL, int>(maybeModel, consensusSet.size()));
+						std::pair<MODEL, int>(maybeModel, static_cast<int>(consensusSet.size())));
 			}
 
 		}

@@ -86,11 +86,11 @@ TEST_F(TriangulateTest, utilityfunctions) {
     Cx = 2;
     Cy = 2;
 
-    float Insidex = 1.5, Insidey = 0.5;
+    float Insidex = 1.5f, Insidey = 0.5f;
     EXPECT_TRUE(tr.insideTriangle2D(Ax,Ay,Bx,By,Cx,Cy,Insidex,Insidey));
-    Insidex = 0.5; Insidey = 0.5;
+    Insidex = 0.5f; Insidey = 0.5f;
     EXPECT_TRUE(tr.insideTriangle2D(Ax,Ay,Bx,By,Cx,Cy,Insidex,Insidey));
-    Insidey = 1.6;
+    Insidey = 1.6f;
     EXPECT_FALSE(tr.insideTriangle2D(Ax,Ay,Bx,By,Cx,Cy,Insidex,Insidey));
 
 
