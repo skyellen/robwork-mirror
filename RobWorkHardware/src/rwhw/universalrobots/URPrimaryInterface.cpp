@@ -165,7 +165,7 @@ void URPrimaryInterface::run() {
 			}
 
 
-			long time = TimerUtil::currentTimeMs();
+			long time = static_cast<long>(TimerUtil::currentTimeMs());
 			if(time-_lastPackageTime>1000){
 				_lostConnection = true;
 			} else {
@@ -227,7 +227,7 @@ bool URPrimaryInterface::readPrimaryInterfacePacket() {
 	}
 
     //Get the length of the available data
-    uint32_t bytesReady = _socket->available();
+    uint32_t bytesReady = static_cast<uint32_t>(_socket->available());
     //std::cout<<"bytes ready "<<bytesReady<<std::endl;
 	//Check if the data can contain an valid messages length
 	if(bytesReady < (uint32_t)sizeof(uint32_t))
@@ -239,7 +239,7 @@ bool URPrimaryInterface::readPrimaryInterfacePacket() {
 		_haveReceivedSize = true;
 	}
 	//std::cout<<"Message Length = "<<_messageLength<<std::endl;
-	_lastPackageTime = TimerUtil::currentTimeMs();
+	_lastPackageTime = static_cast<long>(TimerUtil::currentTimeMs());
 
 	if (bytesReady < _messageLength)
 		return false; //Wait for a who packet are ready
@@ -283,7 +283,7 @@ bool URPrimaryInterface::readPrimaryInterfacePacket() {
 void URPrimaryInterface::readRobotMessage(const std::vector<char>& data, unsigned int messageLength)
 {
 	//uint32_t _messageOffset = 0;
-	_data.controllerTimeStamp = URCommon::getUInt64(data, _messageOffset);
+	_data.controllerTimeStamp = static_cast<long>(URCommon::getUInt64(data, _messageOffset));
 	//char source = URCommon::getUChar(data, _messageOffset);
 	URCommon::getUChar(data, _messageOffset);
 	char robotMessageType = URCommon::getUChar(data, _messageOffset);
@@ -399,7 +399,7 @@ void URPrimaryInterface::readRobotsState(const std::vector<char>& data) {
 	//std::cout<<"Package Length = "<<packetLength<<"  PacketType = "<<(int)packetType<<std::endl;
 	switch(packetType) {
 	case ROBOT_MODE_DATA:
-		_data.controllerTimeStamp = URCommon::getUInt64(data, _messageOffset);
+		_data.controllerTimeStamp = static_cast<long>(URCommon::getUInt64(data, _messageOffset));
 		_data.physical = URCommon::getBoolean(data, _messageOffset);
 		_data.real = URCommon::getBoolean(data, _messageOffset);
 		_data.robotPowerOn = URCommon::getBoolean(data, _messageOffset);
@@ -420,10 +420,10 @@ void URPrimaryInterface::readRobotsState(const std::vector<char>& data) {
 			jointSpeed[j] = URCommon::getDouble(data, _messageOffset);
 
 			//store Array
-			_data.jointCurrent[j] = URCommon::getFloat(data, _messageOffset);
-			_data.jointVoltage[j] = URCommon::getFloat(data, _messageOffset);
-			_data.jointMotorTemperature[j] = URCommon::getFloat(data, _messageOffset);
-			_data.jointMicroTemperature[j] = URCommon::getFloat(data, _messageOffset);
+			_data.jointCurrent[j] = static_cast<float>(URCommon::getFloat(data, _messageOffset));
+			_data.jointVoltage[j] = static_cast<float>(URCommon::getFloat(data, _messageOffset));
+			_data.jointMotorTemperature[j] = static_cast<float>(URCommon::getFloat(data, _messageOffset));
+			_data.jointMicroTemperature[j] = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 			_data.jointMode[j] = URCommon::getUChar(data, _messageOffset);
 		}
 		//Store rw::math::Q
@@ -446,16 +446,16 @@ void URPrimaryInterface::readRobotsState(const std::vector<char>& data) {
 		_data.analogIn[3] = URCommon::getDouble(data, _messageOffset);
 
 		// float toolVoltage48V
-		_data.toolVoltage48V = URCommon::getFloat(data, _messageOffset);
+		_data.toolVoltage48V = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 
 		// unsigned char tool_output_voltage (can only be 0, 12 or 24)
 		_data.toolOutputVoltage = URCommon::getUChar(data, _messageOffset);
 
 		// float tool_current
-		_data.toolCurrent = URCommon::getFloat(data, _messageOffset);
+		_data.toolCurrent = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 
 		// float toolTemperature;
-		_data.toolTemperature = URCommon::getFloat(data, _messageOffset);
+		_data.toolTemperature = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 
 		// uchar tool mode
 		_data.toolMode = URCommon::getUChar(data, _messageOffset);
@@ -490,16 +490,16 @@ void URPrimaryInterface::readRobotsState(const std::vector<char>& data) {
 		_data.analogOut[1] = URCommon::getDouble(data, _messageOffset);
 
 		// float masterTemperature;
-		_data.masterTemperature = URCommon::getFloat(data, _messageOffset);
+		_data.masterTemperature = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 
 		// float robotVoltage48V;
-		_data.robotVoltage48V = URCommon::getFloat(data, _messageOffset);
+		_data.robotVoltage48V = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 
 		// float robotCurrent;
-		_data.robotCurrent = URCommon::getFloat(data, _messageOffset);
+		_data.robotCurrent = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 
 		// float masterIOCurrent;
-		_data.masterIOCurrent = URCommon::getFloat(data, _messageOffset);
+		_data.masterIOCurrent = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 
 		// secret stuff, masterSafetyState, master
 		_messageOffset+=2;
@@ -530,7 +530,7 @@ void URPrimaryInterface::readRobotsState(const std::vector<char>& data) {
 
 //Extract many booleans, max 16
 bool URPrimaryInterface::extractBoolean(uint16_t input, unsigned int bitNumber) {
-	uint16_t filter = 1<<bitNumber;
+	uint16_t filter = static_cast<uint16_t>(1<<bitNumber);
 	bool output = (input & filter)>0;
 	return output;
 }

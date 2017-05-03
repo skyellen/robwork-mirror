@@ -220,14 +220,14 @@ private:
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 		enum CmdType { STOP = 0, MOVEQ = 1, MOVET = 2, SERVOQ = 3, FORCE_MODE_START = 4, FORCE_MODE_UPDATE = 5, FORCE_MODE_END = 6, TEACH_MODE_START = 7, TEACH_MODE_END = 8, SET_DIGOUT = 9, SET_PAYLOAD = 10, DO_NOTHING = 9999 };
 
-		void initVariables()
-		{
-			_speed = 0;
-			_blend = 0;
-			_id = 0;
-			_bValue = false;
-			_mass = 0;
-		}
+        URScriptCommand()
+        {
+            _speed = 0;
+            _blend = 0;
+            _id = 0;
+            _bValue = false;
+            _mass = 0;
+        }
 
 		URScriptCommand(CmdType type, const rw::math::Q& q, float speed, float blend):
 			_type(type),
@@ -235,7 +235,6 @@ private:
 			_speed(speed),
 			_blend(blend)
 		{
-			initVariables();
 		}
 
 		URScriptCommand(CmdType type, const rw::math::Q& q, float speed):
@@ -243,13 +242,11 @@ private:
 			_q(q),
 			_speed(speed)
 		{
-			initVariables();
 		}
 
 		URScriptCommand(CmdType type):
 			_type(type)
 		{
-			initVariables();
 		}
 
 	    URScriptCommand(CmdType type, const rw::math::Transform3D<>& transform, float speed, float blend):
@@ -258,14 +255,12 @@ private:
 			_speed(speed),
 			_blend(blend)
 	    {
-			initVariables();
 		}
 
 		URScriptCommand(CmdType type, const rw::math::Transform3D<>& transform):
 			_type(type),
 			_transform(transform)
 		{
-			initVariables();
 		}
 
 		URScriptCommand(CmdType type, const rw::math::Transform3D<>& transform, const rw::math::VelocityScrew6D<>& velocity):
@@ -273,7 +268,6 @@ private:
 			_transform(transform)/*,
 			_velocity(velocity)*/
 		{
-			initVariables();
 		}
 
 		URScriptCommand(CmdType type, const rw::math::Q& selection, const rw::math::Wrench6D<>& wrench, const rw::math::Q& limits):
@@ -282,7 +276,6 @@ private:
 			_wrench(wrench),
 			_limits(limits)
 		{
-			initVariables();
 		}
 
 		URScriptCommand(CmdType type, const rw::math::Transform3D<>& base2ref, const rw::math::Q& selection, const rw::math::Wrench6D<>& wrench, const rw::math::Q& limits):
@@ -292,14 +285,12 @@ private:
 			_wrench(wrench),
 			_limits(limits)
 		{
-			initVariables();
 		}
 
 		URScriptCommand(CmdType type, const rw::math::Wrench6D<>& wrench):
 			_type(type),
 			_wrench(wrench)
 		{
-			initVariables();
 		}
 
 	    URScriptCommand(CmdType type, int id, bool bValue):
@@ -307,7 +298,6 @@ private:
 			_id(id),
 			_bValue(bValue)
 	    {
-			initVariables();
 		}
 
 	    URScriptCommand(CmdType type, double mass, const rw::math::Vector3D<>& centerOfGravity):
@@ -315,7 +305,6 @@ private:
 			_mass(mass),
 			_centerOfGravity(centerOfGravity)
 	    {
-			initVariables();
 		}
 
 		CmdType _type;

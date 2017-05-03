@@ -38,7 +38,7 @@ public:
 			data.resize(cnt);
 		socket->read_some(boost::asio::buffer(&data[0], cnt));
 
-		return cnt;
+		return static_cast<int>(cnt);
 	}
 
 
@@ -58,7 +58,7 @@ public:
 			cnt++;
 			getChar(socket, &(buffer[cnt]));
 		}
-		messageOffset += cnt+1;
+		messageOffset += static_cast<uint32_t>(cnt+1);
 		buffer[cnt] = 0;
 		return std::string(buffer);
 	}
@@ -244,7 +244,7 @@ public:
 	}
 
     static inline void send(boost::asio::ip::tcp::socket* socket, const std::vector<int>& integers) {        
-        const int n = integers.size()*sizeof(int);
+        const int n = static_cast<int>(integers.size()*sizeof(int));
         char* buffer = new char[n];
         int* ibuf = new int[integers.size()];
 		try {

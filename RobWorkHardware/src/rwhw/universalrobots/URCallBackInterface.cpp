@@ -191,32 +191,32 @@ namespace {
 		const Vector3D<>& p = transform.P();
 		EAA<> eaa(transform.R());
     
-        integers[offset] = p(0)*FLOAT_TO_INT_SCALE;
-        integers[offset+1] = p(1)*FLOAT_TO_INT_SCALE;
-        integers[offset+2] = p(2)*FLOAT_TO_INT_SCALE;
-        integers[offset+3] = eaa(0)*FLOAT_TO_INT_SCALE;
-        integers[offset+4] = eaa(1)*FLOAT_TO_INT_SCALE;
-        integers[offset+5] = eaa(2)*FLOAT_TO_INT_SCALE;
+        integers[offset] = static_cast<int>(p(0)*FLOAT_TO_INT_SCALE);
+        integers[offset+1] = static_cast<int>(p(1)*FLOAT_TO_INT_SCALE);
+        integers[offset+2] = static_cast<int>(p(2)*FLOAT_TO_INT_SCALE);
+        integers[offset+3] = static_cast<int>(eaa(0)*FLOAT_TO_INT_SCALE);
+        integers[offset+4] = static_cast<int>(eaa(1)*FLOAT_TO_INT_SCALE);
+        integers[offset+5] = static_cast<int>(eaa(2)*FLOAT_TO_INT_SCALE);
 
     }
 
 
     void vector3d2intVector(const Vector3D<>& vec, std::vector<int>& integers, int offset) {
 	RW_ASSERT(offset+2 < integers.size());
-	integers[offset] = vec[0]*FLOAT_TO_INT_SCALE;
-	integers[offset+1] = vec[1]*FLOAT_TO_INT_SCALE;
-	integers[offset+2] = vec[2]*FLOAT_TO_INT_SCALE;
+	integers[offset] = static_cast<int>(vec[0]*FLOAT_TO_INT_SCALE);
+	integers[offset+1] = static_cast<int>(vec[1]*FLOAT_TO_INT_SCALE);
+	integers[offset+2] = static_cast<int>(vec[2]*FLOAT_TO_INT_SCALE);
     }
 
 
     void wrench2intVector(const Wrench6D<>& wrench, std::vector<int>& integers, int offset) {
 	RW_ASSERT(offset+5 < integers.size());
-	integers[offset] = wrench.force()(0)*FLOAT_TO_INT_SCALE;
-	integers[offset+1] = wrench.force()(1)*FLOAT_TO_INT_SCALE;
-	integers[offset+2] = wrench.force()(2)*FLOAT_TO_INT_SCALE;
-	integers[offset+3] = wrench.torque()(0)*FLOAT_TO_INT_SCALE;
-	integers[offset+4] = wrench.torque()(1)*FLOAT_TO_INT_SCALE;
-	integers[offset+5] = wrench.torque()(2)*FLOAT_TO_INT_SCALE;
+	integers[offset] = static_cast<int>(wrench.force()(0)*FLOAT_TO_INT_SCALE);
+	integers[offset+1] = static_cast<int>(wrench.force()(1)*FLOAT_TO_INT_SCALE);
+	integers[offset+2] = static_cast<int>(wrench.force()(2)*FLOAT_TO_INT_SCALE);
+	integers[offset+3] = static_cast<int>(wrench.torque()(0)*FLOAT_TO_INT_SCALE);
+	integers[offset+4] = static_cast<int>(wrench.torque()(1)*FLOAT_TO_INT_SCALE);
+	integers[offset+5] = static_cast<int>(wrench.torque()(2)*FLOAT_TO_INT_SCALE);
     }
 
 }
@@ -253,14 +253,14 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
         break;
     case URScriptCommand::MOVEQ:
         q2intVector(cmd._q, integers, 1);
-        integers[7] = (cmd._speed*NORMALIZE_PERCENTAGE)*FLOAT_TO_INT_SCALE;
-        integers[8] = (cmd._blend)*FLOAT_TO_INT_SCALE;
+        integers[7] = static_cast<int>((cmd._speed*NORMALIZE_PERCENTAGE)*FLOAT_TO_INT_SCALE);
+        integers[8] = static_cast<int>((cmd._blend)*FLOAT_TO_INT_SCALE);
         _isMoving = true;
         break;
     case URScriptCommand::MOVET: 
         t2intVector(cmd._transform, integers, 1);
-        integers[7] = (cmd._speed*NORMALIZE_PERCENTAGE)*FLOAT_TO_INT_SCALE;
-        integers[8] = (cmd._blend)*FLOAT_TO_INT_SCALE;
+        integers[7] = static_cast<int>((cmd._speed*NORMALIZE_PERCENTAGE)*FLOAT_TO_INT_SCALE);
+        integers[8] = static_cast<int>((cmd._blend)*FLOAT_TO_INT_SCALE);
         _isMoving = true;
         break;
     case URScriptCommand::SERVOQ:
@@ -294,7 +294,7 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
 		integers[2] = cmd._bValue;
 		break;
     case URScriptCommand::SET_PAYLOAD:
-		integers[1] = cmd._mass*FLOAT_TO_INT_SCALE;
+		integers[1] = static_cast<int>(cmd._mass*FLOAT_TO_INT_SCALE);
 		vector3d2intVector(cmd._centerOfGravity, integers, 2);
         break;    
 	default:

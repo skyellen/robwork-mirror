@@ -195,7 +195,7 @@ bool UniversalRobotsRTLogging::readRTInterfacePacket() {
 		_data.tcpForce = tcp_force;
 		_data.toolPose = tool_pose;
 		_data.tcpSpeed = tcp_speed;
-		_data.digIn = digin;
+		_data.digIn = static_cast<int64_t>(digin);
     }
 
     _lastPackageTime = TimerUtil::currentTimeMs();
