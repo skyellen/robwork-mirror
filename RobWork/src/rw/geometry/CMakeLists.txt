@@ -47,8 +47,6 @@ SET(FILES_CPP
     RectDistanceCalc.cpp
     RSSDistanceCalc.cpp
     SphereDistanceCalc.cpp
-    TriDistanceCalc.cpp
-    TriTriToleranceIntersect.cpp
     TriMeshSurfaceSampler.cpp
     PointCloud.cpp
 )
@@ -105,11 +103,20 @@ SET(FILES_HPP
     RectDistanceCalc.hpp
     RSSDistanceCalc.hpp
     SphereDistanceCalc.hpp
-    TriDistanceCalc.hpp
-    TriTriToleranceIntersect.hpp
     TriMeshSurfaceSampler.hpp
     PointCloud.hpp
 )
+
+IF (RW_HAVE_PQP)
+  SET(FILES_CPP ${FILES_CPP}
+    TriDistanceCalc.cpp
+    TriTriToleranceIntersect.cpp
+  )
+  SET(FILES_HPP ${FILES_HPP}
+    TriDistanceCalc.hpp
+    TriTriToleranceIntersect.hpp
+  )
+ENDIF()
 
 SOURCE_GROUP(geometry FILES ${FILES_CPP} ${FILES_HPP})
 

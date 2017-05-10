@@ -31,8 +31,6 @@ SET(FILES_CPP
   rwstrategy/BVTreeColliderFactory.cpp
   rwstrategy/BVTreeToleranceCollider.cpp
   rwstrategy/OBVTreeDFSCollider.cpp
-  
-  rwstrategy/TreeDistanceCalc.cpp
 )
 
 SET(FILES_HPP
@@ -61,6 +59,15 @@ SET(FILES_HPP
   rwstrategy/BVTreeToleranceCollider.hpp
   rwstrategy/OBVTreeDFSCollider.hpp 
 )
+
+IF (RW_HAVE_PQP)
+  SET(FILES_CPP ${FILES_CPP}
+    rwstrategy/TreeDistanceCalc.cpp
+  )
+  SET(FILES_HPP ${FILES_HPP}
+    rwstrategy/TreeDistanceCalc.hpp
+  )
+ENDIF()
 
 SOURCE_GROUP(proximity FILES ${FILES_CPP} ${FILES_HPP})
 
