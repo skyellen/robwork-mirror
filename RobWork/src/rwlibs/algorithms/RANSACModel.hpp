@@ -259,7 +259,7 @@ public:
 	 */
 	static MODEL bestModel(const std::vector<MODEL>& models) {
 		if (models.size() == 0) {
-			return *(new MODEL());
+			return MODEL();
 		}
 
 		size_t idx = 0;
@@ -286,7 +286,7 @@ public:
 	 */
 	static MODEL likelyModel(const std::vector<MODEL>& models) {
 		if (models.size() == 0) {
-			return *(new MODEL());
+			return MODEL();
 		}
 
 		size_t total_inliers = 0;
