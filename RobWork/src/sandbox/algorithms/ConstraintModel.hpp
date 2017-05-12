@@ -27,7 +27,7 @@
  */
 
 #include <rw/math/Transform3D.hpp>
-#include <sandbox/algorithms/RANSACModel.hpp>
+#include <rwlibs/algorithms/RANSACModel.hpp>
 
 #include <iostream>
 
