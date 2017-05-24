@@ -101,28 +101,31 @@ public:
 	    std::vector<ProximityStrategyData> _fullInfo;
 	};
 
-
-    /**
-     @brief Collision detector for a workcell.
-
-     The default collision setup stored in the workcell is used for
-     broad phase collision filtering as a static filter list.
-
-     @param workcell [in] the workcell.
-
-     @param strategy [in] the collision checker strategy to use.
-     */
+	/**
+	 * @brief Collision detector for a workcell with only broad-phase collision checking.
+	 *
+	 * The default collision setup stored in the workcell is used for
+	 * broad phase collision filtering as a static filter list.
+	 *
+	 * Notice that no narrow phase checking is performed.
+	 * If broad-phase filter returns any frame-pairs, this will be taken as a collision.
+	 *
+	 * @param workcell [in] the workcell.
+	 */
 	CollisionDetector(rw::common::Ptr<rw::models::WorkCell> workcell);
 
-    /**
-     * @brief Collision detector for a workcell
+	/**
+	 * @brief Collision detector for a workcell.
      *
-     * The collision dispatcher is initialized with the \b strategy
+     * The collision detector is initialized with the \b strategy .
+     * Notice that the collision detector will create and store models inside the \b strategy .
      *
      * The default collision setup stored in the workcell is used for
      * broad phase collision filtering as a static filter list.
      *
-     */
+	 * @param workcell [in] the workcell.
+	 * @param strategy [in/out] the strategy for narrow-phase checking. The strategy will have models added to it.
+	 */
 	CollisionDetector(rw::common::Ptr<rw::models::WorkCell> workcell, CollisionStrategy::Ptr strategy);
 
     /**
@@ -130,12 +133,20 @@ public:
      * Collision checking is done for the provided collision setup alone.
      *
      * @param workcell [in] the workcell.
-     * @param strategy [in] the collision checker strategy to use.
+     * @param strategy [in/out] the strategy for narrow-phase checking. The strategy will have models added to it.
      * @param filter [in] proximity filter used to cull or filter frame-pairs that are obviously not colliding
      */
 	CollisionDetector(rw::common::Ptr<rw::models::WorkCell> workcell,
 		CollisionStrategy::Ptr strategy,
 		ProximityFilterStrategy::Ptr filter);
+
+#if __cplusplus >= 201103L
+	//! @brief Copy constructor is non-existent. Copying is not possible!
+    CollisionDetector(const CollisionDetector&) = delete;
+
+	//! @brief Assignment operator is non-existent. Copying is not possible!
+    CollisionDetector& operator=(const CollisionDetector&) = delete;
+#endif
 
     /**
      @brief Check the workcell for collisions.
@@ -159,7 +170,7 @@ public:
     bool inCollision(const kinematics::State& state, class ProximityData &data) const;
 
     /**
-     * @brief The collision strategy of the collision checker.
+     * @brief The broad phase collision strategy of the collision checker.
      */
 	ProximityFilterStrategy::Ptr getProximityFilterStrategy() const
     {
@@ -167,7 +178,8 @@ public:
     }
 
     /**
-     * @brief get the collision strategy
+     * @brief Get the narrow-phase collision strategy.
+     * @return the strategy if set, otherwise NULL.
      */
 	CollisionStrategy::Ptr getCollisionStrategy() const
     {
@@ -179,7 +191,7 @@ public:
 	 * 
 	 * The current shape of the geometry is copied, hence later changes to \b geometry has no effect
 	 *
-	 * @param frame [in] Frame to associated geometry to
+	 * @param frame [in] Frame to associate geometry to
 	 * @param geometry [in] Geometry to add
 	 */
 	void addGeometry(rw::kinematics::Frame* frame, const rw::common::Ptr<rw::geometry::Geometry> geometry);
@@ -204,20 +216,31 @@ public:
 	 */
 	void removeGeometry(rw::kinematics::Frame* frame, const std::string geometryId);
 
-	//! @brief Adds rule specyfying inclusion/exclusion of frame pairs in collision detection
+	//! @brief Adds rule specifying inclusion/exclusion of frame pairs in collision detection
 	void addRule(const ProximitySetupRule& rule);
 	
-	//! @brief Removes rule specyfying inclusion/exclusion of frame pairs in collision detection
+	//! @brief Removes rule specifying inclusion/exclusion of frame pairs in collision detection
 	void removeRule(const ProximitySetupRule& rule);
 
-	double getComputationTime() {
+	/**
+	 * @brief Get the computation time used in the inCollision functions.
+	 * @return the total computation time.
+	 */
+	double getComputationTime() const {
 		return _timer.getTime();
 	}
 
-	int getNoOfCalls() {
+	/**
+	 * @brief Get the number of times the inCollision functions have been called.
+	 * @return number of calls to inCollision functions.
+	 */
+	int getNoOfCalls() const {
 		return _numberOfCalls;
 	}
 
+	/**
+	 * @brief Reset the counter for inCollision invocations and the computation timer.
+	 */
 	void resetComputationTimeAndCount() {
 		_timer.resetAndPause();
 		_numberOfCalls = 0;
@@ -236,21 +259,28 @@ public:
 	bool hasGeometry(rw::kinematics::Frame* frame, const std::string& geometryId);
 
 private:
+	/**
+	 * @brief Initialize the narrow phase strategy for the given workcell.
+	 * @param wc [in] the workcell.
+	 */
     void initialize(rw::common::Ptr<rw::models::WorkCell> wc);
 
-    // the broad phase collision strategy
+    //! @brief Timer for measuring the time spent in inCollision functions.
 	mutable rw::common::Timer _timer;
+	//! @brief The number of calls to the inCollision functions.
 	mutable int _numberOfCalls;
+    //! @brief the broad phase collision strategy
 	ProximityFilterStrategy::Ptr _bpfilter;
-
-    // the narrow phase collision strategy
+    //! @brief the narrow phase collision strategy
 	CollisionStrategy::Ptr _npstrategy;
-
+	//! @brief Map from frame to collision model.
 	rw::kinematics::FrameMap<ProximityModel::Ptr> _frameToModels;
 
+#if __cplusplus < 201103L
 private:
     CollisionDetector(const CollisionDetector&);
     CollisionDetector& operator=(const CollisionDetector&);
+#endif
 };
 
 /*@}*/
