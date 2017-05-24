@@ -30,7 +30,7 @@ using namespace rwlibs::task;
 using namespace rwslibs;
 
 ATaskVisPlugin::ATaskVisPlugin():
-    RobWorkStudioPlugin("ATaskVisPlugin", QIcon(":/assemblytaskvisplugin/pa_icon.png")),
+    RobWorkStudioPlugin("ATaskVisPlugin", QIcon(":/assemblytaskvisplugin/atask_icon.png")),
     _wc(NULL),
     _showReal(true)
 {
