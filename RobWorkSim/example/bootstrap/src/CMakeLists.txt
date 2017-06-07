@@ -33,6 +33,10 @@ SET(FILES_HPP
     bstrap/mp/GraspMotorProgram.hpp
 )
 
+IF(RWS_USE_QT5)
+	QT5_WRAP_CPP(MocSrcFiles bstrap/core/Brain.hpp)
+ELSE()
+	QT4_WRAP_CPP(MocSrcFiles bstrap/core/Brain.hpp)
+ENDIF()
 
-
-add_library(bstrap ${FILES_CPP})
+add_library(bstrap ${FILES_CPP} ${MocSrcFiles})

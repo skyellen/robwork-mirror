@@ -61,5 +61,5 @@ SET(SrcFiles SimTemplatePlugin.cpp ${UIS_OUT_H})
 
 # The shared library to build:
 ADD_LIBRARY(SimTemplatePlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(SimTemplatePlugin ${ROBWORKSIM_LIBRARIES})
+TARGET_LINK_LIBRARIES(SimTemplatePlugin ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
 

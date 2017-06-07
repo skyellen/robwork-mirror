@@ -3,6 +3,7 @@ SET(UIS_FILES BootstrapPlugin.ui )
 
 # to be able to include the generated ui header files
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}) 
+LINK_DIRECTORIES( ${ROBWORKSTUDIO_LIBRARY_DIRS} )
 
 IF(RWS_USE_QT5)
 	QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
@@ -18,5 +19,5 @@ SET(SrcFiles BootstrapPlugin.cpp ${UIS_OUT_H})
 
 # The shared library to build:
 ADD_LIBRARY(BootstrapPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(BootstrapPlugin bstrap ${ROBWORKSIM_LIBRARIES})
+TARGET_LINK_LIBRARIES(BootstrapPlugin bstrap ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
 
