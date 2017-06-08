@@ -281,6 +281,7 @@ void WorkCellScene::updateSceneGraph(State& state){
         	if(obj->getBase()!=frame)
 				continue;
 
+        	_frameDrawableMap[frame].clear();
 
 	        // check if obj is deformable object
 	    	if( DeformableObject::Ptr dobj = obj.cast<DeformableObject>() ){
