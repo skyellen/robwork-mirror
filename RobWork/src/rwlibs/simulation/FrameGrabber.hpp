@@ -73,7 +73,7 @@ namespace rwlibs { namespace simulation {
          * @return the height of the image
          */
         int getHeight() { return _img->getHeight(); }
-
+		
         /**
          * @brief resizes the image that this frameGrabber use. The colorcode will
          * default to the one that FrameGrabber was initialized with.

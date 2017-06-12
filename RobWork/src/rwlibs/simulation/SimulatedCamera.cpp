@@ -80,6 +80,7 @@ SimulatedCamera::SimulatedCamera(
     _isAcquired(false)
 {
     _csensor = rw::common::ownedPtr( new CameraWrapper(this,  model->getName()) );
+	
 }
 
 SimulatedCamera::~SimulatedCamera()

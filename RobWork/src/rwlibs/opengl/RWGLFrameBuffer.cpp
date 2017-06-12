@@ -72,7 +72,7 @@ bool RWGLFrameBuffer::initialize() {
     glIsRenderbufferEXT                      = (PFNGLISRENDERBUFFEREXTPROC)wglGetProcAddress("glIsRenderbufferEXT");
     glRenderbufferStorageMultisampleEXT      = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC)wglGetProcAddress("glRenderbufferStorageMultisampleEXT");
     glTexImage2DMultisample                  = (PFNGLTEXIMAGE2DMULTISAMPLEPROC)wglGetProcAddress("glTexImage2DMultisample");
-    glBlitFrameBufferEXT                     = (PFNGLBLITFRAMEBUFFEREXTPROC) wglGetProcAddress("glBlitFrameBufferEXT");
+    glBlitFrameBufferEXT                     = (PFNGLBLITFRAMEBUFFEREXTPROC) wglGetProcAddress("glBlitFramebufferEXT");
 
 #elif defined(RW_MACOS)
 

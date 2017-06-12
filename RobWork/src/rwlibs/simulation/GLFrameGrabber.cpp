@@ -25,12 +25,12 @@ using namespace rw::common;
 using namespace rw::graphics;
 using namespace rwlibs::simulation;
 
-GLFrameGrabber::GLFrameGrabber(int width, int height, double fov,double near, double far)
+GLFrameGrabber::GLFrameGrabber(int width, int height, double fov,double nearArg, double farArg)
     :
     FrameGrabber(width,height,rw::sensor::Image::RGB),
     _fieldOfView(fov),_drawer(NULL),
     _perspTrans(rw::math::Transform3D<double>::identity()),
-    _near(near),_far(far)
+    _near(nearArg),_far(farArg)
 {
 }
 
@@ -66,9 +66,7 @@ void GLFrameGrabber::resize(int width, int height, rw::sensor::Image::ColorCode 
 
 void GLFrameGrabber::init(rw::graphics::SceneViewer::Ptr drawer){
     _drawer = drawer;
-    std::cout << "initialize glframegrabber";
     SceneViewer::View::Ptr view = _drawer->createView("CameraSensorView");
-
     view->_viewCamera->setAspectRatioControl(SceneCamera::Scale);
     view->_viewCamera->setEnabled(true);
     view->_viewCamera->setClearBufferEnabled(true);
