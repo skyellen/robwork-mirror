@@ -60,7 +60,7 @@ public:
 	 * @param femaleTfemaleTcp [in] (optional) if the hole body frame does is not at the top of the hole, the transform from the body frame to the top of the hole should be given here.
 	 * @param maleTmaleTcp [in] (optional) if the peg body frame does is not at the end of the peg towards the hole, the transform from the body frame to the end of the peg should be given here.
 	 */
-	PiHStrategy(const rw::math::Transform3D<>& worldTfemale, const rw::math::Transform3D<>& femaleTfemaleTcp, const rw::math::Transform3D<>& maleTmaleTcp);
+	PiHStrategy(const rw::math::Transform3D<>& worldTfemale, const rw::math::Transform3D<>& femaleTfemaleTcp = rw::math::Transform3D<>::identity(), const rw::math::Transform3D<>& maleTmaleTcp = rw::math::Transform3D<>::identity());
 
 	//! @brief Destructor.
 	virtual ~PiHStrategy();

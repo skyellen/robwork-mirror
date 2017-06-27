@@ -31,7 +31,7 @@ AssemblyRegistry::AssemblyRegistry():
 		_map[strategy->getID()] = strategy;
 	}
 	{
-		AssemblyControlStrategy::Ptr strategy = ownedPtr(new PiHStrategy());
+		AssemblyControlStrategy::Ptr strategy = ownedPtr(new PiHStrategy(rw::math::Transform3D<>::identity()));
 		_map[strategy->getID()] = strategy;
 	}
 	{
