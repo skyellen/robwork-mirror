@@ -41,15 +41,19 @@ namespace rwlibs { namespace opengl { class RenderPointCloud; } }
 namespace rwlibs { namespace opengl { class RenderLines; } }
 
 namespace rwslibs {
-
-// Forward declarations
-
 //! @addtogroup rwslibs
 //! @{
 /**
- * @brief Plugin for visualization assembly operations.
+ * @brief Plugin for visualization of assembly operations.
  *
- * This plugin works best when used together with the Playback plugin but can be compiled and used independently.
+ * \image html assembly/ATaskVisPlugin.png "The plugin for visualization of assembly operations."
+ *
+ * This plugin works best when used together with the rws::PlayBack plugin but can be compiled and used independently.
+ * When a workcell is loaded, the assembly task definition and results can be loaded in the plugin. If the result includes trajectory information,
+ * this can be shown with the playback plugin. The information under the result section, will be updated based on the time step chosen in the playback plugin.
+ * This plugin will also add additional renders to the RobWorkStudio scene, for rendering of contact and force/torque information stored in the assembly task and result.
+ *
+ * It is possible to show a library of assembly strategies with the StrategyLibraryDialog. This dialog will also help set up a new assembly task definition if needed.
  *
  * To use the plugin, create a RobWorkStudio.ini file in the RobWorkStudio/bin/debug folder with the following content (for debug build):
  * \par RobWorkStudio.ini:
@@ -79,21 +83,14 @@ public:
 	//! @copydoc rws::RobWorkStudioPlugin::open
     virtual void open(rw::models::WorkCell* workcell);
 
-	//! @copydoc rws::RobWorkStudioPlugin::close
-    virtual void close();
-
-	//! @copydoc rws::RobWorkStudioPlugin::initialize
+	//! @brief When the RobWorkStudio instance is valid, the ATaskVisPlugin will subscribe to events received from the PlayBack plugin.
     virtual void initialize();
 
 private:
-    void genericEventListener(const std::string& event);
-
     void genericAnyEventListener(const std::string& event, boost::any data);
 
 private slots:
     void btnPressed();
-
-    void stateChangedListener(const rw::kinematics::State& state);
 
 private:
     void loadTasks();

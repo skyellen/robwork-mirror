@@ -1,5 +1,7 @@
 #include "ATaskVisPlugin.hpp"
 
+#include "StrategyLibraryDialog.hpp"
+
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 
@@ -38,23 +40,18 @@ ATaskVisPlugin::ATaskVisPlugin():
     _editor = new PropertyViewEditor(this);
     _taskBoxLayout->addWidget(_editor);
 
-    connect(_loadTasksBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_loadResultsBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_real    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_assumed    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_assumed    ,SIGNAL(toggled(bool)), this, SLOT(btnPressed()) );
+    connect(_loadTasksBtn,       SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_loadResultsBtn,     SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_btnStrategyLibrary, SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_real,               SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_assumed,            SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_assumed,            SIGNAL(toggled(bool)), this, SLOT(btnPressed()) );
 }
 
 ATaskVisPlugin::~ATaskVisPlugin() {
 }
 
 void ATaskVisPlugin::initialize() {
-    getRobWorkStudio()->stateChangedEvent().add(
-            boost::bind(&ATaskVisPlugin::stateChangedListener, this, _1), this);
-
-    getRobWorkStudio()->genericEvent().add(
-          boost::bind(&ATaskVisPlugin::genericEventListener, this, _1), this);
-
     getRobWorkStudio()->genericAnyEvent().add(
           boost::bind(&ATaskVisPlugin::genericAnyEventListener, this, _1, _2), this);
 
@@ -68,16 +65,20 @@ void ATaskVisPlugin::open(WorkCell* workcell)
     _wc = workcell;
 }
 
-void ATaskVisPlugin::close() {
-}
-
 void ATaskVisPlugin::btnPressed() {
     QObject *obj = sender();
     if (obj == _loadTasksBtn)
     	loadTasks();
     else if (obj == _loadResultsBtn)
     	loadResults();
-    else if (obj == _real || obj == _assumed) {
+    else if (obj == _btnStrategyLibrary) {
+    	StrategyLibraryDialog* const dialog = new StrategyLibraryDialog();
+    	dialog->setAttribute(Qt::WA_DeleteOnClose);
+    	dialog->setWorkCell(getRobWorkStudio()->getWorkCell());
+    	dialog->show();
+    	dialog->raise();
+    	dialog->activateWindow();
+    } else if (obj == _real || obj == _assumed) {
     	if (_real->isChecked())
     		_showReal = true;
     	else
@@ -85,10 +86,6 @@ void ATaskVisPlugin::btnPressed() {
     	if (_currentTask != NULL && _currentResult != NULL && _wc != NULL)
     		constructPlayback();
     }
-}
-
-void ATaskVisPlugin::stateChangedListener(const State& state) {
-
 }
 
 void ATaskVisPlugin::genericAnyEventListener(const std::string& event, boost::any data){
@@ -167,9 +164,6 @@ void ATaskVisPlugin::genericAnyEventListener(const std::string& event, boost::an
     } catch (...){
         Log::warningLog() << "ATaskVisPlugin: Event \"" << event << "\" did not have the correct datatype or an error occured!\n";
     }
-}
-
-void ATaskVisPlugin::genericEventListener(const std::string& event){
 }
 
 void ATaskVisPlugin::loadTasks(){
