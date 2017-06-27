@@ -25,12 +25,12 @@ HelpAssistant::~HelpAssistant()
     delete proc;
 }
 
-void HelpAssistant::showDocumentation(const QStringList& paths)
+bool HelpAssistant::showDocumentation(const QStringList& paths)
 {
     QStringList files;
     // search for the help file
     QString filename( "robwork_help-v");
-    filename.append("RWS_VERSION");
+    filename.append(RWS_VERSION);
     filename.append(".qhc");
     files.append(filename);
     files.append("docs/"+filename);
@@ -60,15 +60,30 @@ void HelpAssistant::showDocumentation(const QStringList& paths)
         QMessageBox msgBox;
         msgBox.setText("The RobWork help files could not be located. \nMake sure they are properly installed.");
         msgBox.exec();
-        return;
+        return false;
     }
 
-    //std::cout << "start assistant: " << absfilename.toStdString() << std::endl;
-    if (!startAssistant(absfilename))
-        return;
+    return startAssistant(absfilename);
+}
 
+void HelpAssistant::gotoURL(const std::string& url) {
+	if (proc->state() != QProcess::Running)
+    	return;
     QByteArray ba("SetSource ");
-    ba.append("qthelp://rws/doc/index.html\n");
+    ba.append(url.c_str());
+    ba.append('\n');
+    proc->write(ba);
+}
+
+void HelpAssistant::minimumView() {
+	if (proc->state() != QProcess::Running)
+    	return;
+	QByteArray ba;
+	ba.append("hide search;");
+	ba.append("hide bookmarks;");
+	ba.append("hide index;");
+	ba.append("hide contents");
+    ba.append('\n');
     proc->write(ba);
 }
 

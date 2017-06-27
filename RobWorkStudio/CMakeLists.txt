@@ -109,7 +109,6 @@ ENDIF(Subversion_FOUND)
 CONFIGURE_FILE(
   ${RWS_ROOT}/src/RobWorkStudioConfig.hpp.in
   "${RWS_ROOT}/src/RobWorkStudioConfig.hpp"
-  @ONLY
 )
 
 # next build information script
@@ -221,7 +220,12 @@ IF(doc_executable)
     ADD_CUSTOM_TARGET(qtrwdoc qhelpgenerator ${RW_ROOT}/../apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robwork-v${ROBWORKSTUDIO_VERSION}.qch)
     ADD_DEPENDENCIES(qtrwdoc apidoc)
   ENDIF()
-  
+
+  IF(TARGET qtrwdoc)
+    CONFIGURE_FILE(${RWS_ROOT}/docs/robwork_help.qhcp.in ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhcp)
+    ADD_CUSTOM_TARGET(robwork_help qcollectiongenerator ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhcp -o ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhc )
+    ADD_DEPENDENCIES(robwork_help qtrwdoc) 
+  ENDIF()
 ENDIF()
 
 # Packaging

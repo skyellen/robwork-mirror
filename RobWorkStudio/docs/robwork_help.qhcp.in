@@ -1,8 +1,12 @@
-  <QHelpCollectionProject version="1.0">
-     <docFiles>
-         <register>
-             <file>robworkstudio-v@ROBWORK_VERSION@.qch</file>
-             <file>robwork-v@ROBWORK_VERSION@.qch</file>
-         </register>
-     </docFiles>
- </QHelpCollectionProject>
+<?xml version="1.0" encoding="utf-8" ?>
+<QHelpCollectionProject version="1.0">
+	<assistant>
+		<title>RobWork Documentation</title>
+		<startPage>qthelp://robworkproject/doc/index.html</startPage>
+	</assistant>
+	<docFiles>
+		<register>
+			<file>robwork-v@ROBWORK_VERSION@.qch</file>
+		</register>
+	</docFiles>
+</QHelpCollectionProject>
