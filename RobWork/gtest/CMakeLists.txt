@@ -132,6 +132,22 @@ TARGET_LINK_LIBRARIES( rw_loaders-gtest ${LOADERS_TEST_LIBRARIES})
 ADD_RW_GTEST(rw_loaders-gtest)
 
 ########################################################################
+# Math
+########################################################################
+
+SET(MATH_TEST_LIBRARIES
+ ${GTEST_BOTH_LIBRARIES}
+ rw
+ )
+
+SET(MATH_TEST_SRC
+  math/StatisticsTest.cpp
+)
+ADD_EXECUTABLE( rw_math-gtest ${MATH_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rw_math-gtest ${MATH_TEST_LIBRARIES})
+ADD_RW_GTEST(rw_math-gtest)
+
+########################################################################
 # Proximity
 ########################################################################
 
