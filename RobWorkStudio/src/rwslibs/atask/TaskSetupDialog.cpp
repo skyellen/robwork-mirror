@@ -38,6 +38,7 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QTimer>
+#include <QUrl>
 
 #include <iostream>
 
