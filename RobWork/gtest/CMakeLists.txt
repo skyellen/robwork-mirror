@@ -82,6 +82,7 @@ SET(GEOMETRY_TEST_LIBRARIES
 )
 
 SET(GEOMETRY_TEST_SRC
+  geometry/HyperSphereTest.cpp
   geometry/IndexedTriMeshTest.cpp
   geometry/IntersectUtilTest.cpp
   geometry/PlaneTest.cpp
