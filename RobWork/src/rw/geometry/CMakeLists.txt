@@ -41,6 +41,7 @@ SET(FILES_CPP
     OBBFactory.cpp
     OBBToleranceCollider.cpp
     DistanceUtil.cpp
+    HyperSphere.cpp
     IndexedArray.cpp
     IndexedTriArray.cpp
     OBVDistanceCalc.cpp
@@ -75,6 +76,7 @@ SET(FILES_HPP
 	ConvexHull2D.hpp
     ConvexHull3D.hpp
     IncrementalHull3D.hpp
+    HyperSphere.hpp
     IndexedArray.hpp
 	IndexedPolygon.hpp
     Polygon.hpp
