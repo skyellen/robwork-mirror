@@ -83,7 +83,6 @@ WorkCellScene::WorkCellScene(SceneGraph::Ptr scene):
 	_worldNode( scene->makeGroupNode("World"))
 {
     _scene->addChild(_worldNode, _scene->getRoot());
-    _frameAxis = _scene->makeDrawableFrameAxis("FrameAxis", 0.25, DrawableNode::Virtual);
     setWorkCell(NULL);
 }
 
@@ -373,7 +372,7 @@ bool WorkCellScene::isHighlighted(const Frame* f) const {
     	return false;
 }
 
-void WorkCellScene::setFrameAxisVisible(bool visible, Frame* f) {
+void WorkCellScene::setFrameAxisVisible(bool visible, Frame* f, double size) {
     if(_frameNodeMap.find(f)==_frameNodeMap.end()){
         return;
     }
@@ -382,13 +381,13 @@ void WorkCellScene::setFrameAxisVisible(bool visible, Frame* f) {
     GroupNode::Ptr node = _frameNodeMap[f];
     if( visible ){
         if( node->hasChild( "FrameAxis" ) ){
-            // the frame axis is allready there
-            return;
+            // remove current frameaxis
+            removeDrawable("FrameAxis",f);
         }
-        // if the frame axis is allready on a node, then do nothing, else add it
 
-        DrawableNodeClone::Ptr dnode = ownedPtr( new DrawableNodeClone("FrameAxis",_frameAxis) );
-        addDrawable(dnode, f);
+        // Add a frame axis of specified size
+        DrawableNode::Ptr frameAxisNode = _scene->makeDrawableFrameAxis("FrameAxis", size, DrawableNode::Virtual);
+        addDrawable(frameAxisNode, f);
         //_frameDrawableMap[f].push_back(dnode);
         //node->addChild( dnode );
         _scene->update();

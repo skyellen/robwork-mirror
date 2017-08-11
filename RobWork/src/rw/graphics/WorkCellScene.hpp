@@ -133,8 +133,9 @@ namespace graphics {
          * @brief enables the drawing of the frame-axis of a frame.
          * @param visible [in] true if frame axis should be drawn, false otherwise
          * @param f [in] the frame
+         * @param size [in] size of the frame-axis (default = 0.25)
          */
-        void setFrameAxisVisible(bool visible, rw::kinematics::Frame* f);
+        void setFrameAxisVisible(bool visible, rw::kinematics::Frame* f, double size = 0.25);
 
         /**
          * @brief test if frame-axis is visible
@@ -399,8 +400,6 @@ namespace graphics {
 
         std::map<rw::common::Ptr<rw::models::DeformableObject>, std::vector<rw::common::Ptr<class Model3D> >  > _deformableObjectsMap;
 
-        //! the drawable used to draw the frame axis
-        DrawableNode::Ptr _frameAxis;
         //! world node
         GroupNode::Ptr _worldNode;
     };

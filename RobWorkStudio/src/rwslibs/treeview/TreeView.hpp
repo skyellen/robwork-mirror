@@ -90,6 +90,8 @@ private slots:
     void customContextMenuRequestSlot(const QPoint& pos);
     void toggleFrameSlot();
     void toggleFramesSlot();
+    void increaseFrameAxisSlot();
+    void decreaseFrameAxisSlot();
     void selectFrameSlot();
     void showSolidSlot();
     void showWireSlot();
@@ -163,6 +165,8 @@ private:
     typedef std::map<QTreeWidgetItem*, rw::common::Ptr<rw::graphics::DrawableNode> > DrawableMap;
     // maintains the drawables that are not constructed and added from this plugin
     DrawableMap _drawableMap;
+
+    double _frameAxisSize;
 
     //typedef std::map<rw::graphics::DrawableNode::Ptr, QTreeWidgetItem*> DrawableToItemMap;
     // maintains all drawables that are added by this map
