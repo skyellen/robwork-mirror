@@ -28,6 +28,7 @@ SET(FILES_CPP
     IntersectUtil.cpp
     Covariance.cpp
     ConvexHullND.cpp
+    Delaunay.cpp
     QHullND.cpp
     QHull3D.cpp
     TriTriIntersectDeviller.cpp
@@ -84,6 +85,7 @@ SET(FILES_HPP
     Contour2D.hpp
     Contour2DUtil.hpp
     Covariance.hpp
+    Delaunay.hpp
     QHullND.hpp
     QHull3D.hpp
     BVCollider.hpp
