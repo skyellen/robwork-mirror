@@ -25,6 +25,7 @@ SET(FILES_CPP
     IncrementalHull3D.cpp
     Contour2D.cpp
     IndexedPolygon.cpp 
+    PolygonUtil.cpp
     IntersectUtil.cpp
     Covariance.cpp
     ConvexHullND.cpp
@@ -81,6 +82,7 @@ SET(FILES_HPP
     IndexedArray.hpp
 	IndexedPolygon.hpp
     Polygon.hpp
+    PolygonUtil.hpp
 	#GiftWrapHull3D.hpp
     Contour2D.hpp
     Contour2DUtil.hpp
