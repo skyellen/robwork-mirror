@@ -17,6 +17,7 @@
 
 #include "PolygonUtil.hpp"
 
+#include <list>
 #include <stack>
 
 using namespace rw::math;
