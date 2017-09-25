@@ -34,7 +34,9 @@ SET(FILES_CPP
   dom/DOMTrajectoryLoader.cpp
   dom/DOMTrajectorySaver.cpp
   dom/DOMProximitySetupLoader.cpp
+  dom/DOMProximitySetupSaver.cpp
   dom/DOMWorkCellSaver.cpp
+
   
   colsetup/CollisionSetupLoader.cpp
   
@@ -70,6 +72,8 @@ SET(FILES_HPP
   dom/DOMTrajectoryLoader.hpp
   dom/DOMTrajectorySaver.hpp
   dom/DOMProximitySetupLoader.hpp
+  dom/DOMProximitySetupSaver.hpp
+  dom/DOMWorkCellSaver.hpp
 
   colsetup/CollisionSetupLoader.hpp
   image/PGMLoader.hpp

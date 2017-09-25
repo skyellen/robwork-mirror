@@ -147,6 +147,8 @@ public:
 	std::map<std::string, Device::Ptr> devMap;
 
 	rw::graphics::SceneDescriptor::Ptr scene;
+	std::string wcFilename;
+    std::vector<std::string> proxSetupFilenames;
 };
 
 void addPropertyToMap(const DummyProperty &dprop, common::PropertyMap& map){
@@ -283,11 +285,19 @@ Frame* addModelToFrame(DummyModel& model, Frame *parent, StateStructure *tree, D
 			geom->setTransform(model._transform);
 			geom->setFrame(modelframe);
 
+			std::ostringstream filePath;
+			if (!StringUtil::isAbsoluteFileName(model._geo[i]._filename + ".tmp")) {
+				filePath << StringUtil::getRelativeDirectoryName(model._geo[i]._pos.file,
+                                                                 StringUtil::getDirectoryName(setup.wcFilename));
+			}
+			filePath << model._geo[i]._filename;
+            std::cout << "Relative file path: " << filePath.str() << std::endl;
+
             // For Polytype CAD models, we want to save the filepath for potential serialization later.
             if(model._geo[i]._type == PolyType)
             {
-                model3d->setFilePath(model._geo[i]._filename);
-                geom->setFilePath(model._geo[i]._filename);
+                model3d->setFilePath(filePath.str());
+                geom->setFilePath(filePath.str());
             }
 
 			if (object != NULL) {
@@ -303,10 +313,18 @@ Frame* addModelToFrame(DummyModel& model, Frame *parent, StateStructure *tree, D
 			geom->setTransform(model._transform);
 			geom->setFrame(modelframe);
 
+            std::ostringstream filePath;
+            if (!StringUtil::isAbsoluteFileName(model._geo[i]._filename + ".tmp")) {
+                filePath << StringUtil::getRelativeDirectoryName(model._geo[i]._pos.file,
+                                                                 StringUtil::getDirectoryName(setup.wcFilename));
+            }
+            filePath << model._geo[i]._filename;
+            std::cout << "Relative file path: " << filePath.str() << std::endl;
+
             // For Polytype CAD models, we want to save the filepath for potential serialization later.
             if(model._geo[i]._type == PolyType)
             {
-                geom->setFilePath(model._geo[i]._filename);
+                geom->setFilePath(filePath.str());
             }
 
 			if (object != NULL) {
@@ -321,10 +339,18 @@ Frame* addModelToFrame(DummyModel& model, Frame *parent, StateStructure *tree, D
 			model3d->setName(model._name);
 			model3d->setTransform(model._transform);
 
+            std::ostringstream filePath;
+            if (!StringUtil::isAbsoluteFileName(model._geo[i]._filename + ".tmp")) {
+                filePath << StringUtil::getRelativeDirectoryName(model._geo[i]._pos.file,
+                                                                 StringUtil::getDirectoryName(setup.wcFilename));
+            }
+            filePath << model._geo[i]._filename;
+            std::cout << "Relative file path: " << filePath.str() << std::endl;
+
             // For Polytype CAD models, we want to save the filepath for potential serialization later.
             if(model._geo[i]._type == PolyType)
             {
-                model3d->setFilePath(model._geo[i]._filename);
+                model3d->setFilePath(filePath.str());
             }
             else {
                 model3d->setFilePath(val.str());
@@ -807,6 +833,9 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname) {
 		DummySetup setup;
 		setup.scene = ownedPtr(new SceneDescriptor());
 
+		// To be used for potential serialization
+		setup.wcFilename = filename;
+
 		// Start parsing workcell
 		//boost::shared_ptr<DummyWorkcell> workcell = XMLRWParser::parseWorkcell(filename);
 		setup.dwc = XMLRWParser::parseWorkcell(filename);
@@ -967,16 +996,35 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname) {
 		//Merge in old collision setups
 		proximitySetup.merge(ProximitySetup(collisionSetup), "");
 
-		ProxSetupList::iterator proxsetupIter = setup.proxsetups.begin();
+        std::string proxSetupFilepath;
+        std::string proxSetupFilename;
+        std::string proxSetupFilepathWithName;
+
+        ProxSetupList::iterator proxsetupIter = setup.proxsetups.begin();
 		for (; proxsetupIter != setup.proxsetups.end(); ++proxsetupIter) {
 			std::string prefix = createScopedName("", (*proxsetupIter)._scope);
 			std::string filename = StringUtil::getDirectoryName((*proxsetupIter)._pos.file);
 			filename += "/" + (*proxsetupIter)._filename;
 			//std::cout << "Colsetup prefix: " << prefix << std::endl;
 			//std::cout << "Colsetup file  : " << filename << std::endl;
+
 			ProximitySetup s = XMLProximitySetupLoader::load(filename);
 			proximitySetup.merge(s, prefix);
 		}
+
+        if(!setup.proxsetups.empty()) {
+            auto it = std::prev(setup.proxsetups.end());
+            proxSetupFilepath = (*it)._pos.file;
+            proxSetupFilename = (*it)._filename;
+            proxSetupFilepathWithName = StringUtil::getDirectoryName((*it)._pos.file) + proxSetupFilename;
+        }
+
+        std::ostringstream relProxSetupFilePath;
+        relProxSetupFilePath << StringUtil::getRelativeDirectoryName(proxSetupFilepath,
+                                                         StringUtil::getDirectoryName(setup.wcFilename));
+
+        relProxSetupFilePath << proxSetupFilename;
+        std::cout << "Relative proximity file path: " << relProxSetupFilePath.str() << std::endl;
 
 		// in case no collisionsetup info is supplied we use the collisionSetup
 		//if( setup.proxsetups.size()==0 ){
@@ -993,7 +1041,12 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname) {
 		// make sure to add the name of the workcell file to the workcell propertymap
 		wc->getPropertyMap().set<std::string>("WorkCellFileName", filename);
 
-		return wc;
+        // save
+        wc->getPropertyMap().addForce("ProximitySetupFilePath", "Main proximity filepath", proxSetupFilepathWithName);
+        wc->getPropertyMap().addForce("ProximitySetupRelFilePath", "Main proximity rel. filepath", relProxSetupFilePath.str());
+
+
+        return wc;
 	} catch (const std::exception& e) {
 		RW_THROW("Could not load WorkCell: " << fname << ". An error occoured:\n " << std::string(e.what()));
 	}

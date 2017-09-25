@@ -245,6 +245,7 @@ public:
     /**
      * @brief Identifier for a Tube
      * @return the identifier.
+     * @return the identifier.
      */
     static const std::string& idTube();
 

@@ -21,6 +21,7 @@
 #include <rw/common/DOMParser.hpp>
 #include <rw/loaders/dom/DOMBasisTypes.hpp>
 #include <rw/loaders/dom/DOMPropertyMapSaver.hpp>
+#include <rw/loaders/dom/DOMProximitySetupSaver.hpp>
 #include <rw/loaders/dom/DOMPropertyMapFormat.hpp>
 
 #include <rw/kinematics/Frame.hpp>
@@ -34,6 +35,7 @@
 #include <rw/geometry/Box.hpp>
 
 #include <regex>
+#include <string>
 
 using namespace rw::common;
 using namespace rw::loaders;
@@ -271,7 +273,8 @@ namespace {
                         }
                     }
                 }
-            } else if (!object->getGeometry().empty() && !object->getModels().empty()) {
+            } else if (!object->getGeometry().empty() && !object->getModels().empty())
+            {
                 std::cout << "object both collision geometry and drawable vis model" << std::endl;
                 for (const auto &mod : object->getModels()) {
                     DOMElem::Ptr draw_element = parent->addChild("Drawable");
@@ -289,15 +292,153 @@ namespace {
                     // Add the position
                     DOMBasisTypes::createPos(mod->getTransform().P(), draw_element);
 
-                    if (!mod->getFilePath().empty()) {
+                    std::string t("#");
+                    if (!mod->getFilePath().empty() && mod->getFilePath().compare(0, t.length(), t) != 0) {
                         DOMElem::Ptr polytope_element = draw_element->addChild("Polytope");
                         std::cout << "Object model filepath: " << mod->getFilePath() << std::endl;
                         polytope_element->addAttribute("file")->setValue(mod->getFilePath());
                     } else {
-                        //Resolve type of geometry
+                        // Resolve type of geometry
 
+                        // First decode the filePath string, which in this case contains info for creating geometry
+                        std::string type, param1, param2, param3, param4, param5;
+                        std::istringstream ss(mod->getFilePath());
+                        ss >> type >> param1 >> param2 >> param3 >> param4 >> param5;
+                        std::cout << type << std::endl << param1 << std::endl << param2 << std::endl << param3
+                                  << std::endl <<
+                                  param4 << std::endl << param5 << std::endl;
+
+                        if (type == "#Plane") {
+                            DOMElem::Ptr plane_element = draw_element->addChild("Plane");
+                        } else if (type == "#Box") {
+                            DOMElem::Ptr box_element = draw_element->addChild("Box");
+                            box_element->addAttribute("x")->setValue(param1);
+                            box_element->addAttribute("y")->setValue(param2);
+                            box_element->addAttribute("z")->setValue(param3);
+                        } else if (type == "#Sphere") {
+                            DOMElem::Ptr sphere_element = draw_element->addChild("Sphere");
+                            sphere_element->addAttribute("radius")->setValue(param1);
+                        } else if (type == "#Cone") {
+                            DOMElem::Ptr cone_element = draw_element->addChild("Cone");
+                            cone_element->addAttribute("radius")->setValue(param1);
+                            cone_element->addAttribute("z")->setValue(param2);
+                        } else if (type == "#Cylinder") {
+                            DOMElem::Ptr cyl_element = draw_element->addChild("Cylinder");
+                            cyl_element->addAttribute("radius")->setValue(param1);
+                            cyl_element->addAttribute("z")->setValue(param2);
+                        } else if (type == "#Tube") {
+                            DOMElem::Ptr tube_element = draw_element->addChild("Tube");
+                            tube_element->addAttribute("radius")->setValue(param1);
+                            tube_element->addAttribute("x")->setValue(param2);
+                            tube_element->addAttribute("z")->setValue(param3);
+                        } else {
+                            std::cout << "Unknown geometry type" << std::endl;
+                        }
                     }
                 }
+
+                for (auto geom : object->getGeometry()) {
+                    DOMElem::Ptr mod_element = parent->addChild("CollisionModel");
+                    std::cout << "Object geometry name: " << geom->getName() << std::endl;
+                    mod_element->addAttribute("name")->setValue(geom->getName());
+                    mod_element->addAttribute("refframe")->setValue(object->getName());
+
+                    // Add the rotation in RPY
+                    RPY<> rpy(geom->getTransform().R());
+                    rpy(0) = rpy(0) * Rad2Deg;
+                    rpy(1) = rpy(1) * Rad2Deg;
+                    rpy(2) = rpy(2) * Rad2Deg;
+                    DOMBasisTypes::createRPY(rpy, mod_element);
+
+                    // Add the position
+                    DOMBasisTypes::createPos(geom->getTransform().P(), mod_element);
+
+                    if (!geom->getFilePath().empty()) {
+                        DOMElem::Ptr polytope_element = mod_element->addChild("Polytope");
+                        std::cout << "Object geometry filepath: " << geom->getFilePath() << std::endl;
+                        polytope_element->addAttribute("file")->setValue(geom->getFilePath());
+                    } else {
+                        //Resolve type of geometry
+                        if (rw::geometry::Plane *const plane = dynamic_cast<rw::geometry::Plane *>(geom->getGeometryData().get())) {
+                            DOMElem::Ptr plane_element = mod_element->addChild("Plane");
+                        } else if (rw::geometry::Box *const box = dynamic_cast<rw::geometry::Box *>(geom->getGeometryData().get())) {
+                            DOMElem::Ptr box_element = mod_element->addChild("Box");
+                            box_element->addAttribute("x")->setValue(box->getParameters()[0]);
+                            box_element->addAttribute("y")->setValue(box->getParameters()[1]);
+                            box_element->addAttribute("z")->setValue(box->getParameters()[2]);
+                        } else if (rw::geometry::Sphere *sphere = dynamic_cast<rw::geometry::Sphere *>(geom->getGeometryData().get())) {
+                            DOMElem::Ptr sphere_element = mod_element->addChild("Sphere");
+                            sphere_element->addAttribute("radius")->setValue(sphere->getRadius());
+                        } else if (rw::geometry::Cone *cone = dynamic_cast<rw::geometry::Cone *>(geom->getGeometryData().get())) {
+                            DOMElem::Ptr cone_element = mod_element->addChild("Cone");
+                            cone_element->addAttribute("radius")->setValue(cone->getBottomRadius());
+                            cone_element->addAttribute("z")->setValue(cone->getHeight());
+                        } else if (rw::geometry::Cylinder *cyl = dynamic_cast<rw::geometry::Cylinder *>(geom->getGeometryData().get())) {
+                            DOMElem::Ptr cyl_element = mod_element->addChild("Cylinder");
+                            cyl_element->addAttribute("radius")->setValue(cyl->getRadius());
+                            cyl_element->addAttribute("z")->setValue(cyl->getHeight());
+                        } else if (rw::geometry::Tube *tube = dynamic_cast<rw::geometry::Tube *>(geom->getGeometryData().get())) {
+                            DOMElem::Ptr tube_element = mod_element->addChild("Tube");
+                            tube_element->addAttribute("radius")->setValue(tube->getInnerRadius());
+                            tube_element->addAttribute("x")->setValue(tube->getThickness());
+                            tube_element->addAttribute("z")->setValue(tube->getHeight());
+                        } else {
+                            std::cout << "Unknown geometry type" << std::endl;
+                        }
+                    }
+                }
+
+                /*for (auto geom : object->getGeometry()) {
+                    DOMElem::Ptr draw_element = parent->addChild("Drawable");
+                    std::cout << "Object model name: " << geom->getName() << std::endl;
+                    draw_element->addAttribute("name")->setValue(geom->getName());
+                    draw_element->addAttribute("refframe")->setValue(object->getName());
+                    draw_element->addAttribute("colmodel")->setValue("Disabled");
+
+                    // Add the rotation in RPY
+                    RPY<> rpy(geom->getTransform().R());
+                    rpy(0) = rpy(0) * Rad2Deg;
+                    rpy(1) = rpy(1) * Rad2Deg;
+                    rpy(2) = rpy(2) * Rad2Deg;
+                    DOMBasisTypes::createRPY(rpy, draw_element);
+
+                    // Add the position
+                    DOMBasisTypes::createPos(geom->getTransform().P(), draw_element);
+
+                    if (!geom->getFilePath().empty()) {
+                        DOMElem::Ptr polytope_element = draw_element->addChild("Polytope");
+                        std::cout << "Object geometry filepath: " << geom->getFilePath() << std::endl;
+                        polytope_element->addAttribute("file")->setValue(geom->getFilePath());
+                    } else {
+                        //Resolve type of geometry
+                        if (rw::geometry::Plane *const plane = dynamic_cast<rw::geometry::Plane *>(geom->getGeometryData().get())) {
+                            DOMElem::Ptr plane_element = draw_element->addChild("Plane");
+                        } else if (rw::geometry::Box *const box = dynamic_cast<rw::geometry::Box *>(geom->getGeometryData().get())) {
+                            DOMElem::Ptr box_element = draw_element->addChild("Box");
+                            box_element->addAttribute("x")->setValue(box->getParameters()[0]);
+                            box_element->addAttribute("y")->setValue(box->getParameters()[1]);
+                            box_element->addAttribute("z")->setValue(box->getParameters()[2]);
+                        } else if (rw::geometry::Sphere *sphere = dynamic_cast<rw::geometry::Sphere *>(geom->getGeometryData().get())) {
+                            DOMElem::Ptr sphere_element = draw_element->addChild("Sphere");
+                            sphere_element->addAttribute("radius")->setValue(sphere->getRadius());
+                        } else if (rw::geometry::Cone *cone = dynamic_cast<rw::geometry::Cone *>(geom->getGeometryData().get())) {
+                            DOMElem::Ptr cone_element = draw_element->addChild("Cone");
+                            cone_element->addAttribute("radius")->setValue(cone->getBottomRadius());
+                            cone_element->addAttribute("z")->setValue(cone->getHeight());
+                        } else if (rw::geometry::Cylinder *cyl = dynamic_cast<rw::geometry::Cylinder *>(geom->getGeometryData().get())) {
+                            DOMElem::Ptr cyl_element = draw_element->addChild("Cylinder");
+                            cyl_element->addAttribute("radius")->setValue(cyl->getRadius());
+                            cyl_element->addAttribute("z")->setValue(cyl->getHeight());
+                        } else if (rw::geometry::Tube *tube = dynamic_cast<rw::geometry::Tube *>(geom->getGeometryData().get())) {
+                            DOMElem::Ptr tube_element = draw_element->addChild("Tube");
+                            tube_element->addAttribute("radius")->setValue(tube->getInnerRadius());
+                            tube_element->addAttribute("x")->setValue(tube->getThickness());
+                            tube_element->addAttribute("z")->setValue(tube->getHeight());
+                        } else {
+                            std::cout << "Unknown geometry type" << std::endl;
+                        }
+                    }
+                }*/
             }
         }
     }
@@ -551,12 +692,10 @@ namespace {
             element->addAttribute("type")->setValue(type);
 
             //Add the rotation in RPY
-            RPY<> rpy(frame->getTransform(state).R());
-            std::cout << "RPY: " << rpy(0) << " " << rpy(1) << " " << rpy(2) << std::endl;
+            RPY<> rpy(frame->getTransform(0.0).R());
             rpy(0) = rpy(0)*Rad2Deg;
             rpy(1) = rpy(1)*Rad2Deg;
             rpy(2) = rpy(2)*Rad2Deg;
-            std::cout << "RPY: " << rpy(0) << " " << rpy(1) << " " << rpy(2) << std::endl;
             DOMBasisTypes::createRPY(rpy, element);
 
             //Add the position
@@ -605,6 +744,23 @@ namespace {
 
         //Add the position
         DOMBasisTypes::createPos(frame->getTransform(state).P(), element);
+
+        // Get any drawables or collision models associated with this frame
+        rw::models::Object::Ptr object = workcell->findObject(frame->getName());
+        writeDrawablesAndColModels(object, element);
+
+        BOOST_FOREACH(const PropertyBase::Ptr prop, frame->getPropertyMap().getProperties())
+                    {
+                        const Property<std::string>* property = toProperty<std::string>(prop);
+                        if (property != nullptr) {
+                            DOMElem::Ptr prop_element = element->addChild(DOMPropertyMapFormat::idProperty());
+                            prop_element->addAttribute("name")->setValue(property->getIdentifier());
+                            prop_element->addAttribute("desc")->setValue(property->getDescription());
+                            prop_element->setValue(property->getValue());
+                        }
+
+                    }
+
         return element;
     }
 
@@ -633,6 +789,18 @@ namespace {
         // Get any drawables or collision models associated with this frame
         rw::models::Object::Ptr object = workcell->findObject(frame->getName());
         writeDrawablesAndColModels(object, element);
+
+        BOOST_FOREACH(const PropertyBase::Ptr prop, frame->getPropertyMap().getProperties())
+                    {
+                        const Property<std::string>* property = toProperty<std::string>(prop);
+                        if (property != nullptr) {
+                            DOMElem::Ptr prop_element = element->addChild(DOMPropertyMapFormat::idProperty());
+                            prop_element->addAttribute("name")->setValue(property->getIdentifier());
+                            prop_element->addAttribute("desc")->setValue(property->getDescription());
+                            prop_element->setValue(property->getValue());
+                        }
+
+                    }
 
         return element;
     }
@@ -817,6 +985,7 @@ namespace {
             writeFrame(frame, creator, workcell, state, rootElement);
         }
 
+
         for (Device::Ptr dev : devices) {
             // First write parent frame to device
             Frame *parent = dev->getBase()->getParent();
@@ -847,6 +1016,23 @@ namespace {
             q_element->addAttribute("name")->setValue(home);
             q_element->setValue(createStringFromArray(dev->getQ(workcell->getDefaultState())));
         }
+
+        // obtain current proximity setup from workcell
+        rw::proximity::ProximitySetup prox_setup = rw::proximity::ProximitySetup::get(workcell);
+
+        // get where to save the proximity setup, assumes that a main proximity setup file was provided.
+        const std::string id_main = "ProximitySetupFilePath";
+        const std::string id_rel = "ProximitySetupRelFilePath";
+        std::string proxFilePath = static_cast<std::string>(workcell->getPropertyMap().get<std::string>(id_main));
+        std::string proxRelFilepath = static_cast<std::string>(workcell->getPropertyMap().get<std::string>(id_rel));
+        std::cout << "Proximity filename: " << proxFilePath << std::endl;
+        // save using the DOMProximitySetupSaver
+        rw::loaders::DOMProximitySetupSaver::save(prox_setup, proxFilePath);
+
+        // add relative reference to the proximity setup file
+        DOMElem::Ptr element = rootElement->addChild("ProximitySetup");
+        element->addAttribute("file")->setValue(proxRelFilepath);
+
     }
 } // end of anonymous namespace
 

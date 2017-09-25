@@ -22,6 +22,9 @@
 
 #include <limits>
 #include <sstream>
+#include <string>
+#include <iostream>
+#include <vector>
 //#include <boost/foreach.hpp>
 #include <boost/algorithm/string/replace.hpp>
 
@@ -55,6 +58,27 @@ std::string StringUtil::getDirectoryName(const std::string& path)
 
     if (pos != std::string::npos)
         return path.substr(0, pos + 1);
+    else
+        return std::string();
+}
+
+std::string StringUtil::getRelativeDirectoryName(const std::string& path, std::string wc_dir_name)
+{
+    if (!wc_dir_name.empty())
+    {
+        wc_dir_name.pop_back();
+    }
+    std::string wc_new_dir = std::string();
+    const std::string::size_type pos = wc_dir_name.find_last_of("/\\");
+    if (pos != std::string::npos)
+        wc_new_dir = wc_dir_name.substr(pos + 1, std::string::npos);
+
+    std::string key_path(wc_new_dir);
+    std::string new_path = getDirectoryName(path); // remove the filename
+
+    const std::string::size_type pos_path = new_path.find(key_path);
+    if (pos_path != std::string::npos)
+        return new_path.substr(pos_path+key_path.length()+1);
     else
         return std::string();
 }

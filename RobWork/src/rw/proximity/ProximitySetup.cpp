@@ -28,12 +28,14 @@ using namespace rw::proximity;
 
 ProximitySetup::ProximitySetup():
 _useIncludeAll(true),
-_useExcludeStaticPairs(true)
+_useExcludeStaticPairs(true),
+_loadedFromFile(false)
 {}
 
 ProximitySetup::ProximitySetup(const CollisionSetup& csetup):
 		_useIncludeAll(true),
-		_useExcludeStaticPairs(true)
+		_useExcludeStaticPairs(true),
+		_loadedFromFile(false)
 {
 	BOOST_FOREACH(rw::common::StringPair pair, csetup.getExcludeList()) {
 		addProximitySetupRule(ProximitySetupRule::makeExclude(pair.first, pair.second));
