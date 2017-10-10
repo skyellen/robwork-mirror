@@ -171,12 +171,12 @@ For RobWorkStudio, the same procedure is repeated in the RWS build folder, and s
 
 Finally, we need to add the following paths to ~/.bashrc:
 
-~~~~{~/.bashrc}
+~~~~{.sh}
 #ROBWORK#
-export RW_ROOT=~/RobWork/trunk/RobWork/
-export RWS_ROOT=~/RobWork/trunk/RobWorkStudio/
-export RWHW_ROOT=~/RobWork/trunk/RobWorkHardware/
-export RWSIM_ROOT=~/RobWork/trunk/RobWorkSim/
+export RW_ROOT=~/RobWork/RobWork/
+export RWS_ROOT=~/RobWork/RobWorkStudio/
+export RWHW_ROOT=~/RobWork/RobWorkHardware/
+export RWSIM_ROOT=~/RobWork/RobWorkSim/
 ~~~~
 
 Remember to only add paths to the components you have actually installed. Ie. if you only installed RobWork and RobWorkStudio, the paths for RobWorkSim and RobWorkHardware should not be set. 
