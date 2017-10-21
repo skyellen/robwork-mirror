@@ -42,69 +42,6 @@ SET(SRC_FILES_HPP
     ${CMAKE_CURRENT_SOURCE_DIR}/src/qtgroupboxpropertybrowser.h 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowserutils_p.h)
 
-# Files to moc and compile:
-#SET(MocHeaderFiles ${SRC_FILES_HPP} )
-
-#SET(MocSrcFiles )
-
-
-IF (RWS_USE_QT5)
-	QT5_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} ${SRC_FILES_CPP})
-
-
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser.cpp PROPERTIES 
-    OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtpropertybrowser.cpp")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertymanager.cpp PROPERTIES 
-    OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtpropertymanager.cpp;${CMAKE_CURRENT_BINARY_DIR}/qtpropertymanager.moc")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qteditorfactory.cpp PROPERTIES 
-    OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qteditorfactory.cpp;${CMAKE_CURRENT_BINARY_DIR}/qteditorfactory.moc")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtvariantproperty.cpp PROPERTIES 
-    OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtvariantproperty.cpp")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qttreepropertybrowser.cpp PROPERTIES 
-    OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qttreepropertybrowser.cpp;${CMAKE_CURRENT_BINARY_DIR}/qttreepropertybrowser.moc")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtbuttonpropertybrowser.cpp PROPERTIES 
-    OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtbuttonpropertybrowser.cpp")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtgroupboxpropertybrowser.cpp PROPERTIES 
-    OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtgroupboxpropertybrowser.cpp")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowserutils.cpp PROPERTIES 
-	OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtpropertybrowserutils_p.cpp")
-	       
-
-ELSE()
-	QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP})
-QT4_CREATE_MOC_COMMAND("${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser.cpp" 
-               "${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser.moc" "${moc_flags}" "${moc_options}" "")
-QT4_CREATE_MOC_COMMAND("${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertymanager.cpp" 
-	       "${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertymanager.moc" "${moc_flags}" "${moc_options}" "")
-QT4_CREATE_MOC_COMMAND("${CMAKE_CURRENT_SOURCE_DIR}/src/qteditorfactory.cpp"
-	       "${CMAKE_CURRENT_BINARY_DIR}/src/qteditorfactory.moc" "${moc_flags}" "${moc_options}" "")
-QT4_CREATE_MOC_COMMAND("${CMAKE_CURRENT_SOURCE_DIR}/src/qttreepropertybrowser.cpp"
-	       "${CMAKE_CURRENT_BINARY_DIR}/src/qttreepropertybrowser.moc" "${moc_flags}" "${moc_options}" "")
-
-
-
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser.cpp PROPERTIES 
-    OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtpropertybrowser.cxx")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertymanager.cpp PROPERTIES 
-    OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtpropertymanager.cxx;${CMAKE_CURRENT_BINARY_DIR}/qtpropertymanager.moc")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qteditorfactory.cpp PROPERTIES 
-    OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qteditorfactory.cxx;${CMAKE_CURRENT_BINARY_DIR}/qteditorfactory.moc")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtvariantproperty.cpp PROPERTIES 
-    OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtvariantproperty.cxx")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qttreepropertybrowser.cpp PROPERTIES 
-    OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qttreepropertybrowser.cxx;${CMAKE_CURRENT_BINARY_DIR}/qttreepropertybrowser.moc")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtbuttonpropertybrowser.cpp PROPERTIES 
-    OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtbuttonpropertybrowser.cxx")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtgroupboxpropertybrowser.cpp PROPERTIES 
-    OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtgroupboxpropertybrowser.cxx")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowserutils.cpp PROPERTIES 
-	OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtpropertybrowserutils_p.cxx")
-	       
-
-ENDIF()
-
-
-					   
 
 # Resource files to rcc and compile:
 IF (RWS_USE_QT5)
