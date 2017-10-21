@@ -19,6 +19,7 @@
 
 #include "PGMLoader.hpp"
 
+#include <complex>
 #include <boost/spirit/include/classic.hpp>
 #include <boost/spirit/include/classic_dynamic.hpp>
 #include <boost/spirit/include/classic_actor.hpp>
