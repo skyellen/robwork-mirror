@@ -68,9 +68,9 @@ BOOST_AUTO_TEST_CASE( EAATest ){
     BOOST_CHECK_EQUAL(norm_inf(xe180_3.axis() - e180_3.axis()),0);
 
     BOOST_TEST_MESSAGE("-- Testing different sign combinations for 180 degree rotations");
-    double val1 = 0.3;
-    double val2 = 0.4;
-    double val3 = 0.5;
+    const double val1 = 0.3;
+    const double val2 = 0.4;
+    const double val3 = 0.5;
     for (int sign1 = -1; sign1 <= 1; sign1++) {
         for (int sign2 = -1; sign2 <= 1; sign2++) {
             for (int sign3 = -1; sign3 <= 1; sign3++) {
@@ -92,6 +92,47 @@ BOOST_AUTO_TEST_CASE( EAATest ){
                 BOOST_CHECK_SMALL(norm_inf(xe180axis - e180axis),1e-15);
             }
         }
+    }
+    BOOST_TEST_MESSAGE("-- Testing different sign combinations for 180 degree rotations - epsilon");
+    const double eps = 1e-7; // should be less than the hardcoded threshold in EAA.cpp
+    for (int sign1 = -1; sign1 <= 1; sign1++) {
+    	for (int sign2 = -1; sign2 <= 1; sign2++) {
+    		for (int sign3 = -1; sign3 <= 1; sign3++) {
+    			if (sign1 == 0 && sign2 == 0 && sign3 == 0)
+    				continue; // the zero case is not tested here
+    			Vector3D<> axisInput(sign1*val1, sign2*val2, sign3*val3);
+    			BOOST_TEST_MESSAGE("--- Sign combination: " << axisInput);
+    			axisInput = normalize(axisInput);
+    			EAA<> e180(axisInput*(Pi-eps));
+    			BOOST_CHECK_CLOSE(e180.angle(), Pi-eps, 1e-13);
+    			Vector3D<> e180axis = e180.axis();
+    			BOOST_CHECK_SMALL(norm_inf(e180axis - axisInput), 1e-15);
+    			EAA<> xe180(e180.toRotation3D());
+    			BOOST_CHECK_CLOSE(xe180.angle(), e180.angle(), 5e-13);
+    			Vector3D<> xe180axis = xe180.axis();
+    			BOOST_CHECK_SMALL(norm_inf(xe180axis - e180axis),1e-7);
+    		}
+    	}
+    }
+    BOOST_TEST_MESSAGE("-- Testing different sign combinations for 180 degree rotations + epsilon");
+    for (int sign1 = -1; sign1 <= 1; sign1++) {
+    	for (int sign2 = -1; sign2 <= 1; sign2++) {
+    		for (int sign3 = -1; sign3 <= 1; sign3++) {
+    			if (sign1 == 0 && sign2 == 0 && sign3 == 0)
+    				continue; // the zero case is not tested here
+    			Vector3D<> axisInput(sign1*val1, sign2*val2, sign3*val3);
+    			BOOST_TEST_MESSAGE("--- Sign combination: " << axisInput);
+    			axisInput = normalize(axisInput);
+    			EAA<> e180(axisInput*(Pi+eps));
+    			BOOST_CHECK_CLOSE(e180.angle(), Pi+eps, 1e-13);
+    			Vector3D<> e180axis = e180.axis();
+    			BOOST_CHECK_SMALL(norm_inf(e180axis - axisInput), 1e-15);
+    			EAA<> xe180(e180.toRotation3D());
+    			BOOST_CHECK_CLOSE(xe180.angle(), Pi-eps, 5e-13); // should choose angle < Pi
+    			Vector3D<> xe180axis = xe180.axis();
+    			BOOST_CHECK_SMALL(norm_inf(xe180axis + e180axis),1e-7); // should flip vector to get angle < Pi
+    		}
+    	}
     }
 
     // 90 degree's around x axis

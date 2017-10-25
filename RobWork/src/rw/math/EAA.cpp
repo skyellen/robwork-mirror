@@ -47,38 +47,43 @@ namespace
 		}
 
 		if (fabs(angle - Pi) < eps) { // Is the angle close to 180 degree
-			V magnitude(
-					(T)Pi * sqrt((T)0.5 * (R(0, 0) + (T)1.0)),
-					(T)Pi * sqrt((T)0.5 * (R(1, 1) + (T)1.0)),
-					(T)Pi * sqrt((T)0.5 * (R(2, 2) + (T)1.0))
+			V values(
+					sqrt((T)0.5 * (R(0, 0) + (T)1.0)),
+					sqrt((T)0.5 * (R(1, 1) + (T)1.0)),
+					sqrt((T)0.5 * (R(2, 2) + (T)1.0))
 			);
+			// Find index the axis element with largest value.
+			std::size_t k = 0;
+			if (std::fabs(axis[1]) > std::fabs(axis[0]))
+				k = 1;
+			if (std::fabs(axis[2]) > std::fabs(axis[1]) && std::fabs(axis[2]) > std::fabs(axis[0]))
+				k = 2;
+			const int sign_k = (axis[k] >= 0) ? 1 : -1;
+			values *= sign_k;
 			// Determine signs
-			std::size_t maxInd = 0;
-			if (magnitude[1] > magnitude[0]) maxInd = 1;
-			if (magnitude[2] > magnitude[1]) maxInd = 2;
-			if (maxInd == 0) {
+			if (k == 0) {
 				T v1v2 = R(0,1)+R(1,0);
 				T v1v3 = R(0,2)+R(2,0);
 				if (v1v2 < 0.)
-					magnitude[1] = -magnitude[1];
+					values[1] = -values[1];
 				if (v1v3 < 0.)
-					magnitude[2] = -magnitude[2];
-			} else if (maxInd == 1) {
+					values[2] = -values[2];
+			} else if (k == 1) {
 				T v1v2 = R(0,1)+R(1,0);
 				T v2v3 = R(1,2)+R(2,1);
 				if (v1v2 < 0.)
-					magnitude[0] = -magnitude[0];
+					values[0] = -values[0];
 				if (v2v3 < 0.)
-					magnitude[2] = -magnitude[2];
-			} else if (maxInd == 2) {
+					values[2] = -values[2];
+			} else if (k == 2) {
 				T v1v3 = R(0,2)+R(2,0);
 				T v2v3 = R(1,2)+R(2,1);
 				if (v1v3 < 0.)
-					magnitude[0] = -magnitude[0];
+					values[0] = -values[0];
 				if (v2v3 < 0.)
-					magnitude[1] = -magnitude[1];
+					values[1] = -values[1];
 			}
-			return magnitude;
+			return values*(Pi-axis.norm2()/2);
 		} 
 
 		return normalize(axis)*angle;
