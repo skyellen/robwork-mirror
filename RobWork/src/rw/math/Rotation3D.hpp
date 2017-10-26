@@ -461,7 +461,8 @@ namespace rw { namespace math {
 
         /**
          * @brief Calculate the inverse.
-         * @note about x5 faster than rot = inverse( rot )
+         * @note This function changes the object that it is invoked on, but this is about x5 faster than rot = inverse( rot )
+         * @see inverse(const Rotation3D< T > &) for the (slower) version that does not change the rotation object itself.
          * @return the inverse rotation.
          */
         inline Rotation3D<T>& inverse()
@@ -508,6 +509,8 @@ namespace rw { namespace math {
      * \robabx{a}{b}{\mathbf{R}}^{-1} @f$ of a rotation matrix
      *
      * @relates Rotation3D
+     *
+     * @see Rotation3D::inverse() for a faster version that modifies the existing rotation object instead of allocating a new one.
      *
      * @param aRb [in] the rotation matrix @f$ \robabx{a}{b}{\mathbf{R}} @f$
      *
