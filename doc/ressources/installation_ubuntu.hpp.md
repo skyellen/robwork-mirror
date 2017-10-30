@@ -3,12 +3,13 @@ Installation on Ubuntu {#page_rw_installation_ubuntu}
 [TOC]
 
 # Introduction # {#sec_rw_install_ubuntu_intro}
-At the moment, no precompiled Debian packages are available for download. Therefore, RobWork needs to be built by the user. This guide shows the steps for doing this in Ubuntu 16.04 and 14.04. The guide has been tested on a fresh install of Ubuntu 14.04.5, 16.04.2, and 16.10 in May 2017. If you have any suggestions or additions to the guide, please post it on the issue tracker https://gitlab.com/caro-sdu/RobWork/issues .
+At the moment, no precompiled Debian packages are available for download. Therefore, RobWork needs to be built by the user. This guide shows the steps for doing this in Ubuntu 16.04 and 14.04. The guide has been tested on a fresh install of Ubuntu 14.04.5, 16.04.3, 17.04 and 17.10 in October 2017. If you have any suggestions or additions to the guide, please post it on the issue tracker https://gitlab.com/caro-sdu/RobWork/issues .
 
 RobWork is basically multiple projects:
 - RobWork : is the core part including math, kinematics, planning and so on.
 - RobWorkStudio : is the GUI which enable visualization and more userfriendly interfaces through gui plugins
 - RobWorkSim : is an extension to the RobWork core functionality which adds dynamic simulation of bodies, devices and several tactile sensors.
+- RobWork Physics Engine (RWPE) : is an extension under RobWorkSim that requires access to code that is not yet public. Please request more information about this if you need it.
 - RobWorkHardware : is mostly drivers (with RobWork datatypes) for common hardware, or hardware on which RobWork platforms have been built eg. SDH, cameras, CAN-devices, the Universal robot arm, serial port...
 
 Note that RobWork is needed to run RobWorkStudio, RobWorkSim and RobWorkHardware. Therefore it is not possible to use these, without having RobWork installed on the machine. 
@@ -47,7 +48,7 @@ Xerces is used some places in RobWork for opening XML files. It is still a requi
 
 SWIG (optional) is a tool that makes it possible to generate a LUA script interface for RobWork.
 Python and Java interfaces are also possible, but require that Python or Java SDK is installed as well.
-All of these interfaces can be generated if you install the following packages:
+All of these interfaces can be generated if you install the following packages (in Ubuntu 16.04 and newer you can consider using liblua5.3-dev instead):
 
 	sudo apt-get install swig liblua5.2-dev python-dev default-jdk
 
@@ -59,7 +60,7 @@ Google Test (optional) is used for unit tests in RobWork. If you are a developer
 
 RobWorkStudio requires Qt to be installed. Both Qt4 and Qt5 is supported, but on a fresh Qt install it is encouraged to choose the Qt5 version:
 
-	sudo apt-get install qtdeclarative5-dev
+	sudo apt-get install qtbase5-dev
 
 ## ¤ RobWorkSim Dependencies ##  {#sec_ubuntu_dependencies_rwsim}
 
@@ -67,14 +68,20 @@ If you need to do dynamic simulations, you will probably need the RobWorkSim pac
 
 Open Dynamics Engine (ODE) can be installed through the package manager:
 
-	sudo apt-get install libode-dev libode4
+	sudo apt-get install libode-dev libodeX
+
+Replace libodeX with the newest version available. Ubuntu 14.04 comes with ODE 0.11.1 (libode1), Ubuntu 16.04 with ODE 0.13.1 (libode4) and Ubuntu versions newer than 16.10 with ODE 0.14 (libode6).
 
 Notice that the version from the package manager can sometimes be a bit outdated. If you want the latest version, Open Dynamics Engine (ODE) must be compiled from source.
-Use Mercurial to download the source from bitbucket:
+Use Mercurial to download the source from bitbucket (use a dot '.' as the third argument to checkout directly to the current folder):
 
 	hg clone https://bitbucket.org/odedevs/ode
 
-Open a terminal and run:
+Make sure that the required build tools are installed:
+
+	sudo apt-get install automake libtool
+
+Open a terminal, go to the ode folder (with the bootstrap file in it) and run:
 
 	./bootstrap
 	./configure --enable-double-precision --enable-shared --enable-ou --enable-builtin-threading-impl --disable-demos --disable-asserts
@@ -82,22 +89,20 @@ Open a terminal and run:
 
 This will make sure that ODE is built with 4 threads with double precision as a shared library.
 
-Bullet Physics can also be installed through the package manager:
+Bullet Physics can also be installed through the package manager. Ubuntu 14.04 comes with Bullet 2.81, Ubuntu 16.04 with 2.83.6, Ubuntu 17.04 with 2.83.7 and Ubuntu 17.10 with 2.86.1. The bullet packages can be installed with the following command:
 
 	sudo apt-get install libbullet-dev libbullet-extras-dev
 
-It is also possible to compile Bullet Physics from source, if a specific version is needed. Clone the source code with git:
+It is also possible to compile Bullet Physics from source, if a specific version is needed. Clone the source code with git (use a dot '.' as the third argument to checkout directly to the current folder):
 
 	git clone https://github.com/bulletphysics/bullet3
 
-Make a Build folder and run CMake to configure the build. From within the Build folder, run in a terminal:
+Make a Build folder under the bullet3 folder and run CMake to configure the build. From within the Build folder, run in a terminal:
 
 	cmake -DCMAKE_BUILD_TYPE=Release -DUSE_DOUBLE_PRECISION=ON -DBUILD_BULLET3=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX:PATH=$WORKSPACE/Release -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_C_FLAGS="-fPIC" -DBUILD_EXTRAS=OFF -DBUILD_BULLET2_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -BUILD_CPU_DEMOS=OFF ..
 	make -j4
 
 Modify the options to suit your needs. The shown options will make sure that Bullet is built with double precision, required compile flags and switch off building of things that are normally unnecessary when used in RobWorkSim.
-
-RobWork Physics Engine (RWPE) requires access to code that is not yet public. Request more information about this if you need it.
 
 ## ¤ RobWorkHardware Dependencies ##  {#sec_ubuntu_dependencies_rwhw}
 
@@ -118,7 +123,7 @@ Make a new directory where you want to install RobWork (in this guide, we will i
 	cd RobWork
 
 
-When the depencies are installed, go ahead and download the newest version of RobWork from the SVN repository at: 
+When the dependencies are installed, go ahead and download the newest version of RobWork from the SVN repository at: 
 
 https://svnsrv.sdu.dk/svn/RobWork/trunk/
 
@@ -149,25 +154,41 @@ In [CMake Options & Environment](@ref page_rw_installation_cmake_options) we try
 
 ## Compiling RobWork ## {#sec_ubuntu_build_compile}
 
-Add build directories for the projects you want to build:
+In the following it is assumed that RobWork was checked out to the folder ~/RobWork, and that this is the current directory.
+Add a build directory for each of the projects you want to build:
 
 	mkdir Build
 	mkdir Build/RW
-	mkdir Build/RWS
+	mkdir Build/RWStudio
+	mkdir Build/RWSim
+	mkdir Build/RWHardware
 
-Now we are ready to build RobWork. Run CMake:
+Now we are ready to build RobWork. Run CMake in the newly created build directory for RobWork, and run make afterwards to build the project:
 
-	cd Build/RW
+	cd ~/RobWork/Build/RW
 	cmake -DCMAKE_BUILD_TYPE=Release ../../RobWork
-
-Look carefully through the CMake output and check that there is no errors, and that the required dependencies are correctly found.
-Now that the CMake files has been built, we are ready to compile the project. Using 4 cores/threads, this is done by: 
-
 	make -j4
 
-Note that you need at least 1 GB of memory per thread when building. Ie. building with 4 cores requires around 4 GB of RAM. 
+Look carefully through the CMake output before running the make command. Check that there is no errors, and that the required dependencies are correctly found. 
+The -j4 argument to make will build RobWork on 4 CPU cores. Note that you need at least 1 GB of memory per thread when building. Ie. building with 4 cores requires around 4 GB of RAM. 
 
-For RobWorkStudio, the same procedure is repeated in the RWS build folder, and similar for RobWorkSim and RobWorkHardware if needed.
+For RobWorkStudio:
+
+	cd ~/RobWork/Build/RWStudio
+	cmake -DCMAKE_BUILD_TYPE=Release ../../RobWorkStudio
+	make -j4
+
+For RobWorkSim:
+
+	cd ~/RobWork/Build/RWSim
+	cmake -DCMAKE_BUILD_TYPE=Release ../../RobWorkSim
+	make -j4
+
+For RobWorkHardware:
+
+	cd ~/RobWork/Build/RWHardware
+	cmake -DCMAKE_BUILD_TYPE=Release ../../RobWorkHardware
+	make -j4
 
 Finally, we need to add the following paths to ~/.bashrc:
 
@@ -179,8 +200,6 @@ export RWHW_ROOT=~/RobWork/RobWorkHardware/
 export RWSIM_ROOT=~/RobWork/RobWorkSim/
 ~~~~
 
-Remember to only add paths to the components you have actually installed. Ie. if you only installed RobWork and RobWorkStudio, the paths for RobWorkSim and RobWorkHardware should not be set. 
+Remember to only add paths to the components you have actually installed. Ie. if you only installed RobWork and RobWorkStudio, the paths for RobWorkSim and RobWorkHardware should not be set.
 
-
-
-
+By setting these environment variables, it will be possible for other projects to find the RobWork projects. 
