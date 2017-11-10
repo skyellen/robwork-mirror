@@ -334,6 +334,13 @@ namespace rw { namespace common {
          */
         bool erase(const std::string& identifier);
 
+
+		/**
+		 * @brief Clears all properties form the map
+		 */
+		void clear();
+
+
         // The following methods are rarely used and are therefore given longer
         // names. They more strongly expose the internal use of Property<T>.
 
@@ -437,7 +444,7 @@ namespace rw { namespace common {
 
     private:
         bool insert(PropertyBase::Ptr property);
-
+			
     private:
         MapType _properties;
         std::string _name;

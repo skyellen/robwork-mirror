@@ -53,20 +53,21 @@ namespace rw { namespace common {
          */
         ~LogStreamWriter();
 
+	protected:
         /**
          * @copydoc LogWriter::write(const std::string&)
          */
-        void write(const std::string& str);
+        void doWrite(const std::string& str);
 
         /**
          * @brief Calls flush on the ostream
          */
-        void flush();
+        void doFlush();
 
 		/** 
 	 	 * @copydoc LogWriter::setTabLevel(int)
 		 */
-		void setTabLevel(int tabLevel);
+		void doSetTabLevel(int tabLevel);
 
     private:
         std::ostream* _stream;

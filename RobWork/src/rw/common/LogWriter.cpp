@@ -20,7 +20,24 @@
 
 #include <sstream>
 
+
 using namespace rw::common;
+
+void LogWriter::write(const std::string& message) {
+	boost::mutex::scoped_lock lock(_mutex);
+	doWrite(message);
+}
+
+void LogWriter::setTabLevel(int tabLevel)
+{
+	boost::mutex::scoped_lock lock(_mutex);
+	doSetTabLevel(tabLevel);
+}
+
+void LogWriter::flush() {
+	boost::mutex::scoped_lock lock(_mutex);
+	doFlush();
+}
 
 void LogWriter::write(const Message& msg)
 {

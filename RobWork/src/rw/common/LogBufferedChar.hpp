@@ -71,22 +71,23 @@ public:
 	 */
 	virtual ~LogBufferedChar();
 
+protected:
 	/**
 	 * @brief Writes str to the buffer
 	 * @param str [in] String to write
 	 */
-	void write(const std::string& str);
+	void doWrite(const std::string& str);
 
 
 	/**
 	 * @brief Flushes the buffer to the output stream
 	 */
-	void flush();
+	void doFlush();
 
 	/**
 	 * @copydoc LogWriter::setTabLevel
 	 */
-	void setTabLevel(int tablevel);
+	void doSetTabLevel(int tablevel);
 
 private:
     std::ostream* _stream;

@@ -24,6 +24,8 @@
 #include "Message.hpp"
 #include "Ptr.hpp"
 
+#include <boost/thread/mutex.hpp>
+
 namespace rw { namespace common {
 
 	/** @addtogroup common */
@@ -48,19 +50,19 @@ namespace rw { namespace common {
         /**
          * @brief Flush method
          */
-        virtual void flush() = 0;
+        void flush();
 
 		/**
 		 * @brief Set the tab level
 		 */
-		virtual void setTabLevel(int tabLevel) = 0;
+		void setTabLevel(int tabLevel);
 
 
         /**
          * @brief Writes \b str to the log
          * @param str [in] message to write
          */
-        virtual void write(const std::string& str) = 0;
+        void write(const std::string& str);
 
         /**
          * @brief Writes \b msg to the log
@@ -70,7 +72,7 @@ namespace rw { namespace common {
          *
          * @param msg [in] message to write
          */
-        virtual void write(const Message& msg);
+        void write(const Message& msg);
 
         /**
          * @brief Writes \b str as a line
@@ -78,7 +80,7 @@ namespace rw { namespace common {
          * By default writeln writes \b str followed by a '\\n'. However, logs
          * are free to implement a line change differently.
          */
-        virtual void writeln(const std::string& str);
+        void writeln(const std::string& str);
 
         /**
          * @brief general stream operator
@@ -92,7 +94,7 @@ namespace rw { namespace common {
 
         /**
          * @brief specialized stream operator
-         */
+        2 */
         LogWriter& operator<<(const std::string& str){
         	write(str);
         	return *this;
@@ -125,9 +127,13 @@ namespace rw { namespace common {
     protected:
         LogWriter() {}
 
+		virtual void doWrite(const std::string& message) = 0;
+		virtual void doSetTabLevel(int tabLevel) = 0;
+		virtual void doFlush() = 0;
     private:
         LogWriter(const LogWriter&);
         LogWriter& operator=(const LogWriter&);
+		boost::mutex _mutex;
     };
 
 #ifdef RW_USE_DEPRECATED

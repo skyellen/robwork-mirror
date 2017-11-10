@@ -53,21 +53,22 @@ namespace rw { namespace common {
          */
         virtual ~LogBufferedMsg();
 
+	protected:
         /**
          * @brief Writes str to the buffer
          * @param str [in] str to write
          */
-        virtual void write(const std::string& str);
+        virtual void doWrite(const std::string& str);
 
         /**
          * @brief Write content of buffer to output stream and flush it
          */
-        virtual void flush();
+        virtual void doFlush();
 
 		/**
 		 * @copydoc LogWriter::setTabLevel
 		 */
-		void setTabLevel(int tablevel);
+		virtual void doSetTabLevel(int tablevel);
 
     private:
 		std::vector<std::pair<std::string, int> > _buffer;
