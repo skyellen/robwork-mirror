@@ -30,6 +30,10 @@
 #include <rw/models/Joint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
+#include <rw/models/SphericalJoint.hpp>
+#include <rw/models/UniversalJoint.hpp>
+#include <rw/models/PrismaticSphericalJoint.hpp>
+#include <rw/models/PrismaticUniversalJoint.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/models/ParallelDevice.hpp>
 #include <rw/models/MobileDevice.hpp>
@@ -321,30 +325,66 @@ Frame* addModelToFrame(DummyModel& model, Frame *parent, StateStructure *tree, D
 	return modelframe;
 }
 
-void addLimit(const DummyLimit &limit, Joint* j) {
-	double convFactor = 1.0;
-	if (dynamic_cast<RevoluteJoint*>(j) != NULL) {
-		convFactor = Deg2Rad;
-	}
-	switch (limit._type) {
-	case (PosLimitType):
-		j->setBounds(std::pair<Q, Q>(Q(1, limit._min * convFactor), Q(1, limit._max * convFactor)));
-		break;
-	case (VelLimitType):
-		j->setMaxVelocity(Q(1, limit._max * convFactor));
-		break;
-	case (AccLimitType):
-		j->setMaxAcceleration(Q(1, limit._max * convFactor));
-		break;
-	default:
-		assert(0);
-		break;
-	}
-}
-
 void addLimits(std::vector<DummyLimit> &limits, Joint *j) {
-	for (size_t i = 0; i < limits.size(); i++)
-		addLimit(limits[i], j);
+	if (limits.size() == 0)
+		return;
+
+	std::vector<DummyLimit> posLimits;
+	std::vector<DummyLimit> velLimits;
+	std::vector<DummyLimit> accLimits;
+	Q convFactor(limits.size());
+	for (std::size_t i = 0; i < limits.size(); i++) {
+		convFactor[i] = 1;
+		switch(limits[i]._type) {
+		case PosLimitType:
+			posLimits.push_back(limits[i]);
+			break;
+		case VelLimitType:
+			velLimits.push_back(limits[i]);
+			break;
+		case AccLimitType:
+			accLimits.push_back(limits[i]);
+			break;
+		}
+	}
+
+	if (dynamic_cast<SphericalJoint*>(j) != NULL) {
+		convFactor[0] = Deg2Rad;
+		convFactor[1] = Deg2Rad;
+		convFactor[2] = Deg2Rad;
+	} else if (dynamic_cast<PrismaticSphericalJoint*>(j) != NULL) {
+		convFactor[0] = Deg2Rad;
+		convFactor[1] = Deg2Rad;
+		convFactor[2] = Deg2Rad;
+	} else if (dynamic_cast<UniversalJoint*>(j) != NULL) {
+		convFactor[0] = Deg2Rad;
+		convFactor[1] = Deg2Rad;
+	} else if (dynamic_cast<PrismaticUniversalJoint*>(j) != NULL) {
+		convFactor[0] = Deg2Rad;
+		convFactor[1] = Deg2Rad;
+	}
+
+	Q minPos(posLimits.size());
+	Q maxPos(posLimits.size());
+	Q maxVel(velLimits.size());
+	Q maxAcc(accLimits.size());
+	for (std::size_t i = 0; i < posLimits.size(); i++) {
+		minPos[i] = posLimits[i]._min * convFactor[i];
+		maxPos[i] = posLimits[i]._max * convFactor[i];
+	}
+	for (std::size_t i = 0; i < velLimits.size(); i++) {
+		maxVel[i] = velLimits[i]._max * convFactor[i];
+	}
+	for (std::size_t i = 0; i < accLimits.size(); i++) {
+		maxAcc[i] = accLimits[i]._max * convFactor[i];
+	}
+	if (posLimits.size() > 0)
+		j->setBounds(std::pair<Q, Q>(minPos,maxPos));
+	if (velLimits.size() > 0)
+		j->setMaxVelocity(maxVel);
+	if (accLimits.size() > 0)
+		j->setMaxAcceleration(maxAcc);
+	return;
 }
 
 void addLimitsToFrame(std::vector<DummyLimit> &limits, Frame *f) {
@@ -405,6 +445,34 @@ Frame *createFrame(DummyFrame& dframe, DummySetup &setup) {
 		if (dframe._state != ActiveState)
 			j->setActive(false);
 		//Accessor::activeJoint().set(*frame, true);
+	} else if (dframe._type == "Spherical") {
+		SphericalJoint *j = new SphericalJoint(dframe.getName(), dframe._transform);
+		addLimits(dframe._limits, j);
+		frame = j;
+
+		if (dframe._state != ActiveState)
+			j->setActive(false);
+	} else if (dframe._type == "PrismaticSpherical") {
+		PrismaticSphericalJoint *j = new PrismaticSphericalJoint(dframe.getName(), dframe._transform);
+		addLimits(dframe._limits, j);
+		frame = j;
+
+		if (dframe._state != ActiveState)
+			j->setActive(false);
+	} else if (dframe._type == "Universal") {
+		UniversalJoint *j = new UniversalJoint(dframe.getName(), dframe._transform);
+		addLimits(dframe._limits, j);
+		frame = j;
+
+		if (dframe._state != ActiveState)
+			j->setActive(false);
+	} else if (dframe._type == "PrismaticUniversal") {
+		PrismaticUniversalJoint *j = new PrismaticUniversalJoint(dframe.getName(), dframe._transform);
+		addLimits(dframe._limits, j);
+		frame = j;
+
+		if (dframe._state != ActiveState)
+			j->setActive(false);
 	} else if (dframe._type == "EndEffector") {
 		frame = new FixedFrame(dframe.getName(), dframe._transform);
 		//Accessor::frameType().set(*frame, rw::kinematics::FrameType::FixedFrame);

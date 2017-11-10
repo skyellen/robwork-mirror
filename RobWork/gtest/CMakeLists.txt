@@ -149,6 +149,22 @@ TARGET_LINK_LIBRARIES( rw_math-gtest ${MATH_TEST_LIBRARIES})
 ADD_RW_GTEST(rw_math-gtest)
 
 ########################################################################
+# Models
+########################################################################
+
+SET(MODELS_TEST_LIBRARIES
+ ${GTEST_BOTH_LIBRARIES}
+ rw
+ )
+
+SET(MODELS_TEST_SRC
+  models/JointTest.cpp
+)
+ADD_EXECUTABLE( rw_models-gtest ${MODELS_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rw_models-gtest ${MODELS_TEST_LIBRARIES})
+ADD_RW_GTEST(rw_models-gtest)
+
+########################################################################
 # Proximity
 ########################################################################
 
