@@ -348,7 +348,9 @@ void addLimits(std::vector<DummyLimit> &limits, Joint *j) {
 		}
 	}
 
-	if (dynamic_cast<SphericalJoint*>(j) != NULL) {
+	if (dynamic_cast<RevoluteJoint*>(j) != NULL) {
+		convFactor[0] = Deg2Rad;
+	} else if (dynamic_cast<SphericalJoint*>(j) != NULL) {
 		convFactor[0] = Deg2Rad;
 		convFactor[1] = Deg2Rad;
 		convFactor[2] = Deg2Rad;
