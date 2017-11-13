@@ -71,7 +71,7 @@ void compareJointWithReferenceJoints(Joint* const joint, const std::vector<Joint
 	for (std::size_t i = 0; i < refJoints.size(); i++)
 		EXPECT_EQ(0, joint->getData(state)[i]);
 
-	double vals[dof];
+	double vals[4];
 	for (std::size_t i = 0; i < refJoints.size(); i++)
 		vals[i] = 0.1*i;
 	joint->setData(state,vals);
