@@ -24,11 +24,6 @@ using namespace rw::models;
 using namespace rw::math;
 using namespace rw::kinematics;
 
-using namespace boost::numeric::ublas;
-
-typedef matrix_range<Jacobian::Base> Range;
-typedef zero_matrix<double> ZeroMatrix;
-
 namespace
 {
     Vector3D<> getCol(const Rotation3D<>& rot, int col)

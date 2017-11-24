@@ -20,31 +20,27 @@
 #include "ParallelLeg.hpp"
 #include "Joint.hpp"
 
+#include <rw/kinematics/FrameMap.hpp>
+
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Jacobian.hpp>
+
+#include <rw/models/SphericalJoint.hpp>
+#include <rw/models/PrismaticSphericalJoint.hpp>
+#include <rw/models/UniversalJoint.hpp>
+#include <rw/models/PrismaticUniversalJoint.hpp>
 
 using namespace rw::models;
 using namespace rw::math;
 using namespace rw::kinematics;
 
-using boost::numeric::ublas::slice;
-using boost::numeric::ublas::range;
-
-typedef boost::numeric::ublas::matrix_vector_slice<Jacobian::BoostBase> MatrixSlice;
-typedef boost::numeric::ublas::matrix_range<Jacobian::BoostBase> MatrixRange;
-
 namespace
 {
-    Jacobian::BoostBase* makeZeroMatrix(int rows, int cols)
-    {
-		return new Jacobian::BoostBase(Jacobian::BoostZeroBase(rows, cols));
-    }
-
-    void append(std::vector<Joint*>& result, const std::vector<Joint*>& tail)
-    {
-        result.insert(result.end(), tail.begin(), tail.end());
-    }
+	void append(std::vector<Joint*>& result, const std::vector<Joint*>& tail)
+	{
+		result.insert(result.end(), tail.begin(), tail.end());
+	}
 
     std::vector<Joint*> getActuatedJoints(const std::vector<ParallelLeg*>& legs)
     {
@@ -54,12 +50,52 @@ namespace
         return result;
     }
 
+    std::vector<Joint*> getActuatedJoints(const std::vector<Joint*>& joints) {
+        std::vector<Joint*> result;
+        for (size_t i = 0; i < joints.size(); i++) {
+        	if (joints[i]->isActive())
+        		result.push_back(joints[i]);
+        }
+        return result;
+    }
+
     std::vector<Joint*> getUnactuatedJoints(const std::vector<ParallelLeg*>& legs)
     {
         std::vector<Joint*> result;
         for (size_t i = 0; i < legs.size(); i++)
             append(result, legs[i]->getUnactuatedJoints());
         return result;
+    }
+
+    std::vector<Joint*> getUnactuatedJoints(const std::vector<Joint*>& joints) {
+        std::vector<Joint*> result;
+        for (size_t i = 0; i < joints.size(); i++) {
+        	if (!joints[i]->isActive())
+        		result.push_back(joints[i]);
+        }
+        return result;
+    }
+
+    std::vector<Joint*> getAllJointsFromLegs(const std::vector<ParallelLeg*>& legs) {
+    	std::vector<Joint*> joints;
+    	for(std::vector< ParallelLeg* >::const_iterator leg_iter = legs.begin(); leg_iter!=legs.end(); leg_iter++) {
+    		const ParallelLeg* const leg = *leg_iter;
+    		for(std::vector<Frame*>::const_iterator iter = leg->getKinematicChain().begin(); iter != leg->getKinematicChain().end(); iter++){
+    			Joint* const joint = dynamic_cast<Joint*>(*iter);
+    			if(joint == NULL)
+    				continue;
+    			joints.push_back(joint);
+    		}
+    	}
+    	return joints;
+    }
+
+    int getJointDOFs(const std::vector<Joint*>& joints)
+    {
+        int DOFs = 0;
+        for (size_t i = 0; i < joints.size(); i++)
+            DOFs += joints[i]->getDOF();
+        return DOFs;
     }
 }
 
@@ -76,227 +112,438 @@ ParallelDevice::ParallelDevice(
         state),
 
     _legs(legs),
+	_junctions(1,legs),
     _actuatedJoints(getActuatedJoints(legs)),
-    _unActuatedJoints(getUnactuatedJoints(legs))
+    _unActuatedJoints(getUnactuatedJoints(legs)),
+	_joints(getAllJointsFromLegs(legs))
 {
-    // create the actuated joint jacobian, should be the sice of row = 6* number of legs
-    // and columns = number of active joints
-    _aJointJ = makeZeroMatrix(6*((int)legs.size()-1), (int)_actuatedJoints.size()) ;
-    // and the unactuated joint matrix
-    _uaJointJ = makeZeroMatrix(6*((int)legs.size()-1), (int)_unActuatedJoints.size());
-
-    // construct the current joint value vectors for actuated and unactuated joints
-    _lastAJVal = new Q(Q::zero((int)_actuatedJoints.size()) );
-    _lastUAJVal = new Q(Q::zero((int)_unActuatedJoints.size()) );
-
-    for (size_t i = 0; i < _actuatedJoints.size(); i++)
-        (*_lastAJVal)(i) = *_actuatedJoints[i]->getData(state);
-
-    for (size_t i = 0;i < _unActuatedJoints.size(); i++)
-        (*_lastUAJVal)(i) = *_unActuatedJoints[i]->getData(state);
 }
 
-ParallelDevice::~ParallelDevice()
+ParallelDevice::ParallelDevice(const std::string name, Frame* base, Frame* end, const std::vector<Joint*>& joints, const State& state, const std::vector<Legs>& junctions):
+	JointDevice(name, base, end, getActuatedJoints(joints), state),
+	_junctions(junctions),
+	_actuatedJoints(getActuatedJoints(joints)),
+	_unActuatedJoints(getUnactuatedJoints(joints)),
+	_joints(joints)
 {
-    delete _aJointJ;
-    delete _uaJointJ;
-    delete _lastAJVal;
-    delete _lastUAJVal;
 }
 
-void ParallelDevice::setQ(const Q& q, State& s) const
-{
+ParallelDevice::~ParallelDevice() {
+}
+
+void ParallelDevice::setQ(const Q& q, State& s) const {
+	const std::vector<bool> enabled(q.size(),true);
+	setQ(q, enabled, s);
+}
+
+void ParallelDevice::setQ(const Q& q, const std::vector<bool>& enabled, State& s) const {
     // default MAX_ITERATIONS.
     const int MAX_ITERATIONS = 20;
 
-    State state(s);
-
-    size_t i;
-    for (i=0; i < _actuatedJoints.size(); i++) {
-        _actuatedJoints[i]->setData(state, &q[i]);
+    std::size_t cntDisabled = 0;
+    for (std::size_t i = 0; i < q.size(); i++) {
+    	if (!enabled[i])
+    		cntDisabled++;
     }
+
+    // construct the current joint value vectors for actuated and unactuated joints
+    Q lastAJVal(Q::zero(getJointDOFs(_actuatedJoints)-cntDisabled));
+    Q lastUAJVal(Q::zero(getJointDOFs(_unActuatedJoints)+cntDisabled));
+
+    // create the actuated joint jacobian, should be the sice of row = 6* number of legs
+    // and columns = number of active joints
+    const int aDOFs = getJointDOFs(_actuatedJoints);
+    const int uaDOFs = getJointDOFs(_unActuatedJoints);
+    Eigen::MatrixXd::Index nCon = 0;
+    for (std::size_t i = 0; i < _junctions.size(); i++) {
+    	const Legs& legs = _junctions[i];
+    	if (legs.size() >= 2) {
+    		nCon += legs.size()-1;
+    	}
+    }
+    Eigen::MatrixXd aJointJ = Eigen::MatrixXd::Zero(nCon*6, aDOFs-cntDisabled); // the actuated joint jacobian
+    Eigen::MatrixXd uaJointJ = Eigen::MatrixXd::Zero(nCon*6, uaDOFs+cntDisabled); // the unactuated joint jacobian
+
+	std::size_t cur;
+	cur = 0;
+	{
+		std::size_t cntEn = 0;
+		for(size_t i=0;i<_actuatedJoints.size();i++) {
+			for (int d = 0; d < _actuatedJoints[i]->size(); d++) {
+				if (enabled[cur]) {
+					lastAJVal(cntEn) = _actuatedJoints[i]->getData(s)[d];
+					cntEn++;
+				}
+				cur++;
+			}
+		}
+	}
+	cur = 0;
+	{
+		std::size_t cntDis = 0;
+		for(size_t i=0;i<_actuatedJoints.size();i++) {
+			for (int d = 0; d < _actuatedJoints[i]->size(); d++) {
+				if (!enabled[cur]) {
+					lastUAJVal(cntDis) = _actuatedJoints[i]->getData(s)[d];
+					cntDis++;
+				}
+				cur++;
+			}
+		}
+		cur = cntDis;
+		for(size_t i=0;i<_unActuatedJoints.size();i++) {
+			for (int d = 0; d < _unActuatedJoints[i]->size(); d++) {
+				lastUAJVal(cur) = _unActuatedJoints[i]->getData(s)[d];
+				cur++;
+			}
+		}
+	}
+
+	State state(s);
+
+    cur = 0;
+    for (std::size_t i=0; i < _actuatedJoints.size(); i++) {
+    	Q redQ(_actuatedJoints[i]->getDOF());
+    	for (int d = 0; d < _actuatedJoints[i]->getDOF(); d++) {
+    		if (enabled[cur+d])
+    			redQ[d] = q[cur+d];
+    		else
+    			redQ[d] = _actuatedJoints[i]->getData(s)[d];
+    	}
+    	_actuatedJoints[i]->setData(state, &redQ[0]);
+    	cur += _actuatedJoints[i]->getDOF();
+    }
+
+    if (uaDOFs+cntDisabled == 0) {
+    	s = state;
+    	return;
+    }
+
+    // Find the first index in the equation system for each joint
+    FrameMap<Eigen::MatrixXd::Index> qIndexActuatedAll;
+    FrameMap<Eigen::MatrixXd::Index> qIndexActuatedEnabled;
+    FrameMap<Eigen::MatrixXd::Index> qIndexUnactuated;
+    {
+    	Eigen::MatrixXd::Index dAct = 0;
+    	Eigen::MatrixXd::Index dUnact = 0;
+    	for (std::size_t i = 0; i < _actuatedJoints.size(); i++) {
+    		Eigen::MatrixXd::Index dActTmp = 0;
+    		Eigen::MatrixXd::Index dUnactTmp = 0;
+			qIndexActuatedAll[*_actuatedJoints[i]] = dAct+dUnact;
+    		for (int d = 0; d < _actuatedJoints[i]->getDOF(); d++) {
+    			if (enabled[dAct+dUnact+d]) {
+    				qIndexActuatedEnabled[*_actuatedJoints[i]] = dAct;
+    				dActTmp++;
+    			} else {
+    	    		qIndexUnactuated[*_actuatedJoints[i]] = dUnact;
+    				dUnactTmp++;
+    			}
+    		}
+    		dAct += dActTmp;
+    		dUnact += dUnactTmp;
+    	}
+    	for (std::size_t i = 0; i < _unActuatedJoints.size(); i++) {
+    		qIndexUnactuated[*_unActuatedJoints[i]] = dUnact;
+    		dUnact += _unActuatedJoints[i]->getDOF();
+    	}
+    }
+
     // initialize configuration vector
-    int row=0,ja_column=0,jua_column=0;
-    for(i=0;i<_legs.size();i++){ // only run through L-1 legs where L is nr of legs
-        Jacobian leg_jacobian = _legs[i]->baseJend(state);
-        std::vector<Frame*>::const_iterator iter = _legs[i]->getKinematicChain().begin();
-        for(size_t j=0; iter!=_legs[i]->getKinematicChain().end(); ++iter ){ // the columns
-            Joint *joint = dynamic_cast<Joint*>(*iter);
-            if( joint == NULL )
-                continue;
-            // determine if joint j is an active joint
-            if( joint->isActive() ){
-                // copy the leg_jacobian column at index j into the actuated jacobian matrix
-                if(i!=_legs.size()-1){
-                    MatrixSlice(
-                        *_aJointJ,
-                        slice(row, 1, 6),
-                        slice(ja_column,0,6)) = column(leg_jacobian.m(), j);
-                }
-                if(i!=0){
-                    MatrixSlice(
-                        *_aJointJ,
-                        slice(row-6, 1, 6),
-                        slice(ja_column, 0, 6)) = -column(leg_jacobian.m(), j);
-                }
-                ja_column++;
-            } else {
-                // copy the jacobian row into the unactuated jacobian matrix
-                if(i!=_legs.size()-1){
-                    MatrixSlice(
-                        *_uaJointJ,
-                        slice(row, 1, 6),
-                        slice(jua_column, 0, 6)) = column(leg_jacobian.m(), j);
-                }
-                if (i != 0) {
-                    MatrixSlice(
-                        *_uaJointJ,
-                        slice(row - 6, 1, 6),
-                        slice(jua_column,0,6)) = - column(leg_jacobian.m(), j);
-                }
-                jua_column++;
-            }
-            j++;
-        }
-        row += 6;
+    int row=0;//,ja_column=0,jua_column=0;
+    for(std::size_t ji = 0; ji < _junctions.size(); ji++) {
+    	const Legs& legs = _junctions[ji];
+    	for(std::size_t i = 0; i < legs.size(); i++) {
+    		const Jacobian::Base leg_jacobian = legs[i]->baseJend(state).e();
+    		std::vector<Frame*>::const_iterator iter = legs[i]->getKinematicChain().begin();
+    		for(size_t j = 0; iter != legs[i]->getKinematicChain().end(); ++iter) { // the columns
+    			Joint *joint = dynamic_cast<Joint*>(*iter);
+    			if( joint == NULL )
+    				continue;
+    			// determine if joint j is an active joint
+    			if( joint->isActive() ){
+    				// copy the leg_jacobian column at index j into the actuated jacobian matrix
+    				const std::size_t ja_column = qIndexActuatedEnabled[*joint];
+    				const std::size_t jua_column = qIndexUnactuated[*joint];
+    				const std::size_t j_enabler = qIndexActuatedAll[*joint];
+    				std::size_t cntEn = 0;
+    				std::size_t cntDis = 0;
+    				if(i != legs.size()-1) {
+    					for (int d = 0; d < joint->getDOF(); d++) {
+    						if (enabled[j_enabler+d]) {
+    							aJointJ.block(row,ja_column+cntEn,6,1) = leg_jacobian.col(j+d);
+    							cntEn++;
+    						} else {
+    							uaJointJ.block(row,jua_column+cntDis,6,1) = leg_jacobian.col(j+d);
+    							cntDis++;
+    						}
+    					}
+    				}
+    				if(i!=0){
+    					cntEn = 0;
+    					cntDis = 0;
+    					for (int d = 0; d < joint->getDOF(); d++) {
+    						if (enabled[j_enabler+d]) {
+    							aJointJ.block(row-6,ja_column+cntEn,6,1) = -leg_jacobian.col(j+d);
+    							cntEn++;
+    						} else {
+    							uaJointJ.block(row-6,jua_column+cntDis,6,1) = -leg_jacobian.col(j+d);
+    							cntDis++;
+    						}
+    					}
+    				}
+    				//ja_column += cntEn;
+    				//jua_column += cntDis;
+    			}
+    			j += joint->getDOF();
+    		}
+    		row += 6;
+    	}
+		row -= 6;
+    }
+    row = 0;
+    for(std::size_t ji = 0; ji < _junctions.size(); ji++) {
+    	const Legs& legs = _junctions[ji];
+    	for(std::size_t i = 0; i < legs.size(); i++) {
+    		const Jacobian::Base leg_jacobian = legs[i]->baseJend(state).e();
+    		std::vector<Frame*>::const_iterator iter = legs[i]->getKinematicChain().begin();
+    		for(size_t j = 0; iter != legs[i]->getKinematicChain().end(); ++iter) { // the columns
+    			Joint *joint = dynamic_cast<Joint*>(*iter);
+    			if( joint == NULL )
+    				continue;
+    			// determine if joint j is an active joint
+    			if(!joint->isActive()) {
+    				const std::size_t jua_column = qIndexUnactuated[*joint];
+    				// copy the jacobian row into the unactuated jacobian matrix
+    				if(i != legs.size()-1){
+    					for (int d = 0; d < joint->getDOF(); d++) {
+    						uaJointJ.block(row,jua_column+d,6,1) = leg_jacobian.col(j+d);
+    					}
+    				}
+    				if (i != 0) {
+    					for (int d = 0; d < joint->getDOF(); d++) {
+    						uaJointJ.block(row-6,jua_column+d,6,1) = -leg_jacobian.col(j+d);
+    					}
+    				}
+    				//jua_column += joint->getDOF();
+    			}
+    			j += joint->getDOF();
+    		}
+    		row += 6;
+    	}
+		row -= 6;
     }
 
     double e = 1e-6;
-    Q deltaQA(Q::zero((int) _actuatedJoints.size() ));
-    for(i=0;i<_actuatedJoints.size();i++){
-        deltaQA(i) = q(i) - (*_lastAJVal)(i);
+    Q deltaQA(Q::zero(aDOFs-cntDisabled));
+    {
+		std::size_t cntEn = 0;
+		for(std::size_t i=0; i < static_cast<std::size_t>(aDOFs); i++) {
+			if (enabled[i]) {
+				deltaQA(cntEn) = q(i) - lastAJVal(cntEn);
+				cntEn++;
+			}
+	    }
     }
 
     // calculate -aJ(q)*dQa , aJ is te actuated jacobian and dQa is difference between
     // current and desired actuated joint val
-    Q aJdeltaQA(
-        - prod(*_aJointJ, deltaQA.m()));
+    Q aJdeltaQA(-aJointJ*deltaQA.e());
 
     // Calculate the initial change of the unactuated joints
-    Q deltaQUA(
-        prod(LinearAlgebra::pseudoInverse(*_uaJointJ), aJdeltaQA.m()));
+    Q deltaQUA(LinearAlgebra::pseudoInverse(uaJointJ)*aJdeltaQA.e());
 
     // Solve the equation uaJ(q)*dQua = dY , where dY = deltaPoses, for dQua
-    Q deltaY(Q::zero((int)_unActuatedJoints.size()));
+    //Q deltaY(Q::zero((int)_unActuatedJoints.size()));
+    Q deltaY(Q::zero(nCon*6));
 
     int iterations = 0;
     double error = 1;
     //double lasterror = 1;
     do{
         // update the unactuated joints and unactuated joint jacobian
-        for(i=0; i<_unActuatedJoints.size(); i++){
-            (*_lastUAJVal)(i) = (*_lastUAJVal)(i) + deltaQUA[i];
-            _unActuatedJoints[i]->setData(state, &(*_lastUAJVal)(i));
+        for(std::size_t i=0; i < (std::size_t)uaDOFs+cntDisabled; i++) {
+    		lastUAJVal(i) = lastUAJVal(i) + deltaQUA[i];
         }
-
-        row = 0;jua_column=0;
-        //update Unactuated Joint Jacobian
-        for(i=0;i<_legs.size();i++){
-            Jacobian leg_jacobian = _legs[i]->baseJend(state);
-            std::vector<Frame*>::const_iterator iter = _legs[i]->getKinematicChain().begin();
-            for(size_t j=0; iter!=_legs[i]->getKinematicChain().end(); ++iter ){
-                Joint *joint = dynamic_cast<Joint*>(*iter);
-                if( joint == NULL )
-                    continue;
-                if( !joint->isActive() ){
-                    // copy the jacobian row into the unactuated jacobian matrix
-                    if(i!=_legs.size()-1){
-                        MatrixSlice(
-                            *_uaJointJ,
-                            slice(row,1,6),
-                            slice(jua_column,0,6)) = column(leg_jacobian.m(), j);
-                    }
-                    if(i!=0){
-                        MatrixSlice(
-                            *_uaJointJ,
-                            slice(row-6,1,6),
-                            slice(jua_column,0,6)) = -column(leg_jacobian.m(), j);
-                    }
-                    jua_column++;
-                }
-                j++;
+    	{
+        	std::size_t cur = 0;
+    		std::size_t cntDis = 0;
+    		for(std::size_t i = 0; i < _actuatedJoints.size(); i++) {
+    			Q qAct(_actuatedJoints[i]->getDOF());
+    			for (int d = 0; d < _actuatedJoints[i]->size(); d++) {
+    				if (enabled[cur])
+    					qAct[d] = _actuatedJoints[i]->getData(state)[d];
+    				else {
+    					qAct[d] = lastUAJVal[cntDis];
+    					cntDis++;
+    				}
+					cur++;
+    			}
+    			_actuatedJoints[i]->setData(state, &qAct[0]);
+    		}
+    		cur = cntDis;
+        	for(std::size_t i=0; i < _unActuatedJoints.size(); i++) {
+                _unActuatedJoints[i]->setData(state, &lastUAJVal(cur));
+                cur += _unActuatedJoints[i]->getDOF();
             }
-            row += 6;
+    	}
+
+        row = 0;//ja_column=0;jua_column=0;
+        //update Unactuated Joint Jacobian
+        for(std::size_t ji = 0; ji < _junctions.size(); ji++) {
+        	const Legs& legs = _junctions[ji];
+        	for(std::size_t i = 0; i < legs.size(); i++) {
+        		const Jacobian::Base leg_jacobian = legs[i]->baseJend(state).e();
+        		std::vector<Frame*>::const_iterator iter = legs[i]->getKinematicChain().begin();
+        		for(size_t j = 0; iter != legs[i]->getKinematicChain().end(); ++iter) {
+        			Joint *joint = dynamic_cast<Joint*>(*iter);
+        			if( joint == NULL )
+        				continue;
+        			if( joint->isActive() ){
+        				// copy the leg_jacobian column at index j into the actuated jacobian matrix
+        				const std::size_t jua_column = qIndexUnactuated[*joint];
+        				const std::size_t j_enabler = qIndexActuatedAll[*joint];
+        				std::size_t cntEn = 0;
+        				std::size_t cntDis = 0;
+        				if(i != legs.size()-1){
+        					for (int d = 0; d < joint->getDOF(); d++) {
+        						if (enabled[j_enabler+d]) {
+        							cntEn++;
+        						} else {
+        							uaJointJ.block(row,jua_column+cntDis,6,1) = leg_jacobian.col(j+d);
+        							cntDis++;
+        						}
+        					}
+        				}
+        				if(i!=0){
+        					cntEn = 0;
+        					cntDis = 0;
+        					for (int d = 0; d < joint->getDOF(); d++) {
+        						if (enabled[j_enabler+d]) {
+        							cntEn++;
+        						} else {
+        							uaJointJ.block(row-6,jua_column+cntDis,6,1) = -leg_jacobian.col(j+d);
+        							cntDis++;
+        						}
+        					}
+        				}
+        				//ja_column += cntEn;
+        				//jua_column += cntDis;
+        			}
+        			j += joint->getDOF();
+        		}
+        		row += 6;
+        	}
+        	row -= 6;
+        }
+        row = 0;
+        for(std::size_t ji = 0; ji < _junctions.size(); ji++) {
+        	const Legs& legs = _junctions[ji];
+        	for(std::size_t i = 0; i < legs.size(); i++) {
+        		const Jacobian::Base leg_jacobian = legs[i]->baseJend(state).e();
+        		std::vector<Frame*>::const_iterator iter = legs[i]->getKinematicChain().begin();
+        		for(size_t j = 0; iter != legs[i]->getKinematicChain().end(); ++iter) {
+        			Joint *joint = dynamic_cast<Joint*>(*iter);
+        			if( joint == NULL )
+        				continue;
+        			if(!joint->isActive()){
+        				// copy the jacobian row into the unactuated jacobian matrix
+        				const std::size_t jua_column = qIndexUnactuated[*joint];
+        				if(i != legs.size()-1){
+        					for (int d = 0; d < joint->getDOF(); d++) {
+        						uaJointJ.block(row,jua_column+d,6,1) = leg_jacobian.block(0,j+d,6,1);
+        					}
+        				}
+        				if(i!=0){
+        					for (int d = 0; d < joint->getDOF(); d++) {
+        						uaJointJ.block(row-6,jua_column+d,6,1) = -leg_jacobian.block(0,j+d,6,1);
+        					}
+        				}
+        				//jua_column += joint->getDOF();
+        			}
+        			j += joint->getDOF();
+        		}
+        		row += 6;
+        	}
+        	row -= 6;
         }
 
         // update deltaY
-        for(i=0; i<_legs.size()-1; i++){
-            // Calculate quaternion and pos for i
-            Transform3D<> bTe = _legs[i]->baseTend(state);
-            // Calculate quaternion and pos for i+1
-            Transform3D<> bTe_1 = _legs[i+1]->baseTend(state);
-            // Calculate the difference between pose1 and pose2
-            Vector3D<> pos = bTe_1.P() - bTe.P();
-            EAA<> orin = bTe.R()*(EAA<>( inverse(bTe.R())*bTe_1.R() ) );
-            // copy it into deltaY
+        row = 0;
+        for(std::size_t ji = 0; ji < _junctions.size(); ji++) {
+        	const Legs& legs = _junctions[ji];
+        	for(std::size_t i = 0; i < legs.size()-1; i++) {
+        		// Calculate quaternion and pos for i
+        		Transform3D<> bTe = legs[i]->baseTend(state);
+        		// Calculate quaternion and pos for i+1
+        		Transform3D<> bTe_1 = legs[i+1]->baseTend(state);
+        		// Calculate the difference between pose1 and pose2
+        		Vector3D<> pos = bTe_1.P() - bTe.P();
+        		EAA<> orin = bTe.R()*(EAA<>( inverse(bTe.R())*bTe_1.R() ) );
+        		// copy it into deltaY
 
-            int index = (int)i*6;
-            deltaY[index+0] = pos(0);
-            deltaY[index+1] = pos(1);
-            deltaY[index+2] = pos(2);
+        		deltaY[row+0] = pos(0);
+        		deltaY[row+1] = pos(1);
+        		deltaY[row+2] = pos(2);
 
-            deltaY[index+3] = orin(0);
-            deltaY[index+4] = orin(1);
-            deltaY[index+5] = orin(2);
+        		deltaY[row+3] = orin(0);
+        		deltaY[row+4] = orin(1);
+        		deltaY[row+5] = orin(2);
+            	row += 6;
+        	}
         }
 
         // Calculate the new change in the unactuated joints
         error = deltaY.norm2();
-        //lasterror = error;
-        deltaQUA = Q(prod(LinearAlgebra::pseudoInverse(*_uaJointJ), deltaY.m()));
+        deltaQUA = Q(LinearAlgebra::pseudoInverse(uaJointJ)*deltaY.e());
         iterations++;
     } while( e < error && iterations < MAX_ITERATIONS);
 
     if (iterations >= MAX_ITERATIONS){
         // TODO cast exception and return parallelDevice to initial state
         std::cout << "ERROR: Max iterations exeeded!!!" << std::endl;
+    	//RW_THROW("ERROR: Max iterations exeeded!!!");
     } else {
        s = state;
     }
 
-    for(size_t i=0;i<_actuatedJoints.size();i++)
-        (*_lastAJVal)(i) = *_actuatedJoints[i]->getData(s);
-
-    for(size_t i=0;i<_unActuatedJoints.size();i++)
-        (*_lastUAJVal)(i) = *_unActuatedJoints[i]->getData(s);
+    normalizeJoints(s);
 }
 
 // Jacobians
 
 Jacobian ParallelDevice::baseJend(const State& state) const
 {
+	if (_legs.size() == 0)
+		RW_THROW("baseJend is not yet supported for ParallelDevice with junctions.");
+    return baseJend(_legs,state);
+}
+
+Jacobian ParallelDevice::baseJend(const std::vector<ParallelLeg*>& legs, const State& state) {
     // calculate the size of the total jacobian matrix and configuration vector
     size_t rows=0, columns=0;
-    std::vector< ParallelLeg* >::const_iterator leg_iter = _legs.begin();
-    for(;leg_iter!=_legs.end();++leg_iter){
+    std::vector< ParallelLeg* >::const_iterator leg_iter = legs.begin();
+    for(;leg_iter!=legs.end();++leg_iter){
         rows += 6;
-        columns += (*leg_iter)->nrOfJoints();
+        columns += (*leg_iter)->getJointDOFs();
     }
 
 
-    Jacobian::BoostBase m = Jacobian::BoostZeroBase(rows, columns);
+    Jacobian::Base m = Jacobian::zero(rows, columns).e();
 
     // initialize configuration vector
     int row=0,column=0;
-    for(size_t i=0;i<_legs.size();i++){
+    for(size_t i=0;i<legs.size();i++){
         // copy the base to endeffector jacobian of leg i to the jacobian matrix at index (row,column)
 
-        MatrixRange(
-            m,
-            range(row, row+6),
-            range(column, column+_legs[i]->nrOfJoints())) = _legs[i]->baseJend(state).m();
+		m.block(row,column,6,legs[i]->getJointDOFs()) = legs[i]->baseJend(state).e();
 
         if(i!=0){ // for all legs except the first copy -bTe jacobian of leg into (row-6,column)
-            MatrixRange(
-                m,
-                range(row-6, row),
-                range(column, column + _legs[i]->nrOfJoints())) =
-                -_legs[i]->baseJend(state).m();
+    		m.block(row-6,column,6,legs[i]->getJointDOFs()) = -legs[i]->baseJend(state).e();
         }
 
         // update the row and column count
         row += 6; // allways for robots in 3d
-        column += (int)_legs[i]->nrOfJoints();
+        column += (int)legs[i]->getJointDOFs();
     }
 
     return Jacobian( m );
@@ -311,9 +558,154 @@ Jacobian ParallelDevice::baseJframe(const Frame* frame, const State& state) cons
     std::vector<ParallelLeg*>::const_iterator leg_iter = _legs.begin();
     for(;leg_iter!=_legs.end();++leg_iter){
         rows += 6;
-        columns += (*leg_iter)->nrOfJoints();
+        columns += (*leg_iter)->getJointDOFs();
     }
 
-    Jacobian jacobian(Jacobian::BoostZeroBase(rows, columns));
-    return jacobian;
+    return Jacobian::zero(rows,columns);
+}
+
+std::vector<Joint*> ParallelDevice::getAllJoints() const {
+	return _joints;
+}
+
+std::size_t ParallelDevice::getFullDOF() const {
+	std::size_t dof = 0;
+    //for(std::vector< ParallelLeg* >::const_iterator leg_iter = _legs.begin(); leg_iter!=_legs.end(); leg_iter++) {
+    //    dof += (*leg_iter)->getJointDOFs();
+    //}
+	for (std::size_t i = 0; i < _joints.size(); i++)
+		dof += _joints[i]->getDOF();
+    return dof;
+}
+
+std::pair<Q, Q> ParallelDevice::getAllBounds() const {
+    const Q q(getFullDOF());
+    std::pair<Q, Q> bounds(q, q);
+    int i = 0;
+    /*
+    for(std::vector< ParallelLeg* >::const_iterator leg_iter = _legs.begin(); leg_iter!=_legs.end(); leg_iter++) {
+    	const ParallelLeg* const leg = *leg_iter;
+    	for(std::vector<Frame*>::const_iterator iter = leg->getKinematicChain().begin(); iter != leg->getKinematicChain().end(); iter++){
+    		const Joint* const joint = dynamic_cast<const Joint*>(*iter);
+    		if(joint == NULL)
+    			continue;
+            const std::pair<Q, Q> pair = joint->getBounds();
+            bounds.first.setSubPart(i,pair.first);
+            bounds.second.setSubPart(i, pair.second);
+            i += joint->getDOF();
+    	}
+    }
+    */
+	for (std::size_t ji = 0; ji < _joints.size(); ji++) {
+        const std::pair<Q, Q> pair = _joints[ji]->getBounds();
+        bounds.first.setSubPart(i,pair.first);
+        bounds.second.setSubPart(i, pair.second);
+        i += _joints[ji]->getDOF();
+	}
+    return bounds;
+}
+
+Q ParallelDevice::getFullQ(const State& state) const {
+	Q q(getFullDOF());
+	std::size_t cur = 0;
+	/*
+    for(std::vector< ParallelLeg* >::const_iterator leg_iter = _legs.begin(); leg_iter!=_legs.end(); leg_iter++) {
+    	const ParallelLeg* const leg = *leg_iter;
+    	for(std::vector<Frame*>::const_iterator iter = leg->getKinematicChain().begin(); iter != leg->getKinematicChain().end(); iter++){
+    		const Joint* const joint = dynamic_cast<const Joint*>(*iter);
+    		if(joint == NULL)
+    			continue;
+    		for (int d = 0; d < joint->size(); d++) {
+    			q[cur] = joint->getData(state)[d];
+    			cur++;
+    		}
+    	}
+    }
+    */
+	for (std::size_t i = 0; i < _joints.size(); i++) {
+		for (int d = 0; d < _joints[i]->size(); d++) {
+			q[cur] = _joints[i]->getData(state)[d];
+			cur++;
+		}
+	}
+    return q;
+}
+
+void ParallelDevice::setFullQ(const Q& q, State& state) const {
+	std::size_t cur = 0;
+	/*
+    for(std::vector< ParallelLeg* >::const_iterator leg_iter = _legs.begin(); leg_iter!=_legs.end(); leg_iter++) {
+    	const ParallelLeg* const leg = *leg_iter;
+    	for(std::vector<Frame*>::const_iterator iter = leg->getKinematicChain().begin(); iter != leg->getKinematicChain().end(); iter++){
+    		const Joint* const joint = dynamic_cast<const Joint*>(*iter);
+    		if(joint == NULL)
+    			continue;
+			joint->setData(state,&q[cur]);
+			cur += joint->size();
+    	}
+    }
+    */
+	for (std::size_t i = 0; i < _joints.size(); i++) {
+		_joints[i]->setData(state,&q[cur]);
+		cur += _joints[i]->size();
+	}
+    normalizeJoints(state);
+}
+
+void ParallelDevice::normalizeJoints(State& state) const {
+	/*
+    for(std::vector< ParallelLeg* >::const_iterator leg_iter = _legs.begin(); leg_iter!=_legs.end(); leg_iter++) {
+    	const ParallelLeg* const leg = *leg_iter;
+    	for(std::vector<Frame*>::const_iterator iter = leg->getKinematicChain().begin(); iter != leg->getKinematicChain().end(); iter++){
+    		const Joint* const joint = dynamic_cast<const Joint*>(*iter);
+    		if(joint == NULL)
+    			continue;
+			Q q(joint->size());
+			const std::pair<Q,Q> bounds = joint->getBounds();
+    		for (int d = 0; d < joint->size(); d++) {
+    			q[d] = joint->getData(state)[d];
+    		}
+    		if (dynamic_cast<const SphericalJoint*>(joint) || dynamic_cast<const PrismaticSphericalJoint*>(joint)) {
+    			for (std::size_t i = 0; i < 3; i++) {
+    				while(q[i] > bounds.second[i])
+    					q[i] -= 2*Pi;
+    				while(q[i] < bounds.first[i])
+    					q[i] += 2*Pi;
+    			}
+    		} else if (dynamic_cast<const UniversalJoint*>(joint) || dynamic_cast<const PrismaticUniversalJoint*>(joint)) {
+    			for (std::size_t i = 0; i < 2; i++) {
+    				while(q[i] > bounds.second[i])
+    					q[i] -= 2*Pi;
+    				while(q[i] < bounds.first[i])
+    					q[i] += 2*Pi;
+    			}
+    		}
+			joint->setData(state,&q[0]);
+    	}
+    }
+    */
+	for (std::size_t i = 0; i < _joints.size(); i++) {
+		Joint* const joint = _joints[i];
+		Q q(joint->size());
+		const std::pair<Q,Q> bounds = joint->getBounds();
+		for (int d = 0; d < joint->size(); d++) {
+			q[d] = joint->getData(state)[d];
+		}
+		if (dynamic_cast<const SphericalJoint*>(joint) || dynamic_cast<const PrismaticSphericalJoint*>(joint)) {
+			for (std::size_t i = 0; i < 3; i++) {
+				while(q[i] > bounds.second[i])
+					q[i] -= 2*Pi;
+				while(q[i] < bounds.first[i])
+					q[i] += 2*Pi;
+			}
+		} else if (dynamic_cast<const UniversalJoint*>(joint) || dynamic_cast<const PrismaticUniversalJoint*>(joint)) {
+			for (std::size_t i = 0; i < 2; i++) {
+				while(q[i] > bounds.second[i])
+					q[i] -= 2*Pi;
+				while(q[i] < bounds.first[i])
+					q[i] += 2*Pi;
+			}
+		}
+		joint->setData(state,&q[0]);
+	}
 }

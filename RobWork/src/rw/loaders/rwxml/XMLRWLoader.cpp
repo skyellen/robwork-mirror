@@ -602,19 +602,47 @@ Device::Ptr createDevice(DummyDevice &dev, DummySetup &setup) {
 	} else if (dev._type == ParallelType) {
 		// a parallel device is composed of a number of serial chains
 		std::vector<std::vector<Frame*> > chains;
+		std::map<std::string, std::size_t> nameToChainIndex;
 		std::vector<Frame*> chain;
 		std::map<std::string, Frame*> addFramesMap;
 		Frame *parent = createFrame(dev._frames[0], setup); //base
 		RW_ASSERT(parent);
 		chain.push_back(parent);
 		addFramesMap[parent->getName()] = parent;
+		std::string chainName;
 		for (size_t i = 1; i < dev._frames.size(); i++) {
 			Frame *frame = NULL;
+			bool newLeg;
 			if (dev._frames[i].getRefFrame() == dev._frames[i - 1].getName()) {
+				newLeg = false;
+				// Start new leg anyway if other frames also refer to the same reference frame
+				for (std::size_t j = i+1; j < dev._frames.size() && !newLeg; j++) {
+					if (i >= 2 && dev._frames[j].getRefFrame() == dev._frames[i - 1].getName()) {
+						newLeg = true;
+					}
+				}
+				// Start new leg anyway if scope changes
+				if (!chainName.empty()) {
+					for (std::size_t j = i+1; j < dev._frames.size() && !newLeg; j++) {
+						if (dev._frames[j].getRefFrame() != dev._frames[j - 1].getName())
+							break;
+						if (dev._frames[j]._scope.back() == chainName || dev._frames[j]._scope.size() <= 1)
+							break;
+						newLeg = true;
+					}
+				}
+			} else {
+				newLeg = true;
+			}
+			if (!newLeg) {
 				// the last frame was parent frame
 				frame = createFrame(dev._frames[i], setup);
+				if (dev._frames[i]._scope.back() != dev._name)
+					chainName = dev._frames[i]._scope.back();
 			} else {
 				// a new serial leg has started, find the parent frame
+				nameToChainIndex[chainName] = chains.size();
+				chainName = "";
 				chains.push_back(chain);
 				parent = NULL;
 				std::map<std::string, Frame*>::iterator res = addFramesMap.find(dev._frames[i].getRefFrame());
@@ -636,6 +664,7 @@ Device::Ptr createDevice(DummyDevice &dev, DummySetup &setup) {
 			parent = frame;
 		}
 		//std::cout << "Remember to push back the last chain!!" << std::endl;
+		nameToChainIndex[chainName] = chains.size();
 		chains.push_back(chain);
 		// Add frames to tree
 		addToStateStructure(chains[0][0]->getName(), setup);
@@ -646,16 +675,41 @@ Device::Ptr createDevice(DummyDevice &dev, DummySetup &setup) {
 		}
 		// Create the parallel legs
 		std::vector<ParallelLeg*> legs;
+		std::vector<Joint*> joints;
 		//tree->addFrame(*(chains[0])[0]);
 		for (size_t i = 0; i < chains.size(); i++) {
 			//std::cout << "chain nr: " << i << std::endl;
-			legs.push_back(new ParallelLeg(chains[i]));
+			if (dev._junctions.size() == 0)
+				legs.push_back(new ParallelLeg(chains[i]));
+			for (std::size_t j = 0; j < chains[i].size(); j++) {
+				if (Joint* const joint = dynamic_cast<Joint*>(chains[i][j]))
+					joints.push_back(joint);
+			}
 		}
 		// And last create ParallelDevice
 		//State state( tree );
 		State state = setup.tree->getDefaultState();
-		model = ownedPtr(new ParallelDevice(legs, dev.getName(), state));
-		std::cout << "parallel device created!!" << std::endl;
+		std::vector<ParallelDevice::Legs> junctions;
+		for (std::size_t i = 0; i < dev._junctions.size(); i++) {
+			ParallelDevice::Legs junctionChains;
+			for (std::size_t j = 0; j < dev._junctions[i].chains.size(); j++) {
+				const std::vector<std::string> split = StringUtil::words(dev._junctions[i].chains[j]);
+				std::vector<Frame*> totalChain;
+				for (std::size_t k = 0; k < split.size(); k++) {
+					const std::map<std::string, std::size_t>::const_iterator legIndex = nameToChainIndex.find(split[k]);
+					if (legIndex == nameToChainIndex.end())
+						RW_THROW("Could not find SerialChain with the name " << split[k] << " when creating junction.");
+					totalChain.insert(totalChain.end(),chains[legIndex->second].begin(),chains[legIndex->second].end());
+				}
+				junctionChains.push_back(new ParallelLeg(totalChain));
+			}
+			junctions.push_back(junctionChains);
+		}
+		if (junctions.size() == 0) {
+			model = ownedPtr(new ParallelDevice(legs, dev.getName(), state));
+		} else {
+			model = ownedPtr(new ParallelDevice(dev.getName(), junctions[0][0]->getBase(), junctions[0][0]->getEnd(), joints, state, junctions));
+		}
 	} else if (dev._type == TreeType) {
 		RW_ASSERT( dev._frames.size()!=0);
 		//std::cout << "TreeDevice not supported yet" << std::endl;

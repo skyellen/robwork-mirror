@@ -159,6 +159,8 @@ SET(MODELS_TEST_LIBRARIES
 
 SET(MODELS_TEST_SRC
   models/JointTest.cpp
+  models/ParallelDeviceTest.cpp
+  models/ParallelLegTest.cpp
 )
 ADD_EXECUTABLE( rw_models-gtest ${MODELS_TEST_SRC})       
 TARGET_LINK_LIBRARIES( rw_models-gtest ${MODELS_TEST_LIBRARIES})

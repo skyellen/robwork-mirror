@@ -275,7 +275,7 @@ namespace rw { namespace models {
 		std::vector<rw::common::Ptr<T> > findDevices() const{
 			std::vector<rw::common::Ptr<T> > result;
         	BOOST_FOREACH(rw::common::Ptr<Device> dev, _devices){
-				rw::common::Ptr<T> res = dev.cast<T>(dev);
+				rw::common::Ptr<T> res = dev.cast<T>();
         		if(res!=NULL)
         			result.push_back(res);
         	}
