@@ -102,8 +102,16 @@ void UniversalRobotsRTLogging::connect(const std::string& host, unsigned int por
 
 void UniversalRobotsRTLogging::disconnect() {
 	if(_socket != NULL) {
-		_socket->shutdown(boost::asio::socket_base::shutdown_both);
-		_socket->close();
+		try {
+			_socket->shutdown(boost::asio::socket_base::shutdown_both);
+			_socket->close();
+		}
+		catch (const boost::system::system_error& exp) {
+			RW_WARN("Boost System Error exception: " << exp.what());
+		} 
+		catch (const std::exception& exp) {
+			RW_WARN("Exception trying to shutdown socket " << exp.what());
+		}
 		delete _socket;
 		_connected = false;
 	   _socket = NULL;

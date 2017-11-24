@@ -22,11 +22,12 @@
 
 class URMessage {
 public:
-	URMessage(int type, int code, int arg, const std::string& text):
+	URMessage(int type, int code, int arg, const std::string& header, const std::string& message):
 		_type(type),
 		_code(code),
 		_arg(arg),
-		_text(text)
+		_header(header),
+		_text(message)
 	{}
 
 
@@ -39,7 +40,7 @@ public:
     		os<<"ROBOT_MESSAGE_ERROR_CODE: ERROR_CODE = "<<msg._code<<" ERROR_ARG = "<<msg._arg<<" TEXT = "<<msg._text;
     		break;
     	case ROBOT_MESSAGE_SECURITY:
-    		os<<"ROBOT_MESSAGE_SECURITY: ERROR_CODE = "<<msg._code<<" ERROR_ARG = "<<msg._arg<<" TEXT = "<<msg._text;
+    		os<<"ROBOT_MESSAGE_SECURITY: ERROR_CODE = "<<msg._code<<" ERROR_ARG = "<<msg._arg<<"SAFETYMODE: "<<msg._header<<" Message = "<<msg._text;
     		break;
     	default:
     		os<<"TYPE = "<<msg._type<<" CODE = "<<msg._code<<" ARG = "<<msg._arg<<" TEXT = "<<msg._text;
@@ -61,6 +62,7 @@ private:
 	int _type;
 	int _code;
 	int _arg;
+	std::string _header;
 	std::string _text;
 };
 

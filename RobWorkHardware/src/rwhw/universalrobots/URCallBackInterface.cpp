@@ -41,10 +41,12 @@ URCallBackInterface::URCallBackInterface():
     _stopServer(false),
     _robotStopped(true),
     _isMoving(false),
-    _isServoing(false)
+    _isServoing(false),
+	_isConnected(false)
 {
+//	_urPrimary = new URPrimaryInterface();
     /* Set the global loglevel to debug */
-    Log::log().setLevel(Log::Debug);
+    //Log::log().setLevel(Log::Debug);
 }
 
 bool URCallBackInterface::isMoving() const {
@@ -57,6 +59,11 @@ double URCallBackInterface::driverTime() const {
 
 void URCallBackInterface::connect(const std::string& host, const unsigned int port) {
     _urPrimary.connect(host, port);
+}
+
+bool URCallBackInterface::isConnected() const
+{
+	return _isConnected;
 }
 
 /* Deprecated function */
@@ -163,12 +170,29 @@ void URCallBackInterface::startCommunication(const std::string& callbackIP, cons
         RW_LOG_ERROR("Was not successful in sending the script to the robot.");
     }
     _urPrimary.start();
+	_isConnected = true;
 }
 
 
 
 void URCallBackInterface::stopCommunication() {
+	
     _stopServer = true;
+	_urPrimary.disconnect();
+	_urPrimary.stop();
+	std::cout << "URCallBackInterface::stopCommunication " << _thread << std::endl;
+	if (_thread != NULL) {
+		// Give the thread one second to stop
+		if (!_thread->timed_join(boost::posix_time::seconds(1))) {
+			// Failure, interrupt
+			RW_WARN("Interrupting URCallBackInterface thread...");
+			_thread->interrupt();
+			if (!_thread->timed_join(boost::posix_time::seconds(1)))
+				RW_WARN("Failed to interrupt URCallBackInterface thread");
+		}
+		_thread = NULL;
+	}
+	_isConnected = false;
 }
 
 
@@ -528,4 +552,13 @@ void URCallBackInterface::setPayload(double mass, const Vector3D<>& centerOfGrav
 
     _commands.push(URScriptCommand(URScriptCommand::SET_PAYLOAD, mass, centerOfGravity));
     _robotStopped = false;
+}
+
+void URCallBackInterface::setTCPTransform(const Transform3D<>& endTtcp) {
+	RW_LOG_DEBUG("rwhw::URCallBackInterface::setTCPTransform("<< endTtcp << ")");
+	boost::mutex::scoped_lock lock(_mutex);
+	popAllUpdateCommands();
+
+	_commands.push(URScriptCommand(URScriptCommand::SET_TCP, endTtcp));
+	_robotStopped = false;
 }

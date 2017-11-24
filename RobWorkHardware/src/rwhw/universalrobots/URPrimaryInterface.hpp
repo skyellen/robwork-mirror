@@ -43,6 +43,9 @@ public:
 	 */
 	URPrimaryInterface();
 
+	/**
+	 * @brief Destructor
+	 */
 	~URPrimaryInterface();
 
 	/**
@@ -59,33 +62,79 @@ public:
 	 */
 	std::string getLocalIP();
 
+	/**
+	 * @brief Starts thread receiving data from the UR
+	 */
 	void start();
+
+	/**
+	 * @brief Stop the thread receiving data from the UR
+	 *
+	 * The method blocks until the thread has been stopped. Throws exception if unable to stop thread within a given timeout 
+	 */
 	void stop();
 
+	/**
+	 * @brief Send script file to the robot
+	 * param filename [in] Path and filename of the ur script to send
+	 * return true if succesfully sent
+	 */
 	bool sendScriptFile(const std::string& filename);
+
+	/**
+	* @brief Send script to the robot
+	* @param script [in] Script to send
+	* @return true if succesfully sent
+	*/
 	bool sendScript(const std::string& script);
 
+	/**
+	 * @brief Returns true if the robot is connected
+	 * @return Returns true if the robot is connected. False otherwise. 
+	 */
 	bool isConnected() const;
 
+	/** 
+	 * @brief Disconnect the socket communication with the robot.
+	 */
 	void disconnect();
 
+	/**
+	 * @brief Returns true if data is available
+	 */
 	bool hasData() const;
+
+	/** 
+	 * @brief Returns the last retrived data
+	 */
 	UniversalRobotsData getLastData() const;
 
+	/** 
+	 * @brief Returns the current time according to the driver
+	 */
 	double driverTime() const;
-	bool _lostConnection;
-	long _lastPackageTime;
 
+
+	/**
+	 * @brief Returns the URMessages received
+	 */
 	std::queue<URMessage> getMessages() {
 		return _messages;
 	}
 
+	/**
+	* @brief Clear the list of recieved URMessages
+	*/
 	void clearMessages() {
 		while (_messages.empty() == false)
 			_messages.pop();
 	}
 
 private:
+	bool _lostConnection;
+	long _lastPackageTime;
+
+
 	rw::common::Ptr<boost::thread> _thread;
 	mutable boost::mutex _mutex;
 	bool _stop;
@@ -109,14 +158,10 @@ private:
 
 	bool _connected;
 
-	static const unsigned int max_buf_len = 5000000;
-	char buf[max_buf_len];
 
 	//Data
 	bool _hasURData;
 	UniversalRobotsData _data;
-
-	//bool _lastTimeRunningProgram;
 
 	std::vector<char> _dataStorage;
 

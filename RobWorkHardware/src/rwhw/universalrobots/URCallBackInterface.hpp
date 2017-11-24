@@ -33,7 +33,7 @@
 namespace rwhw {
 class URCallBackInterface {
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+	//EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 	/**
 	 * @brief Which controller version of the UR to use
@@ -79,7 +79,7 @@ public:
 	 */
 	void startCommunication(const unsigned int callbackPort = 33334, ControllerBox cb = CB2, const std::string& filename = "");
 
-
+	
 	/**
 	 * @brief Stops the robot communication thread
 	 */
@@ -199,6 +199,17 @@ public:
 	 */
 	void setPayload(double mass, const rw::math::Vector3D<>& centerOfGravity);
 	 
+	/**
+	 * @brief Sets the TCP transform of the robot
+	 * @param endTtcp [in] Transform between robot flange and the tcp
+	 */
+	void setTCPTransform(const rw::math::Transform3D<>& endTtcp);
+
+	/**
+	 * @brief Returns true if connected to the UR
+	 * @return Returns true if connected to the UR
+	 */
+	bool isConnected() const;
 private:
     void run();
 
@@ -214,11 +225,11 @@ private:
 
 	bool _isMoving;
 	bool _isServoing;
-
+	bool _isConnected;
 	class URScriptCommand {
 	public:
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-		enum CmdType { STOP = 0, MOVEQ = 1, MOVET = 2, SERVOQ = 3, FORCE_MODE_START = 4, FORCE_MODE_UPDATE = 5, FORCE_MODE_END = 6, TEACH_MODE_START = 7, TEACH_MODE_END = 8, SET_DIGOUT = 9, SET_PAYLOAD = 10, DO_NOTHING = 9999 };
+		//EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+		enum CmdType { STOP = 0, MOVEQ = 1, MOVET = 2, SERVOQ = 3, FORCE_MODE_START = 4, FORCE_MODE_UPDATE = 5, FORCE_MODE_END = 6, TEACH_MODE_START = 7, TEACH_MODE_END = 8, SET_DIGOUT = 9, SET_PAYLOAD = 10, SET_TCP = 11, DO_NOTHING = 9999 };
 
         URScriptCommand()
         {
@@ -287,6 +298,12 @@ private:
 		{
 		}
 
+			URScriptCommand(CmdType type, double mass, const rw::math::Vector3D<>& centerOfGravity):
+			_type(type),
+			_mass((float)mass),
+			_centerOfGravity(centerOfGravity)
+		{}
+
 		URScriptCommand(CmdType type, const rw::math::Wrench6D<>& wrench):
 			_type(type),
 			_wrench(wrench)
@@ -297,13 +314,6 @@ private:
 			_type(type),
 			_id(id),
 			_bValue(bValue)
-	    {
-		}
-
-	    URScriptCommand(CmdType type, double mass, const rw::math::Vector3D<>& centerOfGravity):
-			_type(type),
-			_mass(mass),
-			_centerOfGravity(centerOfGravity)
 	    {
 		}
 

@@ -76,6 +76,15 @@ public:
 		return output;
 	}
 
+	static inline std::string getString(const std::vector<char>& data, int length, uint32_t &messageOffset) {
+		char* ch = new char[length+1];
+		memcpy(ch, &data[messageOffset], length);
+		ch[length] = 0;
+		std::string result = std::string(ch);
+		delete[] ch;
+		return result;
+	}
+
 	//Extract a 16 bit unsigned int
 	static inline uint16_t getUInt16(boost::asio::ip::tcp::socket* socket, uint32_t &messageOffset) {
 		uint16_t output = 0;
