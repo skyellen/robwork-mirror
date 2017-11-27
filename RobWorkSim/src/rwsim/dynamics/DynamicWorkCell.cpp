@@ -108,7 +108,7 @@ bool DynamicWorkCell::inDevice(rw::common::Ptr<const Body> body) const {
     return false;
 }
 
-rwlibs::simulation::SimulatedController::Ptr DynamicWorkCell::findController(const std::string& name){
+rwlibs::simulation::SimulatedController::Ptr DynamicWorkCell::findController(const std::string& name) const {
     BOOST_FOREACH(rwlibs::simulation::SimulatedController::Ptr ctrl, _controllers){
         if( ctrl->getControllerName()==name )
             return ctrl;
@@ -124,7 +124,7 @@ Body::Ptr DynamicWorkCell::findBody(const std::string& name) const {
     return NULL;
 }
 
-SimulatedSensor::Ptr DynamicWorkCell::findSensor(const std::string& name) {
+SimulatedSensor::Ptr DynamicWorkCell::findSensor(const std::string& name) const {
 	BOOST_FOREACH(SimulatedSensor::Ptr sensor, _sensors){
 		if (sensor->getName() == name)
             return sensor;
