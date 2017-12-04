@@ -20,6 +20,8 @@
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Jacobian.hpp>
 #include <rw/models/Joint.hpp>
+#include <rw/models/DependentRevoluteJoint.hpp>
+#include <rw/models/DependentPrismaticJoint.hpp>
 
 #include <vector>
 
@@ -56,20 +58,66 @@ const Jacobian& ParallelLeg::baseJend(const State& state){
 
     size_t index = 0;
     // Iterate through all frames
-    std::vector<Frame*>::iterator iter = _kinematicChain.begin();
+    std::vector<Frame*>::const_iterator iter = _kinematicChain.begin();
     for(iter++; iter!=_kinematicChain.end(); ++iter){
         bTl = bTl * (*iter)->getTransform(state);
         if (const Joint* const joint = dynamic_cast<const Joint*>(*iter)) {
+        	int DOFs = joint->getDOF();
+        	if (const DependentJoint* const djoint = dynamic_cast<const DependentJoint*>(joint)) {
+        		if (const DependentRevoluteJoint* const drjoint = dynamic_cast<const DependentRevoluteJoint*>(djoint)) {
+        			DOFs = drjoint->getOwner().getDOF();
+        		} else if (const DependentPrismaticJoint* const dpjoint = dynamic_cast<const DependentPrismaticJoint*>(djoint)) {
+        			DOFs = dpjoint->getOwner().getDOF();
+        		} else {
+        			RW_WARN("ParallelLeg only supports dependent joints if they are of revolute or prismatic type. Dependent joint is ignored.");
+        		}
+        	}
         	for (std::size_t i = 0; i < 6; i++) {
-        		for (int j = 0; j < joint->getDOF(); j++) {
+        		for (int j = 0; j < DOFs; j++) {
         			(*_jacobian)(i, index+j) = 0;
         		}
         	}
         	joint->getJacobian(0,index,bTl,vbTe,state,*_jacobian);
-        	index += joint->getDOF();
+        	index += DOFs;
         }
     }
     return *_jacobian;
+}
+
+Jacobian ParallelLeg::baseJframe(const Frame* frame, const State& state) const {
+	Jacobian jac(Jacobian::zero(6, getJointDOFs()).e());
+
+    // Find end-effector transform
+    const Transform3D<>& vbTe = baseTframe(frame,state);
+    Transform3D<> bTl = Transform3D<>::identity();
+
+    size_t index = 0;
+    // Iterate through all frames
+    std::vector<Frame*>::const_iterator iter = _kinematicChain.begin();
+    for(iter++; iter!=_kinematicChain.end(); ++iter){
+        bTl = bTl * (*iter)->getTransform(state);
+        if (const Joint* const joint = dynamic_cast<const Joint*>(*iter)) {
+        	int DOFs = joint->getDOF();
+        	if (const DependentJoint* const djoint = dynamic_cast<const DependentJoint*>(joint)) {
+        		if (const DependentRevoluteJoint* const drjoint = dynamic_cast<const DependentRevoluteJoint*>(djoint)) {
+        			DOFs = drjoint->getOwner().getDOF();
+        		} else if (const DependentPrismaticJoint* const dpjoint = dynamic_cast<const DependentPrismaticJoint*>(djoint)) {
+        			DOFs = dpjoint->getOwner().getDOF();
+        		} else {
+        			RW_WARN("ParallelLeg only supports dependent joints if they are of revolute or prismatic type. Dependent joint is ignored.");
+        		}
+        	}
+        	for (std::size_t i = 0; i < 6; i++) {
+        		for (int j = 0; j < DOFs; j++) {
+        			jac(i, index+j) = 0;
+        		}
+        	}
+        	joint->getJacobian(0,index,bTl,vbTe,state,jac);
+        	index += DOFs;
+        }
+    }
+
+	return jac;
 }
 
 Q ParallelLeg::getQ(const State& state) const {
@@ -110,6 +158,10 @@ Transform3D<double> ParallelLeg::baseTend(const State& state) const {
         state);
 }
 
+Transform3D<double> ParallelLeg::baseTframe(const Frame* frame, const State& state) const {
+    return Kinematics::frameTframe(_kinematicChain.front(), frame, state);
+}
+
 const std::vector<Frame*>& ParallelLeg::getKinematicChain() const {
     return _kinematicChain;
 }
@@ -138,10 +190,30 @@ std::size_t ParallelLeg::getJointDOFs() const {
     int actuatedDOF = 0;
     int unactuatedDOF = 0;
     for (std::size_t i = 0; i < _actuatedJoints.size(); i++) {
-    	actuatedDOF += _actuatedJoints[i]->getDOF();
+		if (const DependentJoint* const djoint = dynamic_cast<const DependentJoint*>(_actuatedJoints[i])) {
+			if (const DependentRevoluteJoint* const drjoint = dynamic_cast<const DependentRevoluteJoint*>(djoint)) {
+		    	actuatedDOF += drjoint->getOwner().getDOF();
+			} else if (const DependentPrismaticJoint* const dpjoint = dynamic_cast<const DependentPrismaticJoint*>(djoint)) {
+		    	actuatedDOF += dpjoint->getOwner().getDOF();
+			} else {
+				RW_WARN("ParallelLeg only supports dependent joints if they are of revolute or prismatic type. Dependent joint is ignored.");
+			}
+		} else {
+	    	actuatedDOF += _actuatedJoints[i]->getDOF();
+		}
     }
     for (std::size_t i = 0; i < _unactuatedJoints.size(); i++) {
-    	unactuatedDOF += _unactuatedJoints[i]->getDOF();
+		if (const DependentJoint* const djoint = dynamic_cast<const DependentJoint*>(_unactuatedJoints[i])) {
+			if (const DependentRevoluteJoint* const drjoint = dynamic_cast<const DependentRevoluteJoint*>(djoint)) {
+				unactuatedDOF += drjoint->getOwner().getDOF();
+			} else if (const DependentPrismaticJoint* const dpjoint = dynamic_cast<const DependentPrismaticJoint*>(djoint)) {
+				unactuatedDOF += dpjoint->getOwner().getDOF();
+			} else {
+				RW_WARN("ParallelLeg only supports dependent joints if they are of revolute or prismatic type. Dependent joint is ignored.");
+			}
+		} else {
+			unactuatedDOF += _unactuatedJoints[i]->getDOF();
+		}
     }
     return actuatedDOF+unactuatedDOF;
 }

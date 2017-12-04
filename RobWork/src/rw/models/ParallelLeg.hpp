@@ -75,11 +75,27 @@ namespace rw { namespace models {
         const math::Jacobian& baseJend(const kinematics::State& state);
 
         /**
+         * @brief Returns the Jacobian of \b frame relative to base frame.
+         * @param frame [in] the frame to find Jacobian for.
+         * @param state [in] State for which to calculate the Jacobian
+         * @return the Jacobian
+         */
+        rw::math::Jacobian baseJframe(const rw::kinematics::Frame* frame, const rw::kinematics::State& state) const;
+
+        /**
          * @brief Returns the base to end transformation
          * @param state [in] State for which to calculate the transform
          * @return the transform
          */
         math::Transform3D<double> baseTend(const kinematics::State& state) const;
+
+        /**
+         * @brief Returns the transformation of a \b frame relative to the base.
+         * @param frame [in] the frame to find transformation to.
+         * @param state [in] State for which to calculate the transform
+         * @return the transform
+         */
+        rw::math::Transform3D<double> baseTframe(const rw::kinematics::Frame* frame, const rw::kinematics::State& state) const;
 
         /**
          * @brief Returns the kinematic chain of the leg

@@ -403,8 +403,16 @@ Frame *createFrame(DummyFrame& dframe, DummySetup &setup) {
 	if (dframe._isDepend) {
 		std::map<std::string, Frame*>::iterator res = setup.frameMap.find(dframe.getDependsOn());
 		if (res == setup.frameMap.end()) {
-			RW_WARN("The frame: " << dframe.getName() << " Depends on an unknown frame: " << dframe.getDependsOn());
-			return NULL;
+			const std::string dependOn = dframe.getDependsOn().substr(dframe.getScoped("").size());
+			std::vector<std::string> scope = dframe._scope;
+			while(scope.size() > 0 && res == setup.frameMap.end()) {
+				res = setup.frameMap.find(createScopedName(dependOn,scope));
+				scope.resize(scope.size()-1);
+			}
+			if (res == setup.frameMap.end()) {
+				RW_WARN("The frame: " << dframe.getName() << " Depends on an unknown frame: " << dframe.getDependsOn());
+				return NULL;
+			}
 		}
 		// then the frame depends on another joint
 		Joint* owner = dynamic_cast<Joint*>((*res).second);
@@ -413,9 +421,15 @@ Frame *createFrame(DummyFrame& dframe, DummySetup &setup) {
 		}
 
 		if (dframe._type == "Revolute") {
-			frame = new DependentRevoluteJoint(dframe.getName(), dframe._transform, owner, dframe._gain, dframe._offset);
+			DependentRevoluteJoint* const joint = new DependentRevoluteJoint(dframe.getName(), dframe._transform, owner, dframe._gain, dframe._offset);
+			if (dframe._state != ActiveState || !owner->isActive())
+				joint->setActive(false);
+			frame = joint;
 		} else if (dframe._type == "Prismatic") {
-			frame = new DependentPrismaticJoint(dframe.getName(), dframe._transform, owner, dframe._gain, dframe._offset);
+			DependentPrismaticJoint* const joint = new DependentPrismaticJoint(dframe.getName(), dframe._transform, owner, dframe._gain, dframe._offset);
+			if (dframe._state != ActiveState || !owner->isActive())
+				joint->setActive(false);
+			frame = joint;
 		} else {
 			RW_THROW("Error: The type of frame: " << dframe.getName() << " cannot depend on another joint!!");
 		}
@@ -658,6 +672,8 @@ Device::Ptr createDevice(DummyDevice &dev, DummySetup &setup) {
 					chain.push_back(parent);
 				}
 			}
+			if (frame == NULL)
+				RW_THROW("Could not create ParallelDevice! A frame could not be created.");
 			chain.push_back(frame);
 			//tree->addFrame(frame, parent);
 			addFramesMap[frame->getName()] = frame;

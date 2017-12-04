@@ -153,7 +153,8 @@ ADD_RW_GTEST(rw_math-gtest)
 ########################################################################
 
 SET(MODELS_TEST_LIBRARIES
- ${GTEST_BOTH_LIBRARIES}
+ rw-gtest-main
+ ${GTEST_LIBRARIES}
  rw
  )
 

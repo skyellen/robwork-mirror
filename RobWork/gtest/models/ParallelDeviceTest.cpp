@@ -17,13 +17,18 @@
 
 #include <gtest/gtest.h>
 
+#include "../TestEnvironment.hpp"
+
 #include <rw/kinematics/FixedFrame.hpp>
+#include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/models/ParallelDevice.hpp>
 #include <rw/models/ParallelLeg.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
+#include <rw/models/WorkCell.hpp>
 
 using namespace rw::kinematics;
+using rw::loaders::WorkCellLoader;
 using namespace rw::math;
 using namespace rw::models;
 
@@ -450,4 +455,145 @@ TEST(ParallelDevice, SerialChains) {
 	EXPECT_EQ(98.6865, qFull[20]);
 	EXPECT_EQ(112.6865, qFull[26]);
 	EXPECT_EQ(95.6865, qFull[32]);
+}
+
+TEST(ParallelDevice, Robotiq) {
+	const WorkCell::Ptr wc = WorkCellLoader::Factory::load(TestEnvironment::testfilesDir()+"devices/Robotiq-2-finger-85/robotiq.wc.xml");
+	ASSERT_FALSE(wc.isNull());
+
+	const ParallelDevice::Ptr robotiqDist = wc->findDevice<ParallelDevice>("RobotiqDistanceControl");
+	const ParallelDevice::Ptr robotiqFinger = wc->findDevice<ParallelDevice>("RobotiqFingerControl");
+	ASSERT_FALSE(robotiqDist.isNull());
+	ASSERT_FALSE(robotiqFinger.isNull());
+
+	State state = wc->getDefaultState();
+
+    // Generic Device functions
+    EXPECT_EQ("RobotiqDistanceControl", robotiqDist->getName());
+    EXPECT_EQ("RobotiqFingerControl", robotiqFinger->getName());
+    EXPECT_TRUE(robotiqDist->baseTend(state).equal(Transform3D<>(Vector3D<>(-0.0425,0.119008,0),RPY<>(0,Pi/2,0)),1e-6));
+    EXPECT_TRUE(robotiqFinger->baseTend(state).equal(Transform3D<>(Vector3D<>(-0.0425,0.119008,0),RPY<>(0,Pi/2,0)),1e-4));
+
+    // Generic JointDevice functions
+    EXPECT_EQ("RobotiqDistanceControl.Base", robotiqDist->getBase()->getName());
+    EXPECT_EQ("RobotiqDistanceControl.LeftMotorEnd", robotiqDist->getEnd()->getName());
+    EXPECT_EQ("RobotiqFingerControl.Base", robotiqFinger->getBase()->getName());
+    EXPECT_EQ("RobotiqFingerControl.LeftMotorEnd", robotiqFinger->getEnd()->getName());
+    EXPECT_EQ(3, robotiqDist->getJoints().size());
+    EXPECT_EQ(3, robotiqDist->getDOF());
+    EXPECT_EQ(3, robotiqDist->getBounds().first.size());
+    EXPECT_EQ(3, robotiqDist->getBounds().second.size());
+    EXPECT_EQ(3, robotiqDist->getVelocityLimits().size());
+    EXPECT_EQ(3, robotiqDist->getAccelerationLimits().size());
+    EXPECT_EQ(4, robotiqFinger->getJoints().size()); // two motor joints maps to one DOF (dependent joints)
+    EXPECT_EQ(3, robotiqFinger->getDOF());
+    EXPECT_EQ(3, robotiqFinger->getBounds().first.size());
+    EXPECT_EQ(3, robotiqFinger->getBounds().second.size());
+    EXPECT_EQ(3, robotiqFinger->getVelocityLimits().size());
+    EXPECT_EQ(3, robotiqFinger->getAccelerationLimits().size());
+
+    // ParallelDevice functions
+    EXPECT_EQ(0, robotiqDist->getLegs().size()); // There should be no legs when using the junction concept.
+    EXPECT_EQ(3, robotiqDist->getJunctions().size());
+    ASSERT_GE(robotiqDist->getJunctions().size(), 3);
+    ASSERT_EQ(2, robotiqDist->getJunctions()[0].size());
+    ASSERT_EQ(2, robotiqDist->getJunctions()[1].size());
+    ASSERT_EQ(2, robotiqDist->getJunctions()[2].size());
+    EXPECT_EQ(3, robotiqDist->getActiveJoints().size());
+    EXPECT_EQ(13, robotiqDist->getAllJoints().size());
+    EXPECT_EQ(12, robotiqDist->getFullDOF());
+    EXPECT_EQ(12, robotiqDist->getAllBounds().first.size());
+    EXPECT_EQ(12, robotiqDist->getAllBounds().second.size());
+    EXPECT_EQ(0, robotiqFinger->getLegs().size()); // There should be no legs when using the junction concept.
+    EXPECT_EQ(2, robotiqFinger->getJunctions().size());
+    ASSERT_GE(robotiqFinger->getJunctions().size(), 2);
+    ASSERT_EQ(2, robotiqFinger->getJunctions()[0].size());
+    ASSERT_EQ(2, robotiqFinger->getJunctions()[1].size());
+    EXPECT_EQ(4, robotiqFinger->getActiveJoints().size());
+    EXPECT_EQ(10, robotiqFinger->getAllJoints().size());
+    EXPECT_EQ(9, robotiqFinger->getFullDOF());
+    EXPECT_EQ(9, robotiqFinger->getAllBounds().first.size());
+    EXPECT_EQ(9, robotiqFinger->getAllBounds().second.size());
+
+    ASSERT_EQ(3, robotiqDist->getQ(state).size());
+    ASSERT_EQ(12, robotiqDist->getFullQ(state).size());
+    ASSERT_EQ(3, robotiqFinger->getQ(state).size());
+    ASSERT_EQ(9, robotiqFinger->getFullQ(state).size());
+
+    // Set Q
+    robotiqDist->setQ(Q(3,0.,0.04,0.),state);
+    {
+    	static const double eps = 1e-4;
+    	EXPECT_NEAR(0.4506,robotiqDist->getFullQ(state)[0],eps);
+    	EXPECT_NEAR(0.0008,robotiqDist->getFullQ(state)[1],eps);
+    	EXPECT_NEAR(-0.4514,robotiqDist->getFullQ(state)[2],eps);
+    	EXPECT_NEAR(0.4511,robotiqDist->getFullQ(state)[3],eps);
+    	EXPECT_NEAR(-0.4511,robotiqDist->getFullQ(state)[4],eps);
+    	EXPECT_NEAR(0.0008,robotiqDist->getFullQ(state)[5],eps);
+    	EXPECT_NEAR(-0.4514,robotiqDist->getFullQ(state)[6],eps);
+    	EXPECT_NEAR(0.4511,robotiqDist->getFullQ(state)[7],eps);
+    	EXPECT_NEAR(-0.4511,robotiqDist->getFullQ(state)[8],eps);
+    	EXPECT_EQ(0,robotiqDist->getFullQ(state)[9]);
+    	EXPECT_EQ(0.04,robotiqDist->getFullQ(state)[10]);
+    	EXPECT_EQ(0,robotiqDist->getFullQ(state)[11]);
+
+    	EXPECT_TRUE(robotiqDist->getJunctions()[0][0]->baseTend(state).equal(robotiqDist->getJunctions()[0][1]->baseTend(state),1e-6));
+    	EXPECT_TRUE(robotiqDist->getJunctions()[1][0]->baseTend(state).equal(robotiqDist->getJunctions()[1][1]->baseTend(state),1e-6));
+    	EXPECT_TRUE(robotiqDist->getJunctions()[2][0]->baseTend(state).equal(robotiqDist->getJunctions()[2][1]->baseTend(state),1e-6));
+    }
+
+    robotiqDist->setQ(Q(3,-0.35,0.04,0.35),state);
+    {
+    	static const double eps = 1e-4;
+    	EXPECT_NEAR(0.4858,robotiqDist->getFullQ(state)[0],eps);
+    	EXPECT_NEAR(-0.2596,robotiqDist->getFullQ(state)[1],eps);
+    	EXPECT_NEAR(0.1237,robotiqDist->getFullQ(state)[2],eps);
+    	EXPECT_NEAR(0.2841,robotiqDist->getFullQ(state)[3],eps);
+    	EXPECT_NEAR(0.0659,robotiqDist->getFullQ(state)[4],eps);
+    	EXPECT_NEAR(-0.2596,robotiqDist->getFullQ(state)[5],eps);
+    	EXPECT_NEAR(0.1237,robotiqDist->getFullQ(state)[6],eps);
+    	EXPECT_NEAR(0.2841,robotiqDist->getFullQ(state)[7],eps);
+    	EXPECT_NEAR(0.0658,robotiqDist->getFullQ(state)[8],eps);
+    	EXPECT_EQ(-0.35,robotiqDist->getFullQ(state)[9]);
+    	EXPECT_EQ(0.04,robotiqDist->getFullQ(state)[10]);
+    	EXPECT_EQ(0.35,robotiqDist->getFullQ(state)[11]);
+
+    	EXPECT_TRUE(robotiqDist->getJunctions()[0][0]->baseTend(state).equal(robotiqDist->getJunctions()[0][1]->baseTend(state),1e-6));
+    	EXPECT_TRUE(robotiqDist->getJunctions()[1][0]->baseTend(state).equal(robotiqDist->getJunctions()[1][1]->baseTend(state),1e-6));
+    	EXPECT_TRUE(robotiqDist->getJunctions()[2][0]->baseTend(state).equal(robotiqDist->getJunctions()[2][1]->baseTend(state),1e-6));
+    }
+
+    robotiqFinger->setQ(Q(3,0.35,0.25,0.25),state);
+    {
+    	static const double eps = 1e-4;
+    	EXPECT_EQ(0.35,robotiqFinger->getFullQ(state)[0]);
+    	EXPECT_NEAR(-0.1294,robotiqFinger->getFullQ(state)[1],eps);
+    	EXPECT_NEAR(-0.0422,robotiqFinger->getFullQ(state)[2],eps);
+    	EXPECT_EQ(0.25,robotiqFinger->getFullQ(state)[3]);
+    	EXPECT_NEAR(-0.0716,robotiqFinger->getFullQ(state)[4],eps);
+    	EXPECT_NEAR(-0.1294,robotiqFinger->getFullQ(state)[5],eps);
+    	EXPECT_NEAR(-0.0422,robotiqFinger->getFullQ(state)[6],eps);
+    	EXPECT_EQ(0.25,robotiqFinger->getFullQ(state)[7]);
+    	EXPECT_NEAR(-0.0716,robotiqFinger->getFullQ(state)[8],eps);
+
+    	EXPECT_TRUE(robotiqFinger->getJunctions()[0][0]->baseTend(state).equal(robotiqFinger->getJunctions()[0][1]->baseTend(state),1e-6));
+    	EXPECT_TRUE(robotiqFinger->getJunctions()[1][0]->baseTend(state).equal(robotiqFinger->getJunctions()[1][1]->baseTend(state),1e-6));
+    }
+
+    robotiqFinger->setQ(Q(3,0.5,0.52,0.2),state);
+    {
+    	static const double eps = 1e-4;
+    	EXPECT_EQ(0.5,robotiqFinger->getFullQ(state)[0]);
+    	EXPECT_NEAR(0.0327,robotiqFinger->getFullQ(state)[1],eps);
+    	EXPECT_NEAR(-0.5776,robotiqFinger->getFullQ(state)[2],eps);
+    	EXPECT_EQ(0.52,robotiqFinger->getFullQ(state)[3]);
+    	EXPECT_NEAR(-0.5650,robotiqFinger->getFullQ(state)[4],eps);
+    	EXPECT_NEAR(-0.3623,robotiqFinger->getFullQ(state)[5],eps);
+    	EXPECT_NEAR(0.3618,robotiqFinger->getFullQ(state)[6],eps);
+    	EXPECT_EQ(0.2,robotiqFinger->getFullQ(state)[7]);
+    	EXPECT_NEAR(0.2995,robotiqFinger->getFullQ(state)[8],eps);
+
+    	EXPECT_TRUE(robotiqFinger->getJunctions()[0][0]->baseTend(state).equal(robotiqFinger->getJunctions()[0][1]->baseTend(state),1e-6));
+    	EXPECT_TRUE(robotiqFinger->getJunctions()[1][0]->baseTend(state).equal(robotiqFinger->getJunctions()[1][1]->baseTend(state),1e-6));
+    }
 }

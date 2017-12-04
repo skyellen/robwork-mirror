@@ -26,6 +26,8 @@
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Jacobian.hpp>
 
+#include <rw/models/DependentPrismaticJoint.hpp>
+#include <rw/models/DependentRevoluteJoint.hpp>
 #include <rw/models/SphericalJoint.hpp>
 #include <rw/models/PrismaticSphericalJoint.hpp>
 #include <rw/models/UniversalJoint.hpp>
@@ -134,6 +136,207 @@ ParallelDevice::~ParallelDevice() {
 void ParallelDevice::setQ(const Q& q, State& s) const {
 	const std::vector<bool> enabled(q.size(),true);
 	setQ(q, enabled, s);
+}
+
+namespace {
+void updateActuatedJacobian(
+		const std::vector<ParallelDevice::Legs>& junctions,
+		const FrameMap<Eigen::MatrixXd::Index>& qIndexActuatedAll,
+		const FrameMap<Eigen::MatrixXd::Index>& qIndexActuatedEnabled,
+		const std::vector<bool>& enabled,
+		const State& state,
+		Eigen::MatrixXd& jacobian)
+{
+	int row=0;
+	for(std::size_t ji = 0; ji < junctions.size(); ji++) {
+		const ParallelDevice::Legs& legs = junctions[ji];
+		for(std::size_t i = 0; i < legs.size(); i++) {
+			const Jacobian::Base leg_jacobian = legs[i]->baseJend(state).e();
+			std::vector<Frame*>::const_iterator iter = legs[i]->getKinematicChain().begin();
+			for(size_t j = 0; iter != legs[i]->getKinematicChain().end(); ++iter) { // the columns
+				const Joint* const joint = dynamic_cast<const Joint*>(*iter);
+				if( joint == NULL )
+					continue;
+				// determine if joint j is an active joint
+				const Joint* depJoint = NULL;
+				double scale = 1;
+				int DOFs = joint->getDOF();
+				bool active = joint->isActive();
+				if (const DependentJoint* const djoint = dynamic_cast<const DependentJoint*>(*iter)) {
+					if (const DependentRevoluteJoint* const drjoint = dynamic_cast<const DependentRevoluteJoint*>(djoint)) {
+						depJoint = &drjoint->getOwner();
+						scale = drjoint->getScale();
+						DOFs = depJoint->getDOF();
+						active = active && depJoint->isActive();
+					} else if (const DependentPrismaticJoint* const dpjoint = dynamic_cast<const DependentPrismaticJoint*>(djoint)) {
+						depJoint = &dpjoint->getOwner();
+						scale = dpjoint->getScale();
+						DOFs = depJoint->getDOF();
+						active = active && depJoint->isActive();
+					} else {
+						RW_WARN("ParallelDevice only supports dependent joints if they are of revolute or prismatic type. Dependent joint is ignored.");
+					}
+				}
+				if(active){
+					// copy the leg_jacobian column at index j into the actuated jacobian matrix
+					std::size_t ja_column = qIndexActuatedEnabled[*joint];
+					std::size_t j_enabler = qIndexActuatedAll[*joint];
+					if (depJoint != NULL) {
+						ja_column = qIndexActuatedEnabled[*depJoint];
+						j_enabler = qIndexActuatedAll[*depJoint];
+						DOFs = depJoint->getDOF();
+					}
+					std::size_t cntEn = 0;
+					if(i != legs.size()-1) {
+						for (int d = 0; d < DOFs; d++) {
+							if (enabled[j_enabler+d]) {
+								jacobian.block(row,ja_column+cntEn,6,1) = leg_jacobian.col(j+d)*scale;
+								cntEn++;
+							}
+						}
+					}
+					if(i!=0){
+						cntEn = 0;
+						for (int d = 0; d < DOFs; d++) {
+							if (enabled[j_enabler+d]) {
+								jacobian.block(row-6,ja_column+cntEn,6,1) = -leg_jacobian.col(j+d)*scale;
+								cntEn++;
+							}
+						}
+					}
+				}
+				j += DOFs;
+			}
+			row += 6;
+		}
+		row -= 6;
+	}
+}
+
+void updateUnactuatedJacobian(
+		const std::vector<ParallelDevice::Legs>& junctions,
+		const FrameMap<Eigen::MatrixXd::Index>& qIndexActuatedAll,
+		const FrameMap<Eigen::MatrixXd::Index>& qIndexActuatedEnabled,
+		const FrameMap<Eigen::MatrixXd::Index>& qIndexUnactuated,
+		const std::vector<bool>& enabled,
+		const State& state,
+		Eigen::MatrixXd& jacobian)
+{
+	int row = 0;
+	//update Unactuated Joint Jacobian
+	for(std::size_t ji = 0; ji < junctions.size(); ji++) {
+		const ParallelDevice::Legs& legs = junctions[ji];
+		for(std::size_t i = 0; i < legs.size(); i++) {
+			const Jacobian::Base leg_jacobian = legs[i]->baseJend(state).e();
+			std::vector<Frame*>::const_iterator iter = legs[i]->getKinematicChain().begin();
+			for(size_t j = 0; iter != legs[i]->getKinematicChain().end(); ++iter) {
+				const Joint* const joint = dynamic_cast<const Joint*>(*iter);
+				if( joint == NULL )
+					continue;
+				const Joint* depJoint = NULL;
+				double scale = 1;
+				int DOFs = joint->getDOF();
+				bool active = joint->isActive();
+				if (const DependentJoint* const djoint = dynamic_cast<const DependentJoint*>(*iter)) {
+					if (const DependentRevoluteJoint* const drjoint = dynamic_cast<const DependentRevoluteJoint*>(djoint)) {
+						depJoint = &drjoint->getOwner();
+						scale = drjoint->getScale();
+						DOFs = depJoint->getDOF();
+						active = active && depJoint->isActive();
+					} else if (const DependentPrismaticJoint* const dpjoint = dynamic_cast<const DependentPrismaticJoint*>(djoint)) {
+						depJoint = &dpjoint->getOwner();
+						scale = dpjoint->getScale();
+						DOFs = depJoint->getDOF();
+						active = active && depJoint->isActive();
+					} else {
+						RW_WARN("ParallelDevice only supports dependent joints if they are of revolute or prismatic type. Dependent joint is ignored.");
+					}
+				}
+				if (active) {
+					std::size_t jua_column = qIndexUnactuated[*joint];
+					std::size_t j_enabler = qIndexActuatedAll[*joint];
+					if (depJoint != NULL) {
+						jua_column = qIndexUnactuated[*depJoint];
+						j_enabler = qIndexActuatedAll[*depJoint];
+					}
+					std::size_t cntDis = 0;
+					if (i != legs.size()-1) {
+						for (int d = 0; d < DOFs; d++) {
+							if (!enabled[j_enabler+d]) {
+								jacobian.block(row,jua_column+cntDis,6,1) = leg_jacobian.col(j+d)*scale;
+								cntDis++;
+							}
+						}
+					}
+					if (i != 0) {
+						cntDis = 0;
+						for (int d = 0; d < DOFs; d++) {
+							if (!enabled[j_enabler+d]) {
+								jacobian.block(row-6,jua_column+cntDis,6,1) = -leg_jacobian.col(j+d)*scale;
+								cntDis++;
+							}
+						}
+					}
+				}
+				j += DOFs;
+			}
+			row += 6;
+		}
+		row -= 6;
+	}
+	row = 0;
+	for(std::size_t ji = 0; ji < junctions.size(); ji++) {
+		const ParallelDevice::Legs& legs = junctions[ji];
+		for(std::size_t i = 0; i < legs.size(); i++) {
+			const Jacobian::Base leg_jacobian = legs[i]->baseJend(state).e();
+			std::vector<Frame*>::const_iterator iter = legs[i]->getKinematicChain().begin();
+			for(size_t j = 0; iter != legs[i]->getKinematicChain().end(); ++iter) {
+				const Joint* const joint = dynamic_cast<const Joint*>(*iter);
+				if( joint == NULL )
+					continue;
+				const Joint* depJoint = NULL;
+				double scale = 1;
+				int DOFs = joint->getDOF();
+				bool active = joint->isActive();
+				if (const DependentJoint* const djoint = dynamic_cast<const DependentJoint*>(*iter)) {
+					if (const DependentRevoluteJoint* const drjoint = dynamic_cast<const DependentRevoluteJoint*>(djoint)) {
+						depJoint = &drjoint->getOwner();
+						scale = drjoint->getScale();
+						DOFs = depJoint->getDOF();
+						active = active && depJoint->isActive();
+					} else if (const DependentPrismaticJoint* const dpjoint = dynamic_cast<const DependentPrismaticJoint*>(djoint)) {
+						depJoint = &dpjoint->getOwner();
+						scale = dpjoint->getScale();
+						DOFs = depJoint->getDOF();
+						active = active && depJoint->isActive();
+					} else {
+						RW_WARN("ParallelDevice only supports dependent joints if they are of revolute or prismatic type. Dependent joint is ignored.");
+					}
+				}
+				if(!active) {
+					// copy the jacobian row into the unactuated jacobian matrix
+					std::size_t jua_column = qIndexUnactuated[*joint];
+					if (depJoint != NULL) {
+						jua_column = qIndexUnactuated[*depJoint];
+					}
+					if(i != legs.size()-1){
+						for (int d = 0; d < DOFs; d++) {
+							jacobian.block(row,jua_column+d,6,1) = leg_jacobian.block(0,j+d,6,1)*scale;
+						}
+					}
+					if(i!=0){
+						for (int d = 0; d < DOFs; d++) {
+							jacobian.block(row-6,jua_column+d,6,1) = -leg_jacobian.block(0,j+d,6,1)*scale;
+						}
+					}
+				}
+				j += DOFs;
+			}
+			row += 6;
+		}
+		row -= 6;
+	}
+}
 }
 
 void ParallelDevice::setQ(const Q& q, const std::vector<bool>& enabled, State& s) const {
@@ -249,89 +452,8 @@ void ParallelDevice::setQ(const Q& q, const std::vector<bool>& enabled, State& s
     }
 
     // initialize configuration vector
-    int row=0;//,ja_column=0,jua_column=0;
-    for(std::size_t ji = 0; ji < _junctions.size(); ji++) {
-    	const Legs& legs = _junctions[ji];
-    	for(std::size_t i = 0; i < legs.size(); i++) {
-    		const Jacobian::Base leg_jacobian = legs[i]->baseJend(state).e();
-    		std::vector<Frame*>::const_iterator iter = legs[i]->getKinematicChain().begin();
-    		for(size_t j = 0; iter != legs[i]->getKinematicChain().end(); ++iter) { // the columns
-    			Joint *joint = dynamic_cast<Joint*>(*iter);
-    			if( joint == NULL )
-    				continue;
-    			// determine if joint j is an active joint
-    			if( joint->isActive() ){
-    				// copy the leg_jacobian column at index j into the actuated jacobian matrix
-    				const std::size_t ja_column = qIndexActuatedEnabled[*joint];
-    				const std::size_t jua_column = qIndexUnactuated[*joint];
-    				const std::size_t j_enabler = qIndexActuatedAll[*joint];
-    				std::size_t cntEn = 0;
-    				std::size_t cntDis = 0;
-    				if(i != legs.size()-1) {
-    					for (int d = 0; d < joint->getDOF(); d++) {
-    						if (enabled[j_enabler+d]) {
-    							aJointJ.block(row,ja_column+cntEn,6,1) = leg_jacobian.col(j+d);
-    							cntEn++;
-    						} else {
-    							uaJointJ.block(row,jua_column+cntDis,6,1) = leg_jacobian.col(j+d);
-    							cntDis++;
-    						}
-    					}
-    				}
-    				if(i!=0){
-    					cntEn = 0;
-    					cntDis = 0;
-    					for (int d = 0; d < joint->getDOF(); d++) {
-    						if (enabled[j_enabler+d]) {
-    							aJointJ.block(row-6,ja_column+cntEn,6,1) = -leg_jacobian.col(j+d);
-    							cntEn++;
-    						} else {
-    							uaJointJ.block(row-6,jua_column+cntDis,6,1) = -leg_jacobian.col(j+d);
-    							cntDis++;
-    						}
-    					}
-    				}
-    				//ja_column += cntEn;
-    				//jua_column += cntDis;
-    			}
-    			j += joint->getDOF();
-    		}
-    		row += 6;
-    	}
-		row -= 6;
-    }
-    row = 0;
-    for(std::size_t ji = 0; ji < _junctions.size(); ji++) {
-    	const Legs& legs = _junctions[ji];
-    	for(std::size_t i = 0; i < legs.size(); i++) {
-    		const Jacobian::Base leg_jacobian = legs[i]->baseJend(state).e();
-    		std::vector<Frame*>::const_iterator iter = legs[i]->getKinematicChain().begin();
-    		for(size_t j = 0; iter != legs[i]->getKinematicChain().end(); ++iter) { // the columns
-    			Joint *joint = dynamic_cast<Joint*>(*iter);
-    			if( joint == NULL )
-    				continue;
-    			// determine if joint j is an active joint
-    			if(!joint->isActive()) {
-    				const std::size_t jua_column = qIndexUnactuated[*joint];
-    				// copy the jacobian row into the unactuated jacobian matrix
-    				if(i != legs.size()-1){
-    					for (int d = 0; d < joint->getDOF(); d++) {
-    						uaJointJ.block(row,jua_column+d,6,1) = leg_jacobian.col(j+d);
-    					}
-    				}
-    				if (i != 0) {
-    					for (int d = 0; d < joint->getDOF(); d++) {
-    						uaJointJ.block(row-6,jua_column+d,6,1) = -leg_jacobian.col(j+d);
-    					}
-    				}
-    				//jua_column += joint->getDOF();
-    			}
-    			j += joint->getDOF();
-    		}
-    		row += 6;
-    	}
-		row -= 6;
-    }
+	updateActuatedJacobian(_junctions, qIndexActuatedAll, qIndexActuatedEnabled, enabled, state, aJointJ);
+	updateUnactuatedJacobian(_junctions, qIndexActuatedAll, qIndexActuatedEnabled, qIndexUnactuated, enabled, state, uaJointJ);
 
     double e = 1e-6;
     Q deltaQA(Q::zero(aDOFs-cntDisabled));
@@ -387,88 +509,10 @@ void ParallelDevice::setQ(const Q& q, const std::vector<bool>& enabled, State& s
             }
     	}
 
-        row = 0;//ja_column=0;jua_column=0;
-        //update Unactuated Joint Jacobian
-        for(std::size_t ji = 0; ji < _junctions.size(); ji++) {
-        	const Legs& legs = _junctions[ji];
-        	for(std::size_t i = 0; i < legs.size(); i++) {
-        		const Jacobian::Base leg_jacobian = legs[i]->baseJend(state).e();
-        		std::vector<Frame*>::const_iterator iter = legs[i]->getKinematicChain().begin();
-        		for(size_t j = 0; iter != legs[i]->getKinematicChain().end(); ++iter) {
-        			Joint *joint = dynamic_cast<Joint*>(*iter);
-        			if( joint == NULL )
-        				continue;
-        			if( joint->isActive() ){
-        				// copy the leg_jacobian column at index j into the actuated jacobian matrix
-        				const std::size_t jua_column = qIndexUnactuated[*joint];
-        				const std::size_t j_enabler = qIndexActuatedAll[*joint];
-        				std::size_t cntEn = 0;
-        				std::size_t cntDis = 0;
-        				if(i != legs.size()-1){
-        					for (int d = 0; d < joint->getDOF(); d++) {
-        						if (enabled[j_enabler+d]) {
-        							cntEn++;
-        						} else {
-        							uaJointJ.block(row,jua_column+cntDis,6,1) = leg_jacobian.col(j+d);
-        							cntDis++;
-        						}
-        					}
-        				}
-        				if(i!=0){
-        					cntEn = 0;
-        					cntDis = 0;
-        					for (int d = 0; d < joint->getDOF(); d++) {
-        						if (enabled[j_enabler+d]) {
-        							cntEn++;
-        						} else {
-        							uaJointJ.block(row-6,jua_column+cntDis,6,1) = -leg_jacobian.col(j+d);
-        							cntDis++;
-        						}
-        					}
-        				}
-        				//ja_column += cntEn;
-        				//jua_column += cntDis;
-        			}
-        			j += joint->getDOF();
-        		}
-        		row += 6;
-        	}
-        	row -= 6;
-        }
-        row = 0;
-        for(std::size_t ji = 0; ji < _junctions.size(); ji++) {
-        	const Legs& legs = _junctions[ji];
-        	for(std::size_t i = 0; i < legs.size(); i++) {
-        		const Jacobian::Base leg_jacobian = legs[i]->baseJend(state).e();
-        		std::vector<Frame*>::const_iterator iter = legs[i]->getKinematicChain().begin();
-        		for(size_t j = 0; iter != legs[i]->getKinematicChain().end(); ++iter) {
-        			Joint *joint = dynamic_cast<Joint*>(*iter);
-        			if( joint == NULL )
-        				continue;
-        			if(!joint->isActive()){
-        				// copy the jacobian row into the unactuated jacobian matrix
-        				const std::size_t jua_column = qIndexUnactuated[*joint];
-        				if(i != legs.size()-1){
-        					for (int d = 0; d < joint->getDOF(); d++) {
-        						uaJointJ.block(row,jua_column+d,6,1) = leg_jacobian.block(0,j+d,6,1);
-        					}
-        				}
-        				if(i!=0){
-        					for (int d = 0; d < joint->getDOF(); d++) {
-        						uaJointJ.block(row-6,jua_column+d,6,1) = -leg_jacobian.block(0,j+d,6,1);
-        					}
-        				}
-        				//jua_column += joint->getDOF();
-        			}
-        			j += joint->getDOF();
-        		}
-        		row += 6;
-        	}
-        	row -= 6;
-        }
+    	updateUnactuatedJacobian(_junctions, qIndexActuatedAll, qIndexActuatedEnabled, qIndexUnactuated, enabled, state, uaJointJ);
 
         // update deltaY
-        row = 0;
+        int row = 0;
         for(std::size_t ji = 0; ji < _junctions.size(); ji++) {
         	const Legs& legs = _junctions[ji];
         	for(std::size_t i = 0; i < legs.size()-1; i++) {
@@ -499,9 +543,7 @@ void ParallelDevice::setQ(const Q& q, const std::vector<bool>& enabled, State& s
     } while( e < error && iterations < MAX_ITERATIONS);
 
     if (iterations >= MAX_ITERATIONS){
-        // TODO cast exception and return parallelDevice to initial state
-        std::cout << "ERROR: Max iterations exeeded!!!" << std::endl;
-    	//RW_THROW("ERROR: Max iterations exeeded!!!");
+    	RW_WARN("Could not find a valid configuration for ParallelDevice! Please check your device model.");
     } else {
        s = state;
     }
