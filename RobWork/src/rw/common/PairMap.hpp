@@ -75,7 +75,7 @@ namespace rw { namespace common {
            @brief True iff a value for \b frame has been inserted in the map (or
            accessed using non-const operator[]).
         */
-        bool has(const Pair& pair)
+        bool has(const Pair& pair) const
         {
             Pair p = pair;
             if(p.first>p.second)
@@ -92,7 +92,7 @@ namespace rw { namespace common {
            @param f1 [in] the first in the pair for which to find its associated values.
            @param f2 [in] the second in the pair for which to find its associated values.
         */
-        bool has(const T1 f1, const T1 f2)
+        bool has(const T1 f1, const T1 f2) const
         {
             return has(Pair(f1, f2));
         }
