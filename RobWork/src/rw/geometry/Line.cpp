@@ -88,7 +88,7 @@ double Line::refit(const std::vector<rw::math::Vector3D<> >::const_iterator begi
 	
 	/* calculate centroid */
 	Vector3D<> centroid;
-	for (std::vector<rw::math::Vector3D<> >::const_iterator it = begin; begin != end; ++it) {
+	for (std::vector<rw::math::Vector3D<> >::const_iterator it = begin; it != end; ++it) {
 		centroid += (*it);
 	}
 	centroid /= static_cast<double>(std::distance(begin, end));
@@ -114,8 +114,6 @@ double Line::refit(const std::vector<rw::math::Vector3D<> >::const_iterator begi
 	/* choose the first eigenvector */	
 	Vector3D<> dir(V.col(0));
 	
-	//std::cout << "dir= " << dir << std::endl;
-	
 	/* find point on the line closest to the origin */
 	double t0 = -dot((*begin), dir) / dot(dir, dir);
 	_p1 = (*begin) + t0 * dir;
@@ -123,7 +121,7 @@ double Line::refit(const std::vector<rw::math::Vector3D<> >::const_iterator begi
 	
 	/* calculate fitting error */
 	double error = 0.0;
-	for (std::vector<rw::math::Vector3D<> >::const_iterator it = begin; begin != end; ++it) {
+	for (std::vector<rw::math::Vector3D<> >::const_iterator it = begin; it != end; ++it) {
 		double d = distance(*it);
 		error += d * d;
 	}
