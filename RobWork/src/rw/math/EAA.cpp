@@ -59,7 +59,7 @@ namespace
 			if (std::fabs(axis[2]) > std::fabs(axis[1]) && std::fabs(axis[2]) > std::fabs(axis[0]))
 				k = 2;
 			const int sign_k = (axis[k] >= 0) ? 1 : -1;
-			values *= sign_k;
+			values *= static_cast<T>(sign_k);
 			// Determine signs
 			if (k == 0) {
 				T v1v2 = R(0,1)+R(1,0);
@@ -83,7 +83,7 @@ namespace
 				if (v2v3 < 0.)
 					values[1] = -values[1];
 			}
-			return values*(Pi-axis.norm2()/2);
+			return values*(static_cast<T>(Pi)-axis.norm2()/2);
 		} 
 
 		return normalize(axis)*angle;
