@@ -17,6 +17,7 @@
 
 #include <iomanip>
 
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QGridLayout>
@@ -34,9 +35,11 @@
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/models/Joint.hpp>
+#include <rw/models/ParallelDevice.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/invkin/IKMetaSolver.hpp>
 #include <rw/invkin/JacobianIKSolver.hpp>
+#include <rw/invkin/ParallelIKSolver.hpp>
 
 using namespace rw::math;
 using namespace rw::common;
@@ -220,6 +223,16 @@ void Slider::sliderValueChanged(int val)
 //    emit valueChanged();
 }
 
+void Slider::enableDisable(int val) {
+	if (val == Qt::Checked) {
+		_box->setEnabled(true);
+		_slider->setEnabled(true);
+	} else if (val == Qt::Unchecked) {
+		_box->setEnabled(false);
+		_slider->setEnabled(false);
+	}
+}
+
 void Slider::setSliderValueFromBox(double val)
 {
 //    _slider->setValue((int)((val - _low) / (_high - _low) * sliderEnd));
@@ -371,7 +384,9 @@ void MovableFrameTab::transformChanged(const Transform3D<>& transform) {
 
 
 
-JointSliderWidget::JointSliderWidget() {
+JointSliderWidget::JointSliderWidget():
+	_enableAngularCombined(false)
+{
     _layout = new QGridLayout(this); // owned
 }
 
@@ -379,7 +394,10 @@ JointSliderWidget::JointSliderWidget() {
 
 void JointSliderWidget::setup(const std::vector<std::string>& titles,
                               const std::pair<Q,Q>& bounds,
-                              const Q& q) {
+                              const Q& q,
+							  bool enablers,
+							  bool enableAngularCombined) {
+	_enableAngularCombined = enableAngularCombined;
   
   // Hack so that we can move the first slider with mouse
 	QLabel* lbl = new QLabel("");
@@ -397,6 +415,16 @@ void JointSliderWidget::setup(const std::vector<std::string>& titles,
         slider->setValue(q(i));
         connect(slider, SIGNAL(valueChanged()), this, SLOT(valueChanged()));
         _sliders.push_back(slider);
+        if (enablers) {
+        	QCheckBox* enabler = new QCheckBox(this);
+        	enabler->setChecked(true);
+        	_layout->addWidget(enabler,i+2,6);
+        	connect(enabler, SIGNAL(stateChanged(int)), slider, SLOT(enableDisable(int)));
+        	if (_enableAngularCombined && i >= 3) {
+            	connect(enabler, SIGNAL(stateChanged(int)), slider, SLOT(enableDisable(int)));
+        	}
+        	_enablers.push_back(enabler);
+        }
     }
 	_layout->addWidget(new QLabel(""), (int)bounds.first.size()+2,1 ); // own _slider
 	_layout->setRowStretch((int)bounds.first.size()+2, 1);
@@ -454,6 +482,14 @@ void JointSliderWidget::updateValues(const rw::math::Q& q) {
     }
 }
 
+void JointSliderWidget::updateInactiveValues(const Q& q) {
+	for (std::size_t i = 0; i < _enablers.size(); i++) {
+		if (!_enablers[i]->isChecked()) {
+	        _sliders[i]->setValue(q(i));
+		}
+	}
+}
+
 rw::math::Q JointSliderWidget::getQ() {
     Q q(_sliders.size());
     for (size_t i = 0; i<_sliders.size(); i++) {
@@ -462,14 +498,29 @@ rw::math::Q JointSliderWidget::getQ() {
     return q;
 }
 
+std::vector<bool> JointSliderWidget::enabledState() const {
+	std::vector<bool> res(_enablers.size());
+	for (std::size_t i = 0; i < _enablers.size(); i++)
+		res[i] = _enablers[i]->isChecked();
+	return res;
+}
 
 void JointSliderWidget::valueChanged() {
     valueChanged(getQ());
 }
 
+void JointSliderWidget::angularChanged(int state) {
+    if (_enableAngularCombined) {
+    	_enablers[3]->setChecked(state == Qt::Checked);
+    	_enablers[4]->setChecked(state == Qt::Checked);
+    	_enablers[5]->setChecked(state == Qt::Checked);
+    }
+}
 
-TransformSliderWidget::TransformSliderWidget(const std::pair<rw::math::Q, rw::math::Q>& bounds, const rw::math::Transform3D<>& transform):
-    _updating(false)
+
+TransformSliderWidget::TransformSliderWidget(const std::pair<rw::math::Q, rw::math::Q>& bounds, const rw::math::Transform3D<>& transform, bool useRPY, bool enablers):
+    _updating(false),
+	_useRPY(useRPY)
 {
     QGridLayout* tablayout = new QGridLayout(this); //owned
 
@@ -477,9 +528,13 @@ TransformSliderWidget::TransformSliderWidget(const std::pair<rw::math::Q, rw::ma
     Q q = transform2q(transform);
     std::vector<std::string> titles(6);
     titles[0] = "x"; titles[1] = "y"; titles[2] = "z";
-    titles[3] = "R"; titles[4] = "P"; titles[5] = "Y";
+    if (useRPY) {
+    	titles[3] = "R"; titles[4] = "P"; titles[5] = "Y";
+    } else {
+    	titles[3] = "EAA x"; titles[4] = "EAA y"; titles[5] = "EAA z";
+    }
 
-    _jointSliderWidget->setup(titles, bounds, q);
+    _jointSliderWidget->setup(titles, bounds, q, enablers, useRPY);
     connect(_jointSliderWidget,
             SIGNAL(valueChanged(const rw::math::Q&)),
             this,
@@ -495,21 +550,70 @@ void TransformSliderWidget::setUnits(const std::vector<double>& converters, cons
 void TransformSliderWidget::updateValues(const Transform3D<>& transform) {
     if (_updating)
         return;
-    Q q = transform2q(transform);
+    Q q(6);
+    if (_useRPY) {
+    	q = transform2q(transform);
+    } else {
+    	EAA<> eaa(transform.R());
+    	for (std::size_t i = 0; i < 3; i++) {
+    		q[i] = transform.P()[i];
+    		q[i+3] = eaa[i];
+    	}
+    }
     _updating = true;
     _jointSliderWidget->updateValues(q);
     _updating = false;
 }
 
+void TransformSliderWidget::updateInactiveValues(const Transform3D<>& transform) {
+    if (_updating)
+        return;
+    Q q(6);
+    if (_useRPY) {
+    	q = transform2q(transform);
+    } else {
+    	EAA<> eaa(transform.R());
+    	for (std::size_t i = 0; i < 3; i++) {
+    		q[i] = transform.P()[i];
+    		q[i+3] = eaa[i];
+    	}
+    }
+    _updating = true;
+    _jointSliderWidget->updateInactiveValues(q);
+    _updating = false;
+}
+
 rw::math::Transform3D<> TransformSliderWidget::getTransform() {
     Q q = _jointSliderWidget->getQ();
-    return q2transform(q);
+    if (_useRPY)
+    	return q2transform(q);
+    else {
+    	return Transform3D<>(Vector3D<>(q[0],q[1],q[2]),EAA<>(q[3],q[4],q[5]));
+    }
+}
+
+VectorND<6, bool> TransformSliderWidget::enabledState() const {
+	VectorND<6, bool> res;
+	const std::vector<bool> state = _jointSliderWidget->enabledState();
+	if (state.size() == 0) {
+		for (std::size_t i = 0; i < 6; i++)
+			res[i] = false;
+	} else {
+		RW_ASSERT(state.size() == 6);
+		for (std::size_t i = 0; i < 6; i++)
+			res[i] = state[i];
+	}
+	return res;
 }
 
 void TransformSliderWidget::valueChanged(const rw::math::Q& q) {
     if (_updating)
         return;
-    Transform3D<> transform = q2transform(q);
+    Transform3D<> transform;
+    if (_useRPY)
+    	transform = q2transform(q);
+    else
+    	transform = Transform3D<>(Vector3D<>(q[0],q[1],q[2]),EAA<>(q[3],q[4],q[5]));
 
     valueChanged(transform);
 }
@@ -563,7 +667,8 @@ CartesianDeviceTab::CartesianDeviceTab(const std::pair<rw::math::Q, rw::math::Q>
 
     tablayout->addWidget(toppanel, 0, 0);
 
-    _transformSliderWidget = new TransformSliderWidget(bounds, Kinematics::frameTframe(_refFrame, _tcpFrame, _state));    
+    const bool enablers = !_device.cast<ParallelDevice>().isNull();
+    _transformSliderWidget = new TransformSliderWidget(bounds, Kinematics::frameTframe(_refFrame, _tcpFrame, _state), !enablers, enablers);
     
     QPushButton* btnPasteQ = new QPushButton("Paste", _transformSliderWidget);
     QHBoxLayout* btnlayout = new QHBoxLayout();
@@ -580,7 +685,10 @@ CartesianDeviceTab::CartesianDeviceTab(const std::pair<rw::math::Q, rw::math::Q>
     tablayout->addWidget(_transformSliderWidget, 2, 0);
 
 
-    _iksolver = ownedPtr(new JacobianIKSolver(_device, _tcpFrame, _state));
+    if (const ParallelDevice::Ptr pdev = _device.cast<ParallelDevice>())
+        _iksolver = ownedPtr(new ParallelIKSolver(pdev.get()));
+    else
+        _iksolver = ownedPtr(new JacobianIKSolver(_device, _tcpFrame, _state));
 
 
     _updating = false; 
@@ -592,7 +700,10 @@ void CartesianDeviceTab::setUnits(const std::vector<double>& converters, const s
 
 void CartesianDeviceTab::tcpFrameChanged(int index) {
     _tcpFrame = _frames[index];
-    _iksolver = ownedPtr(new JacobianIKSolver(_device, _tcpFrame, _state));
+    if (const ParallelDevice::Ptr pdev = _device.cast<ParallelDevice>())
+    	_iksolver = ownedPtr(new ParallelIKSolver(pdev.get()));
+    else
+    	_iksolver = ownedPtr(new JacobianIKSolver(_device, _tcpFrame, _state));
     _refTtcp = FKRange(_refFrame, _tcpFrame, _state);
 
     doUpdateValues();
@@ -613,18 +724,26 @@ void CartesianDeviceTab::transformChanged(const Transform3D<>& refTtcp) {
     Transform3D<> baseTref = _baseTref.get(_state);
     Transform3D<> baseTtcp = baseTref*refTtcp;
 
-    IKMetaSolver metaSolver(_iksolver.get(), _device, (CollisionDetector*)NULL);
-    metaSolver.setMaxAttempts(50);
-    std::vector<Q> solutions = metaSolver.solve(baseTtcp, _state);
+    std::vector<Q> solutions;
+    if (const ParallelIKSolver::Ptr psolver = _iksolver.cast<ParallelIKSolver>()) {
+    	std::vector<ParallelIKSolver::Target> targets(1);
+    	targets[0] = ParallelIKSolver::Target(_tcpFrame,baseTtcp, _transformSliderWidget->enabledState());
+        solutions = psolver->solve(targets, _state);
+    } else {
+        IKMetaSolver metaSolver(_iksolver.get(), _device, (CollisionDetector*)NULL);
+        metaSolver.setMaxAttempts(50);
+        solutions = metaSolver.solve(baseTtcp, _state);
+    }
     if (solutions.empty()) {
         doUpdateValues();
     } else {
         _device->setQ(solutions.front(), _state);
         _updating = true;
+        Transform3D<> refTtcp = _refTtcp.get(_state);
+        _transformSliderWidget->updateInactiveValues(refTtcp);
         stateChanged(_state);
         _updating = false;
     }
-
 }
 
 void CartesianDeviceTab::updateValues(const rw::kinematics::State& state) {
