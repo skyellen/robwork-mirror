@@ -421,7 +421,7 @@ TEST(ParallelDevice, SerialChains) {
 
 	hexapod.setQ(q,state);
 	for (std::size_t i = 0; i < legs.size(); i++) {
-		EXPECT_TRUE(legs[i]->baseTend(state).R().equal(hexapod.baseTend(state).R(),1e-10));
+		EXPECT_TRUE(legs[i]->baseTend(state).R().equal(hexapod.baseTend(state).R(),5e-10));
 		EXPECT_NEAR(0,(legs[i]->baseTend(state).P()-hexapod.baseTend(state).P()).normInf(),5e-9);
 	}
 
