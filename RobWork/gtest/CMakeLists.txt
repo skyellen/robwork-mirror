@@ -98,12 +98,14 @@ ADD_RW_GTEST(rw_geometry-gtest)
 # Inverse Kinematics
 ########################################################################
 SET(INVKIN_TEST_LIBRARIES
- ${GTEST_BOTH_LIBRARIES}
+ rw-gtest-main
+ ${GTEST_LIBRARIES}
  rw
 )
 
 SET(INVKIN_TEST_SRC
   invkin/ClosedFormIKSolverKukaIIWATest.cpp
+  invkin/ParallelIKSolverTest.cpp
 )
 ADD_EXECUTABLE( rw_invkin-gtest ${INVKIN_TEST_SRC})       
 TARGET_LINK_LIBRARIES( rw_invkin-gtest ${INVKIN_TEST_LIBRARIES})

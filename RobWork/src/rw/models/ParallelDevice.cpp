@@ -553,11 +553,75 @@ void ParallelDevice::setQ(const Q& q, const std::vector<bool>& enabled, State& s
 
 // Jacobians
 
-Jacobian ParallelDevice::baseJend(const State& state) const
-{
-	if (_legs.size() == 0)
-		RW_THROW("baseJend is not yet supported for ParallelDevice with junctions.");
-    return baseJend(_legs,state);
+Jacobian ParallelDevice::baseJend(const State& state) const {
+    // Find the first index in the equation system for each joint
+    FrameMap<Eigen::MatrixXd::Index> qIndex;
+    std::size_t columns = 0;
+    {
+    	Eigen::MatrixXd::Index d = 0;
+    	for (std::size_t i = 0; i < _joints.size(); i++) {
+    		qIndex[*_joints[i]] = d;
+			d += _joints[i]->getDOF();
+    	}
+    	columns = d;
+    }
+
+    Eigen::MatrixXd::Index rows = 0;
+    for (std::size_t i = 0; i < _junctions.size(); i++) {
+    	const Legs& legs = _junctions[i];
+    	if (legs.size() >= 2) {
+    		rows += (legs.size()-1)*6;
+    	}
+    }
+    rows += _junctions.size()*6;
+
+	Jacobian::Base m = Jacobian::zero(rows, columns).e();
+
+    int row = 0;
+    for(std::size_t ji = 0; ji < _junctions.size(); ji++) {
+    	const Legs& legs = _junctions[ji];
+    	for(std::size_t i = 0; i < legs.size(); i++) {
+    		const Jacobian::Base leg_jacobian = legs[i]->baseJend(state).e();
+    		std::vector<Frame*>::const_iterator iter = legs[i]->getKinematicChain().begin();
+    		for(size_t j = 0; iter != legs[i]->getKinematicChain().end(); ++iter) {
+    			const Joint* joint = dynamic_cast<const Joint*>(*iter);
+    			if(joint == NULL)
+    				continue;
+				const Joint* depJoint = NULL;
+				double scale = 1;
+				int DOFs = joint->getDOF();
+				if (const DependentJoint* const djoint = dynamic_cast<const DependentJoint*>(*iter)) {
+					if (const DependentRevoluteJoint* const drjoint = dynamic_cast<const DependentRevoluteJoint*>(djoint)) {
+						depJoint = &drjoint->getOwner();
+						scale = drjoint->getScale();
+						DOFs = depJoint->getDOF();
+					} else if (const DependentPrismaticJoint* const dpjoint = dynamic_cast<const DependentPrismaticJoint*>(djoint)) {
+						depJoint = &dpjoint->getOwner();
+						scale = dpjoint->getScale();
+						DOFs = depJoint->getDOF();
+					} else {
+						RW_WARN("ParallelDevice only supports dependent joints if they are of revolute or prismatic type. Dependent joint is ignored.");
+					}
+				}
+    			// copy the jacobian row into the jacobian matrix
+    			std::size_t j_column = qIndex[*joint];
+				if (depJoint != NULL) {
+					j_column = qIndex[*depJoint];
+				}
+    			if(i != legs.size()-1) {
+					m.block(row,j_column,6,DOFs) = leg_jacobian.block(0,j,6,DOFs)*scale;
+    			}
+    			if(i != 0) {
+					m.block(row-6,j_column,6,DOFs) = -leg_jacobian.block(0,j,6,DOFs)*scale;
+    			}
+    			j += DOFs;
+    		}
+    		row += 6;
+    	}
+    	row -= 6;
+    }
+
+	return Jacobian( m );
 }
 
 Jacobian ParallelDevice::baseJend(const std::vector<ParallelLeg*>& legs, const State& state) {
