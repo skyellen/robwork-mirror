@@ -404,9 +404,10 @@ void SceneOpenGLViewer::renderView(View::Ptr view){
 
     _scene->draw( _renderInfo );
 
-    GLenum res = glGetError();
-    if(res!=GL_NO_ERROR){
-        //std::cout << "AN OPENGL ERROR: " << res << "\n";
+    {
+    	const GLenum error = glGetError();
+    	if (error > 0)
+    		RW_WARN("OpenGL error detected:" << SceneOpenGL::toString(error));
     }
 
 }
@@ -420,6 +421,11 @@ void SceneOpenGLViewer::glDraw(){
 
 void SceneOpenGLViewer::initializeGL()
 {
+    {
+    	const GLenum error = glGetError();
+    	if (error > 0)
+    		RW_WARN("OpenGL error detected:" << SceneOpenGL::toString(error));
+    }
     /****************************************/
     /* Set up OpenGL lights etc.            */
     /****************************************/
@@ -436,14 +442,24 @@ void SceneOpenGLViewer::initializeGL()
     glShadeModel(val);   // GL_FLAT, GL_SMOOTH
 
     //glDisable( GL_COLOR_MATERIAL );
+    {
+    	const GLenum error = glGetError();
+    	if (error > 0)
+    		RW_WARN("OpenGL error detected:" << SceneOpenGL::toString(error));
+    }
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     //glEnable(GL_TEXTURE_2D);
+    {
+    	const GLenum error = glGetError();
+    	if (error > 0)
+    		RW_WARN("OpenGL error detected:" << SceneOpenGL::toString(error));
+    }
 
     if( _pmap->getValue().add<bool>("GL_LIGHTING","",true)->getValue() )
         glEnable( GL_LIGHTING );
@@ -532,6 +548,11 @@ void SceneOpenGLViewer::initializeGL()
         glDisable(GL_ALPHA_TEST);
     }
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    {
+    	const GLenum error = glGetError();
+    	if (error > 0)
+    		RW_WARN("OpenGL error detected:" << SceneOpenGL::toString(error));
+    }
 }
 
 void SceneOpenGLViewer::paintGL()
@@ -563,9 +584,10 @@ void SceneOpenGLViewer::paintGL()
     _renderInfo.cams = _currentView->_camGroup;
     _scene->draw( _renderInfo );
 
-    GLenum res = glGetError();
-    if(res!=GL_NO_ERROR){
-        //std::cout << "AN OPENGL ERROR: " << res << "\n";
+    {
+    	const GLenum error = glGetError();
+    	if (error > 0)
+    		RW_WARN("OpenGL error detected:" << SceneOpenGL::toString(error));
     }
 }
 

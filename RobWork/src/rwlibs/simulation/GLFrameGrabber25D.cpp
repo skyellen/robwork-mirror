@@ -31,20 +31,20 @@ using namespace rwlibs::simulation;
 GLFrameGrabber25D::GLFrameGrabber25D(int width,
                                      int height,
                                      double fov,
-                                     double near, double far):
+                                     double mindepth, double maxdepth):
     FrameGrabber25D(width, height),
     _fieldOfView(fov),
     _drawer(NULL),
     _perspTrans(rw::math::Transform3D<double>::identity()),
-    _minDepth(near),
-    _maxDepth(far)
+    _minDepth(mindepth),
+    _maxDepth(maxdepth)
 {
 }
 
 GLFrameGrabber25D::~GLFrameGrabber25D() {
 }
 
-void GLFrameGrabber25D::init(rw::graphics::SceneViewer::Ptr drawer){
+bool GLFrameGrabber25D::init(rw::graphics::SceneViewer::Ptr drawer){
     _drawer = drawer;
     //std::cout << "initialize GLFrameGrabber25D";
     SceneViewer::View::Ptr view = _drawer->createView("Camera25DSensorView");
@@ -63,13 +63,18 @@ void GLFrameGrabber25D::init(rw::graphics::SceneViewer::Ptr drawer){
     view->_viewCamera->attachTo( drawer->getMainView()->_viewCamera->getRefNode() );
     view->_viewCamera->setDrawMask(DrawableNode::Physical);
     // render offscreen
-
-    view->_camGroup->setOffscreenRenderEnabled(true);
-    view->_camGroup->setOffscreenRenderColor(rw::sensor::Image::RGB);
-    view->_camGroup->setOffscreenRenderSize((int)getWidth(),(int)getHeight());
-    view->_camGroup->setCopyToScan25D( _img );
-    view->_camGroup->setEnabled(true);
-    _view = view;
+    if (view->_camGroup->setOffscreenRenderEnabled(true)) {
+        view->_camGroup->setOffscreenRenderColor(rw::sensor::Image::RGB);
+        view->_camGroup->setOffscreenRenderSize((int)getWidth(),(int)getHeight());
+        view->_camGroup->setCopyToScan25D( _img );
+        view->_camGroup->setEnabled(true);
+    	_view = view;
+    } else {
+    	_drawer->destroyView(view);
+    	RW_WARN("GLFrameGrabber25D could not be initialized as offscreen rendering is not supported.");
+    	return false;
+    }
+    return true;
 }
 
 void GLFrameGrabber25D::setMaxDepth(double depth){
@@ -93,6 +98,8 @@ void GLFrameGrabber25D::setMinDepth(double depth){
 void GLFrameGrabber25D::grab(rw::kinematics::Frame *frame,
                              const rw::kinematics::State& state)
 {
+	if(_view.isNull())
+		RW_THROW("GLFrameGrabber25D must be initialized before grab is called!");
     rw::math::Transform3D<> wTf = rw::kinematics::Kinematics::worldTframe(frame, state);
     // TODO: we need to transform the image such that the camera looks in  the positive z-direction
     _view->_viewCamera->setTransform( wTf );

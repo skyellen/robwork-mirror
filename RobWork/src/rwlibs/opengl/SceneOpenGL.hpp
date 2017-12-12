@@ -99,8 +99,9 @@ namespace rwlibs { namespace opengl {
         //! @copydoc rw::graphics::SceneGraph::makeCameraGroup
         rw::common::Ptr<rw::graphics::CameraGroup> makeCameraGroup(const std::string& name);
         void clear();
-    private:
 
+    protected:
+        static std::string toString(const GLenum error);
 
     private:
         SceneOpenGL(const SceneOpenGL&);

@@ -90,6 +90,8 @@ SimulatedKinect::SimulatedKinect(const std::string& name, rw::kinematics::Frame 
 		SimulatedSensor( KinectSensorModel::make( makeDefaultCameraModel(name,frame,43,640,480,0.01,6), makeDefaultScannerModel(name,frame,43,640,480,0.01,6) )),
 		_frameRate(1),
         _dtsum(0),
+		_isAcquired(false),
+		_isOpenned(false),
 		_noiseEnabled(true),
         _near(0.01),
         _far(6),
@@ -109,6 +111,8 @@ SimulatedKinect::SimulatedKinect(const std::string& name,
 		SimulatedSensor( KinectSensorModel::make( makeDefaultCameraModel(name,frame,43,640,480,0.01,6), makeDefaultScannerModel(name,frame,43,640,480,0.01,6) )),
 		_frameRate(30),
 		_dtsum(0),
+		_isAcquired(false),
+		_isOpenned(false),
         _noiseEnabled(true),
         _near(0.01),
         _far(6),
@@ -127,6 +131,8 @@ SimulatedKinect::SimulatedKinect(rw::sensor::CameraModel::Ptr camModel, rw::sens
 	SimulatedSensor( KinectSensorModel::make(camModel,scannerModel)),
 	_frameRate(1),
     _dtsum(0),
+	_isAcquired(false),
+	_isOpenned(false),
 	_noiseEnabled(true),
     _near(0.01),
     _far(6),
@@ -142,7 +148,7 @@ SimulatedKinect::SimulatedKinect(rw::sensor::CameraModel::Ptr camModel, rw::sens
 
 SimulatedKinect::~SimulatedKinect(){}
 
-void SimulatedKinect::init(rw::graphics::SceneViewer::Ptr drawer){
+bool SimulatedKinect::init(rw::graphics::SceneViewer::Ptr drawer){
     _drawer = drawer;
 
     SceneViewer::View::Ptr view = _drawer->createView("CameraSensorView");
@@ -161,14 +167,18 @@ void SimulatedKinect::init(rw::graphics::SceneViewer::Ptr drawer){
     view->_viewCamera->attachTo( drawer->getMainView()->_viewCamera->getRefNode() );
     view->_viewCamera->setDrawMask(DrawableNode::Physical);
     // render offscreen
-    view->_camGroup->setOffscreenRenderEnabled(true);
-    view->_camGroup->setOffscreenRenderColor( rw::sensor::Image::RGB );
-    view->_camGroup->setOffscreenRenderSize(_width, _height);
-    view->_camGroup->setCopyToImage( _img );
-    view->_camGroup->setCopyToScan25D( _scan );
-
-    view->_camGroup->setEnabled(true);
-    _view = view;
+    if (view->_camGroup->setOffscreenRenderEnabled(true)) {
+        view->_camGroup->setOffscreenRenderColor( rw::sensor::Image::RGB );
+        view->_camGroup->setOffscreenRenderSize(_width, _height);
+        view->_camGroup->setCopyToImage( _img );
+        view->_camGroup->setCopyToScan25D( _scan );
+    	_view = view;
+    } else {
+    	_drawer->destroyView(view);
+    	RW_WARN("SimulatedKinect could not be initialized as offscreen rendering is not supported.");
+    	return false;
+    }
+    return true;
 }
 
 

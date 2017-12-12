@@ -39,9 +39,11 @@
 
 #include <string>
 
+using rw::geometry::PointCloud;
 using rw::kinematics::Frame;
 using rw::loaders::WorkCellLoader;
 using namespace rwlibs::simulation;
+using rws::RobWorkStudio;
 using std::string;
 
 namespace
@@ -54,24 +56,18 @@ public:
     rw::models::WorkCell::Ptr wc;
 
     // Scanner
-    SimulatedScanner2D::Ptr scanner2d;
-    SimulatedScanner25D::Ptr scanner25d;
     const string scannerName = "TestScanner";
     Frame::Ptr sensorFrame;
-
-    // Open GL scene viewer
-    rw::graphics::SceneViewer::Ptr sceneViewer;
-
-    // Framegrapper
-    GLFrameGrabber25D::Ptr frameGrabber;
-
-    // Point cloud:
-    rw::geometry::PointCloud lastScan;
 
     // Def state:
     rw::kinematics::State defaultState;
 
     rwlibs::simulation::Simulator::UpdateInfo updateInfo;
+
+    QApplication* app;
+    RobWorkStudio* rwstudio;
+
+    SceneViewer::Ptr sceneViewer;
 
     virtual void SetUp()
     {
@@ -83,33 +79,42 @@ public:
         if (sensorFrame == NULL)
             RW_THROW("sensor frame not found");
         defaultState = wc->getDefaultState();
+
+        updateInfo.time = 0;
+        updateInfo.dt = 0.1001;
+
+        // Open an instance of RWS
+        int argc = 1;
+        char name[14] = "RobWorkStudio";
+        char* argv[1] = {name};
+        PropertyMap map;
+        app = new QApplication(argc,argv);
+        rwstudio = new RobWorkStudio(map);
+        rwstudio->setWorkcell(wc);
+        rwstudio->show();
+        app->processEvents();
+
+        sceneViewer = rwstudio->getView()->getSceneViewer();
+    }
+
+    virtual void TearDown() {
+    	delete rwstudio;
+    	delete app;
     }
 };
 
 TEST_F(SimulatedSensors_test, SimulatedScanner2D_test) {
-    // Open an instance of RWS
-    int argc = 1;
-    char name[14] = "RobWorkStudio";
-    char* argv[1] = {name};
-    PropertyMap map;
-    QApplication app(argc,argv);
-    rws::RobWorkStudio rwstudio(map);
+    static const int x = 101;
+    static const int y = 101;
 
-    rwstudio.setWorkcell(wc);
+    GLFrameGrabber25D* const frameGrabber = new GLFrameGrabber25D(x, y, 90, 0.1, 5);
+    if (!frameGrabber->init(sceneViewer)) {
+    	delete frameGrabber;
+    	RW_WARN("Not performing this test because it does not seem to be supported.");
+    	return;
+    }
 
-    rwstudio.show();
-    app.processEvents();
-
-    // Setup the scanner
-    sceneViewer = rwstudio.getView()->getSceneViewer();
-
-    int x = 101;
-    int y = 101;
-
-    frameGrabber = new rwlibs::simulation::GLFrameGrabber25D(x, y, 90, 0.1, 5);
-    frameGrabber->init(sceneViewer);
-
-    scanner2d = new SimulatedScanner2D(scannerName,sensorFrame.get(),frameGrabber);
+    SimulatedScanner2D* const scanner2d = new SimulatedScanner2D(scannerName,sensorFrame.get(),frameGrabber);
     scanner2d->open();
     TimerUtil::sleepMs(50);
 
@@ -120,11 +125,7 @@ TEST_F(SimulatedSensors_test, SimulatedScanner2D_test) {
     EXPECT_FALSE(scanner2d->isScanReady());
     scanner2d->acquire();  // not necessary for simulated
 
-    EXPECT_EQ(lastScan.size(),0);
-    lastScan = scanner2d->getScan();
-
-    updateInfo.time = 0;
-    updateInfo.dt = 0.1001;
+    PointCloud lastScan = scanner2d->getScan();
 
     scanner2d->update(updateInfo,defaultState);
     EXPECT_TRUE(scanner2d->isScanReady());
@@ -143,32 +144,23 @@ TEST_F(SimulatedSensors_test, SimulatedScanner2D_test) {
     {
         EXPECT_NEAR(lastScan(i,50)(2),-0.95,0.01);
     }
+
+    delete scanner2d;
+    delete frameGrabber;
 }
 
 TEST_F(SimulatedSensors_test, SimulatedScanner25D_test) {
-    // Open an instance of RWS
-    int argc = 1;
-    char name[14] = "RobWorkStudio";
-    char* argv[1] = {name};
-    PropertyMap map;
-    QApplication app(argc,argv);
-    rws::RobWorkStudio rwstudio(map);
+    static const int x = 101;
+    static const int y = 101;
 
-    rwstudio.setWorkcell(wc);
+    GLFrameGrabber25D* const frameGrabber = new GLFrameGrabber25D(x, y, 90, 0.1, 5);
+    if (!frameGrabber->init(sceneViewer)) {
+    	RW_WARN("Not performing this test because it does not seem to be supported.");
+    	delete frameGrabber;
+    	return;
+    }
 
-    rwstudio.show();
-    app.processEvents();
-
-    // Setup the scanner
-    sceneViewer = rwstudio.getView()->getSceneViewer();
-
-    int x = 101;
-    int y = 101;
-
-    frameGrabber = new rwlibs::simulation::GLFrameGrabber25D(x, y, 90, 0.1, 5);
-    frameGrabber->init(sceneViewer);
-
-    scanner25d = new SimulatedScanner25D(scannerName,sensorFrame.get(),frameGrabber);
+    SimulatedScanner25D* const scanner25d = new SimulatedScanner25D(scannerName,sensorFrame.get(),frameGrabber);
     scanner25d->open();
     TimerUtil::sleepMs(50);
     EXPECT_TRUE(scanner25d->isOpen());
@@ -181,11 +173,7 @@ TEST_F(SimulatedSensors_test, SimulatedScanner25D_test) {
 
     scanner25d->acquire();  // not necessary for simulated sensors as the function does nothing
 
-    EXPECT_EQ(lastScan.size(),0);
-    lastScan = scanner25d->getScan();
-
-    updateInfo.time = 0;
-    updateInfo.dt = 0.1001;
+    PointCloud lastScan = scanner25d->getScan();
 
     scanner25d->update(updateInfo,defaultState);
     EXPECT_TRUE(scanner25d->isScanReady());
@@ -205,36 +193,25 @@ TEST_F(SimulatedSensors_test, SimulatedScanner25D_test) {
         EXPECT_NEAR(lastScan(i,50)(2),-0.95,0.01);
     }
 
+    delete scanner25d;
+    delete frameGrabber;
 }
 
 TEST_F(SimulatedSensors_test, SimulatedCamera_test)
 {
-    // Open an instance of RWS
-    int argc = 1;
-    char name[14] = "RobWorkStudio";
-    char* argv[1] = {name};
-    PropertyMap map;
-    QApplication app(argc,argv);
-    rws::RobWorkStudio rwstudio(map);
+	static const int x = 128;
+	static const int y = 128;
 
-    rwstudio.setWorkcell(wc);
+    GLFrameGrabber* const frameGrabber2d = new GLFrameGrabber(x, y, 100, 0.1, 5);
 
-    rwstudio.show();
-    app.processEvents();
-
-    // Setup the scanner
-    sceneViewer = rwstudio.getView()->getSceneViewer();
-
-    int x = 128;
-    int y = 128;
-
-    rwlibs::simulation::GLFrameGrabber::Ptr frameGrabber2d = new rwlibs::simulation::GLFrameGrabber(x, y, 100, 0.1, 5);
-
-    frameGrabber2d->init(sceneViewer);
+    if (!frameGrabber2d->init(sceneViewer)) {
+    	RW_WARN("Not performing this test because it does not seem to be supported.");
+    	delete frameGrabber2d;
+    	return;
+    }
     TimerUtil::sleepMs(100);
 
-    rwlibs::simulation::SimulatedCamera::Ptr camera;
-    camera = new SimulatedCamera(scannerName,90,sensorFrame.get(),frameGrabber2d);
+    SimulatedCamera* const camera = new SimulatedCamera(scannerName,90,sensorFrame.get(),frameGrabber2d);
 
     // initialize and start camera
     EXPECT_TRUE(camera->initialize());
@@ -249,13 +226,9 @@ TEST_F(SimulatedSensors_test, SimulatedCamera_test)
     EXPECT_EQ(camera->getWidth(),128);
     EXPECT_EQ(camera->getHeight(),128);
 
-    // Do timesteps untill we get a image from camera
-    rw::sensor::Image lastImage;
-
     // We expect no image, since no time steps has been completed
     EXPECT_FALSE(camera->isImageReady());
 
-    updateInfo.time = 0;
     updateInfo.dt = 0.0501;
 
     // Update to get an image
@@ -263,31 +236,34 @@ TEST_F(SimulatedSensors_test, SimulatedCamera_test)
 
     ASSERT_TRUE(camera->isImageReady());
 
-    lastImage = *(camera->getImage());
+    const rw::sensor::Image* lastImage = camera->getImage();
 
-    EXPECT_EQ(lastImage.getWidth(),128);
-    EXPECT_EQ(lastImage.getHeight(),128);
+    EXPECT_EQ(lastImage->getWidth(),128);
+    EXPECT_EQ(lastImage->getHeight(),128);
 
     // save image for reference
-    lastImage.saveAsPPM("cameraimage.ppm");
+    lastImage->saveAsPPM("cameraimage.ppm");
 
     // check some pixel values: (white first)
-    EXPECT_EQ(lastImage.getPixelValuei(0,0,0),255);
-    EXPECT_EQ(lastImage.getPixelValuei(0,0,1),255);
-    EXPECT_EQ(lastImage.getPixelValuei(0,0,2),255);
+    EXPECT_EQ(lastImage->getPixelValuei(0,0,0),255);
+    EXPECT_EQ(lastImage->getPixelValuei(0,0,1),255);
+    EXPECT_EQ(lastImage->getPixelValuei(0,0,2),255);
 
-    EXPECT_EQ(lastImage.getPixelValuei(2,57,0),255);
-    EXPECT_EQ(lastImage.getPixelValuei(2,57,1),255);
-    EXPECT_EQ(lastImage.getPixelValuei(2,57,2),255);
+    EXPECT_EQ(lastImage->getPixelValuei(2,57,0),255);
+    EXPECT_EQ(lastImage->getPixelValuei(2,57,1),255);
+    EXPECT_EQ(lastImage->getPixelValuei(2,57,2),255);
 
     // red pixel(collision)
-    EXPECT_EQ(lastImage.getPixelValuei(1,57,0),184);
-    EXPECT_EQ(lastImage.getPixelValuei(1,57,1),31);
-    EXPECT_EQ(lastImage.getPixelValuei(1,57,2),31);
+    EXPECT_EQ(lastImage->getPixelValuei(1,57,0),184);
+    EXPECT_EQ(lastImage->getPixelValuei(1,57,1),31);
+    EXPECT_EQ(lastImage->getPixelValuei(1,57,2),31);
 
     // gray pixel (box with no texture)
-    EXPECT_EQ(lastImage.getPixelValuei(124,58,0),46);
-    EXPECT_EQ(lastImage.getPixelValuei(124,58,1),46);
-    EXPECT_EQ(lastImage.getPixelValuei(124,58,2),46);
+    EXPECT_EQ(lastImage->getPixelValuei(124,58,0),46);
+    EXPECT_EQ(lastImage->getPixelValuei(124,58,1),46);
+    EXPECT_EQ(lastImage->getPixelValuei(124,58,2),46);
+
+	delete camera;
+	delete frameGrabber2d;
 }
 }

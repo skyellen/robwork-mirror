@@ -129,6 +129,12 @@ namespace {
         }
 
         void init(){
+            {
+            	const GLenum error = glGetError();
+            	if (error > 0)
+            		RW_WARN("OpenGL error detected:" << toString(error));
+            }
+
             GLuint maxGLuintSize = (GLuint) -1;
             if( (_offscreenRender==false && _fbId>=0) ){
                 //RW_WARN("_offscreenRender==false && _fbId>=0");
@@ -253,6 +259,12 @@ namespace {
             }
 
             _initialized = true;
+
+            {
+            	const GLenum error = glGetError();
+            	if (error > 0)
+            		RW_WARN("OpenGL error detected:" << toString(error));
+            }
         }
 
         void copyToImage( ){
@@ -285,12 +297,17 @@ namespace {
             return _mainCam;
         }
 
-        void setOffscreenRenderEnabled( bool enable ){
+        bool setOffscreenRenderEnabled( bool enable ){
             // if both are same then do nothing
             if( enable == _offscreenRender )
-                return;
-            _offscreenRender = enable;
+                return _offscreenRender;
+            RWGLFrameBuffer::initialize();
+            if (RWGLFrameBuffer::hasFrameBuffers())
+            	_offscreenRender = enable;
+            else
+            	_offscreenRender = false;
             _initialized=false;
+            return _offscreenRender;
         }
 
         bool isOffscreenRenderEnabled(){
@@ -300,7 +317,7 @@ namespace {
         void setOffscreenRenderSize(int width, int height){
             _offWidth=width; _offHeight=height;
             _initialized=false;
-        };
+        }
 
         void setOffscreenRenderColor(rw::sensor::Image::ColorCode color){
             _initialized=false;
@@ -624,8 +641,12 @@ namespace {
             }
             if( (scam->_renderToDepth) && scam->_scan25!=NULL){
                 scam->bind();
-                if(glGetError()>1)
-                    RW_WARN("error: " << glGetError());
+
+                {
+                	const GLenum error = glGetError();
+                	if (error > 0)
+                		RW_WARN("OpenGL error detected:" << toString(error));
+                }
 
                 //std::cout << "render to depth" << std::endl;
                 if(scam->_depthData.size() != (unsigned int)(scam->_scan25->getWidth()*scam->_scan25->getHeight()) )
@@ -646,11 +667,10 @@ namespace {
                 //     GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, &scam->_depthData[0]);
 
                 {
-                    int error = glGetError();
-                    if(error>1)
-                        RW_WARN("error: " << error);
+                	const GLenum error = glGetError();
+                	if (error > 0)
+                		RW_WARN("OpenGL error detected:" << toString(error));
                 }
-
 
                 GLdouble modelview[16];
                 GLdouble projection[16];
@@ -940,3 +960,25 @@ DrawableNode::Ptr SceneOpenGL::makeDrawable(const std::string& name, rw::common:
     return drawable;
 }
 
+std::string SceneOpenGL::toString(const GLenum error) {
+	switch(error) {
+	case GL_NO_ERROR:
+		return "";
+	case GL_INVALID_ENUM:
+		return "GL_INVALID_ENUM";
+	case GL_INVALID_VALUE:
+		return "GL_INVALID_VALUE";
+	case GL_INVALID_OPERATION:
+		return "GL_INVALID_OPERATION";
+	case GL_INVALID_FRAMEBUFFER_OPERATION:
+		return "GL_INVALID_FRAMEBUFFER_OPERATION";
+	case GL_OUT_OF_MEMORY:
+		return "GL_OUT_OF_MEMORY";
+	case GL_STACK_UNDERFLOW:
+		return "GL_STACK_UNDERFLOW";
+	case GL_STACK_OVERFLOW:
+		return "GL_STACK_OVERFLOW";
+	default:
+		return "Unknown error: " + error;
+	}
+}
