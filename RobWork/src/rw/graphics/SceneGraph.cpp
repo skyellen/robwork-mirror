@@ -363,8 +363,9 @@ namespace {
             return _cameras;
         }
 
-        void setOffscreenRenderEnabled( bool enable ){
+        bool setOffscreenRenderEnabled( bool enable ){
             _offscreenRender = enable;
+            return true;
         }
 
         bool isOffscreenRenderEnabled(){
