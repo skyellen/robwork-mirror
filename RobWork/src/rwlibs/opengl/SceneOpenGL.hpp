@@ -100,8 +100,12 @@ namespace rwlibs { namespace opengl {
         rw::common::Ptr<rw::graphics::CameraGroup> makeCameraGroup(const std::string& name);
         void clear();
 
-    protected:
-        static std::string toString(const GLenum error);
+    public:
+        /**
+         * @brief Check if there has been any OpenGL errors since last call to this function or to glGetError.
+         * @return a string representation of the error, or empty string if there is no error.
+         */
+        static std::string detectGLerror();
 
     private:
         SceneOpenGL(const SceneOpenGL&);

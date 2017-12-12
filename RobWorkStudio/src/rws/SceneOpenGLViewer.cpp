@@ -405,9 +405,9 @@ void SceneOpenGLViewer::renderView(View::Ptr view){
     _scene->draw( _renderInfo );
 
     {
-    	const GLenum error = glGetError();
-    	if (error > 0)
-    		RW_WARN("OpenGL error detected:" << SceneOpenGL::toString(error));
+    	const std::string error = SceneOpenGL::detectGLerror();
+    	if (!error.empty())
+    		RW_WARN("OpenGL error detected:" << error);
     }
 
 }
@@ -422,9 +422,9 @@ void SceneOpenGLViewer::glDraw(){
 void SceneOpenGLViewer::initializeGL()
 {
     {
-    	const GLenum error = glGetError();
-    	if (error > 0)
-    		RW_WARN("OpenGL error detected:" << SceneOpenGL::toString(error));
+    	const std::string error = SceneOpenGL::detectGLerror();
+    	if (!error.empty())
+    		RW_WARN("OpenGL error detected:" << error);
     }
     /****************************************/
     /* Set up OpenGL lights etc.            */
@@ -443,9 +443,9 @@ void SceneOpenGLViewer::initializeGL()
 
     //glDisable( GL_COLOR_MATERIAL );
     {
-    	const GLenum error = glGetError();
-    	if (error > 0)
-    		RW_WARN("OpenGL error detected:" << SceneOpenGL::toString(error));
+    	const std::string error = SceneOpenGL::detectGLerror();
+    	if (!error.empty())
+    		RW_WARN("OpenGL error detected:" << error);
     }
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -456,9 +456,9 @@ void SceneOpenGLViewer::initializeGL()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     //glEnable(GL_TEXTURE_2D);
     {
-    	const GLenum error = glGetError();
-    	if (error > 0)
-    		RW_WARN("OpenGL error detected:" << SceneOpenGL::toString(error));
+    	const std::string error = SceneOpenGL::detectGLerror();
+    	if (!error.empty())
+    		RW_WARN("OpenGL error detected:" << error);
     }
 
     if( _pmap->getValue().add<bool>("GL_LIGHTING","",true)->getValue() )
@@ -549,9 +549,9 @@ void SceneOpenGLViewer::initializeGL()
     }
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     {
-    	const GLenum error = glGetError();
-    	if (error > 0)
-    		RW_WARN("OpenGL error detected:" << SceneOpenGL::toString(error));
+    	const std::string error = SceneOpenGL::detectGLerror();
+    	if (!error.empty())
+    		RW_WARN("OpenGL error detected:" << error);
     }
 }
 
@@ -585,9 +585,9 @@ void SceneOpenGLViewer::paintGL()
     _scene->draw( _renderInfo );
 
     {
-    	const GLenum error = glGetError();
-    	if (error > 0)
-    		RW_WARN("OpenGL error detected:" << SceneOpenGL::toString(error));
+    	const std::string error = SceneOpenGL::detectGLerror();
+    	if (!error.empty())
+    		RW_WARN("OpenGL error detected:" << error);
     }
 }
 

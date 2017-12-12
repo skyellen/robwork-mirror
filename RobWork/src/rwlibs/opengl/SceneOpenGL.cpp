@@ -130,9 +130,9 @@ namespace {
 
         void init(){
             {
-            	const GLenum error = glGetError();
-            	if (error > 0)
-            		RW_WARN("OpenGL error detected:" << toString(error));
+            	const std::string error = SceneOpenGL::detectGLerror();
+            	if (!error.empty())
+            		RW_WARN("OpenGL error detected:" << error);
             }
 
             GLuint maxGLuintSize = (GLuint) -1;
@@ -261,9 +261,9 @@ namespace {
             _initialized = true;
 
             {
-            	const GLenum error = glGetError();
-            	if (error > 0)
-            		RW_WARN("OpenGL error detected:" << toString(error));
+            	const std::string error = SceneOpenGL::detectGLerror();
+            	if (!error.empty())
+            		RW_WARN("OpenGL error detected:" << error);
             }
         }
 
@@ -643,9 +643,9 @@ namespace {
                 scam->bind();
 
                 {
-                	const GLenum error = glGetError();
-                	if (error > 0)
-                		RW_WARN("OpenGL error detected:" << toString(error));
+                	const std::string error = SceneOpenGL::detectGLerror();
+                	if (!error.empty())
+                		RW_WARN("OpenGL error detected:" << error);
                 }
 
                 //std::cout << "render to depth" << std::endl;
@@ -667,9 +667,9 @@ namespace {
                 //     GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, &scam->_depthData[0]);
 
                 {
-                	const GLenum error = glGetError();
-                	if (error > 0)
-                		RW_WARN("OpenGL error detected:" << toString(error));
+                	const std::string error = SceneOpenGL::detectGLerror();
+                	if (!error.empty())
+                		RW_WARN("OpenGL error detected:" << error);
                 }
 
                 GLdouble modelview[16];
@@ -960,7 +960,8 @@ DrawableNode::Ptr SceneOpenGL::makeDrawable(const std::string& name, rw::common:
     return drawable;
 }
 
-std::string SceneOpenGL::toString(const GLenum error) {
+std::string SceneOpenGL::detectGLerror() {
+	const GLenum error = glGetError();
 	switch(error) {
 	case GL_NO_ERROR:
 		return "";
