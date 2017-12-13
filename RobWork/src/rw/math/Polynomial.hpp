@@ -18,6 +18,8 @@
 #ifndef RW_MATH_POLYNOMIAL_HPP_
 #define RW_MATH_POLYNOMIAL_HPP_
 
+#include "PolynomialND.hpp"
+
 #include <rw/common/macros.hpp>
 #include <rw/common/Serializable.hpp>
 
@@ -48,16 +50,17 @@ namespace math {
  * The polynomial is represented as a list of coefficients ordered from lowest-order term to highest-order term, \f${c_0,c_1,...,c_n}\f$.
  */
 template<typename T = double>
-class Polynomial {
+class Polynomial: public PolynomialND<T, T> {
 public:
 	/**
 	 * @brief Create polynomial with coefficients initialized to zero.
 	 * @param order [in] the order of the polynomial.
 	 */
 	Polynomial(std::size_t order):
-		_EPS(std::numeric_limits<T>::epsilon()),
-		_coef(std::vector<T>(order+1,0))
+		PolynomialND<T,T>(order),
+		_EPS(std::numeric_limits<double>::epsilon())
 	{
+		PolynomialND<T,T>::_coef = std::vector<T>(order+1,0);
 	}
 
 	/**
@@ -65,8 +68,8 @@ public:
 	 * @param coefficients [in] the coefficients ordered from lowest-order term to highest-order term.
 	 */
 	Polynomial(const std::vector<T> &coefficients):
-		_EPS(std::numeric_limits<T>::epsilon()),
-		_coef(coefficients)
+		PolynomialND<T,T>(coefficients),
+		_EPS(std::numeric_limits<double>::epsilon())
 	{
 	}
 
@@ -75,11 +78,19 @@ public:
 	 * @param p [in] the polynomial to copy.
 	 */
 	Polynomial(const Polynomial<T> &p):
-		_EPS(std::numeric_limits<T>::epsilon()),
-		_coef(std::vector<T>(p.order()+1))
+		PolynomialND<T,T>(p),
+		_EPS(std::numeric_limits<double>::epsilon())
 	{
-		for (std::size_t i = 0; i <= p.order(); i++)
-			_coef[i] = p[i];
+	}
+
+	/**
+	 * @brief Create polynomial from other polynomial.
+	 * @param p [in] the polynomial to copy.
+	 */
+	Polynomial(const PolynomialND<T,T> &p):
+		PolynomialND<T,T>(p),
+		_EPS(std::numeric_limits<double>::epsilon())
+	{
 	}
 
 	/**
@@ -88,33 +99,9 @@ public:
 	virtual ~Polynomial() {
 	}
 
-	/**
-	 * @brief Get the order of the polynomial (the highest power).
-	 * @return the order.
-	 */
-	std::size_t order() const {
-		return _coef.size()-1;
-	}
-
-	/**
-	 * @brief Increase the order of this polynomial.
-	 * @param increase [in] how much to increase the order (default is 1).
-	 */
-	void increaseOrder(std::size_t increase = 1) {
-		_coef.resize(_coef.size()+increase,0);
-	}
-
-	/**
-	 * @brief Evaluate the polynomial using Horner's Method.
-	 * @param x [in] the input parameter.
-	 * @return the value \f$f(x)\f$.
-	 */
+	//! @copydoc PolynomialND<T,T>::evaluate
 	T evaluate(const T &x) const {
-		// Horner's Method
-		T res = _coef.back();
-		for (int i = static_cast<int>(_coef.size()-2); i >= 0; i--)
-			res = _coef[i]+res*x;
-		return res;
+		return PolynomialND<T,T>::evaluate(x);
 	}
 
 	/**
@@ -124,48 +111,28 @@ public:
 	 * @return the value \f$f(x)\f$.
 	 * @note Error is the absolute size of the interval where \f$f(x)\f$ can be, assuming coefficients are exact.
 	 */
-	T evaluate(const T &x, T& err) const {
+	T evaluate(const T &x, double& err) const {
 		// Horner's Method
-		T res = _coef.back();
+		T res = PolynomialND<T,T>::_coef.back();
 		double errCoef = 0; // Error due to finite precision coefficients
 		double errX = 0; // Error due to finite precision x value
 		double errComb = 0; // Combinational error of error both in coefficients and x (magnitude very small - eps*eps)
 		errCoef = fabs(res);
 		const double dX = fabs(x)*_EPS;
- 		for (int i = static_cast<int>(_coef.size()-2); i >= 0; i--) {
+ 		for (int i = static_cast<int>(PolynomialND<T,T>::_coef.size()-2); i >= 0; i--) {
  			errX = fabs(res)*dX+errX*fabs(x)+errX*dX;
-			res = _coef[i]+res*x;
+			res = PolynomialND<T,T>::_coef[i]+res*x;
 			errComb = errComb*fabs(x)+errComb*dX+errCoef*_EPS*dX;
-			errCoef = fabs(_coef[i]) + fabs(x)*errCoef;
+			errCoef = fabs(PolynomialND<T,T>::_coef[i]) + fabs(x)*errCoef;
 		}
  		errCoef *= _EPS;
- 		err = static_cast<T>(errCoef+errX+errComb);
+ 		err = errCoef+errX+errComb;
 		return res;
 	}
 
-	/**
-	 * @brief Evaluate a the derivatives of the polynomial using Horner's Method.
-	 * @param x [in] the input parameter.
-	 * @param n [in] the number of derivatives to find (default is the first derivative only)
-	 * @return a vector of values \f${f(x),\dot{f}(x),\ddot{f}(x),\cdots}\f$.
-	 */
+	//! @copydoc PolynomialND<T,T>::evaluateDerivatives
 	std::vector<T> evaluateDerivatives(const T &x, std::size_t n = 1) const {
-		// Horner's Method
-		std::vector<T> res(n+1,0);
-		res[0] = _coef.back();
-		for (int i = static_cast<int>(_coef.size()-2); i >= 0; i--) {
-			int minJ = static_cast<int>(std::min<std::size_t>(n,_coef.size()-1-i));
-			for (int j = minJ; j > 0; j--) {
-				res[j] = res[j-1]+res[j]*x;
-			}
-			res[0] = _coef[i]+res[0]*x;
-		}
-		T k = 1;
-		for (std::size_t i = 2; i <= n; i++) {
-			k *= i;
-			res[i] *= k;
-		}
-		return res;
+		return PolynomialND<T,T>::evaluateDerivatives(x,n);
 	}
 
 	/**
@@ -182,16 +149,16 @@ public:
 		for (std::size_t i = 0; i < err.size(); i++)
 			err[i] = 0;
 		std::vector<T> res(n+1,0);
-		res[0] = _coef.back();
+		res[0] = PolynomialND<T,T>::_coef.back();
 		err[0] = fabs(res[0]);
-		for (int i = static_cast<int>(_coef.size()-2); i >= 0; i--) {
-			int minJ = static_cast<int>(std::min<std::size_t>(n,_coef.size()-1-i));
+		for (int i = static_cast<int>(PolynomialND<T,T>::_coef.size()-2); i >= 0; i--) {
+			int minJ = static_cast<int>(std::min<std::size_t>(n,PolynomialND<T,T>::_coef.size()-1-i));
 			for (int j = minJ; j > 0; j--) {
 				res[j] = res[j-1]+res[j]*x;
 				err[j] = fabs(res[j-1])+fabs(x)*err[j];
 			}
-			res[0] = _coef[i]+res[0]*x;
-			err[0] = fabs(_coef[i])+fabs(x)*err[0];
+			res[0] = PolynomialND<T,T>::_coef[i]+res[0]*x;
+			err[0] = fabs(PolynomialND<T,T>::_coef[i])+fabs(x)*err[0];
 		}
 		std::size_t k = 1;
 		for (std::size_t i = 2; i <= n; i++) {
@@ -205,101 +172,28 @@ public:
 		return res;
 	}
 
-	/**
-	 * @brief Perform deflation of polynomial.
-	 * @param x [in] a root of the polynomial.
-	 * @return a new polynomial of same order minus one.
-	 * @note There is no check that the given root is in fact a root of the polynomial.
-	 */
+	//! @copydoc PolynomialND<T,T>::deflate
 	Polynomial<T> deflate(const T &x) const {
 		// Horner Method
-		std::size_t no = order()-1;
+		std::size_t no = PolynomialND<T,T>::order()-1;
 		Polynomial<T> res(no);
-		res[no] = _coef.back();
+		res[no] = PolynomialND<T,T>::_coef.back();
 		for (int i = (int)no-1; i >= 0; i--) {
-			res[i] = x*res[i+1]+_coef[i+1];
+			res[i] = x*res[i+1]+PolynomialND<T,T>::_coef[i+1];
 		}
 		return res;
 	}
 
-	/**
-	 * @brief Get the derivative polynomial.
-	 * @param n [in] gives the n'th derivative (default is n=1).
-	 * @return a new polynomial of same order minus one.
-	 * @note To evaluate derivatives use the evaluate derivative method which is more precise.
-	 */
+	//! @copydoc PolynomialND<T,T>::derivative
 	Polynomial<T> derivative(std::size_t n = 1) const {
 		if (n == 0)
 			return *this;
-		std::size_t no = order()-1;
+		std::size_t no = PolynomialND<T,T>::order()-1;
 		Polynomial<T> der(no);
-		for (std::size_t i = 1; i <= order(); i++)
-			der[i-1] = _coef[i]*i;
+		for (std::size_t i = 1; i <= PolynomialND<T,T>::order(); i++)
+			der[i-1] = PolynomialND<T,T>::_coef[i]*i;
 		return der.derivative(n-1);
 	}
-
-	/**
-	 * @name Coefficient access operators.
-	 * Operators used to access coefficients.
-	 */
-	///@{
-
-	/**
-	 * @brief Get specific coefficient.
-	 * @param i [in] the power of the term to get coefficient for.
-	 * @return the coefficient.
-	 */
-	const T& operator()(size_t i) const {
-		if (i > order()) {
-			std::stringstream str;
-			str << "Polynomial of order " << order() << " has no coefficient with index " << i;
-			RW_THROW(str.str());
-		}
-		return _coef[i];
-	}
-
-	/**
-	 * @brief Get specific coefficient.
-	 * @param i [in] the power of the term to get coefficient for.
-	 * @return the coefficient.
-	 */
-	T& operator()(size_t i) {
-		if (i > order()) {
-			std::stringstream str;
-			str << "Polynomial of order " << order() << " has no coefficient with index " << i;
-			RW_THROW(str.str());
-		}
-		return _coef[i];
-	}
-
-	/**
-	 * @brief Get specific coefficient.
-	 * @param i [in] the power of the term to get coefficient for.
-	 * @return the coefficient.
-	 */
-	const T& operator[](size_t i) const {
-		if (i > order()) {
-			std::stringstream str;
-			str << "Polynomial of order " << order() << " has no coefficient with index " << i;
-			RW_THROW(str.str());
-		}
-		return _coef[i];
-	}
-
-	/**
-	 * @brief Get specific coefficient.
-	 * @param i [in] the power of the term to get coefficient for.
-	 * @return the coefficient.
-	 */
-	T& operator[](size_t i) {
-		if (i > order()) {
-			std::stringstream str;
-			str << "Polynomial of order " << order() << " has no coefficient with index " << i;
-			RW_THROW(str.str());
-		}
-		return _coef[i];
-	}
-	///@}
 
 	/**
 	 * @name Arithmetic operators between polynomial and scalars.
@@ -338,11 +232,74 @@ public:
 	 */
 	const Polynomial<T> operator*( T s) const
 	{
-		Polynomial<T> pol(order());
-		for (std::size_t i = 0; i <= order(); i++) {
-			pol[i] = _coef[i]*s;
+		Polynomial<T> pol(PolynomialND<T,T>::order());
+		for (std::size_t i = 0; i <= PolynomialND<T,T>::order(); i++) {
+			pol[i] = PolynomialND<T,T>::_coef[i]*s;
 		}
 		return pol;
+	}
+
+	/**
+	 * @brief Polynomial multiplication
+	 *
+	 * This multiplication functions uses a convolution of the coefficients.
+	 * More efficient implementations are possible.
+	 *
+	 * @param polynomial [in] polynomial to multiply with.
+	 * @return new polynomial after multiplication.
+	 */
+	const Polynomial<T> operator*(const Polynomial<T>& polynomial) const {
+		return PolynomialND<T,T>::template multiply<T,T>(polynomial);
+	}
+
+	/**
+	 * @brief Multiply polynomial with scalar coefficients with a 3D polynomial vector.
+	 * @param p [in] polynomial with scalar coefficients.
+	 * @param polynomial [in] polynomial vector.
+	 * @return a 3D polynomial vector.
+	 */
+	friend PolynomialND<Eigen::Matrix<T,3,1>,T> operator*(const Polynomial<T>& p, const PolynomialND<Eigen::Matrix<T,3,1>,T>& polynomial) {
+		return p.template multiply<Eigen::Matrix<T,3,1>,Eigen::Matrix<T,3,1> >(polynomial);
+	}
+
+	//! @copydoc operator*(const Polynomial<T>&, const PolynomialND<Eigen::Matrix<T,3,1>,T>&)
+	friend PolynomialND<Eigen::Matrix<T,1,3>,T> operator*(const Polynomial<T>& p, const PolynomialND<Eigen::Matrix<T,1,3>,T>& polynomial) {
+		return p.template multiply<Eigen::Matrix<T,1,3>,Eigen::Matrix<T,1,3> >(polynomial);
+	}
+
+	/**
+	 * @brief Multiply polynomial with scalar coefficients with a 3D polynomial matrix.
+	 * @param p [in] polynomial with scalar coefficients.
+	 * @param polynomial [in] polynomial matrix.
+	 * @return a 3D polynomial matrix.
+	 */
+	friend PolynomialND<Eigen::Matrix<T,3,3>,T> operator*(const Polynomial<T>& p, const PolynomialND<Eigen::Matrix<T,3,3>,T>& polynomial) {
+		return p.template multiply<Eigen::Matrix<T,3,3>,Eigen::Matrix<T,3,3> >(polynomial);
+	}
+
+	/**
+	 * @brief Multiply polynomial with scalar coefficients with a vector.
+	 * @param p [in] polynomial with scalar coefficients.
+	 * @param a [in] vector to multiply with.
+	 * @return a 3D polynomial vector.
+	 */
+	friend PolynomialND<Eigen::Matrix<T,3,1>,T> operator*(const Polynomial<T>& p, const Eigen::Matrix<T,3,1>& a) {
+		return p.template multiply<Eigen::Matrix<T,3,1>,Eigen::Matrix<T,3,1> >(a);
+	}
+
+	//! @copydoc operator*(const Polynomial<T>&, const Eigen::Matrix<T,3,1>&)
+	friend PolynomialND<Eigen::Matrix<T,1,3>,T> operator*(const Polynomial<T>& p, const Eigen::Matrix<T,1,3>& a) {
+		return p.template multiply<Eigen::Matrix<T,1,3>,Eigen::Matrix<T,1,3> >(a);
+	}
+
+	/**
+	 * @brief Multiply polynomial with scalar coefficients with a matrix.
+	 * @param p [in] polynomial with scalar coefficients.
+	 * @param A [in] matrix to multiply with.
+	 * @return a 3D polynomial matrix.
+	 */
+	friend PolynomialND<Eigen::Matrix<T,3,3>,T> operator*(const Polynomial<T>& p, const Eigen::Matrix<T,3,3>& A) {
+		return p.template multiply<Eigen::Matrix<T,3,3>,Eigen::Matrix<T,3,3> >(A);
 	}
 
 	/**
@@ -352,9 +309,9 @@ public:
 	 */
 	const Polynomial<T> operator/(T s) const
 	{
-		Polynomial<T> pol(order());
-		for (std::size_t i = 0; i <= order(); i++) {
-			pol[i] = _coef[i]/s;
+		Polynomial<T> pol(PolynomialND<T,T>::order());
+		for (std::size_t i = 0; i <= PolynomialND<T,T>::order(); i++) {
+			pol[i] = PolynomialND<T,T>::_coef[i]/s;
 		}
 		return pol;
 	}
@@ -366,7 +323,7 @@ public:
 	 */
 	Polynomial<T>& operator+=(T s)
 	{
-		_coef[0] += s;
+		PolynomialND<T,T>::_coef[0] += s;
 		return *this;
 	}
 
@@ -377,7 +334,7 @@ public:
 	 */
 	Polynomial<T>& operator-=(T s)
 	{
-		_coef[0] -= s;
+		PolynomialND<T,T>::_coef[0] -= s;
 		return *this;
 	}
 
@@ -387,8 +344,8 @@ public:
 	 * @return reference to same polynomial with changed coefficients.
 	 */
 	Polynomial<T>& operator*=(T s) {
-		for (std::size_t i = 0; i <= order(); i++) {
-			_coef[i] *= s;
+		for (std::size_t i = 0; i <= PolynomialND<T,T>::order(); i++) {
+			PolynomialND<T,T>::_coef[i] *= s;
 		}
 		return *this;
 	}
@@ -399,8 +356,8 @@ public:
 	 * @return reference to same polynomial with changed coefficients.
 	 */
 	Polynomial<T>& operator/=(T s) {
-		for (std::size_t i = 0; i <= order(); i++) {
-			_coef[i] /= s;
+		for (std::size_t i = 0; i <= PolynomialND<T,T>::order(); i++) {
+			PolynomialND<T,T>::_coef[i] /= s;
 		}
 		return *this;
 	}
@@ -419,6 +376,7 @@ public:
 		}
 		return pol;
 	}
+
 	///@}
 
 	/**
@@ -434,10 +392,10 @@ public:
 	 */
 	const Polynomial<T> operator-(const Polynomial<T>& b) const
 	{
-		std::size_t ord = std::max<std::size_t>(order(),b.order());
+		std::size_t ord = std::max<std::size_t>(PolynomialND<T,T>::order(),b.order());
 		Polynomial<T> pol(ord);
-		for (std::size_t i = 0; i <= order(); i++) {
-			pol[i] = _coef[i];
+		for (std::size_t i = 0; i <= PolynomialND<T,T>::order(); i++) {
+			pol[i] = PolynomialND<T,T>::_coef[i];
 		}
 		for (std::size_t i = 0; i <= b.order(); i++) {
 			pol[i] -= b[i];
@@ -451,11 +409,11 @@ public:
 	 * @return same polynomial with different coefficients after subtraction.
 	 */
 	Polynomial<T>& operator-=(const Polynomial<T>& b) {
-		std::size_t ord = std::max<std::size_t>(order(),b.order());
-		if (ord > order())
-			increaseOrder(ord-order());
+		std::size_t ord = std::max<std::size_t>(PolynomialND<T,T>::order(),b.order());
+		if (ord > PolynomialND<T,T>::order())
+			PolynomialND<T,T>::increaseOrder(ord-PolynomialND<T,T>::order());
 		for (std::size_t i = 0; i <= b.order(); i++) {
-			_coef[i] -= b[i];
+			PolynomialND<T,T>::_coef[i] -= b[i];
 		}
 		return *this;
 	}
@@ -467,10 +425,10 @@ public:
 	 */
 	const Polynomial<T> operator+(const Polynomial<T>& b) const
 	{
-		std::size_t ord = std::max<std::size_t>(order(),b.order());
+		std::size_t ord = std::max<std::size_t>(PolynomialND<T,T>::order(),b.order());
 		Polynomial<T> pol(ord);
-		for (std::size_t i = 0; i <= order(); i++) {
-			pol[i] = _coef[i];
+		for (std::size_t i = 0; i <= PolynomialND<T,T>::order(); i++) {
+			pol[i] = PolynomialND<T,T>::_coef[i];
 		}
 		for (std::size_t i = 0; i <= b.order(); i++) {
 			pol[i] += b[i];
@@ -484,11 +442,11 @@ public:
 	 * @return same polynomial with different coefficients after addition.
 	 */
 	Polynomial<T>& operator+=(const Polynomial<T>& b) {
-		std::size_t ord = std::max<std::size_t>(order(),b.order());
-		if (ord > order())
-			increaseOrder(ord-order());
+		std::size_t ord = std::max<std::size_t>(PolynomialND<T,T>::order(),b.order());
+		if (ord > PolynomialND<T,T>::order())
+			PolynomialND<T,T>::increaseOrder(ord-PolynomialND<T,T>::order());
 		for (std::size_t i = 0; i <= b.order(); i++) {
-			_coef[i] += b[i];
+			PolynomialND<T,T>::_coef[i] += b[i];
 		}
 		return *this;
 	}
@@ -499,9 +457,9 @@ public:
 	 * @return true if equal, false if not.
 	 */
 	void operator=(const Polynomial<T>& b) {
-		_coef.resize(b.order()+1);
+		PolynomialND<T,T>::_coef.resize(b.order()+1);
 		for(size_t i=0;i<=b.order();i++)
-			_coef[i] = b[i];
+			PolynomialND<T,T>::_coef[i] = b[i];
 	}
 
 	///@}
@@ -512,9 +470,9 @@ public:
 	 */
 	const Polynomial<T> operator-() const
 	{
-		Polynomial<T> pol(order());
-		for (std::size_t i = 0; i <= order(); i++) {
-			pol[i] = -_coef[i];
+		Polynomial<T> pol(PolynomialND<T,T>::order());
+		for (std::size_t i = 0; i <= PolynomialND<T,T>::order(); i++) {
+			pol[i] = -PolynomialND<T,T>::_coef[i];
 		}
 		return pol;
 	}
@@ -540,8 +498,8 @@ public:
 	 * @return true if equal, false if not.
 	 */
 	bool operator==(const Polynomial<T>& b) const {
-		for(size_t i=0;i<=order();i++)
-			if(_coef[i]!=b[i])
+		for(size_t i=0;i<=PolynomialND<T,T>::order();i++)
+			if(PolynomialND<T,T>::_coef[i]!=b[i])
 				return false;
 		return true;
 	}
@@ -553,17 +511,56 @@ public:
 	template<class Q>
 	const Polynomial<Q> cast()
 	{
-		Polynomial<Q> pol(order());
-		for (std::size_t i = 0; i <= order(); i++) {
-			pol[i] = static_cast<Q>(_coef[i]);
+		Polynomial<Q> pol(PolynomialND<T,T>::order());
+		for (std::size_t i = 0; i <= PolynomialND<T,T>::order(); i++) {
+			pol[i] = static_cast<Q>(PolynomialND<T,T>::_coef[i]);
 		}
 		return pol;
 	}
 
 private:
 	const double _EPS;
-	std::vector<T> _coef;
 };
+
+/**
+ * @brief Multiply 3D polynomial vector with 3D polynomial vector.
+ * @param a [in] first polynomial vector (row vector).
+ * @param b [in] second polynomial vector (column vector).
+ * @return a polynomial with scalar coefficients.
+ */
+Polynomial<> operator*(const PolynomialND<Eigen::Matrix<double,1,3> >& a, const PolynomialND<Eigen::Matrix<double,3,1> >& b);
+
+/**
+ * @brief Multiply 3D polynomial vector with a polynomial with scalar coefficients.
+ * @param polynomial [in] the polynomial vector.
+ * @param p [in] polynomial with scalar coefficients.
+ * @return a 3D polynomial vector.
+ */
+PolynomialND<Eigen::Vector3d> operator*(const PolynomialND<Eigen::Vector3d>& polynomial, const Polynomial<>& p);
+
+//! @copydoc operator*(const PolynomialND<Eigen::Vector3d>&, const Polynomial<>&)
+PolynomialND<Eigen::Matrix<double,1,3> > operator*(const PolynomialND<Eigen::Matrix<double,1,3> >& polynomial, const Polynomial<>& p);
+
+/**
+ * @brief Multiply 3D polynomial matrix with a polynomial with scalar coefficients.
+ * @param polynomial [in] the polynomial matrix.
+ * @param p [in] polynomial with scalar coefficients.
+ * @return a 3D polynomial matrix.
+ */
+PolynomialND<Eigen::Matrix3d> operator*(const PolynomialND<Eigen::Matrix3d >& polynomial, const Polynomial<>& p);
+
+//! @copydoc operator*(const PolynomialND<Eigen::Matrix<double,1,3> >&, const PolynomialND<Eigen::Matrix<double,3,1> >&)
+Polynomial<float> operator*(const PolynomialND<Eigen::Matrix<float,1,3>,float>& a, const PolynomialND<Eigen::Matrix<float,3,1>,float>& b);
+
+//! @copydoc operator*(const PolynomialND<Eigen::Vector3d>&, const Polynomial<>&)
+PolynomialND<Eigen::Vector3f,float> operator*(const PolynomialND<Eigen::Vector3f,float>& polynomial, const Polynomial<float>& p);
+
+//! @copydoc operator*(const PolynomialND<Eigen::Matrix<double,1,3> >&, const Polynomial<>&)
+PolynomialND<Eigen::Matrix<float,1,3>,float> operator*(const PolynomialND<Eigen::Matrix<float,1,3>,float>& polynomial, const Polynomial<float>& p);
+
+//! @copydoc operator*(const PolynomialND<Eigen::Matrix3d >&, const Polynomial<>&)
+PolynomialND<Eigen::Matrix3f,float> operator*(const PolynomialND<Eigen::Matrix3f,float>& polynomial, const Polynomial<float>& p);
+
 //! @}
 } /* namespace math */
 } /* namespace rw */

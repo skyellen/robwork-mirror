@@ -32,7 +32,6 @@ SET(MATH_TEST_SRC
   math/EAATest.cpp
   math/LinearAlgebraTest.cpp
   math/MathSerializationTest.cpp
-  math/PolynomialTest.cpp
   math/Pose6DTest.cpp 
   math/QuaternionTest.cpp
   math/Rotation3DTest.cpp
