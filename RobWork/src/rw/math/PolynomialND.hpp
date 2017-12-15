@@ -54,7 +54,7 @@ public:
 	 * @brief Create polynomial with uninitialized coefficients.
 	 * @param order [in] the order of the polynomial.
 	 */
-	PolynomialND(std::size_t order):
+	explicit PolynomialND(std::size_t order):
 		_coef(std::vector<Coef>(order+1))
 	{
 	}
@@ -98,7 +98,11 @@ public:
 	 * @param increase [in] how much to increase the order (default is 1).
 	 */
 	void increaseOrder(std::size_t increase = 1) {
-		_coef.resize(_coef.size()+increase,0);
+		const std::size_t size = _coef.size();
+		_coef.resize(size+increase);
+		for (std::size_t i = size; i < size + increase; i++) {
+			_coef[i] *= 0;
+		}
 	}
 
 	/**
@@ -122,7 +126,9 @@ public:
 	 */
 	std::vector<Coef> evaluateDerivatives(const Scalar &x, std::size_t n = 1) const {
 		// Horner's Method
-		std::vector<Coef> res(n+1,0);
+		std::vector<Coef> res(n+1);
+		for (std::size_t i = 0; i < n + 1; i++)
+			res[i] *= 0;
 		res[0] = _coef.back();
 		for (int i = static_cast<int>(_coef.size()-2); i >= 0; i--) {
 			int minJ = static_cast<int>(std::min<std::size_t>(n,_coef.size()-1-i));
@@ -131,10 +137,10 @@ public:
 			}
 			res[0] = _coef[i]+res[0]*x;
 		}
-		Scalar k = 1;
+		unsigned int k = 1;
 		for (std::size_t i = 2; i <= n; i++) {
-			k *= i;
-			res[i] *= k;
+			k *= static_cast<unsigned int>(i);
+			res[i] *= static_cast<Scalar>(k);
 		}
 		return res;
 	}
@@ -242,30 +248,6 @@ public:
 	///@{
 
 	/**
-	 * @brief Scalar addition
-	 * @param s [in] scalar to add.
-	 * @return new polynomial after addition.
-	 */
-	const PolynomialND<Coef, Scalar> operator+(Scalar s) const
-	{
-		PolynomialND<Coef, Scalar> pol = *this;
-		pol[0] += s;
-		return pol;
-	}
-
-	/**
-	 * @brief Scalar subtraction
-	 * @param s [in] scalar to subtract.
-	 * @return new polynomial after subtraction.
-	 */
-	const PolynomialND<Coef, Scalar> operator-(Scalar s) const
-	{
-		PolynomialND<Coef, Scalar> pol = *this;
-		pol[0] -= s;
-		return pol;
-	}
-
-	/**
 	 * @brief Scalar multiplication
 	 * @param s [in] scalar to multiply with.
 	 * @return new polynomial after multiplication.
@@ -291,28 +273,6 @@ public:
 			pol[i] = _coef[i]/s;
 		}
 		return pol;
-	}
-
-	/**
-	 * @brief Scalar addition
-	 * @param s [in] scalar to add.
-	 * @return same polynomial with coefficients changed.
-	 */
-	PolynomialND<Coef, Scalar>& operator+=(Scalar s)
-	{
-		_coef[0] += s;
-		return *this;
-	}
-
-	/**
-	 * @brief Scalar subtraction
-	 * @param s [in] scalar to subtract.
-	 * @return same polynomial with coefficients changed.
-	 */
-	PolynomialND<Coef, Scalar>& operator-=(Scalar s)
-	{
-		_coef[0] -= s;
-		return *this;
 	}
 
 	/**
@@ -487,7 +447,7 @@ public:
 	{
 		PolynomialND<Coef, Scalar> pol(order());
 		for (std::size_t i = 0; i <= order(); i++) {
-			pol[i] = -_coef[i];
+			pol[i] = _coef[i]*(-1);
 		}
 		return pol;
 	}

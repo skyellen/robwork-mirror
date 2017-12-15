@@ -56,7 +56,7 @@ public:
 	 * @brief Create polynomial with coefficients initialized to zero.
 	 * @param order [in] the order of the polynomial.
 	 */
-	Polynomial(std::size_t order):
+	explicit Polynomial(std::size_t order):
 		PolynomialND<T,T>(order)
 	{
 		PolynomialND<T,T>::_coef = std::vector<T>(order+1,0);
@@ -120,13 +120,13 @@ public:
 		ErrT errCoef = 0; // Error due to finite precision coefficients
 		ErrT errX = 0; // Error due to finite precision x value
 		ErrT errComb = 0; // Combinational error of error both in coefficients and x (magnitude very small - eps*eps)
-		errCoef = fabs(res);
-		const ErrT dX = fabs(x)*eps;
+		errCoef = abs(res);
+		const ErrT dX = std::abs(x)*eps;
  		for (int i = static_cast<int>(PolynomialND<T,T>::_coef.size()-2); i >= 0; i--) {
- 			errX = fabs(res)*dX+errX*fabs(x)+errX*dX;
+ 			errX = std::abs(res)*dX+errX*std::abs(x)+errX*dX;
 			res = PolynomialND<T,T>::_coef[i]+res*x;
-			errComb = errComb*fabs(x)+errComb*dX+errCoef*eps*dX;
-			errCoef = fabs(PolynomialND<T,T>::_coef[i]) + fabs(x)*errCoef;
+			errComb = errComb*std::abs(x)+errComb*dX+errCoef*eps*dX;
+			errCoef = std::abs(PolynomialND<T,T>::_coef[i]) + std::abs(x)*errCoef;
 		}
  		errCoef *= eps;
  		err = errCoef+errX+errComb;

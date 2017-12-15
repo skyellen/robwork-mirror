@@ -23,6 +23,19 @@
 
 using namespace rw::math;
 
+// Test template instantiation
+// We test instantiation of the templates here to save the time during compilation of the core library.
+template class PolynomialND<double, double>;
+template class PolynomialND<float, float>;
+template class PolynomialND<Eigen::Matrix3d, double>;
+template class PolynomialND<Eigen::Vector3d, double>;
+template class PolynomialND<Eigen::Matrix<double, 1, 3>, double>;
+template class PolynomialND<Eigen::Matrix3f, float>;
+template class PolynomialND<Eigen::Vector3f, float>;
+template class PolynomialND<Eigen::Matrix<float, 1, 3>, float>;
+template class Polynomial<double>;
+template class Polynomial<float>;
+
 template <typename A, typename B = A>
 struct Type {
   typedef A First;
