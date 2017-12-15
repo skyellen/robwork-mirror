@@ -160,21 +160,24 @@ public:
 			err[i] = 0;
 		std::vector<T> res(n+1,0);
 		res[0] = PolynomialND<T,T>::_coef.back();
-		err[0] = fabs(res[0]);
+		err[0] = std::abs(res[0]);
 		for (int i = static_cast<int>(PolynomialND<T,T>::_coef.size()-2); i >= 0; i--) {
 			int minJ = static_cast<int>(std::min<std::size_t>(n,PolynomialND<T,T>::_coef.size()-1-i));
 			for (int j = minJ; j > 0; j--) {
 				res[j] = res[j-1]+res[j]*x;
-				err[j] = fabs(res[j-1])+fabs(x)*err[j];
+				err[j] = std::abs(res[j-1])+std::abs(x)*err[j];
 			}
 			res[0] = PolynomialND<T,T>::_coef[i]+res[0]*x;
-			err[0] = fabs(PolynomialND<T,T>::_coef[i])+fabs(x)*err[0];
+			err[0] = std::abs(PolynomialND<T,T>::_coef[i])+std::abs(x)*err[0];
 		}
-		std::size_t k = 1;
+		T k = 1;
 		for (std::size_t i = 2; i <= n; i++) {
-			k *= i;
+			const T kInit = k;
+			for (std::size_t j = 0; j < i-1; j++) {
+				k += kInit;
+			}
 			res[i] *= k;
-			err[i] *= k;
+			err[i] *= std::abs(k);
 		}
 		for (std::size_t i = 0; i <= n; i++) {
 			err[i] *= eps;
@@ -200,8 +203,11 @@ public:
 			return *this;
 		std::size_t no = PolynomialND<T,T>::order()-1;
 		Polynomial<T> der(no);
-		for (std::size_t i = 1; i <= PolynomialND<T,T>::order(); i++)
-			der[i-1] = PolynomialND<T,T>::_coef[i]*static_cast<T>(i);
+		T factor = 0;
+		for (std::size_t i = 1; i <= PolynomialND<T, T>::order(); i++) {
+			factor += 1;
+			der[i - 1] = PolynomialND<T, T>::_coef[i] * factor;
+		}
 		return der.derivative(n-1);
 	}
 

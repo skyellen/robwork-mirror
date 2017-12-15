@@ -137,10 +137,13 @@ public:
 			}
 			res[0] = _coef[i]+res[0]*x;
 		}
-		unsigned int k = 1;
+		Scalar k = 1;
 		for (std::size_t i = 2; i <= n; i++) {
-			k *= static_cast<unsigned int>(i);
-			res[i] *= static_cast<Scalar>(k);
+			const Scalar kInit = k;
+			for (std::size_t j = 0; j < i-1; j++) {
+				k += kInit;
+			}
+			res[i] *= k;
 		}
 		return res;
 	}
