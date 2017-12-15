@@ -39,7 +39,7 @@ namespace math {
 
 //! @{
 /**
- * @brief Representation of a real polynomial.
+ * @brief Representation of an ordinary polynomial with scalar coefficients (that can be both real and complex).
  *
  * Representation of a polynomial of the following form:
  *
@@ -57,8 +57,7 @@ public:
 	 * @param order [in] the order of the polynomial.
 	 */
 	Polynomial(std::size_t order):
-		PolynomialND<T,T>(order),
-		_EPS(std::numeric_limits<double>::epsilon())
+		PolynomialND<T,T>(order)
 	{
 		PolynomialND<T,T>::_coef = std::vector<T>(order+1,0);
 	}
@@ -68,8 +67,7 @@ public:
 	 * @param coefficients [in] the coefficients ordered from lowest-order term to highest-order term.
 	 */
 	Polynomial(const std::vector<T> &coefficients):
-		PolynomialND<T,T>(coefficients),
-		_EPS(std::numeric_limits<double>::epsilon())
+		PolynomialND<T,T>(coefficients)
 	{
 	}
 
@@ -78,8 +76,7 @@ public:
 	 * @param p [in] the polynomial to copy.
 	 */
 	Polynomial(const Polynomial<T> &p):
-		PolynomialND<T,T>(p),
-		_EPS(std::numeric_limits<double>::epsilon())
+		PolynomialND<T,T>(p)
 	{
 	}
 
@@ -88,8 +85,7 @@ public:
 	 * @param p [in] the polynomial to copy.
 	 */
 	Polynomial(const PolynomialND<T,T> &p):
-		PolynomialND<T,T>(p),
-		_EPS(std::numeric_limits<double>::epsilon())
+		PolynomialND<T,T>(p)
 	{
 	}
 
@@ -106,26 +102,33 @@ public:
 
 	/**
 	 * @brief Evaluate the polynomial using Horner's Method.
+	 *
+	 * This function estimates the error of the result.
+	 * For float or double types, the error type, ErrT, should be the same as the type T.
+	 * For std::complex<float> or std::complex<double> types, the error type, ErrT, should be either float or double.
+	 *
 	 * @param x [in] the input parameter.
 	 * @param err [out] estimate of the absolute error.
 	 * @return the value \f$f(x)\f$.
 	 * @note Error is the absolute size of the interval where \f$f(x)\f$ can be, assuming coefficients are exact.
 	 */
-	T evaluate(const T &x, double& err) const {
+	template<typename ErrT = T>
+	T evaluate(const T &x, ErrT& err) const {
+		const ErrT eps = std::numeric_limits<ErrT>::epsilon();
 		// Horner's Method
 		T res = PolynomialND<T,T>::_coef.back();
-		double errCoef = 0; // Error due to finite precision coefficients
-		double errX = 0; // Error due to finite precision x value
-		double errComb = 0; // Combinational error of error both in coefficients and x (magnitude very small - eps*eps)
+		ErrT errCoef = 0; // Error due to finite precision coefficients
+		ErrT errX = 0; // Error due to finite precision x value
+		ErrT errComb = 0; // Combinational error of error both in coefficients and x (magnitude very small - eps*eps)
 		errCoef = fabs(res);
-		const double dX = fabs(x)*_EPS;
+		const ErrT dX = fabs(x)*eps;
  		for (int i = static_cast<int>(PolynomialND<T,T>::_coef.size()-2); i >= 0; i--) {
  			errX = fabs(res)*dX+errX*fabs(x)+errX*dX;
 			res = PolynomialND<T,T>::_coef[i]+res*x;
-			errComb = errComb*fabs(x)+errComb*dX+errCoef*_EPS*dX;
+			errComb = errComb*fabs(x)+errComb*dX+errCoef*eps*dX;
 			errCoef = fabs(PolynomialND<T,T>::_coef[i]) + fabs(x)*errCoef;
 		}
- 		errCoef *= _EPS;
+ 		errCoef *= eps;
  		err = errCoef+errX+errComb;
 		return res;
 	}
@@ -136,14 +139,21 @@ public:
 	}
 
 	/**
-	 * @brief Evaluate a the first derivative of the polynomial using Horner's Method.
+	 * @brief Evaluate the first \b n derivatives of the polynomial using Horner's Method.
+	 *
+	 * This function estimates the error of the result.
+	 * For float or double types, the error type, ErrT, should be the same as the type T.
+	 * For std::complex<float> or std::complex<double> types, the error type, ErrT, should be either float or double.
+	 *
 	 * @param x [in] the input parameter.
 	 * @param err [out] estimate of the absolute errors.
 	 * @param n [in] the number of derivatives to find (default is the first derivative only)
 	 * @return the value \f$\dot{f}(x)\f$.
 	 * @note Error is the absolute size of the interval where \f$f(x)\f$ can be, assuming coefficients are exact.
 	 */
-	std::vector<T> evaluateDerivatives(const T &x, std::vector<T>& err, std::size_t n = 1) const {
+	template<typename ErrT = T>
+	std::vector<T> evaluateDerivatives(const T &x, std::vector<ErrT>& err, std::size_t n = 1) const {
+		const ErrT eps = std::numeric_limits<ErrT>::epsilon();
 		// Horner's Method
 		err.resize(n+1);
 		for (std::size_t i = 0; i < err.size(); i++)
@@ -167,7 +177,7 @@ public:
 			err[i] *= k;
 		}
 		for (std::size_t i = 0; i <= n; i++) {
-			err[i] *= static_cast<T>(_EPS);
+			err[i] *= eps;
 		}
 		return res;
 	}
@@ -191,7 +201,7 @@ public:
 		std::size_t no = PolynomialND<T,T>::order()-1;
 		Polynomial<T> der(no);
 		for (std::size_t i = 1; i <= PolynomialND<T,T>::order(); i++)
-			der[i-1] = PolynomialND<T,T>::_coef[i]*i;
+			der[i-1] = PolynomialND<T,T>::_coef[i]*static_cast<T>(i);
 		return der.derivative(n-1);
 	}
 
@@ -517,9 +527,6 @@ public:
 		}
 		return pol;
 	}
-
-private:
-	const double _EPS;
 };
 
 /**

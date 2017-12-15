@@ -115,7 +115,7 @@ public:
 	}
 
 	/**
-	 * @brief Evaluate a the derivatives of the polynomial using Horner's Method.
+	 * @brief Evaluate the first \b n derivatives of the polynomial using Horner's Method.
 	 * @param x [in] the input parameter.
 	 * @param n [in] the number of derivatives to find (default is the first derivative only)
 	 * @return a vector of values \f${f(x),\dot{f}(x),\ddot{f}(x),\cdots}\f$.

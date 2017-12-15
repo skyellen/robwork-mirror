@@ -23,44 +23,63 @@
 
 using namespace rw::math;
 
-TEST(Polynomial, 1D) {
-	const double coef[] = {600,50,-2500,-100,2000,85,14,-3,3};
-	const Polynomial<> p(std::vector<double>(coef,coef+9));
+template <typename A, typename B = A>
+struct Type {
+  typedef A First;
+  typedef B Second;
+};
+
+template <typename T>
+class PolynomialTest: public ::testing::Test {
+public:
+	PolynomialTest() {}
+	virtual ~PolynomialTest() {}
+};
+
+typedef ::testing::Types<Type<float>,Type<double>,Type<std::complex<float>,float>,Type<std::complex<double>,double> > MyTypes;
+TYPED_TEST_CASE(PolynomialTest, MyTypes);
+
+TYPED_TEST(PolynomialTest, 1D) {
+	typedef typename TypeParam::First T;
+	typedef typename TypeParam::Second InnerT;
+
+	const T coef[] = {600,50,-2500,-100,2000,85,14,-3,3};
+	const Polynomial<T> p(std::vector<T>(coef,coef+9));
 
 	// Check that order is correct
 	EXPECT_EQ(8, p.order());
 
 	{
 		// Evaluation tests
-		const double t1 = 0.2;
-		const double t2 = -2./7.;
-		const double ft1 = 512.4280652800000; // solution with infinite accuracy: 200167213/390625
-		const double ft2 = 397.1391727138543; // solution with infinite accuracy: 2289428300/5764801
-		double err1, err2;
-		const double eval1A = p.evaluate(t1,err1);
-		const double eval1B = p.evaluate(t1);
-		const double eval2A = p.evaluate(t2,err2);
-		const double eval2B = p.evaluate(t2);
+		const T t1 = 0.2;
+		const T t2 = -2./7.;
+		const T ft1 = 512.4280652800000; // solution with infinite accuracy: 200167213/390625
+		const T ft2 = 397.1391727138543; // solution with infinite accuracy: 2289428300/5764801
+		InnerT err1, err2;
+		const T eval1A = p.evaluate(t1,err1);
+		const T eval1B = p.evaluate(t1);
+		const T eval2A = p.evaluate(t2,err2);
+		const T eval2B = p.evaluate(t2);
 		// Does the two evaluation methods give same results?
 		EXPECT_EQ(eval1A, eval1B);
 		EXPECT_EQ(eval2A, eval2B);
 		// Do they give the expected values within the returned uncertainty?
-		EXPECT_NEAR(0,eval1A-ft1,err1);
-		EXPECT_NEAR(0,eval2A-ft2,err2);
+		EXPECT_NEAR(0,std::fabs(eval1A-ft1),err1);
+		EXPECT_NEAR(0,std::fabs(eval2A-ft2),err2);
 		// Are the uncertainty reasonable?
-		EXPECT_NEAR(0,err1,ft1*10*std::numeric_limits<double>::epsilon());
-		EXPECT_NEAR(0,err2,ft2*10*std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0,err1,std::fabs(ft1)*10*std::numeric_limits<InnerT>::epsilon());
+		EXPECT_NEAR(0,err2,std::fabs(ft2)*10*std::numeric_limits<InnerT>::epsilon());
 
 		// Derivative tests
-		const double d1 = -897.2941568; // solution with infinite accuracy: -(70101106/78125)
-		const double d2 = 1270.1497772429611; // solution with infinite accuracy: 1046022958/823543
-		const double dd1 = -4145.757568; // solution with infinite accuracy: -(64777462/15625)
-		const double dd2 = -2905.9077765216875; // solution with infinite accuracy: -(48839592/16807)
-		std::vector<double> derr1, derr2;
-		const std::vector<double> der1A = p.evaluateDerivatives(t1,2);
-		const std::vector<double> der2A = p.evaluateDerivatives(t2,2);
-		const std::vector<double> der1B = p.evaluateDerivatives(t1,derr1,2);
-		const std::vector<double> der2B = p.evaluateDerivatives(t2,derr2,2);
+		const T d1 = static_cast<T>(-897.2941568); // solution with infinite accuracy: -(70101106/78125)
+		const T d2 = static_cast<T>(1270.1497772429611); // solution with infinite accuracy: 1046022958/823543
+		const T dd1 = static_cast<T>(-4145.757568); // solution with infinite accuracy: -(64777462/15625)
+		const T dd2 = static_cast<T>(-2905.9077765216875); // solution with infinite accuracy: -(48839592/16807)
+		std::vector<InnerT> derr1, derr2;
+		const std::vector<T> der1A = p.evaluateDerivatives(t1,2);
+		const std::vector<T> der2A = p.evaluateDerivatives(t2,2);
+		const std::vector<T> der1B = p.evaluateDerivatives(t1,derr1,2);
+		const std::vector<T> der2B = p.evaluateDerivatives(t2,derr2,2);
 		EXPECT_EQ(3, der1A.size());
 		EXPECT_EQ(3, der1B.size());
 		EXPECT_EQ(3, der2A.size());
@@ -76,29 +95,29 @@ TEST(Polynomial, 1D) {
 		//BOOST_CHECK(derr1[0] == err1);
 		//BOOST_CHECK(derr2[0] == err2);
 		// Do they give the expected values within the returned uncertainty?
-		EXPECT_NEAR(0,der1A[1]-d1,derr1[1]);
-		EXPECT_NEAR(0,der2A[1]-d2,derr2[1]);
-		EXPECT_NEAR(0,der1A[2]-dd1,derr1[2]);
-		EXPECT_NEAR(0,der2A[2]-dd2,derr2[2]);
+		EXPECT_NEAR(0,std::fabs(der1A[1]-d1),std::fabs(derr1[1]));
+		EXPECT_NEAR(0,std::fabs(der2A[1]-d2),std::fabs(derr2[1]));
+		EXPECT_NEAR(0,std::fabs(der1A[2]-dd1),std::fabs(derr1[2]));
+		EXPECT_NEAR(0,std::fabs(der2A[2]-dd2),std::fabs(derr2[2]));
 		// Are the uncertainty reasonable?
-		EXPECT_NEAR(0, derr1[1], std::fabs(d1)*10*std::numeric_limits<double>::epsilon());
-		EXPECT_NEAR(0, derr1[2], std::fabs(dd1)*10*std::numeric_limits<double>::epsilon());
-		EXPECT_NEAR(0, derr2[1], std::fabs(d2)*10*std::numeric_limits<double>::epsilon());
-		EXPECT_NEAR(0, derr2[2], std::fabs(dd2)*10*std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0, std::fabs(derr1[1]), std::fabs(d1)*10*std::numeric_limits<InnerT>::epsilon());
+		EXPECT_NEAR(0, std::fabs(derr1[2]), std::fabs(dd1)*10*std::numeric_limits<InnerT>::epsilon());
+		EXPECT_NEAR(0, std::fabs(derr2[1]), std::fabs(d2)*10*std::numeric_limits<InnerT>::epsilon());
+		EXPECT_NEAR(0, std::fabs(derr2[2]), std::fabs(dd2)*10*std::numeric_limits<InnerT>::epsilon());
 
 		// Get polynomial for second derivative and again check that it evaluates as expected
-		const Polynomial<> dpol = p.derivative(2);
+		const Polynomial<T> dpol = p.derivative(2);
 		double dpolEval1Err, dpolEval2Err;
-		const double dpolEval1 = dpol.evaluate(t1,dpolEval1Err);
-		const double dpolEval2 = dpol.evaluate(t2,dpolEval2Err);
-		EXPECT_NEAR(0, dpolEval1-der1A[2],dpolEval1Err);
-		EXPECT_NEAR(0, dpolEval2-der2A[2],dpolEval2Err);
+		const T dpolEval1 = dpol.evaluate(t1,dpolEval1Err);
+		const T dpolEval2 = dpol.evaluate(t2,dpolEval2Err);
+		EXPECT_NEAR(0, std::fabs(dpolEval1-der1A[2]),dpolEval1Err);
+		EXPECT_NEAR(0, std::fabs(dpolEval2-der2A[2]),dpolEval2Err);
 
 		// Try increasing order by two and check if it evaluates to the same
-		Polynomial<> pol = p;
+		Polynomial<T> pol = p;
 		pol.increaseOrder(2);
 		EXPECT_EQ(10, pol.order());
-		const double evalOrder = pol.evaluate(t1);
+		const T evalOrder = pol.evaluate(t1);
 		EXPECT_EQ(evalOrder, eval1A);
 		EXPECT_EQ(pol[0], pol[0]);
 		EXPECT_EQ(pol[1], pol[1]);
@@ -109,62 +128,62 @@ TEST(Polynomial, 1D) {
 		EXPECT_EQ(pol[6], pol[6]);
 		EXPECT_EQ(pol[7], pol[7]);
 		EXPECT_EQ(pol[8], pol[8]);
-		EXPECT_EQ(pol[9], 0);
-		EXPECT_EQ(pol[10], 0);
+		EXPECT_EQ(pol[9], static_cast<T>(0.));
+		EXPECT_EQ(pol[10], static_cast<T>(0.));
 	}
 
 	{
 		// Deflation test
-		const double root = -0.5586196985150068;
-		const Polynomial<> def = p.deflate(root);
+		const T root = -0.5586196985150068;
+		const Polynomial<T> def = p.deflate(root);
 		EXPECT_EQ(7, def.order());
-		const double c7 = 3.;
-		const double c6 = -4.675859095545022;
-		const double c5 = 16.612026998252034;
-		const double c4 = 75.72019448651334;
-		const double c3 = 1957.701207784446;
-		const double c2 = -1193.6104584750124;
-		const double c1 = -1833.2256855423295;
-		const double c0 = 1074.0759797676228;
-		EXPECT_NEAR(0, def[7]-c7, std::fabs(c7)*10*std::numeric_limits<double>::epsilon());
-		EXPECT_NEAR(0, def[6]-c6, std::fabs(c6)*10*std::numeric_limits<double>::epsilon());
-		EXPECT_NEAR(0, def[5]-c5, std::fabs(c5)*10*std::numeric_limits<double>::epsilon());
-		EXPECT_NEAR(0, def[4]-c4, std::fabs(c4)*10*std::numeric_limits<double>::epsilon());
-		EXPECT_NEAR(0, def[3]-c3, std::fabs(c3)*10*std::numeric_limits<double>::epsilon());
-		EXPECT_NEAR(0, def[2]-c2, std::fabs(c2)*10*std::numeric_limits<double>::epsilon());
-		EXPECT_NEAR(0, def[1]-c1, std::fabs(c1)*10*std::numeric_limits<double>::epsilon());
-		EXPECT_NEAR(0, def[0]-c0, std::fabs(c0)*10*std::numeric_limits<double>::epsilon());
+		const T c7 = 3.;
+		const T c6 = -4.675859095545022;
+		const T c5 = 16.612026998252034;
+		const T c4 = 75.72019448651334;
+		const T c3 = 1957.701207784446;
+		const T c2 = -1193.6104584750124;
+		const T c1 = -1833.2256855423295;
+		const T c0 = 1074.0759797676228;
+		EXPECT_NEAR(0, std::fabs(def[7]-c7), std::fabs(c7)*10*std::numeric_limits<InnerT>::epsilon());
+		EXPECT_NEAR(0, std::fabs(def[6]-c6), std::fabs(c6)*10*std::numeric_limits<InnerT>::epsilon());
+		EXPECT_NEAR(0, std::fabs(def[5]-c5), std::fabs(c5)*10*std::numeric_limits<InnerT>::epsilon());
+		EXPECT_NEAR(0, std::fabs(def[4]-c4), std::fabs(c4)*10*std::numeric_limits<InnerT>::epsilon());
+		EXPECT_NEAR(0, std::fabs(def[3]-c3), std::fabs(c3)*10*std::numeric_limits<InnerT>::epsilon());
+		EXPECT_NEAR(0, std::fabs(def[2]-c2), std::fabs(c2)*10*std::numeric_limits<InnerT>::epsilon());
+		EXPECT_NEAR(0, std::fabs(def[1]-c1), std::fabs(c1)*10*std::numeric_limits<InnerT>::epsilon());
+		EXPECT_NEAR(0, std::fabs(def[0]-c0), std::fabs(c0)*10*std::numeric_limits<InnerT>::epsilon());
 	}
 
 	{
-		Polynomial<> pol(3);
+		Polynomial<T> pol(3);
 		pol[2] = 1;
 		pol[1] = 0.5;
 
 		// Add
-		Polynomial<> add = pol+p+5;
+		Polynomial<T> add = pol+p+static_cast<T>(5.);
 		for (std::size_t i = 8; i >= 3; i--) {
 			EXPECT_EQ(add[i], p[i]);
 		}
-		EXPECT_EQ(add[2], p[2]+1);
-		EXPECT_EQ(add[1], p[1]+0.5);
-		EXPECT_EQ(add[0], p[0]+5);
-		add += 2.5;
-		EXPECT_EQ(add[0], p[0]+5+2.5);
+		EXPECT_EQ(add[2], p[2]+static_cast<T>(1.));
+		EXPECT_EQ(add[1], p[1]+static_cast<T>(0.5));
+		EXPECT_EQ(add[0], p[0]+static_cast<T>(5.));
+		add += static_cast<T>(2.5);
+		EXPECT_EQ(add[0], p[0]+static_cast<T>(5.+2.5));
 
 		// Subtract
-		Polynomial<> sub = pol-p-5;
+		Polynomial<T> sub = pol-p-static_cast<T>(5.);
 		for (std::size_t i = 8; i >= 3; i--) {
 			EXPECT_EQ(sub[i], -p[i]);
 		}
-		EXPECT_EQ(sub[2], -p[2]+1);
-		EXPECT_EQ(sub[1], -p[1]+0.5);
-		EXPECT_EQ(sub[0], -p[0]-5);
-		sub -= 2.5;
-		EXPECT_EQ(sub[0], -p[0]-5-2.5);
+		EXPECT_EQ(sub[2], -p[2]+static_cast<T>(1.));
+		EXPECT_EQ(sub[1], -p[1]+static_cast<T>(0.5));
+		EXPECT_EQ(sub[0], -p[0]-static_cast<T>(5.));
+		sub -= static_cast<T>(2.5);
+		EXPECT_EQ(sub[0], -p[0]-static_cast<T>(5.+2.5));
 
 		// Negate
-		const Polynomial<> neg = -p;
+		const Polynomial<T> neg = -p;
 		for (std::size_t i = 0; i <= 8; i++) {
 			EXPECT_EQ(neg[i], -p[i]);
 		}
@@ -172,38 +191,38 @@ TEST(Polynomial, 1D) {
 
 	{
 		// Assignment
-		Polynomial<> pol(1);
+		Polynomial<T> pol(1);
 		pol = p;
 		EXPECT_EQ(8, pol.order());
 		pol[8] = 2;
 		pol(2) = -1;
-		EXPECT_EQ(2, pol(8));
-		EXPECT_EQ(-1, pol(2));
+		EXPECT_EQ(0, std::fabs(pol(8)-static_cast<T>(2.)));
+		EXPECT_EQ(0, std::fabs(pol(2)+static_cast<T>(1.)));
 	}
 
 	{
 		// Multiplication
-		Polynomial<> mult = p*1.2;
+		Polynomial<T> mult = p*static_cast<T>(1.2);
 		for (std::size_t i = 0; i <= 8; i++) {
-			EXPECT_EQ(mult[i], p[i]*1.2);
+			EXPECT_EQ(mult[i], p[i]*static_cast<T>(1.2));
 		}
 		mult *= 6.;
 		for (std::size_t i = 0; i <= 8; i++) {
-			EXPECT_EQ(mult[i], p[i]*1.2*6);
+			EXPECT_EQ(mult[i], p[i]*static_cast<T>(1.2)*static_cast<T>(6.));
 		}
 		// Division
-		Polynomial<> div = p/1.2;
+		Polynomial<T> div = p/1.2;
 		for (std::size_t i = 0; i <= 8; i++) {
-			EXPECT_EQ(div[i], p[i]/1.2);
+			EXPECT_EQ(div[i], p[i]/static_cast<T>(1.2));
 		}
 		div /= 6.;
 		for (std::size_t i = 0; i <= 8; i++) {
-			EXPECT_EQ(div[i], p[i]/1.2/6);
+			EXPECT_EQ(div[i], p[i]/static_cast<T>(1.2)/static_cast<T>(6.));
 		}
 	}
 }
 
-TEST(Polynomial, 3D) {
+TEST(PolynomialND, 3D) {
     Eigen::Matrix3d A, B, C;
     A << 1, 2, 3,
     		5, 5, 4,
@@ -259,7 +278,7 @@ TEST(Polynomial, 3D) {
 	EXPECT_NEAR(0,(mult[0]-ref[0]).norm(),5e-15);
 }
 
-TEST(Polynomial, Solver_Degree3_A) {
+TEST(PolynomialSolver, Degree3_A) {
 	// x³-12x²+50x-72=(x-4)(x-4+i sqrt(2))(x-4-i sqrt(2))
 	Polynomial<> pol(3);
 	pol[3] = 1;
@@ -274,7 +293,7 @@ TEST(Polynomial, Solver_Degree3_A) {
 	EXPECT_NEAR(4,realSols[0],1e-14);
 }
 
-TEST(Polynomial, Solver_Degree3_B) {
+TEST(PolynomialSolver, Degree3_B) {
 	// x³+2x=x(x+i sqrt(2))(x-i sqrt(2))
 	Polynomial<> pol(3);
 	pol[3] = 1;
@@ -288,7 +307,7 @@ TEST(Polynomial, Solver_Degree3_B) {
 	EXPECT_NEAR(0,realSols[0],1e-14);
 }
 
-TEST(Polynomial, Solver_Degree3_C) {
+TEST(PolynomialSolver, Degree3_C) {
 	// x³+2x=x(x+i sqrt(2))(x-i sqrt(2))
 	Polynomial<> pol(4);
 	pol[4] = 0;
@@ -303,7 +322,7 @@ TEST(Polynomial, Solver_Degree3_C) {
 	EXPECT_NEAR(0,realSols[0],1e-14);
 }
 
-TEST(Polynomial, Solver_Degree4) {
+TEST(PolynomialSolver, Degree4) {
 	// -40.032 x⁴ + 160.042 x³ + 47.9581 x + 40.032
 	Polynomial<> pol(4);
 	pol[4] = -40.032;
