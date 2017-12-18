@@ -78,6 +78,7 @@ namespace
         QDoubleSpinBox* box = new QDoubleSpinBox();
         box->setDecimals(3);
         box->setRange(low, high);
+        box->setKeyboardTracking(false);
 
         const double step = (high - low) / 400;
         box->setSingleStep(step);
