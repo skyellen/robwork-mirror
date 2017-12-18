@@ -61,7 +61,7 @@ std::vector<double> PolynomialSolver::getRealSolutions(const double EPS) {
 
 	for (std::size_t i = 0; i < sol.size(); i++) {
 		std::complex<double> x = sol[i];
-		if (fabs(x.imag()) <= 2.*EPS*fabs(x.real())) {
+		if (std::fabs(x.imag()) <= 2.*EPS*std::fabs(x.real())) {
 			res.push_back(x.real());
 		}
 	}
@@ -127,7 +127,7 @@ std::complex<double> PolynomialSolver::laguerre(std::complex<double> x) const {
 	for (std::size_t i = 1; i <= _iterations; i++) {
 		double err;
 		std::complex<double> val = _polynomial.evaluate(x,err);
-		if (abs(val) <= err)
+		if (std::abs(val) <= err)
 			return x;
 		const std::vector<std::complex<double> > der = _polynomial.evaluateDerivatives(x,2);
 		const std::complex<double> G = der[1]/val;
@@ -136,8 +136,8 @@ std::complex<double> PolynomialSolver::laguerre(std::complex<double> x) const {
 		const std::complex<double> sq = std::sqrt((n-2)*((n-1)*H-Gsq));
 		const std::complex<double> denPlus = G+sq;
 		const std::complex<double> denMinus = G-sq;
-		const std::complex<double> den = (abs(denPlus) > abs(denMinus)) ? denPlus : denMinus;
-		if (abs(den) == 0)
+		const std::complex<double> den = (std::abs(denPlus) > std::abs(denMinus)) ? denPlus : denMinus;
+		if (std::abs(den) == 0)
 			RW_THROW("PolynomialSolver::laguerre failed du to zero denominator!");
 		const std::complex<double> a = (n-1)/den;
 		std::complex<double> xNew = x - a;

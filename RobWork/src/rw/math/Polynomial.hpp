@@ -120,7 +120,7 @@ public:
 		ErrT errCoef = 0; // Error due to finite precision coefficients
 		ErrT errX = 0; // Error due to finite precision x value
 		ErrT errComb = 0; // Combinational error of error both in coefficients and x (magnitude very small - eps*eps)
-		errCoef = abs(res);
+		errCoef = std::abs(res);
 		const ErrT dX = std::abs(x)*eps;
  		for (int i = static_cast<int>(PolynomialND<T,T>::_coef.size()-2); i >= 0; i--) {
  			errX = std::abs(res)*dX+errX*std::abs(x)+errX*dX;
