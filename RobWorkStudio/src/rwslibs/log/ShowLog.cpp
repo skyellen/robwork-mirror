@@ -43,9 +43,8 @@ using namespace rws;
     public:
         typedef std::pair<std::string, QColor> Message;
         WriterWrapper(ShowLog* slog, QColor color):
-            _slog(slog),_color(color)
+            _slog(slog),_color(color), _tabLevel(4)
         {
-
         }
 
         virtual ~WriterWrapper(){}
