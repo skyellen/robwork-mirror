@@ -96,12 +96,23 @@ public:
 	/**
 	 * @brief Increase the order of this polynomial.
 	 * @param increase [in] how much to increase the order (default is 1).
+	 * @see increaseOrder(std::size_t,const Coef&) for a version that initializes the new coefficients to a certain value.
 	 */
 	void increaseOrder(std::size_t increase = 1) {
 		const std::size_t size = _coef.size();
 		_coef.resize(size+increase);
+	}
+
+	/**
+	 * @brief Increase the order of this polynomial.
+	 * @param increase [in] how much to increase the order (default is 1).
+	 * @param value [in] initialize new coefficients to this value.
+	 */
+	void increaseOrder(std::size_t increase, const Coef& value) {
+		const std::size_t size = _coef.size();
+		_coef.resize(size+increase);
 		for (std::size_t i = size; i < size + increase; i++) {
-			_coef[i] *= 0;
+			_coef[i] = value;
 		}
 	}
 
@@ -127,8 +138,6 @@ public:
 	std::vector<Coef> evaluateDerivatives(const Scalar &x, std::size_t n = 1) const {
 		// Horner's Method
 		std::vector<Coef> res(n+1);
-		for (std::size_t i = 0; i < n + 1; i++)
-			res[i] *= 0;
 		res[0] = _coef.back();
 		for (int i = static_cast<int>(_coef.size()-2); i >= 0; i--) {
 			int minJ = static_cast<int>(std::min<std::size_t>(n,_coef.size()-1-i));
@@ -331,15 +340,27 @@ public:
 	 */
 	const PolynomialND<Coef, Scalar> operator-(const PolynomialND<Coef, Scalar>& b) const
 	{
-		std::size_t ord = std::max<std::size_t>(order(),b.order());
-		PolynomialND<Coef, Scalar> pol(ord);
-		for (std::size_t i = 0; i <= order(); i++) {
-			pol[i] = _coef[i];
+		const std::size_t thisOrder = order();
+		const std::size_t bOrder = b.order();
+		if (bOrder > thisOrder) {
+			PolynomialND<Coef, Scalar> pol(bOrder);
+			for (std::size_t i = 0; i <= thisOrder; i++) {
+				pol[i] = (*this)[i]-b[i];
+			}
+			for (std::size_t i = thisOrder+1; i <= bOrder; i++) {
+				pol[i] = -b[i];
+			}
+			return pol;
+		} else {
+			PolynomialND<Coef, Scalar> pol(thisOrder);
+			for (std::size_t i = 0; i <= bOrder; i++) {
+				pol[i] = (*this)[i]-b[i];
+			}
+			for (std::size_t i = bOrder+1; i <= thisOrder; i++) {
+				pol[i] = (*this)[i];
+			}
+			return pol;
 		}
-		for (std::size_t i = 0; i <= b.order(); i++) {
-			pol[i] -= b[i];
-		}
-		return pol;
 	}
 
 	/**
@@ -348,11 +369,20 @@ public:
 	 * @return same polynomial with different coefficients after subtraction.
 	 */
 	PolynomialND<Coef, Scalar>& operator-=(const PolynomialND<Coef, Scalar>& b) {
-		std::size_t ord = std::max<std::size_t>(order(),b.order());
-		if (ord > order())
-			increaseOrder(ord-order());
-		for (std::size_t i = 0; i <= b.order(); i++) {
-			_coef[i] -= b[i];
+		const std::size_t thisOrder = order();
+		const std::size_t bOrder = b.order();
+		if (bOrder > thisOrder) {
+			increaseOrder(bOrder-thisOrder);
+			for (std::size_t i = 0; i <= thisOrder; i++) {
+				(*this)[i] -= b[i];
+			}
+			for (std::size_t i = thisOrder+1; i <= bOrder; i++) {
+				(*this)[i] = -b[i];
+			}
+		} else {
+			for (std::size_t i = 0; i <= bOrder; i++) {
+				(*this)[i] -= b[i];
+			}
 		}
 		return *this;
 	}
@@ -364,15 +394,27 @@ public:
 	 */
 	const PolynomialND<Coef, Scalar> operator+(const PolynomialND<Coef, Scalar>& b) const
 	{
-		std::size_t ord = std::max<std::size_t>(order(),b.order());
-		PolynomialND<Coef, Scalar> pol(ord);
-		for (std::size_t i = 0; i <= order(); i++) {
-			pol[i] = _coef[i];
+		const std::size_t thisOrder = order();
+		const std::size_t bOrder = b.order();
+		if (bOrder > thisOrder) {
+			PolynomialND<Coef, Scalar> pol(bOrder);
+			for (std::size_t i = 0; i <= thisOrder; i++) {
+				pol[i] = (*this)[i]+b[i];
+			}
+			for (std::size_t i = thisOrder+1; i <= bOrder; i++) {
+				pol[i] = b[i];
+			}
+			return pol;
+		} else {
+			PolynomialND<Coef, Scalar> pol(thisOrder);
+			for (std::size_t i = 0; i <= bOrder; i++) {
+				pol[i] = (*this)[i]+b[i];
+			}
+			for (std::size_t i = bOrder+1; i <= thisOrder; i++) {
+				pol[i] = (*this)[i];
+			}
+			return pol;
 		}
-		for (std::size_t i = 0; i <= b.order(); i++) {
-			pol[i] += b[i];
-		}
-		return pol;
 	}
 
 	/**
@@ -381,11 +423,20 @@ public:
 	 * @return same polynomial with different coefficients after addition.
 	 */
 	PolynomialND<Coef, Scalar>& operator+=(const PolynomialND<Coef, Scalar>& b) {
-		std::size_t ord = std::max<std::size_t>(order(),b.order());
-		if (ord > order())
-			increaseOrder(ord-order());
-		for (std::size_t i = 0; i <= b.order(); i++) {
-			_coef[i] += b[i];
+		const std::size_t thisOrder = order();
+		const std::size_t bOrder = b.order();
+		if (bOrder > thisOrder) {
+			increaseOrder(bOrder-thisOrder);
+			for (std::size_t i = 0; i <= thisOrder; i++) {
+				(*this)[i] += b[i];
+			}
+			for (std::size_t i = thisOrder+1; i <= bOrder; i++) {
+				(*this)[i] = b[i];
+			}
+		} else {
+			for (std::size_t i = 0; i <= bOrder; i++) {
+				(*this)[i] += b[i];
+			}
 		}
 		return *this;
 	}
@@ -404,8 +455,9 @@ public:
 		const std::size_t ord = order()+b.order();
 		PolynomialND<OutCoef, Scalar> pol(ord);
 		for (std::size_t k = 0; k <= ord; k++) {
-			pol[ord-k] *= 0;
-			for (std::size_t j = (k < b.order())? 0 : k-b.order(); j <= std::min(k,order()); j++) {
+			const std::size_t firstJ = (k < b.order())? 0 : k-b.order();
+			pol[ord-k] = _coef[order()-firstJ]*b[b.order()-(k-firstJ)];
+			for (std::size_t j = firstJ+1; j <= std::min(k,order()); j++) {
 				pol[ord-k] += _coef[order()-j]*b[b.order()-(k-j)];
 			}
 		}

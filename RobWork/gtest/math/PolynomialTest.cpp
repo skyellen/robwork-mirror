@@ -128,7 +128,7 @@ TYPED_TEST(PolynomialTest, 1D) {
 
 		// Try increasing order by two and check if it evaluates to the same
 		Polynomial<T> pol = p;
-		pol.increaseOrder(2);
+		pol.increaseOrder(2, static_cast<T>(0.));
 		EXPECT_EQ(10, pol.order());
 		const T evalOrder = pol.evaluate(t1);
 		EXPECT_EQ(evalOrder, eval1A);
@@ -184,6 +184,16 @@ TYPED_TEST(PolynomialTest, 1D) {
 		add += static_cast<T>(2.5);
 		EXPECT_EQ(add[0], p[0]+static_cast<T>(5.+2.5));
 
+		Polynomial<T> addOp = p+pol+static_cast<T>(5.);
+		for (std::size_t i = 8; i >= 3; i--) {
+			EXPECT_EQ(addOp[i], p[i]);
+		}
+		EXPECT_EQ(addOp[2], p[2]+static_cast<T>(1.));
+		EXPECT_EQ(addOp[1], p[1]+static_cast<T>(0.5));
+		EXPECT_EQ(addOp[0], p[0]+static_cast<T>(5.));
+		addOp += static_cast<T>(2.5);
+		EXPECT_EQ(addOp[0], p[0]+static_cast<T>(5.+2.5));
+
 		// Subtract
 		Polynomial<T> sub = pol-p-static_cast<T>(5.);
 		for (std::size_t i = 8; i >= 3; i--) {
@@ -194,6 +204,16 @@ TYPED_TEST(PolynomialTest, 1D) {
 		EXPECT_EQ(sub[0], -p[0]-static_cast<T>(5.));
 		sub -= static_cast<T>(2.5);
 		EXPECT_EQ(sub[0], -p[0]-static_cast<T>(5.+2.5));
+
+		Polynomial<T> subOp = p-pol-static_cast<T>(5.);
+		for (std::size_t i = 8; i >= 3; i--) {
+			EXPECT_EQ(subOp[i], p[i]);
+		}
+		EXPECT_EQ(subOp[2], p[2]-static_cast<T>(1.));
+		EXPECT_EQ(subOp[1], p[1]-static_cast<T>(0.5));
+		EXPECT_EQ(subOp[0], p[0]-static_cast<T>(5.));
+		subOp -= static_cast<T>(2.5);
+		EXPECT_EQ(subOp[0], p[0]-static_cast<T>(5.+2.5));
 
 		// Negate
 		const Polynomial<T> neg = -p;

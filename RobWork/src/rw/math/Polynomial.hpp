@@ -408,15 +408,27 @@ public:
 	 */
 	const Polynomial<T> operator-(const Polynomial<T>& b) const
 	{
-		std::size_t ord = std::max<std::size_t>(PolynomialND<T,T>::order(),b.order());
-		Polynomial<T> pol(ord);
-		for (std::size_t i = 0; i <= PolynomialND<T,T>::order(); i++) {
-			pol[i] = PolynomialND<T,T>::_coef[i];
+		const std::size_t thisOrder = PolynomialND<T,T>::order();
+		const std::size_t bOrder = b.order();
+		if (bOrder > thisOrder) {
+			Polynomial<T> pol(bOrder);
+			for (std::size_t i = 0; i <= thisOrder; i++) {
+				pol[i] = (*this)[i]-b[i];
+			}
+			for (std::size_t i = thisOrder+1; i <= bOrder; i++) {
+				pol[i] = -b[i];
+			}
+			return pol;
+		} else {
+			Polynomial<T> pol(thisOrder);
+			for (std::size_t i = 0; i <= bOrder; i++) {
+				pol[i] = (*this)[i]-b[i];
+			}
+			for (std::size_t i = bOrder+1; i <= thisOrder; i++) {
+				pol[i] = (*this)[i];
+			}
+			return pol;
 		}
-		for (std::size_t i = 0; i <= b.order(); i++) {
-			pol[i] -= b[i];
-		}
-		return pol;
 	}
 
 	/**
@@ -425,11 +437,20 @@ public:
 	 * @return same polynomial with different coefficients after subtraction.
 	 */
 	Polynomial<T>& operator-=(const Polynomial<T>& b) {
-		std::size_t ord = std::max<std::size_t>(PolynomialND<T,T>::order(),b.order());
-		if (ord > PolynomialND<T,T>::order())
-			PolynomialND<T,T>::increaseOrder(ord-PolynomialND<T,T>::order());
-		for (std::size_t i = 0; i <= b.order(); i++) {
-			PolynomialND<T,T>::_coef[i] -= b[i];
+		const std::size_t thisOrder = PolynomialND<T,T>::order();
+		const std::size_t bOrder = b.order();
+		if (bOrder > thisOrder) {
+			PolynomialND<T,T>::increaseOrder(bOrder-thisOrder);
+			for (std::size_t i = 0; i <= thisOrder; i++) {
+				(*this)[i] -= b[i];
+			}
+			for (std::size_t i = thisOrder+1; i <= bOrder; i++) {
+				(*this)[i] = -b[i];
+			}
+		} else {
+			for (std::size_t i = 0; i <= bOrder; i++) {
+				(*this)[i] -= b[i];
+			}
 		}
 		return *this;
 	}
@@ -441,15 +462,27 @@ public:
 	 */
 	const Polynomial<T> operator+(const Polynomial<T>& b) const
 	{
-		std::size_t ord = std::max<std::size_t>(PolynomialND<T,T>::order(),b.order());
-		Polynomial<T> pol(ord);
-		for (std::size_t i = 0; i <= PolynomialND<T,T>::order(); i++) {
-			pol[i] = PolynomialND<T,T>::_coef[i];
+		const std::size_t thisOrder = PolynomialND<T,T>::order();
+		const std::size_t bOrder = b.order();
+		if (bOrder > thisOrder) {
+			Polynomial<T> pol(bOrder);
+			for (std::size_t i = 0; i <= thisOrder; i++) {
+				pol[i] = (*this)[i]+b[i];
+			}
+			for (std::size_t i = thisOrder+1; i <= bOrder; i++) {
+				pol[i] = b[i];
+			}
+			return pol;
+		} else {
+			Polynomial<T> pol(thisOrder);
+			for (std::size_t i = 0; i <= bOrder; i++) {
+				pol[i] = (*this)[i]+b[i];
+			}
+			for (std::size_t i = bOrder+1; i <= thisOrder; i++) {
+				pol[i] = (*this)[i];
+			}
+			return pol;
 		}
-		for (std::size_t i = 0; i <= b.order(); i++) {
-			pol[i] += b[i];
-		}
-		return pol;
 	}
 
 	/**
@@ -458,11 +491,20 @@ public:
 	 * @return same polynomial with different coefficients after addition.
 	 */
 	Polynomial<T>& operator+=(const Polynomial<T>& b) {
-		std::size_t ord = std::max<std::size_t>(PolynomialND<T,T>::order(),b.order());
-		if (ord > PolynomialND<T,T>::order())
-			PolynomialND<T,T>::increaseOrder(ord-PolynomialND<T,T>::order());
-		for (std::size_t i = 0; i <= b.order(); i++) {
-			PolynomialND<T,T>::_coef[i] += b[i];
+		const std::size_t thisOrder = PolynomialND<T,T>::order();
+		const std::size_t bOrder = b.order();
+		if (bOrder > thisOrder) {
+			PolynomialND<T,T>::increaseOrder(bOrder-thisOrder);
+			for (std::size_t i = 0; i <= thisOrder; i++) {
+				(*this)[i] += b[i];
+			}
+			for (std::size_t i = thisOrder+1; i <= bOrder; i++) {
+				(*this)[i] = b[i];
+			}
+		} else {
+			for (std::size_t i = 0; i <= bOrder; i++) {
+				(*this)[i] += b[i];
+			}
 		}
 		return *this;
 	}
