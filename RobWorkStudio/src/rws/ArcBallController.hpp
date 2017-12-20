@@ -24,6 +24,8 @@
 #include <rw/math/Quaternion.hpp>
 #include "CameraController.hpp"
 
+namespace rw { namespace models { class WorkCell; } }
+
 namespace rws{
 
 	/**
@@ -56,7 +58,7 @@ namespace rws{
 		/**
 		 * @brief destructor
 		 */
-		virtual ~ArcBallController() { /* nothing to do */ };
+		virtual ~ArcBallController() { /* nothing to do */ }
 
         /**
          * @brief register a mouse click event. The coordinates must be inside the
@@ -97,6 +99,12 @@ namespace rws{
 
         //! @copydoc CameraController::getCenter
         rw::math::Vector3D<> getCenter(){return _pivotPoint;}
+
+        //! @copydoc CameraController::zoom
+        void zoom(double amount);
+
+        //! @copydoc CameraController::autoZoom
+        void autoZoom(rw::common::Ptr<rw::models::WorkCell> workcell, rw::common::Ptr<const rw::kinematics::State> state, double fovy, double aspectRatio);
 
 	private:
 		rw::math::Vector2D<> _centerPt; // Center of the ball

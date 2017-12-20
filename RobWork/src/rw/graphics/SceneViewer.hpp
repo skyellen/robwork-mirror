@@ -22,6 +22,9 @@ namespace graphics {
         //! @brief smart pointer type to this class
         typedef rw::common::Ptr<SceneViewer> Ptr;
 
+        //! @brief Constructor.
+        SceneViewer(){}
+
         //! @brief Destructor.
         virtual ~SceneViewer(){}
 
@@ -231,6 +234,14 @@ namespace graphics {
 
         //virtual void setWorkCellScene(rw::graphics::WorkCellScene::Ptr wcscene) = 0;
 
+        /**
+         * @brief Move the camera along its z-axis.
+         * @param amount [in] the amount of zoom.
+         */
+        virtual void zoom(double amount) = 0;
+
+        //! @brief Automatically fits all frames inside the viewport by moving camera in its z-axis.
+        virtual void autoZoom() = 0;
 
     protected:
         //! @brief Event for selection of a position.

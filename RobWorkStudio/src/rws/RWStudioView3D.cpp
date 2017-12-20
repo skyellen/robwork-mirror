@@ -100,27 +100,27 @@ void RWStudioView3D::setupActions(){
 
     // view transforms
     _axometricViewAction =
-        new QAction(QIcon(":/images/default_view_100.png"), tr("&Axiometric"), this); // owned
+        new QAction(QIcon(":/images/default_view_100.png"), tr("&Axiometric (Ctrl + A)"), this); // owned
     connect(_axometricViewAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
 
     _frontViewAction =
-        new QAction(QIcon(":/images/front_view_100.png"), tr("Front"), this); // owned
+        new QAction(QIcon(":/images/front_view_100.png"), tr("Front (Ctrl + F)"), this); // owned
     connect(_frontViewAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
 
     _rightViewAction =
-        new QAction(QIcon(":/images/right_view_100.png"), tr("Right"), this); // owned
+        new QAction(QIcon(":/images/right_view_100.png"), tr("Right (Ctrl + R)"), this); // owned
     connect(_rightViewAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
 
-    _topViewAction = new QAction(QIcon(":/images/top_view_100.png"), tr("Top"), this); // owned
+    _topViewAction = new QAction(QIcon(":/images/top_view_100.png"), tr("Top (Ctrl + T)"), this); // owned
     connect(_topViewAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
 
-    _rearViewAction = new QAction(QIcon(":/images/rear_view_100.png"), tr("Rear"), this); // owned
+    _rearViewAction = new QAction(QIcon(":/images/rear_view_100.png"), tr("Rear (Ctrl + E)"), this); // owned
     connect(_rearViewAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
 
-    _leftViewAction = new QAction(QIcon(":/images/left_view_100.png"), tr("Left"), this); // owned
+    _leftViewAction = new QAction(QIcon(":/images/left_view_100.png"), tr("Left (Ctrl + L)"), this); // owned
     connect(_leftViewAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
 
-    _bottomViewAction = new QAction(QIcon(":/images/bottom_view_100.png"), tr("Bottom"), this); // owned
+    _bottomViewAction = new QAction(QIcon(":/images/bottom_view_100.png"), tr("Bottom  (Ctrl + B)"), this); // owned
     connect(_bottomViewAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
 
     _addViewAction = new QAction(tr("Add view..."), this); // owned
@@ -183,6 +183,23 @@ void RWStudioView3D::setupActions(){
      _user4MaskEnabled->setCheckable(true);
      _user4MaskEnabled->setChecked( DrawableNode::User4 & mask);
 
+
+     // Setup Zoom buttons:
+     _zoomInAction = new QAction(QIcon(":/images/zoom_in.png"), tr("Zoom in (Ctrl + +)"), this); // owned
+     connect(_zoomInAction, SIGNAL(triggered()), this, SLOT(zoomInSlot()));
+
+
+     _zoomOutAction = new QAction(QIcon(":/images/zoom_out.png"), tr("Zoom out (Ctrl + -)"), this); // owned
+     connect(_zoomOutAction, SIGNAL(triggered()), this, SLOT(zoomOutSlot()));
+
+     // outline action
+     _zoomAutoAction = new QAction(QIcon(":/images/zoom_auto.png"), tr("Autozoom (A)"), this); // owned
+     connect(_zoomAutoAction, SIGNAL(triggered()), this, SLOT(zoomAutoSlot()));
+
+     QActionGroup* zoomButtons = new QActionGroup(this); // owned
+     zoomButtons->addAction(_zoomInAction);
+     zoomButtons->addAction(_zoomOutAction);
+     zoomButtons->addAction(_zoomAutoAction);
 }
 
 
@@ -408,10 +425,46 @@ void RWStudioView3D::mouseDoubleClickEvent(QMouseEvent* event){
 
 void RWStudioView3D::keyPressEvent(QKeyEvent *e)
 {
-    // change camera view according to the keyboard inputs
+
     if(e->key() == Qt::Key_G && e->modifiers() == Qt::ControlModifier){
         saveBufferToFileDialog();
-    } else if(e->modifiers() == Qt::ControlModifier){
+    }
+    // Change between predefined camera angles:
+    else if(e->key() == Qt::Key_A && e->modifiers() == Qt::ControlModifier) {
+        _axometricViewAction->activate(QAction::Trigger);
+    }
+    else if(e->key() == Qt::Key_F && e->modifiers() == Qt::ControlModifier) {
+        _frontViewAction->activate(QAction::Trigger);
+    }
+    else if(e->key() == Qt::Key_R && e->modifiers() == Qt::ControlModifier) {
+        _rightViewAction->activate(QAction::Trigger);
+    }
+    else if(e->key() == Qt::Key_T && e->modifiers() == Qt::ControlModifier) {
+        _topViewAction->activate(QAction::Trigger);
+    }
+    else if(e->key() == Qt::Key_E && e->modifiers() == Qt::ControlModifier) {
+        _rearViewAction->activate(QAction::Trigger);
+    }
+    else if(e->key() == Qt::Key_L && e->modifiers() == Qt::ControlModifier) {
+        _leftViewAction->activate(QAction::Trigger);
+    }
+    else if(e->key() == Qt::Key_B && e->modifiers() == Qt::ControlModifier) {
+        _bottomViewAction->activate(QAction::Trigger);
+    }
+
+    // Zoom commands:
+    else if(e->key() == Qt::Key_A) {
+        zoomAutoSlot();
+    }
+    else if(e->key() == Qt::Key_Plus && e->modifiers() == Qt::ControlModifier) {
+        zoomInSlot();
+    }
+    else if(e->key() == Qt::Key_Minus && e->modifiers() == Qt::ControlModifier) {
+        zoomOutSlot();
+    }
+
+// change camera view according to the keyboard inputs
+    else if(e->modifiers() == Qt::ControlModifier){
         // get the currently selected view
         size_t currentView = 0;
         SceneViewer::View::Ptr currView = _view->getCurrentView();
@@ -534,6 +587,15 @@ void RWStudioView3D::setupToolBarAndMenu(QMainWindow* mwindow)
     stdviewtoolbar->addAction(_rearViewAction);
     stdviewtoolbar->addAction(_leftViewAction);
     stdviewtoolbar->addAction(_bottomViewAction);
+
+
+    /// --------------------------------------------------------------------------
+    QToolBar* zoomtoolbar = mwindow->addToolBar(tr("Zoom toolbar"));
+    zoomtoolbar->setObjectName("ZoomToolbar");
+    zoomtoolbar->addAction(_zoomInAction);
+    zoomtoolbar->addAction(_zoomOutAction);
+    zoomtoolbar->addAction(_zoomAutoAction);
+
 
     /// --------------------------------------------------------------------------
     QMenu* menu = mwindow->menuBar()->addMenu(tr("&View3D"));
@@ -863,6 +925,21 @@ void RWStudioView3D::showPivotPointSlot()
 {
     showPivotPoint(_showPivotPointAction->isChecked());
 }
+void RWStudioView3D::zoomInSlot()
+{
+    _view->zoom(2.0);
+    _view->updateView();
+}
+void RWStudioView3D::zoomOutSlot()
+{
+    _view->zoom(-2.0);
+    _view->updateView();
+}
+void RWStudioView3D::zoomAutoSlot()
+{
+    _view->autoZoom();
+    _view->updateView();
+}
 
 void RWStudioView3D::showPivotPoint(bool visible)
 {
@@ -871,6 +948,8 @@ void RWStudioView3D::showPivotPoint(bool visible)
     _viewWidget->getPivotDrawable()->setVisible(visible);
     _view->updateView();
 }
+
+
 
 void RWStudioView3D::saveBufferToFileDialog()
 {

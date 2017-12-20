@@ -22,6 +22,7 @@
 #include <rw/geometry/Geometry.hpp>
 #include <rw/graphics/Render.hpp>
 #include <rw/graphics/WorkCellScene.hpp>
+#include <rw/math/Constants.hpp>
 
 #include <rwlibs/opengl/DrawableUtil.hpp>
 
@@ -320,7 +321,6 @@ SceneOpenGLViewer::SceneOpenGLViewer(QWidget* parent):
             //QGLWidget( QGLFormat(QGL::DepthBuffer), parent),
             QGLWidget( makeQGLFormat(NULL), parent),
             _scene( ownedPtr(new SceneOpenGL()) ),
-            _logoFont("Helvetica [Cronyx]", 24, QFont::DemiBold , true),
             _viewLogo("RobWork"),
             _cameraCtrl( ownedPtr( new ArcBallController(640,480) ) )
 {
@@ -336,7 +336,6 @@ SceneOpenGLViewer::SceneOpenGLViewer(PropertyMap& pmap, QWidget* parent) :
     //QGLWidget( QGLFormat(QGL::DepthBuffer) , parent),
     QGLWidget( makeQGLFormat( pmap.getPtr<PropertyMap>("SceneViewer") ) , parent),
     _scene( ownedPtr(new SceneOpenGL()) ),
-    _logoFont("Helvetica [Cronyx]", 24, QFont::DemiBold , true),
     _viewLogo("RobWork"),
     _cameraCtrl( ownedPtr( new ArcBallController(640,480) ) )
 {
@@ -942,4 +941,21 @@ void SceneOpenGLViewer::propertyChangedListener(PropertyBase* base){
 
     }
 
+}
+void SceneOpenGLViewer::zoom(double amount)
+{
+    _cameraCtrl->zoom(amount);
+}
+
+void SceneOpenGLViewer::autoZoom() {
+    if (!(_wcscene->getWorkCell()))
+    {
+        RW_WARN("Can't autozoom when no workcell is loaded");
+        return;
+    }
+    static const double fovy = 45.*Deg2Rad;
+    int x, y, width, height;
+    _mainCam->getViewport(x,y,width,height);
+    const double aspectRatio = static_cast<double>(width)/static_cast<double>(height);
+    _cameraCtrl->autoZoom(_wcscene->getWorkCell(),_state,fovy,aspectRatio);
 }
