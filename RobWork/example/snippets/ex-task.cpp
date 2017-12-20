@@ -48,7 +48,7 @@ void printTask(QTask::Ptr task) {
     }
 }
 
-int main(int argc, char* argv[]) {
+int main() {
     //Construct a Task
     QTask::Ptr task = ownedPtr(new QTask());
     rw::math::Q q1(1); q1(0) = 1;

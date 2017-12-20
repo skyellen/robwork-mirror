@@ -86,6 +86,12 @@ class SimpleGLViewer: public rw::graphics::SceneViewer {
         //! @copydoc SceneViewer::renderView
         virtual void renderView(View::Ptr);
 
+        //! @copydoc SceneViewer::zoom
+        virtual void zoom(double amount);
+
+        //! @copydoc SceneViewer::autoZoom
+        virtual void autoZoom();
+
         void init(int argc, char** argv);
 
         void addMenu(Menu *menu);

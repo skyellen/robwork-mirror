@@ -37,3 +37,9 @@ target_link_libraries(MathJogling ${ROBWORK_LIBRARIES})
 
 add_executable(WorkCellAndDevices WorkCellAndDevices.cpp)
 target_link_libraries(WorkCellAndDevices ${ROBWORK_LIBRARIES})
+
+if ( CMAKE_COMPILER_IS_GNUCC )
+    # Do not warn about unused variables. They are there for demonstration.
+    target_compile_options(InverseKinematics PRIVATE "-Wno-unused-variable;-Wno-unused-but-set-variable")
+    target_compile_options(WorkCellAndDevices PRIVATE "-Wno-unused-variable;-Wno-unused-but-set-variable")
+endif()
