@@ -78,6 +78,15 @@ TEST(PlaneTest, refit) {
 	EXPECT_DOUBLE_EQ(1./std::sqrt(3.),plane.normal()[2]);
 	EXPECT_DOUBLE_EQ(-1./std::sqrt(3.),plane.d());
 	EXPECT_DOUBLE_EQ(-1./std::sqrt(3.),plane.distance(Vector3D<>::zero()));
+
+	// Add a point on the same plane to see that the result remains the same with more than 3 points.
+	data.push_back(Vector3D<>(1./3.,1./3.,1./3.));
+	EXPECT_DOUBLE_EQ(0.,plane.refit(data));
+	EXPECT_DOUBLE_EQ(1./std::sqrt(3.),plane.normal()[0]);
+	EXPECT_DOUBLE_EQ(1./std::sqrt(3.),plane.normal()[1]);
+	EXPECT_DOUBLE_EQ(1./std::sqrt(3.),plane.normal()[2]);
+	EXPECT_DOUBLE_EQ(-1./std::sqrt(3.),plane.d());
+	EXPECT_DOUBLE_EQ(-1./std::sqrt(3.),plane.distance(Vector3D<>::zero()));
 }
 
 TEST(PlaneTest, intersection) {

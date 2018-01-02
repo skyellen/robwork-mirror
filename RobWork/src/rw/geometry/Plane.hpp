@@ -63,6 +63,7 @@ namespace geometry {
 	     */
 		Plane(const rw::math::Q& q)
 		{
+            RW_ASSERT(q.size() == 4);
 		    _normal(0) = q(0);
 		    _normal(1) = q(1);
 		    _normal(2) = q(2);
@@ -75,7 +76,7 @@ namespace geometry {
 		 * @param d [in] distance from plane to (0,0,0) in direction of normal
 		 * @return
 		 */
-		Plane(const rw::math::Vector3D<>& n, double d):
+		Plane(const rw::math::Vector3D<>& n, const double d):
 			_normal(n) ,_d(d)
 		{}
 
@@ -136,10 +137,12 @@ namespace geometry {
 		 * largest extends are used for defining the plane. The error is the
 		 * sum of the squared mean of the points to the plane.
 		 *
+		 * The plane normal always points in the positive z-direction.
+		 *
 		 * @param data [in] a set of points
 		 * @return fitting error
 		 */
-		double refit(std::vector<rw::math::Vector3D<> >& data);
+		double refit(const std::vector<rw::math::Vector3D<> >& data);
 
 		/**
 		 * @brief Calculates the intersection between the line and plane.

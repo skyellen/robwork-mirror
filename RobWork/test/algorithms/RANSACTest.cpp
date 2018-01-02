@@ -198,10 +198,11 @@ BOOST_AUTO_TEST_CASE(RANSACPlaneTest) {
 
         // check if the model is acceptably close to ground truth
         rw::geometry::Plane referencePlane(
-                    Vector3D<>(-0.254345014605346, -0.962099998458569, 0.098347376738927),
-                    -0.25
+                    Vector3D<>(-0.25435, -0.962100, 0.098347),
+                    0.25 // distance from plane to origo.
                     );
         PlaneModel referenceModel(referencePlane);
+        BOOST_CHECK(referencePlane.d() == -referenceModel.d()); // Notice that the PlaneModel uses the distance from the origo to the plane (which is opposite of the Plane).
 
         BOOST_CHECK(bestModel.same(referenceModel, 0.01));
     }

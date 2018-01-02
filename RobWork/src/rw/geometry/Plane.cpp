@@ -47,7 +47,7 @@ void Plane::setParameters(const rw::math::Q& q) {
 	_d = q(3);
 }
 
-TriMesh::Ptr Plane::createMesh(int resolution, double size) const  {
+TriMesh::Ptr Plane::createMesh(int, double size) const  {
     size *= 0.5; //Scale s.t. the real size becomes size.
 
 	// we find 4 points on the plane and create 2 triangles that represent the plane
@@ -85,7 +85,7 @@ TriMesh::Ptr Plane::createMesh(int resolution, double size) const  {
 
 }
 
-double Plane::refit( std::vector<rw::math::Vector3D<> >& data ){
+double Plane::refit(const std::vector<rw::math::Vector3D<> >& data) {
 	if( data.size()<3 )
 		RW_THROW("Data size must be 3 or more!");
 
@@ -111,7 +111,7 @@ double Plane::refit( std::vector<rw::math::Vector3D<> >& data ){
 
         Eigen::MatrixXd covar(Eigen::MatrixXd::Zero(3, 3));
         Vector3D<> centroid(0, 0, 0);
-        BOOST_FOREACH(Vector3D<> &v, data) {
+        BOOST_FOREACH(const Vector3D<> &v, data) {
             centroid += v;
             for(size_t j = 0; j < 3; j++) {
                 for(size_t k = 0; k < 3; k++) {
@@ -163,7 +163,7 @@ double Plane::refit( std::vector<rw::math::Vector3D<> >& data ){
         	_normal = -_normal;
 		}
         
-        _d = dot(_normal, c); //-_normal(0)*c(0) -_normal(1)*c(1) - _normal(2)*c(2);
+        _d = -dot(_normal, c); //-_normal(0)*c(0) -_normal(1)*c(1) - _normal(2)*c(2);
         
         /*if( _normal(2)<0 ) {
         	_normal = -_normal;
@@ -174,7 +174,7 @@ double Plane::refit( std::vector<rw::math::Vector3D<> >& data ){
 
 	// calculate the fit error as the squared mean over the distance of a point from the plane
 	double sum = 0;
-	BOOST_FOREACH(Vector3D<> &p, data){
+	BOOST_FOREACH(const Vector3D<> &p, data){
 		const double dist = distance(p);
 		sum = dist*dist;
 	}
