@@ -47,7 +47,9 @@ public:
 		ch[cnt] = 0;
 		socket->read_some(boost::asio::buffer(ch, cnt));
 		messageOffset += cnt;
-		return std::string(ch);
+		const std::string ret(ch);
+		delete[] ch;
+		return ret;
 	}
 
 	static inline std::string readUntil(boost::asio::ip::tcp::socket* socket, char terminator, uint32_t& messageOffset) {

@@ -144,7 +144,9 @@ bool URPrimaryInterface::sendScriptFile(const std::string& filename)
 	infile.read (buffer,length);
     buffer[(int)length] = 0;
 	
-    return sendScript(buffer); 
+    const bool ret = sendScript(buffer);
+    delete[] buffer;
+    return ret;
 
 }
 
