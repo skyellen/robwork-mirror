@@ -53,12 +53,12 @@ StateStructure::~StateStructure()
     // for now everything is destructed with shared_ptr
 }
 
-bool StateStructure::has(StateData *data){
+bool StateStructure::has(const StateData * const data){
     const int id = data->getID();
     return (id>=0 && id<getMaxID() && _allDatas[id]!=NULL);
 }
 
-void StateStructure::addData(StateData *data){
+void StateStructure::addData(StateData * const data){
 
     addDataInternal(data);
 
@@ -67,7 +67,7 @@ void StateStructure::addData(StateData *data){
     _stateDataAddedEvent.fire(data);
 }
 
-void StateStructure::addData(boost::shared_ptr<StateData> data){
+void StateStructure::addData(const boost::shared_ptr<StateData> data){
     addDataInternal(data);
 
     updateDefaultState();
@@ -75,7 +75,7 @@ void StateStructure::addData(boost::shared_ptr<StateData> data){
     _stateDataAddedEvent.fire(data.get());
 }
 
-void StateStructure::addDataInternal(StateData *data){
+void StateStructure::addDataInternal(StateData * const data){
     // frame must not be in tree allready
     if(has(data))
         RW_THROW("The StateData has allready been added! State data can only be added once.");
@@ -95,7 +95,7 @@ void StateStructure::addDataInternal(StateData *data){
     // lastly update the default state
 }
 
-void StateStructure::addDataInternal(boost::shared_ptr<StateData> data){
+void StateStructure::addDataInternal(const boost::shared_ptr<StateData> data){
     // frame must not be in tree allready
     if(has(data.get())){
         RW_THROW("The StateData has allready been added! State data can only be added once. " << data->getName() << " ID: " << data->getID());
@@ -115,7 +115,7 @@ void StateStructure::addDataInternal(boost::shared_ptr<StateData> data){
 }
 
 
-void StateStructure::addFrame(Frame *frame, Frame *parent_arg){
+void StateStructure::addFrame(Frame * const frame, Frame * const parent_arg){
     // both frame and parent must be well defined
     if(frame==NULL)
         RW_THROW("Input frame must not be NULL!");

@@ -71,8 +71,10 @@ namespace rw { namespace models {
     class WorkCell {
     public:
 
-		//! @brief smart pointer type to this class
+		//! @brief Smart pointer type to a WorkCell object
 		typedef rw::common::Ptr<WorkCell> Ptr;
+		//! @brief Smart pointer type to a constant WorkCell object
+		typedef rw::common::Ptr<const WorkCell> CPtr;
 
 		typedef enum{STATE_DATA_ADDED,STATE_DATA_REMOVED,WORKCELL_CHANGED} WorkCellEventType;
 

@@ -69,7 +69,7 @@ namespace rw { namespace kinematics {
          * @note the search includes the union of StateData in all
          * StateSetup's that belong to the StateStructure
          */
-        bool has(StateData *data);
+        bool has(const StateData * data);
 
         /**
          * @brief gets the max ID of any StateData/Frame currently in the tree.

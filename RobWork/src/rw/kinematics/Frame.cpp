@@ -35,7 +35,7 @@ Frame::Frame(int dof, const std::string& name) :
 
 Frame* Frame::getParent(const State& state)
 {
-    Frame* f1 = getParent();
+    Frame* const f1 = getParent();
     if (f1)
         return f1;
     else
@@ -44,7 +44,7 @@ Frame* Frame::getParent(const State& state)
 
 const Frame* Frame::getParent(const State& state) const
 {
-    const Frame* f1 = getParent();
+    const Frame* const f1 = getParent();
     if (f1)
         return f1;
     else
