@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 
+#include <rw/math/Constants.hpp>
 #include <rw/math/Polynomial.hpp>
 #include <rw/math/PolynomialND.hpp>
 #include <rw/math/PolynomialSolver.hpp>
@@ -311,63 +312,434 @@ TEST(PolynomialND, 3D) {
 	EXPECT_NEAR(0,(mult[0]-ref[0]).norm(),5e-15);
 }
 
-TEST(PolynomialSolver, Degree3_A) {
-	// x³-12x²+50x-72=(x-4)(x-4+i sqrt(2))(x-4-i sqrt(2))
-	Polynomial<> pol(3);
-	pol[3] = 1;
-	pol[2] = -12;
-	pol[1] = 50;
-	pol[0] = -72;
-	PolynomialSolver solver(pol);
-	solver.setInitialGuess(4);
-	std::vector<std::complex<double> > sols = solver.getSolutions();
-	std::vector<double> realSols = solver.getRealSolutions();
-	ASSERT_EQ(1,realSols.size());
-	EXPECT_NEAR(4,realSols[0],1e-14);
+TEST(PolynomialSolver, Degree1) {
+	{
+		// 46x-24
+		Polynomial<> pol(1);
+		pol[1] = 46;
+		pol[0] = -24;
+		PolynomialSolver solver(pol);
+		EXPECT_EQ(1,solver.getSolutions().size());
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(1,realSols.size());
+		EXPECT_DOUBLE_EQ(12./23.,realSols[0]);
+	}
+
+	{
+		// (-2+15i) x - 24+36i
+		Polynomial<std::complex<double> > pol(1);
+		pol[1] = std::complex<double>(-2,15);
+		pol[0] = std::complex<double>(-24,36);
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(1,sols.size());
+		EXPECT_NEAR(0.,std::abs(sols[0]+std::complex<double>(588./229.,288./229.)),1e-15);
+		ASSERT_EQ(0,solver.getRealSolutions().size());
+	}
 }
 
-TEST(PolynomialSolver, Degree3_B) {
-	// x³+2x=x(x+i sqrt(2))(x-i sqrt(2))
-	Polynomial<> pol(3);
-	pol[3] = 1;
-	pol[2] = 0;
-	pol[1] = 2;
-	pol[0] = 0;
-	PolynomialSolver solver(pol);
-	std::vector<std::complex<double> > sols = solver.getSolutions();
-	std::vector<double> realSols = solver.getRealSolutions();
-	ASSERT_EQ(1,realSols.size());
-	EXPECT_NEAR(0,realSols[0],1e-14);
+TEST(PolynomialSolver, Degree2) {
+	{
+		// 4x²+46x-24=(x-0.5)(x+12)
+		Polynomial<> pol(2);
+		pol[2] = 4;
+		pol[1] = 46;
+		pol[0] = -24;
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		EXPECT_EQ(2,sols.size());
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(2,realSols.size());
+		EXPECT_DOUBLE_EQ(0.5,realSols[0]);
+		EXPECT_DOUBLE_EQ(-12.,realSols[1]);
+	}
+
+	{
+		// x²-4x+13=(x-(2-3i))(x-(2+3i))
+		Polynomial<> pol(2);
+		pol[2] = 1;
+		pol[1] = -4;
+		pol[0] = 13;
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(2,sols.size());
+		EXPECT_NEAR(0.,std::abs(sols[0]-std::complex<double>(2,-3)),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[1]-std::complex<double>(2, 3)),std::numeric_limits<double>::epsilon());
+		std::vector<double> realSols = solver.getRealSolutions();
+		EXPECT_EQ(0,realSols.size());
+	}
+
+	{
+		// i x² + (-2+15i) x - 24+36i = (x+(3+2i))(x+12)
+		Polynomial<std::complex<double> > pol(2);
+		pol[2] = std::complex<double>(0,1);
+		pol[1] = std::complex<double>(-2,15);
+		pol[0] = std::complex<double>(-24,36);
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(2,sols.size());
+		EXPECT_NEAR(0.,std::abs(sols[0]+std::complex<double>(3,2)),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[1]+12.),std::numeric_limits<double>::epsilon());
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(1,realSols.size());
+		EXPECT_DOUBLE_EQ(-12.,realSols[0]);
+	}
 }
 
-TEST(PolynomialSolver, Degree3_C) {
-	// x³+2x=x(x+i sqrt(2))(x-i sqrt(2))
-	Polynomial<> pol(4);
-	pol[4] = 0;
-	pol[3] = 1;
-	pol[2] = 0;
-	pol[1] = 2;
-	pol[0] = 0;
-	PolynomialSolver solver(pol);
-	std::vector<std::complex<double> > sols = solver.getSolutions();
-	std::vector<double> realSols = solver.getRealSolutions();
-	ASSERT_EQ(1,realSols.size());
-	EXPECT_NEAR(0,realSols[0],1e-14);
+TEST(PolynomialSolver, Degree3) {
+	// Test triple root polynomials (zero determinant)
+	{
+		// 8x³-144x²+864x-1728=(x-6)³
+		Polynomial<> pol(3);
+		pol[3] = 8;
+		pol[2] = -144;
+		pol[1] = 864;
+		pol[0] = -1728;
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(3,sols.size());
+		EXPECT_NEAR(0.,std::abs(sols[0]-6.),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[1]-6.),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[2]-6.),std::numeric_limits<double>::epsilon());
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(3,realSols.size());
+		EXPECT_DOUBLE_EQ(6.,realSols[0]);
+		EXPECT_DOUBLE_EQ(6.,realSols[1]);
+		EXPECT_DOUBLE_EQ(6.,realSols[2]);
+	}
+	{
+		// -8i x³ + (144+24i) x² + (-288+840i) x + (-1584-856i)=(x-1+6i)³
+		Polynomial<std::complex<double> > pol(3);
+		pol[3] = std::complex<double>(0,-8);
+		pol[2] = std::complex<double>(144,24);
+		pol[1] = std::complex<double>(-288,840);
+		pol[0] = std::complex<double>(-1584,-856);
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(3,sols.size());
+		EXPECT_NEAR(0.,std::abs(sols[0]-std::complex<double>(1,-6)),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[1]-std::complex<double>(1,-6)),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[2]-std::complex<double>(1,-6)),std::numeric_limits<double>::epsilon());
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(0,realSols.size());
+	}
+
+	// Test polynomials with double root and simple root (zero determinant)
+	{
+		// 4x³-40x²+48x+288=(x-6)²(x+2)
+		Polynomial<> pol(3);
+		pol[3] = 4;
+		pol[2] = -40;
+		pol[1] = 48;
+		pol[0] = 288;
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(3,sols.size());
+		EXPECT_NEAR(0.,std::abs(sols[0]-6.),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[1]-6.),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[2]+2.),std::numeric_limits<double>::epsilon());
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(3,realSols.size());
+		EXPECT_DOUBLE_EQ(6.,realSols[0]);
+		EXPECT_DOUBLE_EQ(6.,realSols[1]);
+		EXPECT_DOUBLE_EQ(-2.,realSols[2]);
+	}
+	{
+		// x³ + (-8-i) x² + (6-4i) x + (38+44i)=(x-(5+i))²(x+2+i)
+		Polynomial<std::complex<double> > pol(3);
+		pol[3] = std::complex<double>(1,0);
+		pol[2] = std::complex<double>(-8,-1);
+		pol[1] = std::complex<double>(6,-4);
+		pol[0] = std::complex<double>(38,44);
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(3,sols.size());
+		EXPECT_NEAR(0.,std::abs(sols[0]-std::complex<double>(5,1)),1e-15);
+		EXPECT_NEAR(0.,std::abs(sols[1]-std::complex<double>(5,1)),1e-15);
+		EXPECT_NEAR(0.,std::abs(sols[2]-std::complex<double>(-2,-1)),std::numeric_limits<double>::epsilon());
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(0,realSols.size());
+	}
+
+	// Check with three different roots (positive determinant)
+	{
+		// 2x³+18x²+22x-42=(x-1)(x+3)(x+7)
+		Polynomial<> pol(3);
+		pol[3] = 2;
+		pol[2] = 18;
+		pol[1] = 22;
+		pol[0] = -42;
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(3,sols.size());
+		EXPECT_NEAR(0.,std::abs(sols[0]+7.),std::numeric_limits<double>::epsilon()*2);
+		EXPECT_NEAR(0.,std::abs(sols[1]-1.),1e-15);
+		EXPECT_NEAR(0.,std::abs(sols[2]+3.),1e-15);
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(3,realSols.size());
+		EXPECT_DOUBLE_EQ(-7.,realSols[0]);
+		EXPECT_DOUBLE_EQ(1.,realSols[1]);
+		EXPECT_DOUBLE_EQ(-3.,realSols[2]);
+	}
+	{
+		// 2x³ + (12+22i) x² + (10+146i) x + (-24-168i)=(x-1)(x+12i)(x+7-i)
+		Polynomial<std::complex<double> > pol(3);
+		pol[3] = std::complex<double>(2,0);
+		pol[2] = std::complex<double>(12,22);
+		pol[1] = std::complex<double>(10,146);
+		pol[0] = std::complex<double>(-24,-168);
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(3,sols.size());
+		EXPECT_NEAR(0.,std::abs(sols[0]-std::complex<double>(-7,1)),1e-15);
+		EXPECT_NEAR(0.,std::abs(sols[1]-std::complex<double>(0,-12)),2e-15);
+		EXPECT_NEAR(0.,std::abs(sols[2]-std::complex<double>(1,0)),2e-15);
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(1,realSols.size());
+		EXPECT_NEAR(1.,realSols[0],2e-15);
+	}
+
+	// Check with one root and two complex conjugate roots (negative determinant)
+	{
+		// x³-12x²+50x-72=(x-4)(x-4+i sqrt(2))(x-4-i sqrt(2))
+		Polynomial<> pol(3);
+		pol[3] = 1;
+		pol[2] = -12;
+		pol[1] = 50;
+		pol[0] = -72;
+		PolynomialSolver solver(pol);
+		solver.setInitialGuess(4);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(3,sols.size());
+		EXPECT_NEAR(0.,std::abs(sols[0]-4.),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[1]+std::complex<double>(-4,std::sqrt(2))),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[2]+std::complex<double>(-4,-std::sqrt(2))),std::numeric_limits<double>::epsilon());
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(1,realSols.size());
+		EXPECT_DOUBLE_EQ(4.,realSols[0]);
+	}
+	{
+		// 2x³ + (26+6i) x² + (358+84i) x + (-386+1158i)=(x-1+3i)(x+7-12i)(x+7+12i)
+		Polynomial<std::complex<double> > pol(3);
+		pol[3] = std::complex<double>(2,0);
+		pol[2] = std::complex<double>(26,6);
+		pol[1] = std::complex<double>(358,84);
+		pol[0] = std::complex<double>(-386,1158);
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(3,sols.size());
+		EXPECT_NEAR(0.,std::abs(sols[0]-std::complex<double>(1,-3)),5e-15);
+		EXPECT_NEAR(0.,std::abs(sols[1]-std::complex<double>(-7,-12)),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[2]-std::complex<double>(-7,12)),1e-15);
+		ASSERT_EQ(0,solver.getRealSolutions().size());
+	}
 }
 
 TEST(PolynomialSolver, Degree4) {
-	// -40.032 x⁴ + 160.042 x³ + 47.9581 x + 40.032
-	Polynomial<> pol(4);
-	pol[4] = -40.032;
-	pol[3] = 160.042;
-	pol[2] = 0;
-	pol[1] = 47.9581;
-	pol[0] = 40.032;
-	PolynomialSolver solver(pol);
-	std::vector<std::complex<double> > sols = solver.getSolutions();
-	EXPECT_EQ(4,sols.size());
-	std::vector<double> realSols = solver.getRealSolutions();
-	ASSERT_EQ(2,realSols.size());
-	EXPECT_DOUBLE_EQ(-0.4636178234202037,realSols[0]);
-	EXPECT_DOUBLE_EQ(4.084342786358328,realSols[1]);
+	{
+		// -40.032 x⁴ + 160.042 x³ + 47.9581 x + 40.032
+		Polynomial<> pol(4);
+		pol[4] = -40.032;
+		pol[3] = 160.042;
+		pol[2] = 0;
+		pol[1] = 47.9581;
+		pol[0] = 40.032;
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		EXPECT_EQ(4,sols.size());
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(2,realSols.size());
+		EXPECT_DOUBLE_EQ(-0.4636178234202037,realSols[0]);
+		EXPECT_DOUBLE_EQ(4.084342786358328,realSols[1]);
+	}
+}
+
+TEST(PolynomialSolver, Degree12) {
+	{
+		// x¹² + 2 x¹¹ - 103 x¹⁰ - 60 x⁹ + 3233 x⁸ - 2594 x⁷ - 29169 x⁶ + 29200 x⁵ + 32566 x⁴ + 334092 x³ - 633728 x² - 360640 x + 627200
+		// = (x - 1) (x + 1) (x + (1 + 2 i)) (x + (1 - 2 i)) (x - 2) (x - (3 + i)) (x - (3 - i)) (x - 4) (x + 4) (x - 7) (x + 7) (x + 8)
+		Polynomial<> pol(12);
+		pol[12] = 1;
+		pol[11] = 2;
+		pol[10] = -103;
+		pol[9] = -60;
+		pol[8] = 3233;
+		pol[7] = -2594;
+		pol[6] = -29169;
+		pol[5] = 29200;
+		pol[4] = 32566;
+		pol[3] = 334092;
+		pol[2] = -633728;
+		pol[1] = -360640;
+		pol[0] = 627200;
+		PolynomialSolver solver(pol);
+		solver.setInitialGuess(0);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(12,sols.size());
+		EXPECT_NEAR(0.,std::abs(sols[0]-1.),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[1]+1.),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[2]-2.),1e-15);
+		EXPECT_NEAR(0.,std::abs(sols[3]-4.),5e-15);
+		EXPECT_NEAR(0.,std::abs(sols[4]+4.),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[5]-std::complex<double>(3,-1)),5e-15);
+		EXPECT_NEAR(0.,std::abs(sols[6]-std::complex<double>(-1,2)),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[7]-std::complex<double>(-1,-2)),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[8]-std::complex<double>(3,1)),5e-15);
+		EXPECT_NEAR(0.,std::abs(sols[9]+8.),2e-14);
+		EXPECT_NEAR(0.,std::abs(sols[10]+7.),2e-14);
+		EXPECT_NEAR(0.,std::abs(sols[11]-7.),2e-15);
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(8,realSols.size());
+		EXPECT_DOUBLE_EQ( 1.,realSols[0]);
+		EXPECT_DOUBLE_EQ(-1.,realSols[1]);
+		EXPECT_DOUBLE_EQ( 2.,realSols[2]);
+		EXPECT_DOUBLE_EQ( 4.,realSols[3]);
+		EXPECT_DOUBLE_EQ(-4.,realSols[4]);
+		EXPECT_NEAR(-8.,realSols[5],2e-14);
+		EXPECT_NEAR(-7.,realSols[6],2e-14);
+		EXPECT_DOUBLE_EQ( 7.,realSols[7]);
+	}
+}
+
+TEST(PolynomialSolver, TrivialRoot) {
+	{
+		// x³+2x=x(x+i sqrt(2))(x-i sqrt(2))
+		Polynomial<> pol(3);
+		pol[3] = 1;
+		pol[2] = 0;
+		pol[1] = 2;
+		pol[0] = 0;
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(1,realSols.size());
+		EXPECT_NEAR(0,realSols[0],1e-14);
+	}
+
+	{
+		// x³+2x=x(x+i sqrt(2))(x-i sqrt(2))
+		Polynomial<> pol(4);
+		pol[4] = 0;
+		pol[3] = 1;
+		pol[2] = 0;
+		pol[1] = 2;
+		pol[0] = 0;
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(1,realSols.size());
+		EXPECT_NEAR(0,realSols[0],1e-14);
+	}
+
+	{
+		// -4 x⁴ - 4
+		Polynomial<> pol(4);
+		pol[4] = -4;
+		pol[3] = 0;
+		pol[2] = 0;
+		pol[1] = 0;
+		pol[0] = -4;
+		PolynomialSolver solver(pol);
+		solver.setInitialGuess(0.5);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(4,sols.size());
+		EXPECT_DOUBLE_EQ(std::sqrt(2.)/2.,sols[0].real());
+		EXPECT_DOUBLE_EQ(-std::sqrt(2.)/2.,sols[1].real());
+		EXPECT_DOUBLE_EQ(std::sqrt(2.)/2.,sols[2].real());
+		EXPECT_DOUBLE_EQ(-std::sqrt(2.)/2.,sols[3].real());
+		EXPECT_DOUBLE_EQ(-std::sqrt(2.)/2.,sols[0].imag());
+		EXPECT_DOUBLE_EQ(std::sqrt(2.)/2.,sols[1].imag());
+		EXPECT_DOUBLE_EQ(std::sqrt(2.)/2.,sols[2].imag());
+		EXPECT_DOUBLE_EQ(-std::sqrt(2.)/2.,sols[3].imag());
+		Polynomial<std::complex<double> > polComplex(4);
+		polComplex[4] = -4;
+		polComplex[3] = 0;
+		polComplex[2] = 0;
+		polComplex[1] = 0;
+		polComplex[0] = -4;
+		EXPECT_NEAR(0.,std::abs(polComplex.evaluate(sols[0])),2e-15);
+		EXPECT_NEAR(0.,std::abs(polComplex.evaluate(sols[1])),2e-15);
+		EXPECT_NEAR(0.,std::abs(polComplex.evaluate(sols[2])),2e-15);
+		EXPECT_NEAR(0.,std::abs(polComplex.evaluate(sols[3])),2e-15);
+		std::vector<double> realSols = solver.getRealSolutions();
+		EXPECT_EQ(0,realSols.size());
+	}
+
+	{
+		// -4 x⁴ + 4
+		Polynomial<> pol(4);
+		pol[4] = -4;
+		pol[3] = 0;
+		pol[2] = 0;
+		pol[1] = 0;
+		pol[0] = 4;
+		PolynomialSolver solver(pol);
+		solver.setInitialGuess(0.5);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		EXPECT_EQ(4,sols.size());
+		std::vector<double> realSols = solver.getRealSolutions();
+		ASSERT_EQ(2,realSols.size());
+		EXPECT_DOUBLE_EQ(1,realSols[0]);
+		EXPECT_DOUBLE_EQ(-1,realSols[1]);
+	}
+
+	{
+		// -4 x⁴ - 4 + 4 sqrt(3) i
+		Polynomial<std::complex<double> > pol(4);
+		pol[4] = -4;
+		pol[3] = 0;
+		pol[2] = 0;
+		pol[1] = 0;
+		pol[0] = std::complex<double>(-4,std::sqrt(3.)*4);
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(4,sols.size());
+		EXPECT_DOUBLE_EQ( std::pow(2.,1./4.)*std::cos( 2. *Pi/12),sols[0].real());
+		EXPECT_DOUBLE_EQ(-std::pow(2.,1./4.)*std::cos( 2. *Pi/12),sols[1].real());
+		EXPECT_DOUBLE_EQ( std::pow(2.,1./4.)*std::cos( 8. *Pi/12),sols[2].real());
+		EXPECT_DOUBLE_EQ(-std::pow(2.,1./4.)*std::cos( 8. *Pi/12),sols[3].real());
+		EXPECT_DOUBLE_EQ( std::pow(2.,1./4.)*std::sin( 2. *Pi/12),sols[0].imag());
+		EXPECT_DOUBLE_EQ(-std::pow(2.,1./4.)*std::sin( 2. *Pi/12),sols[1].imag());
+		EXPECT_DOUBLE_EQ( std::pow(2.,1./4.)*std::sin( 8. *Pi/12),sols[2].imag());
+		EXPECT_DOUBLE_EQ(-std::pow(2.,1./4.)*std::sin( 8. *Pi/12),sols[3].imag());
+		EXPECT_NEAR(0.,std::abs(pol.evaluate(sols[0])),1e-14);
+		EXPECT_NEAR(0.,std::abs(pol.evaluate(sols[1])),1e-14);
+		EXPECT_NEAR(0.,std::abs(pol.evaluate(sols[2])),1e-14);
+		EXPECT_NEAR(0.,std::abs(pol.evaluate(sols[3])),1e-14);
+		std::vector<double> realSols = solver.getRealSolutions();
+		EXPECT_EQ(0,realSols.size());
+	}
+
+	{
+		// -4 x⁵ - 4 - 4 sqrt(3) i
+		Polynomial<std::complex<double> > pol(5);
+		pol[5] = -4;
+		pol[4] = 0;
+		pol[3] = 0;
+		pol[2] = 0;
+		pol[1] = 0;
+		pol[0] = std::complex<double>(-4,-std::sqrt(3.)*4);
+		PolynomialSolver solver(pol);
+		std::vector<std::complex<double> > sols = solver.getSolutions();
+		ASSERT_EQ(5,sols.size());
+		EXPECT_DOUBLE_EQ(std::pow(2.,1./5.)*std::cos(-2. *Pi/15),sols[0].real());
+		EXPECT_DOUBLE_EQ(std::pow(2.,1./5.)*std::cos( 4. *Pi/15),sols[1].real());
+		EXPECT_DOUBLE_EQ(std::pow(2.,1./5.)*std::cos( 10.*Pi/15),sols[2].real());
+		EXPECT_DOUBLE_EQ(std::pow(2.,1./5.)*std::cos(-14.*Pi/15),sols[3].real());
+		//EXPECT_DOUBLE_EQ(std::pow(2.,1./5.)*std::cos(-8. *Pi/15),sols[4].real());
+		EXPECT_DOUBLE_EQ(std::pow(2.,1./5.)*std::cos(22. *Pi/15),sols[4].real());
+		EXPECT_DOUBLE_EQ(std::pow(2.,1./5.)*std::sin(-2. *Pi/15),sols[0].imag());
+		EXPECT_DOUBLE_EQ(std::pow(2.,1./5.)*std::sin( 4. *Pi/15),sols[1].imag());
+		EXPECT_DOUBLE_EQ(std::pow(2.,1./5.)*std::sin( 10.*Pi/15),sols[2].imag());
+		//EXPECT_DOUBLE_EQ(std::pow(2.,1./5.)*std::sin(-14.*Pi/15),sols[3].imag());
+		EXPECT_DOUBLE_EQ(std::pow(2.,1./5.)*std::sin( 16.*Pi/15),sols[3].imag());
+		EXPECT_DOUBLE_EQ(std::pow(2.,1./5.)*std::sin(-8. *Pi/15),sols[4].imag());
+		EXPECT_NEAR(0.,std::abs(pol.evaluate(sols[0])),5e-14);
+		EXPECT_NEAR(0.,std::abs(pol.evaluate(sols[1])),5e-14);
+		EXPECT_NEAR(0.,std::abs(pol.evaluate(sols[2])),5e-14);
+		EXPECT_NEAR(0.,std::abs(pol.evaluate(sols[3])),5e-14);
+		EXPECT_NEAR(0.,std::abs(pol.evaluate(sols[4])),5e-14);
+		std::vector<double> realSols = solver.getRealSolutions();
+		EXPECT_EQ(0,realSols.size());
+	}
 }
