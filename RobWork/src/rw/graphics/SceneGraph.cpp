@@ -124,7 +124,7 @@ namespace {
         StaticFilter(bool retValue):_retvalue(retValue){
             functor =  boost::ref(*this);
         }
-        bool operator()(const SceneNode::Ptr& child) const { return _retvalue; }
+        bool operator()(const SceneNode::Ptr&) const { return _retvalue; }
         bool _retvalue;
     };
 
@@ -207,7 +207,8 @@ std::vector<DrawableNode::Ptr> SceneGraph::getDrawables(){
 
 std::vector<DrawableNode::Ptr> SceneGraph::getDrawables(SceneNode::Ptr node){
     DrawableVectorVisitor visitor;
-    traverse(node, visitor.functor, StaticFilter(true).functor);
+    //traverse(node, visitor.functor, StaticFilter(true).functor);
+    traverse(node, visitor.functor, NodeTypeExcludeFilter(SceneNode::GroupType).functor); // only traverse leaf children (exclude subgroups)
     return visitor.drawables;
 }
 
@@ -226,7 +227,8 @@ DrawableNode::Ptr SceneGraph::findDrawable(const std::string& name){
 
 DrawableNode::Ptr SceneGraph::findDrawable(const std::string& name, SceneNode::Ptr node){
     FindDrawableVisitor visitor(name, false);
-    traverse(node, visitor.functor, StaticFilter(true).functor);
+    //traverse(node, visitor.functor, StaticFilter(true).functor);
+    traverse(node, visitor.functor, NodeTypeExcludeFilter(SceneNode::GroupType).functor); // only traverse leaf children (exclude subgroups)
     return visitor._dnode;
 }
 
@@ -347,7 +349,7 @@ namespace {
         virtual ~SimpleCameraGroup(){}
         std::string getName(){ return _name; }
         bool isEnabled(){ return _enabled;}
-        void setEnabled(bool enabled){ _enabled = true;}
+        void setEnabled(bool){ _enabled = true;}
         void insertCamera(SceneCamera::Ptr cam, int index){
             std::list<SceneCamera::Ptr>::iterator i = _cameras.begin();
             std::advance(i, index);
@@ -377,9 +379,9 @@ namespace {
         void setOffscreenRenderColor(rw::sensor::Image::ColorCode color){
             _color = color;
         }
-        void setCopyToImage(rw::sensor::Image::Ptr img){}
-        void setCopyToScan25D(rw::common::Ptr<class rw::geometry::PointCloud> img){}
-        void setMultiSample(int samples){};
+        void setCopyToImage(rw::sensor::Image::Ptr){}
+        void setCopyToScan25D(rw::common::Ptr<class rw::geometry::PointCloud>){}
+        void setMultiSample(int){}
         void setMainCamera(SceneCamera::Ptr cam){
             _maincam = cam;
         }
