@@ -95,6 +95,22 @@ TARGET_LINK_LIBRARIES( rw_geometry-gtest ${GEOMETRY_TEST_LIBRARIES})
 ADD_RW_GTEST(rw_geometry-gtest)
 
 ########################################################################
+# Graphics
+########################################################################
+SET(GRAPHICS_TEST_LIBRARIES
+ ${GTEST_BOTH_LIBRARIES}
+ rw
+)
+
+SET(GRAPHICS_TEST_SRC
+  graphics/SceneGraphTest.cpp
+  graphics/WorkCellSceneTest.cpp
+)
+ADD_EXECUTABLE( rw_graphics-gtest ${GRAPHICS_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rw_graphics-gtest ${GRAPHICS_TEST_LIBRARIES})
+ADD_RW_GTEST(rw_graphics-gtest)
+
+########################################################################
 # Inverse Kinematics
 ########################################################################
 SET(INVKIN_TEST_LIBRARIES
