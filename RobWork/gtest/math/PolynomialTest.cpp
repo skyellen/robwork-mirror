@@ -363,8 +363,13 @@ TEST(PolynomialSolver, Degree2) {
 		PolynomialSolver solver(pol);
 		std::vector<std::complex<double> > sols = solver.getSolutions();
 		ASSERT_EQ(2,sols.size());
-		EXPECT_NEAR(0.,std::abs(sols[0]-std::complex<double>(2,-3)),std::numeric_limits<double>::epsilon());
-		EXPECT_NEAR(0.,std::abs(sols[1]-std::complex<double>(2, 3)),std::numeric_limits<double>::epsilon());
+		if (sols[0].imag() < 0) {
+			std::complex<double> tmp = sols[0];
+			sols[0] = sols[1];
+			sols[1] = tmp;
+		}
+		EXPECT_NEAR(0.,std::abs(sols[0]-std::complex<double>(2, 3)),std::numeric_limits<double>::epsilon());
+		EXPECT_NEAR(0.,std::abs(sols[1]-std::complex<double>(2,-3)),std::numeric_limits<double>::epsilon());
 		std::vector<double> realSols = solver.getRealSolutions();
 		EXPECT_EQ(0,realSols.size());
 	}
