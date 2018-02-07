@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WorkCell name="SimpleWorkcell">
+ <Frame name="Item" refframe="WORLD" type="Movable">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0.6000000000000001 0.5125000000000001</Pos>
+  <Drawable name="cyl" refframe="Item">
+   <RPY>0 -0 0</RPY>
+   <Pos>0 0 0</Pos>
+   <Cylinder radius="0.02500000037252903" z="1"/>
+  </Drawable>
+ </Frame>
+ <Frame name="Pos-0" refframe="WORLD" type="Fixed">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0.25</Pos>
+ </Frame>
+ <Frame name="Wall-1" refframe="Pos-0" type="Fixed">
+  <RPY>0 0 0</RPY>
+  <Pos>0.5 0.5 0</Pos>
+  <Drawable name="box" refframe="Wall-1">
+   <RPY>0 -0 0</RPY>
+   <Pos>0 0 0</Pos>
+   <Box x="0.05000000074505806" y="1" z="0.5"/>
+  </Drawable>
+ </Frame>
+ <Frame name="Wall-2" refframe="Pos-0" type="Fixed">
+  <RPY>90 0 0</RPY>
+  <Pos>-0.5 0.5 0.3</Pos>
+  <Drawable name="box" refframe="Wall-2">
+   <RPY>0 -0 0</RPY>
+   <Pos>0 0 0</Pos>
+   <Box x="0.05000000074505806" y="1" z="0.5"/>
+  </Drawable>
+ </Frame>
+ <Frame name="Cylinder-1" refframe="WORLD" type="Fixed">
+  <RPY>0 0 0</RPY>
+  <Pos>-0.6000000000000001 -0.02 0.6000000000000001</Pos>
+  <Drawable name="cyl" refframe="Cylinder-1">
+   <RPY>0 -0 0</RPY>
+   <Pos>0 0 0</Pos>
+   <Cylinder radius="0.20000000298023224" z="1.2000000476837158"/>
+  </Drawable>
+ </Frame>
+ <Frame name="Floor" refframe="WORLD" type="Fixed">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 -0.0125</Pos>
+  <Drawable name="box" refframe="Floor">
+   <RPY>0 -0 0</RPY>
+   <Pos>0 0 0</Pos>
+   <Box x="4" y="3" z="0.02500000037252903"/>
+  </Drawable>
+ </Frame>
+ <Frame name="base" refframe="WORLD" type="Fixed">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+ </Frame>
+ <SerialDevice name="PA10">
+  <Frame name="Base" refframe="base">
+   <RPY>0 -0 0</RPY>
+   <Pos>0 0 0</Pos>
+   <Drawable name="BaseGeo" refframe="PA10.Base">
+    <RPY>-90 0 0</RPY>
+    <Pos>0 0 0</Pos>
+    <Polytope file="PA10/Geometry/Rob-0"/>
+   </Drawable>
+  </Frame>
+  <Joint name="Joint1" refframe="Base" type="Revolute">
+   <RPY>0 -0 0</RPY>
+   <Pos>0 0 0.211</Pos>
+   <PosLimit min="-180" max="180"/>
+   <VelLimit max="90"/>
+   <AccLimit max="180"/>
+   <Drawable name="Joint1Geo" refframe="PA10.Joint1">
+    <RPY>0 0 0</RPY>
+    <Pos>0 0 -0.21</Pos>
+    <Polytope file="PA10/Geometry/Rob-1"/>
+   </Drawable>
+  </Joint>
+  <Joint name="Joint2" refframe="Joint1" type="Revolute">
+   <RPY>0 -90 -90</RPY>
+   <Pos>0 0 0.105</Pos>
+   <PosLimit min="-94" max="94"/>
+   <VelLimit max="94"/>
+   <AccLimit max="200"/>
+   <Drawable name="Joint2Geo" refframe="PA10.Joint2">
+    <RPY>0 0 0</RPY>
+    <Pos>0 0 0</Pos>
+    <Polytope file="PA10/Geometry/Rob-2"/>
+   </Drawable>
+  </Joint>
+  <Joint name="Joint3" refframe="Joint2" type="Revolute">
+   <RPY>90 -0 90</RPY>
+   <Pos>0.45 0 0</Pos>
+   <PosLimit min="-180" max="180"/>
+   <VelLimit max="180"/>
+   <AccLimit max="360"/>
+   <Drawable name="Joint3Geo" refframe="PA10.Joint3">
+    <RPY>0 0 0</RPY>
+    <Pos>0 0 -0.14</Pos>
+    <Polytope file="PA10/Geometry/Rob-3"/>
+   </Drawable>
+  </Joint>
+  <Joint name="Joint4" refframe="Joint3" type="Revolute">
+   <RPY>0 -90 -90</RPY>
+   <Pos>0 0 0</Pos>
+   <PosLimit min="-143" max="143"/>
+   <VelLimit max="143"/>
+   <AccLimit max="300"/>
+   <Drawable name="Joint4Geo" refframe="PA10.Joint4">
+    <RPY>0 0 180</RPY>
+    <Pos>0 0 0</Pos>
+    <Polytope file="PA10/Geometry/Rob-4"/>
+   </Drawable>
+  </Joint>
+  <Joint name="Joint5" refframe="Joint4" type="Revolute">
+   <RPY>90 -0 90</RPY>
+   <Pos>0.5 0 0</Pos>
+   <PosLimit min="-270" max="270"/>
+   <VelLimit max="270"/>
+   <AccLimit max="540"/>
+   <Drawable name="Joint5Geo" refframe="PA10.Joint5">
+    <RPY>0 0 0</RPY>
+    <Pos>0 0 -0.235</Pos>
+    <Polytope file="PA10/Geometry/Rob-5"/>
+   </Drawable>
+  </Joint>
+  <Joint name="Joint6" refframe="Joint5" type="Revolute">
+   <RPY>0 -90 -90</RPY>
+   <Pos>0 0 0</Pos>
+   <PosLimit min="-119.99999999999999" max="119.99999999999999"/>
+   <VelLimit max="119.99999999999999"/>
+   <AccLimit max="360"/>
+   <Drawable name="Joint6Geo" refframe="PA10.Joint6">
+    <RPY>0 0 0</RPY>
+    <Pos>0 0 0</Pos>
+    <Polytope file="PA10/Geometry/Rob-6"/>
+   </Drawable>
+  </Joint>
+  <Joint name="Joint7" refframe="Joint6" type="Revolute">
+   <RPY>0 90 0</RPY>
+   <Pos>0 0 0</Pos>
+   <PosLimit min="-360" max="360"/>
+   <VelLimit max="360"/>
+   <AccLimit max="720"/>
+  </Joint>
+  <Q name="Home">0 0 0 0 0 0 0</Q>
+ </SerialDevice>
+ <ProximitySetup file="ProximitySetup.xml"/>
+</WorkCell>

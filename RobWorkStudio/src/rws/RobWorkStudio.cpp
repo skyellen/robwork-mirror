@@ -46,6 +46,8 @@
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/loaders/xml/XMLPropertyLoader.hpp>
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/loaders/rwxml/XMLRWLoader.hpp>
+#include <rw/loaders/dom/DOMWorkCellSaver.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
@@ -354,6 +356,10 @@ void RobWorkStudio::setupFileActions()
         new QAction(QIcon(":/images/close.png"), tr("&Close"), this); // owned
     connect(closeAction, SIGNAL(triggered()), this, SLOT(closeWorkCell()));
 
+    QAction* saveAction =
+        new QAction(QIcon(":/images/save.png"), tr("&Save"), this); // owned
+    connect(saveAction, SIGNAL(triggered()), this, SLOT(saveWorkCell()));
+
 	QAction* exitAction =
         new QAction(QIcon(), tr("&Exit"), this); // owned
     connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
@@ -363,11 +369,13 @@ void RobWorkStudio::setupFileActions()
     fileToolBar->addAction(newAction);
     fileToolBar->addAction(openAction);
     fileToolBar->addAction(closeAction);
+    fileToolBar->addAction(saveAction);
     ////
     _fileMenu = menuBar()->addMenu(tr("&File"));
     _fileMenu->addAction(newAction);
     _fileMenu->addAction(openAction);
     _fileMenu->addAction(closeAction);
+    _fileMenu->addAction(saveAction);
     _fileMenu->addSeparator();
 
     QAction* propertyAction =
@@ -814,6 +822,18 @@ void RobWorkStudio::newWorkCell()
 	// Workcell sent to plugins.
 	openAllPlugins();
 	updateHandler();
+}
+
+void RobWorkStudio::saveWorkCell()
+{
+  if (_workcell != nullptr)
+  {
+    std::string wcFilePath = static_cast<std::string>(_workcell->getPropertyMap().get<std::string>(rw::loaders::XMLRWLoader::getWorkCellFileNameId()));
+    QString wcFileName = QFileDialog::getSaveFileName(this,
+                                            tr("Save Workcell"), QString::fromStdString(wcFilePath), tr("RobWork Workcell (*.wc.xml)"));
+
+    rw::loaders::DOMWorkCellSaver::save(_workcell, _state, wcFileName.toStdString());
+  }
 }
 
 void RobWorkStudio::dragMoveEvent(QDragMoveEvent *event)

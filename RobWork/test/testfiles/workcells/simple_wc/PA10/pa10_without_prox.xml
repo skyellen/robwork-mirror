@@ -98,6 +98,5 @@
      <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
      <Polytope file = "Geometry/Rob-6"/>
     </Drawable>
-    
-    <ProximitySetup file="PA10ProximitySetup.xml" />
+   
  </SerialDevice>

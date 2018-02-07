@@ -106,6 +106,21 @@ public:
 		_useIncludeAll = includeAll;
 	}
 
+	void setLoadedFromFile(bool loaded_from_file) {
+		_loadedFromFile = loaded_from_file;
+	}
+
+	bool getLoadedFromFile() const {
+		return _loadedFromFile;
+	}
+
+	void setFileName(const std::string& file_name) {
+		_fileName = file_name;
+	}
+
+	std::string getFileName() const {
+		return _fileName;
+	}
 
     static ProximitySetup get(const rw::models::WorkCell& wc);
     static ProximitySetup get(rw::common::Ptr<rw::models::WorkCell> wc);
@@ -119,6 +134,8 @@ private:
 
 	bool _useIncludeAll;
 	bool _useExcludeStaticPairs;
+	bool _loadedFromFile;
+	std::string _fileName;
 };
 
 /*@}*/

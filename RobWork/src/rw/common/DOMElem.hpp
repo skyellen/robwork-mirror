@@ -291,6 +291,8 @@ namespace common {
 		virtual void setValue(int val);
 		//! @copydoc setValue(const std::string&)
 		virtual void setValue(double val);
+		//! @copydoc setValue(const std::string&)
+		virtual void setValueString(std::string val);
 
 	protected:
 

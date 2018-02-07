@@ -179,7 +179,7 @@ namespace graphics {
                 {};
 
             //! @brief test if the object is textured
-            bool hasTexture() const{ return _hasTexture;};
+            bool hasTexture() const{ return _hasTexture;}
 
             //! add triangle using currently selected material
             void addTriangle(const rw::geometry::IndexedTriangle<uint16_t>& tri){
@@ -378,20 +378,24 @@ namespace graphics {
 
 
         //! @brief get all materials that are available in this model
-        std::vector<Material>& getMaterials(){ return _materials; };
+        std::vector<Material>& getMaterials(){ return _materials; }
 
         //! @brief get all objects that make out this model
-        std::vector<Object3D::Ptr>& getObjects(){ return _objects; };
+        std::vector<Object3D::Ptr>& getObjects(){ return _objects; }
 
         //! get pose of this modle3d
-        const rw::math::Transform3D<>& getTransform(){ return _transform;};
+        const rw::math::Transform3D<>& getTransform(){ return _transform;}
         //! set the pose of this modle3d
-        void setTransform(const rw::math::Transform3D<>& t3d){ _transform = t3d;};
+        void setTransform(const rw::math::Transform3D<>& t3d){ _transform = t3d;}
 
         //! get string identifier of this model3d
-        const std::string& getName(){ return _name; };
+        const std::string& getName(){ return _name; }
+        //! get filePath of this model3d
+        const std::string& getFilePath(){ return _filePath; }
         //! set string identifier of this model3d
-        void setName(const std::string& name){ _name = name; };
+        void setName(const std::string& name){ _name = name; }
+        //! set filePath this model3d
+        void setFilePath(const std::string& name){ _filePath = name; }
 
         //! get mask of this model3d
         int getMask(){ return _mask; }
@@ -423,6 +427,8 @@ namespace graphics {
         rw::math::Transform3D<> _transform;
         //! @brief Name of the model.
         std::string _name;
+        //! @brief FilePath of the model, if model was constructed from file.
+        std::string _filePath;
         //! @brief The DrawableNode::DrawableTypeMask
         int _mask;
         //! @brief Total number of vertices in the model

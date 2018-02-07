@@ -585,6 +585,7 @@ namespace rws {
 		void open();
         void setCheckAction();
 		void closeWorkCell();
+	    void saveWorkCell();
 		void showSolidTriggered();
 		void showWireTriggered();
 		void showBothTriggered();

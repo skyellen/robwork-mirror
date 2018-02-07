@@ -26,7 +26,7 @@ bool DOMElem::getValueAsBool(){
 	std::string val = getValue();
 	std::string valu = rw::common::StringUtil::toUpper(val);
 	if(valu=="TRUE") return true;
-	if(valu=="FALSE") return true;
+	if(valu=="FALSE") return false;
 	return boost::lexical_cast<bool>(val);
 }
 
@@ -40,5 +40,9 @@ void DOMElem::setValue(int val){
 
 void DOMElem::setValue(double val){
 	setValue( boost::lexical_cast<std::string>(val) );
+}
+
+void DOMElem::setValueString(std::string val){
+    setValue( val );
 }
 

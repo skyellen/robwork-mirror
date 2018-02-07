@@ -297,9 +297,9 @@ namespace graphics {
         /**
          * @brief get all drawables of a specific frame in the WorkCellScene
          * @param f [in] the frame
-         * @return a list of drawables
+         * @return a vector of drawable proxies
          */
-        std::vector<DrawableNode::Ptr> getDrawables(rw::kinematics::Frame* f);
+        std::vector<DrawableProxy::Ptr> getDrawables(rw::kinematics::Frame* f);
 
         /**
          * @brief get the frame that a specific drawable \b d is associated to

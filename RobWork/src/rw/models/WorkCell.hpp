@@ -479,6 +479,11 @@ namespace rw { namespace models {
          */
         rw::common::PropertyMap& getPropertyMap(){ return _map;}
 
+        /**
+         * @brief Properties of this workcell
+         */
+        const rw::common::PropertyMap& getPropertyMap() const { return _map;}
+
 		/**
 		 * @brief Returns collision setup associated to work cell
 		 *
@@ -519,7 +524,7 @@ namespace rw { namespace models {
 		 *
 		 * @param calibrationFilename [in] Filename of calibration file with path relative to the work cell path.
 		 */
-		void setCalibrationFilename(const std::string& calibrationFilename); 
+		void setCalibrationFilename(const std::string& calibrationFilename);
 
     protected:
         void stateDataAddedListener(const rw::kinematics::StateData* data);

@@ -36,6 +36,7 @@ using namespace rw::geometry;
 
 Model3D::Model3D(const std::string& name):
         _name(name),
+        _filePath(""),
         _mask(rw::geometry::Geometry::PhysicalGroup),
         _isDynamic(false)
 {}

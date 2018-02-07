@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProximitySetup UseIncludeAll="true" UseExcludeStaticPairs="true">
+ <Exclude PatternA="Joint0" PatternB="Joint*"/>
+ <Exclude PatternA="Joint1" PatternB="Joint*"/>
+ <Exclude PatternA="Joint2" PatternB="Joint*"/>
+ <Exclude PatternA="Joint3" PatternB="Joint*"/>
+ <Exclude PatternA="Joint4" PatternB="Joint*"/>
+ <Exclude PatternA="Joint5" PatternB="Joint*"/>
+ <Exclude PatternA="Joint6" PatternB="Joint*"/>
+</ProximitySetup>

@@ -135,6 +135,7 @@ SET(LOADERS_TEST_LIBRARIES
  rw-gtest-main
  ${GTEST_LIBRARIES}
  rw
+ rw_proximitystrategies
  ${XERCESC_LIBRARIES}
  ${ASSIMP_LIBRARIES}
  ${QHULL_LIBRARIES}
@@ -142,6 +143,7 @@ SET(LOADERS_TEST_LIBRARIES
  )
 
 SET(LOADERS_TEST_SRC
+  loaders/DOMProximitySetupSaver.cpp
   loaders/DOMPropertyMap.cpp
   loaders/ImageLoaderTest.cpp
   loaders/PathLoaderCSVTest.cpp
