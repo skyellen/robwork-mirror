@@ -1,0 +1,196 @@
+NameOfData "pa10"
+TypeOfData "robot_model"
+
+{ "Link0"
+    Position (0, 0, 0)
+    RPY (0, 0, 0)
+    ReferenceFrame ""
+    Attributes
+        Link
+        CollisionSetup "PA10CollisionSetup.xml"
+}
+
+{ "Link1"
+    Position (0, 0, 0.211)
+    RPY (0,0,0)
+    ReferenceFrame "Link0"
+    Attributes
+        Link
+        JointName "axis0"
+        ActiveJoint
+        Revolute
+        JointPosLimit -180 180
+        JointVelLimit 90
+        JointAccLimit 180
+}
+
+{ "Link2"
+    Position (0, 0, 0.105)
+    I (0, 0, 1)
+    J (1, 0, 0)
+    K (0, 1, 0)
+    ReferenceFrame "Link1"
+    Attributes
+        Link
+        JointName "axis1"
+        ActiveJoint
+        Revolute
+        JointPosLimit -94 94
+        JointVelLimit 94	
+        JointAccLimit 200
+}
+
+{ "Link3"
+    Position (0.45, 0, 0)
+    I (0, 1, 0)
+    J (0, 0, 1)
+    K (1, 0, 0)
+    ReferenceFrame "Link2"
+    Attributes
+        Link
+        JointName "axis2"
+        ActiveJoint
+        Revolute
+        JointPosLimit -180 180
+        JointVelLimit 180
+        JointAccLimit 360
+}
+
+{ "Link4"
+    Position (0, 0, 0)
+    I (0,  0,  1)
+    J (1,  0,  0)
+    K (0,  1,  0)
+    ReferenceFrame "Link3"
+    Attributes
+        Link
+        JointName "axis3"
+        ActiveJoint
+        Revolute
+        JointPosLimit -143 143
+        JointVelLimit 143
+        JointAccLimit 300
+}
+
+{ "Link5"
+    Position (0.5, 0, 0)
+    I (0, 1, 0)
+    J (0, 0, 1)
+    K (1, 0, 0)
+    ReferenceFrame "Link4"
+    Attributes
+        Link
+        JointName "axis4"
+        ActiveJoint
+        Revolute        
+	JointPosLimit -270 270
+        JointVelLimit 270
+        JointAccLimit 540
+
+}
+
+{ "Link6"
+    Position (0, 0, 0)
+    I (0, 0, 1)
+    J (1, 0, 0)
+    K (0, 1, 0)
+    ReferenceFrame "Link5"
+    Attributes
+        Link
+        JointName "axis5"
+        ActiveJoint
+        Revolute
+        JointPosLimit -120 120
+        JointVelLimit 120
+        JointAccLimit 360
+}
+
+{ "Link7"
+    Position (0, 0, 0)
+    I (0, 1, 0)
+    J (0, 0, 1)
+    K (1, 0, 0)
+    ReferenceFrame "Link6"
+    Attributes
+        Link
+        JointName "axis6"
+        ActiveJoint
+        Revolute
+        JointPosLimit -360 360
+        JointVelLimit 360
+        JointAccLimit 720
+}
+
+{ "Tool"
+	Position (0.195, 0, 0.315)
+	RPY (0, 90, 0)
+	ReferenceFrame "Link7"
+	Attributes
+		Link
+	        JointName "tool"
+}
+
+
+{ "Link0Geo"
+    Position (0, 0, 0)
+    RPY (-90, 0, 0)
+    ReferenceFrame "Link0"
+    Attributes
+        GeoID "Geometry/Rob-0"
+}
+
+{ "Link1Geo"
+    Position (0, 0, -0.21)
+    RPY (0, 0, 0)
+    ReferenceFrame "Link1"
+    Attributes
+        GeoID "Geometry/Rob-1"
+}
+
+{ "Link2Geo"
+    Position (0, 0, 0)
+    RPY (0, 0, 0)
+    ReferenceFrame "Link2"
+    Attributes
+        GeoID "Geometry/Rob-2"
+}
+
+{ "Link3Geo"
+    Position (0, 0, -0.14)
+    RPY (0, 0, 0)
+    ReferenceFrame "Link3"
+    Attributes
+        GeoID "Geometry/Rob-3"
+}
+
+{ "Link4Geo"
+    Position (0, 0, 0)
+    RPY (0, 0, 180)
+    ReferenceFrame "Link4"
+    Attributes
+        GeoID "Geometry/Rob-4"
+}
+
+{ "Link5Geo"
+    Position (0, 0, -0.235)
+    RPY (0, 0, 0)
+    ReferenceFrame "Link5"
+    Attributes
+        GeoID "Geometry/Rob-5"
+}
+
+{ "Link6Geo"
+    Position (0, 0, 0)
+    RPY (0, 0, 0)
+    ReferenceFrame "Link6"
+    Attributes
+        GeoID "Geometry/Rob-6"
+}
+
+{ "Link7Geo"
+    Position (0, 0, 0.08)
+    RPY (0, 0, 0)
+    ReferenceFrame "Link7"
+    Attributes
+        GeoID "Geometry/welding-gun"
+}

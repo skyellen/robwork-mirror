@@ -46,6 +46,7 @@
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/loaders/xml/XMLPropertyLoader.hpp>
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/loaders/rwxml/XMLRWLoader.hpp>
 #include <rw/loaders/dom/DOMWorkCellSaver.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 
@@ -827,9 +828,7 @@ void RobWorkStudio::saveWorkCell()
 {
   if (_workcell != nullptr)
   {
-    const std::string id_wc = "WorkCellFileName";
-    std::string wcFilePath = static_cast<std::string>(_workcell->getPropertyMap().get<std::string>(id_wc));
-    std::cout << "Workcell File path: " << wcFilePath << std::endl;
+    std::string wcFilePath = static_cast<std::string>(_workcell->getPropertyMap().get<std::string>(rw::loaders::XMLRWLoader::getWorkCellFileNameId()));
     QString wcFileName = QFileDialog::getSaveFileName(this,
                                             tr("Save Workcell"), QString::fromStdString(wcFilePath), tr("RobWork Workcell (*.wc.xml)"));
 

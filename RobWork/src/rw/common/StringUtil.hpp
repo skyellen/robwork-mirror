@@ -69,7 +69,7 @@ namespace rw { namespace common {
         static std::string getDirectoryName(const std::string& path);
 
         /**
-         * @brief The directory part of a path name relative to the root workcell file.
+         * @brief The directory part of a path name relative to a root directory.
          *
          * The function returns everything up to and including the last slash
          * or backslash. If there is no such slash or backslash, the empty string is
@@ -77,11 +77,11 @@ namespace rw { namespace common {
          *
          * @param path [in] The path name.
          *
-         * @param wc_dir_name [in] The workcell file directory name.
+         * @param dir_name [in] The root directory name.
          *
          * @return The relative directory name for the path.
          */
-        static std::string getRelativeDirectoryName(const std::string& path, std::string wc_dir_name);
+        static std::string getRelativeDirectoryName(const std::string& path, std::string dir_name);
 
         /**
          * @brief Extract the file name (including extension) from a string containing full name including the directory.

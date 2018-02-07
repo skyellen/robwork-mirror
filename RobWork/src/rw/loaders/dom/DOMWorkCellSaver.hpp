@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Copyright 2017 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
  * Faculty of Engineering, University of Southern Denmark
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,13 @@
 #ifndef RW_LOADERS_DOMWORKCELLSAVER_HPP
 #define RW_LOADERS_DOMWORKCELLSAVER_HPP
 
-#include <rw/models/WorkCell.hpp>
-#include <rw/rw.hpp>
+#include <rw/common/Ptr.hpp>
 #include <string>
+#include <stack>
 #include <ostream>
+
+namespace rw { namespace models { class WorkCell; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rw {
     namespace loaders {
@@ -43,14 +46,14 @@ public:
 	 * @param fileName [in] Name of the file to which to write.
 	 */
 
-    static void save(rw::models::WorkCell::Ptr workcell, const rw::kinematics::State state, std::string fileName);
+    static void save(rw::common::Ptr<const rw::models::WorkCell> workcell, const rw::kinematics::State& state, std::string fileName);
 
     /**
      * @brief Writes \bworkcellCalibration to stream.
      * @param workcellCalibration [in] workcellCalibration to write
      * @param ostream [in] Stream to write to
      */
-    static void save(rw::models::WorkCell::Ptr workcell, const rw::kinematics::State state, std::ostream& ostream);
+    static void save(rw::common::Ptr<const rw::models::WorkCell> workcell, const rw::kinematics::State& state, std::ostream& ostream);
 };
 
 /** @} */

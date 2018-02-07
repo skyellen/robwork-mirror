@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Copyright 2017 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
  * Faculty of Engineering, University of Southern Denmark
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,9 @@
 #ifndef RW_LOADERS_DOMPROXIMITYSETUPSAVER_HPP
 #define RW_LOADERS_DOMPROXIMITYSETUPSAVER_HPP
 
-#include <rw/common/DOMElem.hpp>
+#include <rw/common/Ptr.hpp>
 
+namespace rw { namespace common { class DOMElem; } }
 namespace rw { namespace common { class DOMParser; } }
 namespace rw { namespace proximity { class ProximitySetup; } }
 
@@ -39,16 +40,16 @@ class DOMProximitySetupSaver
 public:
 
     /**
-     * @brief Saves proximity setup patterns of a ProximitySetup as childs to \b element.
+     * @brief Saves proximity setup patterns of a ProximitySetup as children to \b parent.
      *
      * Constructs element representing the include or exclude patterns defined in the proximity setup.
      *
-     * Throws rw::common::Exception if the type of a ProximitySetupRule is not supported.
+     * @throws rw::common::Exception if the type of a ProximitySetupRule is not supported.
      *
      * @param prox [in] ProximitySetup to save.
-     * @param parent [in] DOMDocument which should contain the ProximitySetup representation
+     * @param parent [out] DOMDocument which should contain the ProximitySetup representation
      */
-    static void save(const rw::proximity::ProximitySetup& prox, rw::common::DOMElem::Ptr parent);
+    static void save(const rw::proximity::ProximitySetup& prox, rw::common::Ptr<rw::common::DOMElem> parent);
 
     /**
      * @brief Saves the proximity setup \b prox to a file named \b filename
@@ -61,34 +62,33 @@ public:
     static void save(const rw::proximity::ProximitySetup& prox, const std::string& filename);
 
     /**
-     * @brief Writes the properties of \b map to \b outstream
+     * @brief Writes the proximity setup \b prox to \b outstream
      *
-     * @throws rw::common::Exception if the type of a property is not supported.
      *
-     * @param map [in] Map of properties to save
+     * @param prox [in] Proximity setup to save.
      * @param outstream [in] Output stream
      */
     static void write(const rw::proximity::ProximitySetup& prox, std::ostream& outstream);
 
     /**
-     * @brief Creates DOMDocument for \b map
+     * @brief Creates DOMDocument for \b prox
      *
      * @throws rw::common::Exception if the type of a property is not supported.
      *
-     * @param map [in] Map of properties
+     * @param prox [in] ProximitySetup
      * @param parser [in] DOMParser to use
-     * @return DOMDocument containing properties.
+     * @return DOMDocument containing ProximitySetup.
      */
-    static rw::common::DOMElem::Ptr createDOMDocument(const rw::proximity::ProximitySetup& prox, rw::common::Ptr<rw::common::DOMParser> parser);
+    static rw::common::Ptr<rw::common::DOMElem> createDOMDocument(const rw::proximity::ProximitySetup& prox, rw::common::Ptr<rw::common::DOMParser> parser);
 
 	/**
 	 * @brief Utility class which initializes local static variables.
 	 *
-	 * If the DOMPropertyMapSaver is used outside main (as a part of global initialization/destruction), the Initializer
+	 * If the DOMProximitySetupSaver is used outside main (as a part of global initialization/destruction), the Initializer
 	 * should be used explicitly to control the static initialization/destruction order.
 	 *
 	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
-	 * be necessary to specify the initializer explicitly if DOMPropertyMapSaver is to be used in local static
+	 * be necessary to specify the initializer explicitly if DOMProximitySetupSaver is to be used in local static
 	 * initialization/destruction.
 	 */
 	class Initializer {

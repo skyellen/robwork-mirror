@@ -100,34 +100,34 @@ namespace rw { namespace geometry {
 		void setScale(double scale){_scale = scale;}
 
 		//! @brief set transformation
-		void setTransform(const rw::math::Transform3D<>& t3d){_transform = t3d;};
+		void setTransform(const rw::math::Transform3D<>& t3d){_transform = t3d;}
 
 		//! @brief get transformation
-		const rw::math::Transform3D<>& getTransform() const {return _transform;};
+		const rw::math::Transform3D<>& getTransform() const {return _transform;}
 
 		//! @brief get geometry data
-		GeometryData::Ptr getGeometryData(){return _data;};
+		GeometryData::Ptr getGeometryData(){return _data;}
 
 		//! @brief get geometry data
-		const GeometryData::Ptr getGeometryData() const {return _data;};
+		const GeometryData::Ptr getGeometryData() const {return _data;}
 
 		//! @brief set transformation
-		void setGeometryData(GeometryData::Ptr data){_data = data;};
+		void setGeometryData(GeometryData::Ptr data){_data = data;}
 
 		//! @brief get name of this geometry
-		const std::string& getName() const {return _name; };
+		const std::string& getName() const {return _name; }
 
         //! @brief get file path of this geometry
-        const std::string& getFilePath() const {return _filePath; };
+        const std::string& getFilePath() const {return _filePath; }
 		
 		//! @brief get identifier of this geometry
-		const std::string& getId() const {return getName(); };
+		const std::string& getId() const {return getName(); }
 
 		//! @brief set name of this geometry
-		void setName(const std::string& name) {_name = name; };
+		void setName(const std::string& name) {_name = name; }
 
         //! @brief set file path this geometry
-        void setFilePath(const std::string& name) {_filePath = name; };
+        void setFilePath(const std::string& name) {_filePath = name; }
 
 		//! @brief set identifier of this geometry
 		void setId(const std::string& id) { setName(id); }
