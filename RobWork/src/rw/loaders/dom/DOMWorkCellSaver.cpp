@@ -165,13 +165,13 @@ namespace {
     void writeDrawablesAndColModels(rw::models::Object::Ptr object, DOMElem::Ptr parent)
     {
         if (object != nullptr) {
-            std::cout << "Object name: " << object->getName() << std::endl;
+            //std::cout << "Object name: " << object->getName() << std::endl;
 
             if (object->getGeometry().empty() && !object->getModels().empty()) {
-                std::cout << "object is only a drawable" << std::endl;
+                //std::cout << "object is only a drawable" << std::endl;
                 for (const auto &mod : object->getModels()) {
                     DOMElem::Ptr draw_element = parent->addChild("Drawable");
-                    std::cout << "Object model name: " << mod->getName() << std::endl;
+                    //std::cout << "Object model name: " << mod->getName() << std::endl;
                     draw_element->addAttribute("name")->setValue(mod->getName());
                     draw_element->addAttribute("refframe")->setValue(object->getName());
 
@@ -188,7 +188,7 @@ namespace {
                     std::string t("#");
                     if (!mod->getFilePath().empty() && mod->getFilePath().compare(0, t.length(), t) != 0) {
                         DOMElem::Ptr polytope_element = draw_element->addChild("Polytope");
-                        std::cout << "Object model filepath: " << mod->getFilePath() << std::endl;
+                        //std::cout << "Object model filepath: " << mod->getFilePath() << std::endl;
                         polytope_element->addAttribute("file")->setValue(mod->getFilePath());
                     } else {
                         // Resolve type of geometry
@@ -197,9 +197,9 @@ namespace {
                         std::string type, param1, param2, param3, param4, param5;
                         std::istringstream ss(mod->getFilePath());
                         ss >> type >> param1 >> param2 >> param3 >> param4 >> param5;
-                        std::cout << type << std::endl << param1 << std::endl << param2 << std::endl << param3
-                                  << std::endl <<
-                                  param4 << std::endl << param5 << std::endl;
+                        //std::cout << type << std::endl << param1 << std::endl << param2 << std::endl << param3
+                        //          << std::endl <<
+                        //          param4 << std::endl << param5 << std::endl;
 
                         if (type == "#Plane") {
                             DOMElem::Ptr plane_element = draw_element->addChild("Plane");
@@ -231,7 +231,7 @@ namespace {
                 }
             }
             else if (!object->getGeometry().empty() && object->getModels().empty()) {
-                std::cout << "object is only a collision geometry" << std::endl;
+                //std::cout << "object is only a collision geometry" << std::endl;
                 for (auto geom : object->getGeometry()) {
                     DOMElem::Ptr mod_element = parent->addChild("CollisionModel");
                     //std::cout << "Object geometry name: " << geom->getName() << std::endl;
@@ -284,7 +284,7 @@ namespace {
                 }
             } else if (!object->getGeometry().empty() && !object->getModels().empty())
             {
-                std::cout << "object both collision geometry and drawable vis model" << std::endl;
+                //std::cout << "object both collision geometry and drawable vis model" << std::endl;
                 for (const auto &mod : object->getModels()) {
                     DOMElem::Ptr draw_element = parent->addChild("Drawable");
                     //std::cout << "Object model name: " << mod->getName() << std::endl;
@@ -352,7 +352,7 @@ namespace {
                         // drawable.
                         if (geom->getName() != mod->getName()) {
                             DOMElem::Ptr mod_element = parent->addChild("CollisionModel");
-                            std::cout << "Object geometry name: " << geom->getName() << std::endl;
+                            //std::cout << "Object geometry name: " << geom->getName() << std::endl;
                             mod_element->addAttribute("name")->setValue(geom->getName());
                             mod_element->addAttribute("refframe")->setValue(object->getName());
 
@@ -369,7 +369,6 @@ namespace {
                             var_element = mod_element;
                         }
                         else {
-                            std::cout << "Geometry name was empty!" << std::endl;
                             var_element = draw_element;
                         }
 
@@ -602,7 +601,7 @@ namespace {
 
                         std::string fname = geom->getName();
                         std::string dname = dev->getName();
-                        std::cout << dname << "-->" << fname << std::endl;
+                        //std::cout << dname << "-->" << fname << std::endl;
                         if(fname.length()>dname.length()){
                             if( dname == fname.substr(0,dname.length())  ){
                                 mod_element->addAttribute("refframe")->setValue(fname.substr(dname.length()+1, fname.length()-(dname.length()+1)));
@@ -668,7 +667,7 @@ namespace {
 
                         std::string fname = mod->getName();
                         std::string dname = dev->getName();
-                        std::cout << dname << "-->" << fname << std::endl;
+                        //std::cout << dname << "-->" << fname << std::endl;
                         if(fname.length()>dname.length()){
                             if( dname == fname.substr(0,dname.length())  ){
                                 draw_element->addAttribute("refframe")->setValue(fname.substr(dname.length()+1, fname.length()-(dname.length()+1)));
