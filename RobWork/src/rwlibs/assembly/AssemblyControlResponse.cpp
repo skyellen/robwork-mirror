@@ -24,6 +24,9 @@ AssemblyControlResponse::AssemblyControlResponse():
 	done(false),
 	success(false)
 {
+	for (std::size_t i = 0; i < 6; i++) {
+		selection[i] = false;
+	}
 }
 
 AssemblyControlResponse::~AssemblyControlResponse() {

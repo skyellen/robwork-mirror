@@ -32,10 +32,15 @@
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/models/JointDevice.hpp>
+#include <rw/models/ParallelDevice.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/models/Joint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
+#include <rw/models/SphericalJoint.hpp>
+#include <rw/models/UniversalJoint.hpp>
+#include <rw/models/PrismaticSphericalJoint.hpp>
+#include <rw/models/PrismaticUniversalJoint.hpp>
 //#include <sandbox/models/BeamJoint.hpp>
 
 using namespace rw::math;
@@ -71,6 +76,65 @@ namespace {
         return descs;
     }
 
+    void makeSliderUnitDataJoint(
+    		const std::pair<std::string, std::string> descs,
+			const std::map<std::string, double>& angleUnitConverters,
+			const std::map<std::string, double>& distanceUnitConverters,
+			Joint* const joint,
+			std::vector<std::string>& desc,
+			std::vector<double>& conv)
+    {
+		if(dynamic_cast<const rw::models::RevoluteJoint*>(joint)) { // Revolute joint
+			// Insert angle converter
+			desc.insert(desc.end(), descs.first);
+			const double toUnit = angleUnitConverters.find(descs.first)->second;
+			conv.insert(conv.end(), toUnit);
+		} else if(dynamic_cast<const rw::models::PrismaticJoint*>(joint)) { // Prismatic joint
+			// Insert distance converter
+			desc.insert(desc.end(), descs.second);
+			const double toUnit = distanceUnitConverters.find(descs.second)->second;
+			conv.insert(conv.end(), toUnit);
+		} else if(dynamic_cast<const rw::models::SphericalJoint*>(joint)) {
+			// Insert distance converter
+			desc.insert(desc.end(), descs.second);
+			desc.insert(desc.end(), descs.second);
+			desc.insert(desc.end(), descs.second);
+			const double toUnit = angleUnitConverters.find(descs.first)->second;
+			conv.insert(conv.end(), toUnit);
+			conv.insert(conv.end(), toUnit);
+			conv.insert(conv.end(), toUnit);
+		} else if(dynamic_cast<const rw::models::PrismaticSphericalJoint*>(joint)) {
+			// Insert distance converter
+			desc.insert(desc.end(), descs.second);
+			desc.insert(desc.end(), descs.second);
+			desc.insert(desc.end(), descs.second);
+			desc.insert(desc.end(), descs.second);
+			const double toUnitAngle = angleUnitConverters.find(descs.first)->second;
+			conv.insert(conv.end(), toUnitAngle);
+			conv.insert(conv.end(), toUnitAngle);
+			conv.insert(conv.end(), toUnitAngle);
+			const double toUnitLen = distanceUnitConverters.find(descs.second)->second;
+			conv.insert(conv.end(), toUnitLen);
+		} else if(dynamic_cast<const rw::models::UniversalJoint*>(joint)) {
+			// Insert distance converter
+			desc.insert(desc.end(), descs.second);
+			desc.insert(desc.end(), descs.second);
+			const double toUnit = angleUnitConverters.find(descs.first)->second;
+			conv.insert(conv.end(), toUnit);
+			conv.insert(conv.end(), toUnit);
+		} else if(dynamic_cast<const rw::models::PrismaticUniversalJoint*>(joint)) {
+			// Insert distance converter
+			desc.insert(desc.end(), descs.second);
+			desc.insert(desc.end(), descs.second);
+			desc.insert(desc.end(), descs.second);
+			const double toUnitAngle = angleUnitConverters.find(descs.first)->second;
+			conv.insert(conv.end(), toUnitAngle);
+			conv.insert(conv.end(), toUnitAngle);
+			const double toUnitLen = distanceUnitConverters.find(descs.second)->second;
+			conv.insert(conv.end(), toUnitLen);
+		}
+    }
+
     /*
      * Inputs are the desired angular/translational unit descriptions, a map of descriptions/converters and a device pointer.
      * First the descriptions are corrected (capital first letter) and then the unit data is created.
@@ -94,27 +158,7 @@ namespace {
               const std::vector<rw::models::Joint*>& joints = jointDevice->getJoints();
               // Iterate through
               for(std::vector<rw::models::Joint*>::const_iterator it = joints.begin(); it != joints.end(); ++it) {
-                if(dynamic_cast<const rw::models::RevoluteJoint*>(*it)) { // Revolute joint
-                  // Insert angle converter
-                  desc.insert(desc.end(), descs.first);
-                  const double toUnit = angleUnitConverters.find(descs.first)->second;
-                  conv.insert(conv.end(), toUnit);
-                } else if(dynamic_cast<const rw::models::PrismaticJoint*>(*it)) { // Prismatic joint
-                  // Insert distance converter
-                  desc.insert(desc.end(), descs.second);
-                  const double toUnit = distanceUnitConverters.find(descs.second)->second;
-                  conv.insert(conv.end(), toUnit);
-                }/* else if(dynamic_cast<const rw::models::BeamJoint*>(*it)) { // Beam joint
-                  // Insert distance converter
-                  desc.insert(desc.end(), descs.second);
-                  double toUnit = distanceUnitConverters.find(descs.second)->second;
-                  conv.insert(conv.end(), toUnit);
-                  // Insert angle converter
-                  desc.insert(desc.end(), descs.first);
-                  toUnit = angleUnitConverters.find(descs.first)->second;
-                  conv.insert(conv.end(), toUnit);                  
-                  
-                }*/ // TODO
+          		makeSliderUnitDataJoint(descs, angleUnitConverters, distanceUnitConverters, *it, desc, conv);
               }
             } else {
                 // create unit converter that does nothing
@@ -141,6 +185,29 @@ namespace {
         return std::pair<std::vector<std::string>, std::vector<double> >(desc, conv);
     }
 
+    std::pair<std::vector<std::string>, std::vector<double> > makeSliderUnitDataFull(const std::string& angles,
+    		const std::string& distances,
+			const std::map<std::string, double>& angleUnitConverters,
+			const std::map<std::string, double>& distanceUnitConverters,
+			const rw::models::ParallelDevice::Ptr pdevice)
+	{
+    	const std::pair<std::string, std::string> descs = formatUnitDescriptions(angles, distances, angleUnitConverters, distanceUnitConverters);
+    	std::vector<std::string> desc;
+    	std::vector<double> conv;
+
+    	// Get joints
+    	const std::vector<Joint*>& joints = pdevice->getAllJoints();
+    	// Iterate through
+    	for(std::vector<Joint*>::const_iterator it = joints.begin(); it != joints.end(); ++it) {
+    		makeSliderUnitDataJoint(descs, angleUnitConverters, distanceUnitConverters, *it, desc, conv);
+    	}
+
+    	// if there is no elements in these then it will fail later on
+    	RW_ASSERT(desc.size()>0);
+    	RW_ASSERT(conv.size()>0);
+    	return std::pair<std::vector<std::string>, std::vector<double> >(desc, conv);
+    }
+
     /*
      * Update a unit combo box index by searching (case insensitive) for the current unit description set.
      */
@@ -162,6 +229,7 @@ Jog::Jog():
     _workcell(0),
     _selectedDevice(0),
     _jointSliderWidget(0),
+    _jointSliderWidgetFull(0),
     _selectedFrame(0),
     _cartesianTab(0),
     _cartesianDeviceTab(0),
@@ -350,10 +418,14 @@ void Jog::cmbUnitChanged( int index ) {
  */
 void Jog::updateUnit(const std::string& angles, const std::string& distances) {
     // Create the unit data: a set of <string, double> pairs containing label
-    std::pair<std::vector<std::string>, std::vector<double> > sliderUnitDataJoint = makeSliderUnitData(angles, distances, _angleUnitConverters, _distanceUnitConverters, _selectedDevice);
-    std::pair<std::vector<std::string>, std::vector<double> > sliderUnitDataCartesian = makeSliderUnitData(angles, distances, _angleUnitConverters, _distanceUnitConverters, 0);
+    const std::pair<std::vector<std::string>, std::vector<double> > sliderUnitDataCartesian = makeSliderUnitData(angles, distances, _angleUnitConverters, _distanceUnitConverters, 0);
     if(_jointSliderWidget) {
+        const std::pair<std::vector<std::string>, std::vector<double> > sliderUnitDataJoint = makeSliderUnitData(angles, distances, _angleUnitConverters, _distanceUnitConverters, _selectedDevice);
         _jointSliderWidget->setUnits(sliderUnitDataJoint.second, sliderUnitDataJoint.first);
+    }
+    if(_jointSliderWidgetFull) {
+        const std::pair<std::vector<std::string>, std::vector<double> > sliderUnitDataJoint = makeSliderUnitDataFull(angles, distances, _angleUnitConverters, _distanceUnitConverters, _selectedDevice.cast<ParallelDevice>());
+        _jointSliderWidgetFull->setUnits(sliderUnitDataJoint.second, sliderUnitDataJoint.first);
     }
     if(_cartesianTab) {
         _cartesianTab->setUnits(sliderUnitDataCartesian.second, sliderUnitDataCartesian.first);
@@ -374,6 +446,7 @@ void Jog::removeTabs() {
         delete widget;
     }
     _jointSliderWidget = NULL;
+    _jointSliderWidgetFull = NULL;
     _cartesianTab = NULL;
     _cartesianDeviceTab = NULL;
 }
@@ -399,7 +472,8 @@ void Jog::constructTabs(Device::Ptr device) {
       ss << "q" << i;
       titles[i] = ss.str();
     }
-    _jointSliderWidget->setup(titles, device->getBounds(), device->getQ(_state));    
+    const bool enablers = !device.cast<ParallelDevice>().isNull();
+    _jointSliderWidget->setup(titles, device->getBounds(), device->getQ(_state), enablers);
 
     QPushButton* btnPasteQ = new QPushButton("Paste", _jointSliderWidget);
     QHBoxLayout* btnlayout = new QHBoxLayout();
@@ -418,8 +492,9 @@ void Jog::constructTabs(Device::Ptr device) {
     _tabWidget->addTab(tabWidget, "Joint");
     connect(_jointSliderWidget, SIGNAL(valueChanged(const rw::math::Q&)), this, SLOT(deviceConfigChanged(const rw::math::Q&)));
 
-    // Construct IK tab for serial devices only
+    // Construct IK tab for serial and parallel devices only
 	SerialDevice::Ptr sdevice = device.cast<SerialDevice>();
+	const ParallelDevice::Ptr pdevice = device.cast<ParallelDevice>();
     if (sdevice != NULL) {
         _cartesianDeviceTab = new CartesianDeviceTab(_cartesianBounds, sdevice, _workcell, _state);
         _tabWidget->addTab(_cartesianDeviceTab, "InvKin");
@@ -427,6 +502,37 @@ void Jog::constructTabs(Device::Ptr device) {
                 SIGNAL(stateChanged(const rw::kinematics::State&)),
                 this,
                 SLOT(stateChanged(const rw::kinematics::State&)));
+    } else if (!pdevice.isNull()) {
+    	_jointSliderWidgetFull = new JointSliderWidget();
+        std::vector<std::string> titles(pdevice->getFullDOF());
+        for(unsigned int i = 0; i < pdevice->getFullDOF(); ++i) {
+          std::stringstream ss;
+          ss << "q" << i;
+          titles[i] = ss.str();
+        }
+        _jointSliderWidgetFull->setup(titles, pdevice->getAllBounds(), pdevice->getFullQ(_state), false);
+
+        QPushButton* btnPasteQ = new QPushButton("Paste", _jointSliderWidgetFull);
+        QHBoxLayout* btnlayout = new QHBoxLayout();
+        btnlayout->addWidget(new QLabel(""));
+        btnlayout->addWidget(btnPasteQ);
+        connect(btnPasteQ, SIGNAL(clicked()), _jointSliderWidgetFull, SLOT(paste()));
+
+        QVBoxLayout* tablayout = new QVBoxLayout();
+        tablayout->addLayout(btnlayout);
+        tablayout->addWidget(_jointSliderWidgetFull);
+
+        QWidget* tabWidget = new QWidget();
+        tabWidget->setLayout(tablayout);
+        _tabWidget->addTab(tabWidget, "All Joints");
+        connect(_jointSliderWidgetFull, SIGNAL(valueChanged(const rw::math::Q&)), this, SLOT(deviceConfigChangedFull(const rw::math::Q&)));
+
+        _cartesianDeviceTab = new CartesianDeviceTab(_cartesianBounds, pdevice, _workcell, _state);
+        _tabWidget->addTab(_cartesianDeviceTab, "InvKin");
+        connect(_cartesianDeviceTab,
+        		SIGNAL(stateChanged(const rw::kinematics::State&)),
+				this,
+				SLOT(stateChanged(const rw::kinematics::State&)));
     } else {
         _cartesianDeviceTab = NULL;
     }
@@ -445,7 +551,26 @@ void Jog::deviceConfigChanged(const Q& q) {
         return;
 
     if (_selectedDevice != NULL) {
-        _selectedDevice->setQ(q, _state);
+    	if (const ParallelDevice::Ptr pdevice = _selectedDevice.cast<ParallelDevice>()) {
+    		const std::vector<bool> enabled = _jointSliderWidget->enabledState();
+    		pdevice->setQ(q, enabled, _state);
+    	} else {
+    		_selectedDevice->setQ(q, _state);
+    	}
+        getRobWorkStudio()->setState(_state);
+    }
+}
+
+void Jog::deviceConfigChangedFull(const Q& q) {
+    if (_updating)
+        return;
+
+    if (_selectedDevice != NULL) {
+    	if (const ParallelDevice::Ptr pdevice = _selectedDevice.cast<ParallelDevice>()) {
+    		pdevice->setFullQ(q, _state);
+    	} else {
+    		_selectedDevice->setQ(q, _state);
+    	}
         getRobWorkStudio()->setState(_state);
     }
 }
@@ -474,12 +599,18 @@ void Jog::close()
 
 void Jog::updateValues() {
     _updating = true;
-    if (_selectedDevice != NULL && _jointSliderWidget != NULL) {
-        Q q = _selectedDevice->getQ(_state);
-        _jointSliderWidget->updateValues(q);
-        if (_cartesianDeviceTab != NULL) {
-            _cartesianDeviceTab->updateValues(_state);
-        }
+    if (_selectedDevice != NULL) {
+    	if (_jointSliderWidget != NULL) {
+    		const Q q = _selectedDevice->getQ(_state);
+    		_jointSliderWidget->updateValues(q);
+    		if (_cartesianDeviceTab != NULL) {
+    			_cartesianDeviceTab->updateValues(_state);
+    		}
+    	}
+    	if (_jointSliderWidgetFull != NULL) {
+    		const Q q = _selectedDevice.cast<ParallelDevice>()->getFullQ(_state);
+    		_jointSliderWidgetFull->updateValues(q);
+    	}
     }
     if (_selectedFrame != NULL && _cartesianTab != NULL) {
         _cartesianTab->updateValues(_state);

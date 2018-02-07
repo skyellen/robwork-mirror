@@ -66,8 +66,9 @@ namespace rwlibs { namespace simulation {
     	/**
     	 * @brief Initialize sensor.
     	 * @param drawer [in] the scene viewer.
+         * @return true if initialization succeeded, false otherwise (depends on the capabilities of the SceneViewer).
     	 */
-    	void init(rw::graphics::SceneViewer::Ptr drawer);
+    	bool init(rw::graphics::SceneViewer::Ptr drawer);
 
     	/**
     	 * @brief set the framerate in frames per sec.

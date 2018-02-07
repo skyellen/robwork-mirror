@@ -15,22 +15,23 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #ifndef RW_MODELS_PARALLELLEG_HPP
 #define RW_MODELS_PARALLELLEG_HPP
 
 /**
  * @file ParallelLeg.hpp
+ *
+ * \copydoc rw::models::ParallelLeg
  */
 
 #include <vector>
 
-#include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
 
 namespace rw {
     namespace math {
-        class Jacobian;
+    	class Jacobian;
+    	class Q;
     }
     namespace models {
         class Joint;
@@ -48,7 +49,6 @@ namespace rw { namespace models {
 
     /**
      * @brief Class representing a single leg in a ParallelDevice
-     *
      */
     class ParallelLeg
     {
@@ -75,17 +75,33 @@ namespace rw { namespace models {
         const math::Jacobian& baseJend(const kinematics::State& state);
 
         /**
+         * @brief Returns the Jacobian of \b frame relative to base frame.
+         * @param frame [in] the frame to find Jacobian for.
+         * @param state [in] State for which to calculate the Jacobian
+         * @return the Jacobian
+         */
+        rw::math::Jacobian baseJframe(const rw::kinematics::Frame* frame, const rw::kinematics::State& state) const;
+
+        /**
          * @brief Returns the base to end transformation
          * @param state [in] State for which to calculate the transform
          * @return the transform
          */
-        math::Transform3D<double> baseTend(const kinematics::State& state);
+        math::Transform3D<double> baseTend(const kinematics::State& state) const;
+
+        /**
+         * @brief Returns the transformation of a \b frame relative to the base.
+         * @param frame [in] the frame to find transformation to.
+         * @param state [in] State for which to calculate the transform
+         * @return the transform
+         */
+        rw::math::Transform3D<double> baseTframe(const rw::kinematics::Frame* frame, const rw::kinematics::State& state) const;
 
         /**
          * @brief Returns the kinematic chain of the leg
          * @return list of frames
          */
-        const std::vector<kinematics::Frame*>& getKinematicChain();
+        const std::vector<kinematics::Frame*>& getKinematicChain() const;
 
         /**
          * @brief the base of the leg
@@ -115,24 +131,37 @@ namespace rw { namespace models {
          * @brief Number of joints (both active and passive)
          * @return number of joints
          */
-        size_t nrOfJoints(){return _actuatedJoints.size()+_unactuatedJoints.size();};
+        size_t nrOfJoints(){return _actuatedJoints.size()+_unactuatedJoints.size();}
 
         /**
          * @brief Returns list of the actuated (active) joints
          * @return list of joints
          */
-        const std::vector<models::Joint*>& getActuatedJoints(){return _actuatedJoints;};
+        const std::vector<models::Joint*>& getActuatedJoints(){return _actuatedJoints;}
 
         /**
          * @brief Returns list of unactuated (passive) joints
          * @return list of joints
          */
-        const std::vector<models::Joint*>& getUnactuatedJoints(){ return _unactuatedJoints;};
+        const std::vector<models::Joint*>& getUnactuatedJoints(){ return _unactuatedJoints;}
+
+        /**
+         * @brief Get the total degrees of freedom (includes both active and passive joints).
+         * @return the total degrees of freedom.
+         */
+        std::size_t getJointDOFs() const;
+
+        /**
+         * @brief Get configuration of the leg.
+         * @param state [in] the state with the configuration values.
+         * @return the configuration.
+         */
+        rw::math::Q getQ(const rw::kinematics::State& state) const;
 
         /**
          * @brief Sets q for the leg in the state
          * @param q [in] q to set
-         * @param state [in] the State to modify
+         * @param state [out] the State to modify
          */
         void setQ(const math::Q& q, kinematics::State& state) const;
 

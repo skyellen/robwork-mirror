@@ -21,6 +21,7 @@
 #include <QObject>
 
 #include <rws/RobWorkStudioPlugin.hpp>
+#include <RobWorkStudioConfig.hpp>
 
 namespace rw { namespace common { class Message; } }
 
@@ -38,6 +39,7 @@ namespace rws {
 class ShowLog : public RobWorkStudioPlugin
 {
     Q_OBJECT
+#define RWS_USE_STATIC_LINK_PLUGINS
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
     Q_INTERFACES(rws::RobWorkStudioPlugin)
 #if RWS_USE_QT5
@@ -110,8 +112,6 @@ private:
     QTextEdit* _editor;
     QTextCursor *_endCursor;
     std::vector<rw::common::Ptr<WriterWrapper> > _writers;
-
-    //rw::kinematics::State _state;
 };
 
 }

@@ -1,4 +1,20 @@
-/* */
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
 #ifndef RWHW_URCOMMON_HPP
 #define RWHW_URCOMMON_HPP
 
@@ -22,7 +38,7 @@ public:
 			data.resize(cnt);
 		socket->read_some(boost::asio::buffer(&data[0], cnt));
 
-		return cnt;
+		return static_cast<int>(cnt);
 	}
 
 
@@ -31,7 +47,9 @@ public:
 		ch[cnt] = 0;
 		socket->read_some(boost::asio::buffer(ch, cnt));
 		messageOffset += cnt;
-		return std::string(ch);
+		const std::string ret(ch);
+		delete[] ch;
+		return ret;
 	}
 
 	static inline std::string readUntil(boost::asio::ip::tcp::socket* socket, char terminator, uint32_t& messageOffset) {
@@ -42,7 +60,7 @@ public:
 			cnt++;
 			getChar(socket, &(buffer[cnt]));
 		}
-		messageOffset += cnt+1;
+		messageOffset += static_cast<uint32_t>(cnt+1);
 		buffer[cnt] = 0;
 		return std::string(buffer);
 	}
@@ -58,6 +76,15 @@ public:
 		unsigned char output = data[messageOffset];
 		messageOffset += 1;
 		return output;
+	}
+
+	static inline std::string getString(const std::vector<char>& data, int length, uint32_t &messageOffset) {
+		char* ch = new char[length+1];
+		memcpy(ch, &data[messageOffset], length);
+		ch[length] = 0;
+		std::string result = std::string(ch);
+		delete[] ch;
+		return result;
 	}
 
 	//Extract a 16 bit unsigned int
@@ -87,7 +114,7 @@ public:
 	}
 
 	static inline uint64_t getUInt64(const std::vector<char>& data, uint32_t &messageOffset) {
-		uint64_t output;// = *((uint64_t*)&data[messageOffset]);
+		uint64_t output;// = *((uint64_t*)&data[_messageOffset]);
 
 		((char*)(&output))[7] = data[messageOffset];
 		((char*)(&output))[6] = data[messageOffset+1];
@@ -132,7 +159,7 @@ public:
 	//Extract a double
 
 	static inline double getDouble(const std::vector<char>& data, uint32_t &messageOffset) {
-		double output; //= *((double*)&data[messageOffset]);
+		double output; //= *((double*)&data[_messageOffset]);
 
 		((char*)(&output))[7] = data[messageOffset];
 		((char*)(&output))[6] = data[messageOffset+1];
@@ -148,7 +175,7 @@ public:
 	}
 
 	static inline double getFloat(const std::vector<char>& data, uint32_t &messageOffset) {
-		float output;// = *((float*)&data[messageOffset]);
+		float output;// = *((float*)&data[_messageOffset]);
 		((char*)(&output))[3] = data[messageOffset];
 		((char*)(&output))[2] = data[messageOffset+1];
 		((char*)(&output))[1] = data[messageOffset+2];
@@ -228,33 +255,37 @@ public:
 	}
 
     static inline void send(boost::asio::ip::tcp::socket* socket, const std::vector<int>& integers) {        
-        const int n = integers.size()*sizeof(int);
+        const int n = static_cast<int>(integers.size()*sizeof(int));
         char* buffer = new char[n];
         int* ibuf = new int[integers.size()];
 		try {
 			for (size_t i = 0; i<integers.size(); i++) {
 				ibuf[i] = integers[i];
 			}
-                        /* TODO:
-                         * This call to memcpy(...) is unnecessary? as the two (not-commented) for-loops are doing the same thing, just flipping the "word order" ?
-                         */
+			/* TODO:
+			 * This call to memcpy(...) is unnecessary? as the two (not-commented) for-loops are doing the same thing,
+			 * just flipping the "word order" ?
+			 */
 			memcpy(buffer, ibuf, n);
         
-	  //      for (size_t i = 0; i<n; i++) {
-		//        std::cout<<"buffer = "<<(int)buffer[i]<<" ibuf = "<<(int)((char*)ibuf)[i]<<std::endl;
-		  //  }
+	  		// for (size_t i = 0; i<n; i++) {
+			// std::cout<<"buffer = "<<(int)buffer[i]<<" ibuf = "<<(int)((char*)ibuf)[i]<<std::endl;
+		  	// }
 
-                        /* TODO:
-                         * Has hardcoded information (ie. 4 and 3 that are dependent on the size of int)
-                         * Rewrite to dynamic sizes using sizeof(int) and verify that the content in buffer will be the same
-                         */
-			for (size_t i = 0; i<integers.size(); i++) {
-				for (size_t j = 0; j < sizeof(int); j++) {
+			/* TODO:
+			 * Has hardcoded information (ie. 4 and 3 that are dependent on the size of int)
+			 * Rewrite to dynamic sizes using sizeof(int) and verify that the content in buffer will be the same
+			 */
+			for (size_t i = 0; i<integers.size(); i++)
+			{
+				for (size_t j = 0; j < sizeof(int); j++)
+				{
 					buffer[4*i+j] = ((char*)(&integers.at(i)))[3-j];
 				}
 			}
 
-			/*for (size_t i = 0; i<integers.size(); ++i) {
+			/*for (size_t i = 0; i<integers.size(); ++i)
+			{
 	//            ibuf[i] = integers.at(i);
 				std::cout<<"Int = "<<integers.at(i)<<" = "<<(unsigned int)ibuf[4*i]<<" "<<(unsigned int)ibuf[4*i+1]<<" "<<(unsigned int)ibuf[4*i+2]<<" "<<(unsigned int)ibuf[4*i+3]<<std::endl;
 				std::cout<<"Int from buffer = "<<*(int*)(&buffer[4*i])<<std::endl;
@@ -266,15 +297,19 @@ public:
 			buffer[0] = 1;
     		socket->send(boost::asio::buffer(buffer, n));*/
                         /*socket->send(boost::asio::buffer(buffer, n));*/
-                        std::size_t bytesTransfered = 0;
-                        bytesTransfered = boost::asio::write(*socket, boost::asio::buffer(buffer, n));
-                        if (static_cast<int>(bytesTransfered) == n) {
-                            /* Successful send */
-                            //RW_LOG_DEBUG("Sent all of the '" << bytesTransfered << "' bytes.");
-                        } else {
-                            /* Unsuccessful send */
-                            RW_LOG_ERROR("Unable to send all the '" << n << "' bytes - only sent '" << bytesTransfered << "' bytes");
-                        }
+			
+			std::size_t bytesTransfered = 0;
+			bytesTransfered = boost::asio::write(*socket, boost::asio::buffer(buffer, n));
+			if (static_cast<int>(bytesTransfered) == n)
+			{
+				/* Successful send */
+				//RW_LOG_DEBUG("Sent all of the '" << bytesTransfered << "' bytes.");
+			}
+			else
+			{
+				/* Unsuccessful send */
+				RW_LOG_ERROR("Unable to send all the '" << n << "' bytes - only sent '" << bytesTransfered << "' bytes");
+			}
 		} catch (std::exception& e) {
 			delete[] buffer;
 			delete[] ibuf;

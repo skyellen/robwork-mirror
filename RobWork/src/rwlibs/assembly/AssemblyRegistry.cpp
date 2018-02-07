@@ -17,6 +17,8 @@
 
 #include "AssemblyRegistry.hpp"
 #include "CircularPiHControlStrategy.hpp"
+#include "PiHStrategy.hpp"
+#include "SpiralStrategy.hpp"
 
 using namespace rw::common;
 using namespace rwlibs::assembly;
@@ -24,8 +26,18 @@ using namespace rwlibs::assembly;
 AssemblyRegistry::AssemblyRegistry():
 	ExtensionPoint<AssemblyControlStrategy>("rwlibs.assembly.AssemblyControlStrategy", "AssemblyControlStrategy extension point.")
 {
-	CircularPiHControlStrategy::Ptr strategy = ownedPtr(new CircularPiHControlStrategy());
-	_map[strategy->getID()] = strategy;
+	{
+		AssemblyControlStrategy::Ptr strategy = ownedPtr(new CircularPiHControlStrategy());
+		_map[strategy->getID()] = strategy;
+	}
+	{
+		AssemblyControlStrategy::Ptr strategy = ownedPtr(new PiHStrategy(rw::math::Transform3D<>::identity()));
+		_map[strategy->getID()] = strategy;
+	}
+	{
+		AssemblyControlStrategy::Ptr strategy = ownedPtr(new SpiralStrategy());
+		_map[strategy->getID()] = strategy;
+	}
 }
 
 AssemblyRegistry::~AssemblyRegistry() {

@@ -127,7 +127,7 @@ public:
 			// if consensus set size is large enough, we have a model
 			if (consensusSet.size() > static_cast<size_t>(dataRequired)) {
 				models.push_back(
-						std::pair<MODEL, int>(maybeModel, consensusSet.size()));
+						std::pair<MODEL, int>(maybeModel, static_cast<int>(consensusSet.size())));
 			}
 
 		}
@@ -259,7 +259,7 @@ public:
 	 */
 	static MODEL bestModel(const std::vector<MODEL>& models) {
 		if (models.size() == 0) {
-			return *(new MODEL());
+			return MODEL();
 		}
 
 		size_t idx = 0;
@@ -286,7 +286,7 @@ public:
 	 */
 	static MODEL likelyModel(const std::vector<MODEL>& models) {
 		if (models.size() == 0) {
-			return *(new MODEL());
+			return MODEL();
 		}
 
 		size_t total_inliers = 0;

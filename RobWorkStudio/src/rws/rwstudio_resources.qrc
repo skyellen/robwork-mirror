@@ -6,6 +6,8 @@
         <file>../images/device.png</file>
         <file>../images/drawable.png</file>
         <file>../images/expand_all.png</file>
+        <file>../images/larger_frameaxis.png</file>
+        <file>../images/smaller_frameaxis.png</file>
         <file>../images/frame.png</file>
         <file>../images/jog.png</file>
         <file>../images/joint.png</file>
@@ -32,6 +34,11 @@
         <file>../images/top_view_100.png</file>
         <file>../images/bottom_view_100.png</file>
         <file>../images/rear_view_100.png</file>
+
+	<file>../images/zoom_auto.png</file>
+	<file>../images/zoom_in.png</file>
+	<file>../images/zoom_out.png</file>
+
         
         <file alias="jog.png" >../rwslibs/jog/jog.png</file>
         <file alias="log.png" >../rwslibs/log/log.png</file>

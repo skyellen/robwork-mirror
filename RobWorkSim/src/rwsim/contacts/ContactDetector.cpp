@@ -15,10 +15,14 @@
  * limitations under the License.
  ********************************************************************************/
 
+#include <RobWorkConfig.hpp>
+
 #include "ContactDetector.hpp"
 #include "BallBallStrategy.hpp"
 #include "ContactStrategy.hpp"
+#ifdef RW_HAVE_PQP
 #include "ContactStrategyPQP.hpp"
+#endif
 #include "ContactDetectorData.hpp"
 #include "ContactDetectorTracking.hpp"
 #include "ContactModel.hpp"
@@ -277,9 +281,11 @@ void ContactDetector::setDefaultStrategies(const PropertyMap& map) {
     	addContactStrategy(ownedPtr(strat), pri);
     	pri++;
     }
+#ifdef RW_HAVE_PQP
 	ContactStrategy* strat = new ContactStrategyPQP();
 	strat->setPropertyMap(map);
     addContactStrategy(ownedPtr(strat),pri);
+#endif
 }
 
 std::vector<Contact> ContactDetector::findContacts(const State& state) {

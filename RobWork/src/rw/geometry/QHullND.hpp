@@ -329,6 +329,35 @@ namespace geometry {
         	return closest_point;
         }
 
+        
+    /**
+     * @brief Calculates the volume of the hull. 
+     * @return The volume of the QHull.
+     */
+     virtual double getVolume() const {
+        // check if we have any faces
+        RW_ASSERT(_faceNormals.size() > 0);
+        
+        // loop over all 'faces' and calculate their areas
+        const size_t nOfFaces = _faceIdxs.size()/N;
+        RW_ASSERT(nOfFaces <= _faceNormals.size());
+        
+        double totalVolume = 0.0;
+        for (size_t i = 0; i < nOfFaces; ++i) {
+            std::vector< rw::math::VectorND<N> > v;
+            for (size_t j = 0; j < N; j++) {
+                v.push_back(_hullVertices[_faceIdxs[i*N + j]]);
+            }
+            const double volume = rw::geometry::GeometryUtil::actualSimplexVolume(v);
+            if(_faceOffsets.at(i) <= 0.0){
+                totalVolume += volume;
+            } else {
+                totalVolume -= volume;
+            }
+        }
+        return totalVolume;
+    }
+
 		
 		/**
 		* @brief Returns the list hull vertices

@@ -10,7 +10,6 @@ SET(FILES_CPP
 	contacts/ContactStrategy.cpp
 	contacts/ContactStrategyData.cpp
 	contacts/ContactStrategyGeometry.cpp
-	contacts/ContactStrategyPQP.cpp
 	contacts/ContactStrategyTracking.cpp
 	contacts/RenderContacts.cpp
 
@@ -148,7 +147,6 @@ SET(FILES_HPP
 	contacts/ContactStrategy.hpp
 	contacts/ContactStrategyData.hpp
 	contacts/ContactStrategyGeometry.hpp
-	contacts/ContactStrategyPQP.hpp
 	contacts/RenderContacts.hpp
 
 	dynamics/Body.hpp
@@ -272,6 +270,15 @@ SET(FILES_HPP
 	rwphysics/RWBodyPool.hpp
 	rwphysics/BodyController.hpp	
 )
+
+IF (RW_BUILD_WITH_PQP)
+  SET(FILES_CPP ${FILES_CPP}
+	contacts/ContactStrategyPQP.cpp
+  )
+  SET(FILES_HPP ${FILES_HPP}
+	contacts/ContactStrategyPQP.hpp
+  )
+ENDIF()
 
 RW_ADD_LIBRARY(rwsim rwsim ${FILES_CPP} ${FILES_HPP})
 TARGET_LINK_LIBRARIES(rwsim ${ROBWORK_LIBRARIES})

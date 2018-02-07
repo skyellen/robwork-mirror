@@ -32,7 +32,6 @@ SET(MATH_TEST_SRC
   math/EAATest.cpp
   math/LinearAlgebraTest.cpp
   math/MathSerializationTest.cpp
-  math/PolynomialTest.cpp
   math/Pose6DTest.cpp 
   math/QuaternionTest.cpp
   math/Rotation3DTest.cpp
@@ -135,7 +134,7 @@ TARGET_LINK_LIBRARIES( rw_planner-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_planner-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_planner-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_planner-test ${TEST_DEPENDENCIES})
 
-IF ( DEFINED COMPILE_SANDBOX OR RW_BUILD_SANDBOX )
+IF ( RW_BUILD_SANDBOX )
     ADD_EXECUTABLE( rw_sandbox-test ${DO_EXCLUDE} test-main.cpp sandbox/misc.cpp)       
     TARGET_LINK_LIBRARIES( rw_sandbox-test ${TEST_LIBRARIES} )
     ADD_TEST( rw_sandbox-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_sandbox-test ${DEFAULT_TEST_ARGS})
@@ -161,11 +160,11 @@ ADD_DEPENDENCIES( rw_calibration-test ${TEST_DEPENDENCIES} )
 SET( CALIBRATION_TEST rw_calibration-test )
 
 # RANSAC fitting
-#ADD_EXECUTABLE( rw_ransac-test ${DO_EXCLUDE} test-main.cpp algorithms/RANSACTest.cpp )
-#TARGET_LINK_LIBRARIES( rw_ransac-test ${TEST_LIBRARIES} )
-#ADD_TEST( rw_ransac-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_ransac-test ${DEFAULT_TEST_ARGS} )
-#ADD_DEPENDENCIES( rw_ransac-test ${TEST_DEPENDENCIES} )
-#SET( RANSAC_TEST rw_ransac-test )
+ADD_EXECUTABLE( rw_ransac-test ${DO_EXCLUDE} test-main.cpp algorithms/RANSACTest.cpp )
+TARGET_LINK_LIBRARIES( rw_ransac-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_ransac-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_ransac-test ${DEFAULT_TEST_ARGS} )
+ADD_DEPENDENCIES( rw_ransac-test ${TEST_DEPENDENCIES} )
+SET( RANSAC_TEST rw_ransac-test )
 
 # Mathematica
 IF ( RW_HAVE_MATHEMATICA )

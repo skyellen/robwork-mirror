@@ -23,6 +23,7 @@
 
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/FKRange.hpp>
+#include <rw/math/VectorND.hpp>
 #include <rw/math/Q.hpp>
 
 #include <rw/common/Ptr.hpp>
@@ -32,6 +33,7 @@ namespace rw { namespace kinematics { class MovableFrame; } }
 namespace rw { namespace models { class Device; } }
 namespace rw { namespace models { class WorkCell; } }
 
+class QCheckBox;
 class QDoubleSpinBox;
 class QSlider;
 class QGridLayout;
@@ -106,6 +108,7 @@ public:
 private slots:
     void boxValueChanged(double val);
     void sliderValueChanged(int val);
+    void enableDisable(int val);
 
 signals:
 	//! @brief Emitted whenever the joint value changes.
@@ -145,10 +148,14 @@ public:
      * @param titles [in] titles of the joints.
      * @param bounds [in] lower and upper bounds for the joints.
      * @param q [in] initial values for the joints.
+     * @param enablers [in] (optional) set to true to show a checkbox for each slider.
+     * @param enableAngularCombined [in] (optional) if enablers are used, control the angular directions as one group (default is false).
      */
     void setup(const std::vector<std::string>& titles,
                const std::pair<rw::math::Q,rw::math::Q>& bounds,
-               const rw::math::Q& q);
+               const rw::math::Q& q,
+			   bool enablers = false,
+			   bool enableAngularCombined = false);
 
     /**
      * @brief Set the units.
@@ -164,10 +171,22 @@ public:
     void updateValues(const rw::math::Q& q);
 
     /**
+     * @brief Set the values of the joints where the enablers are unchecked.
+     * @param q [in] new joint values.
+     */
+    void updateInactiveValues(const rw::math::Q& q);
+
+    /**
      * @brief Get the current values of joints.
      * @return the current values.
      */
     rw::math::Q getQ();
+
+    /**
+     * @brief Get the enabled state of each slider.
+     * @return a vector of the enabled states (empty vector if enablers are not used).
+     */
+    std::vector<bool> enabledState() const;
 
 signals:
 	/**
@@ -181,12 +200,15 @@ public slots:
     void paste();
 
 private slots:
-    void valueChanged();
+	void valueChanged();
+	void angularChanged(int state);
     
 private:
     std::vector<Slider*> _sliders;
+    std::vector<QCheckBox*> _enablers;
 
     QGridLayout* _layout;
+    bool _enableAngularCombined;
 };
 
 
@@ -199,8 +221,11 @@ public:
 	 * @brief Construct new widget.
 	 * @param bounds [in] the lower and upper bounds - 6 elements of each corresponding to x,y,z,R,P and Y.
 	 * @param transform [in] the initial transform.
+	 * @param useRPY [in] (optional) set to true to use RPY values, false to use EAA values (default is RPY).
+     * @param enablers [in] (optional) set to true to show a checkbox for each slider.
+     * It is only possible to check/uncheck checkboxes for EAA values (not RPY).
 	 */
-    TransformSliderWidget(const std::pair<rw::math::Q, rw::math::Q>& bounds, const rw::math::Transform3D<>& transform);
+    TransformSliderWidget(const std::pair<rw::math::Q, rw::math::Q>& bounds, const rw::math::Transform3D<>& transform, bool useRPY = true, bool enablers = false);
 
     //! @copydoc JointSliderWidget::setUnits
     void setUnits(const std::vector<double>& converters, const std::vector<std::string>& descriptions);
@@ -212,10 +237,22 @@ public:
     void updateValues(const rw::math::Transform3D<>& transform);
 
     /**
+     * @brief Change the transform where the enablers have been unchecked.
+     * @param transform [in] new transform.
+     */
+    void updateInactiveValues(const rw::math::Transform3D<>& transform);
+
+    /**
      * @brief Get the currently chosen transform.
      * @return the current transform.
      */
     rw::math::Transform3D<> getTransform();
+
+    /**
+     * @brief Get the enabled state for the x,y,z,R,P and Y state respectively.
+     * @return the enabled state.
+     */
+    rw::math::VectorND<6, bool> enabledState() const;
 
 signals:
 	/**
@@ -235,6 +272,7 @@ private:
     JointSliderWidget* _jointSliderWidget;
 
     bool _updating;
+    const bool _useRPY;
 };
 
 

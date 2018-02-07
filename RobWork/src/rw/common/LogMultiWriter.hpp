@@ -48,20 +48,21 @@ namespace rw { namespace common {
 	    */
         void addWriter(LogWriter::Ptr writer);
 
+	protected:
         /**
         * @copydoc LogWriter::write(const std::string&)
         */
-        void write(const std::string& str);
+        void doWrite(const std::string& str);
 
         /**
         * @brief Calls flush on the individual writers
         */
-        void flush();
+        void doFlush();
 
         /**
 	    * @copydoc LogWriter::setTabLevel(int)
 	    */
-        void setTabLevel(int tabLevel);
+        void doSetTabLevel(int tabLevel);
 
 
     private:

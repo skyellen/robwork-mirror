@@ -53,27 +53,28 @@ public:
 
 }
 
-SimulatedScanner25D::SimulatedScanner25D(const std::string& name,
-                                         rw::kinematics::Frame *frame,
-                                         FrameGrabber25D::Ptr framegrabber):
-		SimulatedSensor( rw::common::ownedPtr( new Scanner25DModel(name,static_cast<int>(framegrabber->getWidth()), static_cast<int>(framegrabber->getHeight()), frame) )),
-		_framegrabber(framegrabber),
-		_frameRate(30),
-        _dtsum(0)
+SimulatedScanner25D::SimulatedScanner25D(const std::string& name, rw::kinematics::Frame *frame, FrameGrabber25D::Ptr framegrabber):
+	SimulatedSensor(rw::common::ownedPtr(
+			new Scanner25DModel(name,static_cast<int>(framegrabber->getWidth()), static_cast<int>(framegrabber->getHeight()), frame)
+	)),
+	_framegrabber(framegrabber),
+	_frameRate(30),
+	_dtsum(0),
+	_isAcquired(false),
+	_isOpenned(false)
 {
-
 }
 
-SimulatedScanner25D::SimulatedScanner25D(const std::string& name,
-		const std::string& desc,
-		rw::kinematics::Frame *frame,
-		FrameGrabber25D::Ptr framegrabber):
-		SimulatedSensor( rw::common::ownedPtr( new Scanner25DModel(name,static_cast<int>(framegrabber->getWidth()), static_cast<int>(framegrabber->getHeight()), frame) )),
-		_framegrabber(framegrabber),
-		_frameRate(30),
-		_dtsum(0)
+SimulatedScanner25D::SimulatedScanner25D(const std::string& name, const std::string& desc, rw::kinematics::Frame *frame, FrameGrabber25D::Ptr framegrabber):
+	SimulatedSensor(rw::common::ownedPtr(
+			new Scanner25DModel(name,static_cast<int>(framegrabber->getWidth()), static_cast<int>(framegrabber->getHeight()), frame)
+	)),
+	_framegrabber(framegrabber),
+	_frameRate(30),
+	_dtsum(0),
+	_isAcquired(false),
+	_isOpenned(false)
 {
-
 }
 
 SimulatedScanner25D::~SimulatedScanner25D(){}
@@ -156,4 +157,7 @@ rw::sensor::Scanner25D::Ptr SimulatedScanner25D::getScanner25DSensor(rwlibs::sim
 	return handle;
 }
 
+void SimulatedScanner25D::setFrameRate(double rate) {
+    _frameRate = rate;
+}
 

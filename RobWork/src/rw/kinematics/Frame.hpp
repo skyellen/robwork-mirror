@@ -57,8 +57,10 @@ namespace rw { namespace kinematics {
 
     public:
 
-		//! @brief smart pointer type to this class
+		//! @brief Smart pointer type for a Frame object
 		typedef rw::common::Ptr<Frame> Ptr;
+		//! @brief Smart pointer type for a constant Frame object
+		typedef rw::common::Ptr<const Frame> CPtr;
 
         /**
          * @brief Destructor for the frame.
@@ -302,11 +304,11 @@ namespace rw { namespace kinematics {
     private:
         friend class StateStructure;
 
-        void setParent(Frame *frame){
+        void setParent(Frame * const frame){
             _parent = frame;
         }
 
-        void removeChild(Frame *frame){
+        void removeChild(const Frame * const frame){
             for (ChildList::iterator it = _children.begin(); it != _children.end(); ++it)
                 if ((*it) == frame) {
                     _children.erase(it);
@@ -323,7 +325,7 @@ namespace rw { namespace kinematics {
         Frame* _parent;
         ChildList _children;
 
-        void addChild(Frame* child) {
+        void addChild(Frame* const child) {
         	/*BOOST_FOREACH(Frame* cchild, _children){
         		if(cchild==child)
         			RW_THROW("The frame: \"" << child->getName() << "\" is allready child of \"" << this->getName() << "\"");

@@ -80,7 +80,7 @@ namespace rw { namespace trajectory {
     //! A tuple of (time, Q).
     typedef Timed<rw::math::Q> TimedQ;
 
-    //! A tuple of (time, State).
+    //! A tuple of (time, State). See rw::trajectory::Timed<t> template for more info.
     typedef Timed<rw::kinematics::State> TimedState;
 
     /*@}*/

@@ -99,8 +99,13 @@ namespace rwlibs { namespace opengl {
         //! @copydoc rw::graphics::SceneGraph::makeCameraGroup
         rw::common::Ptr<rw::graphics::CameraGroup> makeCameraGroup(const std::string& name);
         void clear();
-    private:
 
+    public:
+        /**
+         * @brief Check if there has been any OpenGL errors since last call to this function or to glGetError.
+         * @return a string representation of the error, or empty string if there is no error.
+         */
+        static std::string detectGLerror();
 
     private:
         SceneOpenGL(const SceneOpenGL&);

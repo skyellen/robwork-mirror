@@ -3,12 +3,16 @@ def rwhw_urscript():
     global qtarget = [ 0,0,0,0,0,0]
     global posetarget = p[ 0,0,0,0,0,0]
     global dqtarget = [ 0,0,0,0,0,0 ]
+    global acceleration = 1.4
+    global tool_acceleration = 1.2
     global speed = 0.75
+    global time = 0.0
+    global blend = 0.0
     global thrd  = -1
     global motionFinished = 0
     global isServoing = 0
     global isStopped = 1
-    global receive_buffer = [8, 0, 0, 0, 0, 0, 0, 0, 0]
+    global receive_buffer = [9, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     global receive_buffer18 = [18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     global FLOAT_SCALE = 0.0001  
     global force_selection = [ 0,0,0,0,0,0]
@@ -37,7 +41,8 @@ def rwhw_urscript():
         textmsg("Calls movej")
         textmsg(qtarget)
         textmsg(speed)
-        movej(qtarget)
+        textmsg(blend)
+        movej(qtarget, acceleration, speed, time, blend)
         textmsg("MoveJ called")
         #We reset our thread handle to -1 to indicate that the motion is finish.
         #This is done in a critical section to avoid race conditions
@@ -49,9 +54,12 @@ def rwhw_urscript():
     end
 
     #Thread for running the movel command
-	thread moveLthread():
+    thread moveLthread():
         textmsg("Calls moveT")
-        movel(posetarget)
+        textmsg(posetarget)
+        textmsg(speed)
+        textmsg(blend)
+        movel(posetarget, tool_acceleration, speed, time, blend)
 
         #We reset our thread handle to -1 to indicate that the motion is finish.
         #This is done in a critical section to avoid race conditions
@@ -93,9 +101,13 @@ def rwhw_urscript():
         exit_critical
         textmsg(qtarget)
         textmsg("Get Speed")
-        speed = receive_buffer[7]*FLOAT_SCALE
+        speed = receive_buffer[8]*FLOAT_SCALE
       	textmsg("speed ")
         textmsg(speed)
+        textmsg("Get Blend")
+        blend = receive_buffer[9]*FLOAT_SCALE
+        textmsg("blend ")
+        textmsg(blend)
         enter_critical
         if thrd != -1:			
             textmsg("Kills old thread")
@@ -127,8 +139,14 @@ def rwhw_urscript():
 		exit_critical
 		
         textmsg(posetarget)
-        
-        speed = receive_buffer[7]*FLOAT_SCALE
+        textmsg("Get Speed")
+        speed = receive_buffer[8]*FLOAT_SCALE
+        textmsg("speed ")
+        textmsg(speed)
+        textmsg("Get Blend")
+        blend = receive_buffer[9]*FLOAT_SCALE
+        textmsg("blend ")
+        textmsg(blend)
     
 		enter_critical		
         if thrd != -1:			
@@ -262,22 +280,6 @@ $CB3    end_teach_mode()
 		set_payload(mass, center_of_gravity) 
     end
 
-	def set_tcp_transform():
-		textmsg("Setting TCP Transform")
-    	cnt = 0
-		mass = receive_buffer[cnt+2]*FLOAT_SCALE
-		enter_critical
-        while cnt < 6:
-            posetarget[cnt] = receive_buffer[cnt+2]*FLOAT_SCALE
-            cnt = cnt + 1
-        end
-		exit_critical
-		
-		textmsg("New TCP Transform: ")
-		textmsg(posetarget)
-
-		set_tcp(posetarget) 
-    end
 	
 #
 # The main loop is running below
@@ -302,7 +304,7 @@ $CB3    end_teach_mode()
     errcnt = 0
 	socket_send_byte(0)
     while errcnt < 1:       
-		receive_buffer = socket_read_binary_integer(8)
+		receive_buffer = socket_read_binary_integer(9)
 
         if motionFinished == 1:
             #textmsg("Sends finished")
@@ -312,8 +314,8 @@ $CB3    end_teach_mode()
         end
 
         #textmsg(receive_buffer)
-        if receive_buffer[0] != 8:
-			textmsg("Did not receive 8 integers as expected")
+        if receive_buffer[0] != 9:
+			textmsg("Did not receive 9 integers as expected")
             stopRobot()
             errcnt = errcnt + 1
         elif receive_buffer[1] == 0: #0: Stop Robot
@@ -327,6 +329,7 @@ $CB3    end_teach_mode()
 			isStopped = 0
             moveT()
         elif receive_buffer[1] == 3: #3: Servo to T
+			textmsg("servo")
 			isStopped = 0
             servoQ()
         elif receive_buffer[1] == 4: #4: Start Force Mode Base
@@ -346,8 +349,6 @@ $CB3    end_teach_mode()
 			set_io()
 		elif receive_buffer[1] == 10: #10: Set Payload
 			set_tcp_payload()	
-		elif receive_buffer[1] == 11: #11: Set TCP Transform
-			set_tcp_transform()
         elif receive_buffer[1] == 9999: #1: Do nothing
         	isStopped = 0
             #Right motion already taken

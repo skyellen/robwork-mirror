@@ -128,3 +128,21 @@ btCollisionAlgorithmCreateFunc* BtRWCollisionConfiguration::getCollisionAlgorith
 
 	return _func;
 }
+
+#if BT_BULLET_VERSION >= 286
+btCollisionAlgorithmCreateFunc* BtRWCollisionConfiguration::getClosestPointsAlgorithmCreateFunc(int proxyType0, int proxyType1) {
+#if BT_BULLET_VERSION > 281
+	if (btBroadphaseProxy::isCompound(proxyType0) && btBroadphaseProxy::isCompound(proxyType1)) {
+		return m_compoundCompoundCreateFunc;
+	}
+#endif
+
+	if (btBroadphaseProxy::isCompound(proxyType0)) {
+		return m_compoundCreateFunc;
+	} else if (btBroadphaseProxy::isCompound(proxyType1)) {
+		return m_swappedCompoundCreateFunc;
+	}
+
+	return _func;
+}
+#endif

@@ -84,6 +84,7 @@ private:
     rw::common::Ptr<StateDraw> makeMyStateDraw();
     void draw(const rw::kinematics::State& state);
 
+    void csvOpenPlayFile(const std::string& file);
     void rawOpenPlayFile(const std::string& file);
     void openPlayFile(const std::string& file);
     void setInfoLabel();

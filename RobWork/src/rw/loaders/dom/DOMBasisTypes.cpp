@@ -445,48 +445,67 @@ Transform3D<> DOMBasisTypes::readTransform3D(DOMElem::Ptr element, bool doCheckH
     Vector3D<> position(0,0,0);
     Rotation3D<> rotation(Rotation3D<>::identity());
 
-    {
-    	std::vector<double> values = element->getValueAsDoubleList();
-		if (values.size() == 12) {
-			rotation(0,0) = values[0];
-			rotation(0,1) = values[1];
-			rotation(0,2) = values[2];
-			rotation(1,0) = values[4];
-			rotation(1,1) = values[5];
-			rotation(1,2) = values[6];
-			rotation(2,0) = values[8];
-			rotation(2,1) = values[9];
-			rotation(2,2) = values[10];
+    std::vector<double> values = element->getValueAsDoubleList();
+    if (values.size() == 12) {
+        rotation(0,0) = values[0];
+        rotation(0,1) = values[1];
+        rotation(0,2) = values[2];
+        rotation(1,0) = values[4];
+        rotation(1,1) = values[5];
+        rotation(1,2) = values[6];
+        rotation(2,0) = values[8];
+        rotation(2,1) = values[9];
+        rotation(2,2) = values[10];
 
-			position(0) = values[3];
-			position(1) = values[7];
-			position(2) = values[11];
-		}
-    }
+        position(0) = values[3];
+        position(1) = values[7];
+        position(2) = values[11];
+    } else {
 
-    BOOST_FOREACH(DOMElem::Ptr child, element->getChildren() ){
-		if (child->isName( idMatrix())) {
-			std::vector<double> values = child->getValueAsDoubleList();
-			if (values.size() != 12)
-				RW_THROW("Expected   <Matrix> with 12 doubles when parsing Transform3D. Found "<<values.size()<<" values");
-			rotation(0,0) = values[0];
-			rotation(0,1) = values[1];
-			rotation(0,2) = values[2];
-			rotation(1,0) = values[4];
-			rotation(1,1) = values[5];
-			rotation(1,2) = values[6];
-			rotation(2,0) = values[8];
-			rotation(2,1) = values[9];
-			rotation(2,2) = values[10];
+        bool isRotationSet = false;
+        bool isPositionSet = false;
 
-			position(0) = values[3];
-			position(1) = values[7];
-			position(2) = values[11];
-		} else if (child->isName( idPos())) {
-			position = readVector3D(child, false);
-		} else {
-			rotation = readRotation3DStructure(child);
-		}
+        BOOST_FOREACH(DOMElem::Ptr child, element->getChildren() ){
+            if (child->isName( idMatrix())) {
+                if (isRotationSet) {
+                    RW_THROW("Rotation already specified for transform when reading "<<idMatrix());
+                }
+                if (isPositionSet) {
+                    RW_THROW("Position already specified for transform when reading "<<idMatrix());
+                }
+
+                std::vector<double> values = child->getValueAsDoubleList();
+                if (values.size() != 12)
+                    RW_THROW("Expected   <Matrix> with 12 doubles when parsing Transform3D. Found "<<values.size()<<" values");
+                rotation(0,0) = values[0];
+                rotation(0,1) = values[1];
+                rotation(0,2) = values[2];
+                rotation(1,0) = values[4];
+                rotation(1,1) = values[5];
+                rotation(1,2) = values[6];
+                rotation(2,0) = values[8];
+                rotation(2,1) = values[9];
+                rotation(2,2) = values[10];
+
+                position(0) = values[3];
+                position(1) = values[7];
+                position(2) = values[11];
+                isRotationSet = true;
+                isPositionSet = true;
+            } else if (child->isName( idPos())) {
+                if (isPositionSet) {
+                    RW_THROW("Positions already specified for transform when reading element "<<idPos());
+                }
+                position = readVector3D(child, false);
+                isPositionSet = true;
+            } else {
+                if (isRotationSet) {
+                    RW_THROW("Rotations already specified for transform when reading element "<<child->getName());
+                }
+                rotation = readRotation3DStructure(child);
+                isRotationSet = true;
+            }
+        }
     }
     //rotation.normalize();
     return Transform3D<>(position, rotation);

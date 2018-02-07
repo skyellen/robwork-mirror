@@ -197,14 +197,19 @@ ENDIF()
 
 # And if possible we would also like to install all the dll's and stuff that we use
 # this will configure the dependency file that will be used if install is invoked
-GET_TARGET_PROPERTY(rw_executable_name loader-test LOCATION)
+#GET_TARGET_PROPERTY(rw_executable_name loader-test LOCATION) # not allowed anymore - must use generator expressions instead
 CONFIGURE_FILE(
    "${RW_ROOT}/cmake/dependencies.cmake.in"
-   "${RW_ROOT}/cmake/dependencies.cmake"
+   "${RW_ROOT}/cmake/dependencies.cmake.gen"
    @ONLY
 )
 
-INSTALL(SCRIPT "${RW_ROOT}/cmake/dependencies.cmake")
+# Disabled generation of the dependencies file (problem with multi-configuration generators like Visual Studio)
+#FILE(GENERATE
+#    OUTPUT "${RW_ROOT}/cmake/dependencies.cmake"
+#    INPUT "${RW_ROOT}/cmake/dependencies.cmake.gen"
+#)
+#INSTALL(SCRIPT "${RW_ROOT}/cmake/dependencies.cmake")
 
 # Install the example directories
 INSTALL(DIRECTORY "${RW_ROOT}/example/" DESTINATION "${RW_INSTALL_DIR}/example/"

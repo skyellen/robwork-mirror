@@ -33,6 +33,7 @@
 
 #include <rw/common/StringUtil.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
+#include <rw/loaders/path/PathLoaderCSV.hpp>
 
 #include <boost/bind.hpp>
 
@@ -348,12 +349,13 @@ void PlayBack::openPath()
     const QString dir(_previousOpenSaveDirectory.c_str());
     QString selectedFilter;
     QString filename = QFileDialog::getOpenFileName(
-        this,
-        "Open playback file", // Title
-        dir, // Directory
-        "Playback files ( *.rwplay )"
-        " \n All ( *.* )",
-        &selectedFilter);
+                this,
+                "Open playback file", // Title
+                dir, // Directory
+                "Playback files ( *.rwplay )"
+                " \n Comma separated values ( *.csv )"
+                " \n All ( *.* )",
+                &selectedFilter);
 
     if (!filename.isEmpty()) {
         _previousOpenSaveDirectory = StringUtil::getDirectoryName(filename.toStdString());
@@ -366,38 +368,65 @@ void PlayBack::savePath()
 {
 	const QString dir(_previousOpenSaveDirectory.c_str());
 	QString filename = QFileDialog::getSaveFileName(
-        this, "Save playback file", dir, "Playback files ( *.rwplay )");
+			this, "Save playback file", dir, "Playback files ( *.rwplay )");
 
 	if (!filename.isEmpty()) {
 		_previousOpenSaveDirectory =
-            StringUtil::getDirectoryName(filename.toStdString());
+				StringUtil::getDirectoryName(filename.toStdString());
 
 		if (StringUtil::getFileExtension(filename.toStdString()) != ".rwplay")
 			filename += ".rwplay";
 
 		PathLoader::storeTimedStatePath(
-            *_workcell,
-            getRobWorkStudio()->getTimedStatePath(),
-            filename.toStdString());
+				*_workcell,
+				getRobWorkStudio()->getTimedStatePath(),
+				filename.toStdString());
 	}
 }
 
 void PlayBack::openPlayFile(const std::string& file)
 {
-    try {
-        rawOpenPlayFile(file);
-    } catch (const Exception& exc) {
-        std::stringstream buf;
-        buf << "Can't open playback file";
+    //Check file extension:
+    std::string filetype = file.substr(file.find_last_of('.',file.length()));
 
-        QMessageBox::information(
-            NULL,
-            buf.str().c_str(),
-            exc.getMessage().getText().c_str(),
-            QMessageBox::Ok);
 
-        // We shouldn't need to have to close() anything. rawOpenPlayFile()
-        // should behave sensibly with respect to exceptions.
+    if (!filetype.compare(".csv"))
+    {
+        try {
+            csvOpenPlayFile(file);
+        } catch (const Exception& exc) {
+            std::stringstream buf;
+            buf << "Can't open playback file in CSV format";
+
+            QMessageBox::information(
+                        NULL,
+                        buf.str().c_str(),
+                        exc.getMessage().getText().c_str(),
+                        QMessageBox::Ok);
+
+            // We shouldn't need to have to close() anything. csvOpenPlayFile()
+            // should behave sensibly with respect to exceptions.
+        }
+    }
+    else if(!filetype.compare(".rwplay")) {
+        try {
+            rawOpenPlayFile(file);
+        } catch (const Exception& exc) {
+            std::stringstream buf;
+            buf << "Can't open playback file in rwplay format";
+
+            QMessageBox::information(
+                        NULL,
+                        buf.str().c_str(),
+                        exc.getMessage().getText().c_str(),
+                        QMessageBox::Ok);
+
+            // We shouldn't need to have to close() anything. rawOpenPlayFile()
+            // should behave sensibly with respect to exceptions.
+        }
+    }
+    else {
+        RW_THROW("Unknown file extension - expected either .csv or .rwplay!");
     }
 }
 
@@ -449,6 +478,18 @@ void PlayBack::rawOpenPlayFile(const std::string& file)
     if (!file.empty() && _workcell) {
         // Load the sequence of states.
         TimedStatePath path = PathLoader::loadTimedStatePath(*_workcell, file);
+
+        getRobWorkStudio()->setTimedStatePath(path);
+
+        // Store the file name.
+        _file = file;
+    }
+}
+void PlayBack::csvOpenPlayFile(const std::string& file)
+{
+    if (!file.empty() && _workcell) {
+        // Load the sequence of states.
+        TimedStatePath path = PathLoaderCSV::loadTimedStatePath(*_workcell, file);
 
         getRobWorkStudio()->setTimedStatePath(path);
 

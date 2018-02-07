@@ -1,0 +1,401 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     13612,        392]
+NotebookOptionsPosition[     12698,        357]
+NotebookOutlinePosition[     13036,        372]
+CellTagsIndexPosition[     12993,        369]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Hyper-Sphere", "Title",
+ CellChangeTimes->{{3.708230323186902*^9, 3.7082303502093287`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["2D Tessellation", "Chapter",
+ CellChangeTimes->{{3.708230357554208*^9, 3.708230370712809*^9}, {
+  3.708230415400935*^9, 3.70823041662492*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"spherical2D", "[", "\[Delta]_", "]"}], ":=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"{", "\[Omega]", "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"\[Omega]", ",", 
+       RowBox[{"\[Delta]", "/", "2"}], ",", 
+       RowBox[{"2", "\[Pi]"}], ",", "\[Delta]"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"cartesian2D", "[", "s_", "]"}], ":=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"Cos", "[", 
+        RowBox[{"s", "[", 
+         RowBox[{"[", 
+          RowBox[{"i", ",", "1"}], "]"}], "]"}], "]"}], ",", 
+       RowBox[{"Sin", "[", 
+        RowBox[{"s", "[", 
+         RowBox[{"[", 
+          RowBox[{"i", ",", "1"}], "]"}], "]"}], "]"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "1", ",", 
+       RowBox[{"Length", "[", "s", "]"}]}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"hyperSphere2D", "[", "\[Delta]_", "]"}], ":=", 
+   RowBox[{"Show", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"ListPlot", "[", 
+        RowBox[{
+         RowBox[{"cartesian2D", "[", 
+          RowBox[{"spherical2D", "[", "\[Delta]", "]"}], "]"}], ",", 
+         RowBox[{"AspectRatio", "\[Rule]", "1"}], ",", 
+         RowBox[{"PlotStyle", "\[Rule]", 
+          RowBox[{"PointSize", "[", "0.02", "]"}]}], ",", 
+         RowBox[{"PlotRange", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"-", "1.05"}], ",", "1.05"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"-", "1.05"}], ",", "1.05"}], "}"}]}], "}"}]}]}], "]"}],
+        ",", 
+       RowBox[{"Graphics", "[", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"Text", "[", 
+           RowBox[{
+            RowBox[{"\"\<\[Delta]=\>\"", "<>", 
+             RowBox[{"ToString", "[", "\[Delta]", "]"}]}], ",", 
+            RowBox[{"{", 
+             RowBox[{"0.25", ",", "0.25"}], "}"}]}], "]"}], ",", 
+          RowBox[{"Circle", "[", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"0", ",", "0"}], "}"}], ",", "1"}], "]"}]}], "}"}], 
+        "]"}]}], "}"}], ",", 
+     RowBox[{"ImageSize", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{"350", ",", "350"}], "}"}]}]}], "]"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.708230385473929*^9, 3.708230610888129*^9}, {
+  3.708230641814159*^9, 3.708230647397832*^9}, {3.7082308442118273`*^9, 
+  3.7082308474597197`*^9}, {3.708230932162972*^9, 3.708230958666667*^9}, {
+  3.708231063025346*^9, 3.708231156560925*^9}, {3.708232452116479*^9, 
+  3.708232516674506*^9}, {3.708233316265942*^9, 3.708233333529078*^9}, {
+  3.7082337512360983`*^9, 3.7082337526036863`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"samples2D", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"hyperSphere2D", "[", "\[Delta]", "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"\[Delta]", ",", "1.57", ",", "0.01", ",", 
+       RowBox[{"-", "0.01"}]}], "}"}]}], "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.708229021654729*^9, 3.708229032158599*^9}, {
+  3.708230810972228*^9, 3.7082308143720922`*^9}, {3.7082308547159767`*^9, 
+  3.7082309015230217`*^9}, {3.7082309957299643`*^9, 3.708231000906785*^9}, {
+  3.708231198472025*^9, 3.7082312011196632`*^9}, {3.708232600969882*^9, 
+  3.708232601425541*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Animate", "[", 
+  RowBox[{
+   RowBox[{"samples2D", "[", 
+    RowBox[{"[", "i", "]"}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"i", ",", "1", ",", 
+     RowBox[{"Length", "[", "samples2D", "]"}], ",", "1"}], "}"}], ",", 
+   RowBox[{"DefaultDuration", "\[Rule]", "20"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.708229412358432*^9, 3.7082294649053926`*^9}, {
+  3.708232604922656*^9, 3.708232605257189*^9}, {3.708233106324296*^9, 
+  3.708233106756694*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{"\"\<hypersphere2D.gif\>\"", ",", "samples2D"}], "]"}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.7082275768604517`*^9, 3.708227593778412*^9}, {
+  3.708229479330703*^9, 3.708229481669303*^9}, {3.708232643385005*^9, 
+  3.70823264796067*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["3D Tessellation", "Chapter",
+ CellChangeTimes->{{3.708230357554208*^9, 3.708230369201046*^9}, {
+  3.708230417633082*^9, 3.708230418872479*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"spherical3D", "[", "\[Delta]_", "]"}], ":=", 
+   RowBox[{"Flatten", "[", 
+    RowBox[{
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"\[Omega]1", ",", "\[Omega]2"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"\[Omega]1", ",", 
+         RowBox[{"\[Delta]", "/", "2"}], ",", 
+         RowBox[{"2", "\[Pi]"}], ",", "\[Delta]"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"\[Omega]2", ",", 
+         RowBox[{"\[Delta]", "/", 
+          RowBox[{"(", 
+           RowBox[{"2", " ", 
+            RowBox[{"Sin", "[", "\[Omega]1", "]"}]}], ")"}]}], ",", 
+         RowBox[{"2", "\[Pi]"}], ",", 
+         RowBox[{"\[Delta]", "/", 
+          RowBox[{"Sin", "[", "\[Omega]1", "]"}]}]}], "}"}]}], "]"}], ",", 
+     "1"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"cartesian3D", "[", "s_", "]"}], ":=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"Cos", "[", 
+        RowBox[{"s", "[", 
+         RowBox[{"[", 
+          RowBox[{"i", ",", "1"}], "]"}], "]"}], "]"}], ",", 
+       RowBox[{
+        RowBox[{"Cos", "[", 
+         RowBox[{"s", "[", 
+          RowBox[{"[", 
+           RowBox[{"i", ",", "2"}], "]"}], "]"}], "]"}], " ", 
+        RowBox[{"Sin", "[", 
+         RowBox[{"s", "[", 
+          RowBox[{"[", 
+           RowBox[{"i", ",", "1"}], "]"}], "]"}], "]"}]}], ",", 
+       RowBox[{
+        RowBox[{"Sin", "[", 
+         RowBox[{"s", "[", 
+          RowBox[{"[", 
+           RowBox[{"i", ",", "1"}], "]"}], "]"}], "]"}], " ", 
+        RowBox[{"Sin", "[", 
+         RowBox[{"s", "[", 
+          RowBox[{"[", 
+           RowBox[{"i", ",", "2"}], "]"}], "]"}], "]"}]}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "1", ",", 
+       RowBox[{"Length", "[", "s", "]"}]}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"hyperSphere3D", "[", "\[Delta]_", "]"}], ":=", 
+   RowBox[{"Show", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"ListPointPlot3D", "[", 
+        RowBox[{
+         RowBox[{"cartesian3D", "[", 
+          RowBox[{"spherical3D", "[", "\[Delta]", "]"}], "]"}], ",", 
+         RowBox[{"AspectRatio", "\[Rule]", "1"}], ",", 
+         RowBox[{"PlotStyle", "\[Rule]", 
+          RowBox[{"PointSize", "[", "0.02", "]"}]}], ",", 
+         RowBox[{"PlotRange", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"-", "1"}], ",", "1"}], "}"}]}], "}"}]}]}], "]"}], ",", 
+       
+       RowBox[{"Graphics3D", "[", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"Text", "[", 
+           RowBox[{
+            RowBox[{"\"\<\[Delta]=\>\"", "<>", 
+             RowBox[{"ToString", "[", "\[Delta]", "]"}]}], ",", 
+            RowBox[{"{", 
+             RowBox[{"0.25", ",", "0.25", ",", "0.25"}], "}"}]}], "]"}], ",", 
+          
+          RowBox[{"Opacity", "[", "0.5", "]"}], ",", 
+          RowBox[{"Sphere", "[", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"0", ",", "0", ",", "0"}], "}"}], ",", "1"}], "]"}]}], 
+         "}"}], "]"}]}], "}"}], ",", 
+     RowBox[{"ImageSize", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{"350", ",", "350"}], "}"}]}]}], "]"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.708230385473929*^9, 3.708230610888129*^9}, {
+  3.708230641814159*^9, 3.708230647397832*^9}, {3.7082308442118273`*^9, 
+  3.7082308474597197`*^9}, {3.708230932162972*^9, 3.708230958666667*^9}, {
+  3.708231063025346*^9, 3.708231156560925*^9}, {3.708231263207657*^9, 
+  3.708231265599148*^9}, {3.708231329446718*^9, 3.7082313355366573`*^9}, {
+  3.708231394895026*^9, 3.7082315300210533`*^9}, {3.708231583636365*^9, 
+  3.7082316144280443`*^9}, {3.708231651612255*^9, 3.708231692218994*^9}, {
+  3.708231926466339*^9, 3.708231929888932*^9}, {3.7082319735365562`*^9, 
+  3.708231973866057*^9}, {3.708232066063876*^9, 3.70823207004778*^9}, {
+  3.7082322064938374`*^9, 3.708232206997683*^9}, {3.708232277605317*^9, 
+  3.7082323920756683`*^9}, {3.708232556410791*^9, 3.708232558882083*^9}, {
+  3.708233289362575*^9, 3.708233291521921*^9}, {3.708233763059889*^9, 
+  3.708233765416629*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"samples3D", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"hyperSphere3D", "[", "\[Delta]", "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"\[Delta]", ",", "1.57", ",", "0.01", ",", 
+       RowBox[{"-", "0.01"}]}], "}"}]}], "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.708229021654729*^9, 3.708229032158599*^9}, {
+   3.708230810972228*^9, 3.7082308143720922`*^9}, {3.7082308547159767`*^9, 
+   3.7082309015230217`*^9}, {3.7082309957299643`*^9, 3.708231000906785*^9}, {
+   3.708231198472025*^9, 3.7082312011196632`*^9}, {3.708231268554852*^9, 
+   3.708231268695256*^9}, {3.708232261173592*^9, 3.708232261332931*^9}, {
+   3.70823261886379*^9, 3.708232619225466*^9}, 3.70823315235567*^9}],
+
+Cell[BoxData[
+ RowBox[{"Animate", "[", 
+  RowBox[{
+   RowBox[{"samples3D", "[", 
+    RowBox[{"[", "i", "]"}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"i", ",", "1", ",", 
+     RowBox[{"Length", "[", "samples3D", "]"}], ",", "1"}], "}"}], ",", 
+   RowBox[{"DefaultDuration", "\[Rule]", "20"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.708229412358432*^9, 3.7082294649053926`*^9}, {
+  3.7082326215137577`*^9, 3.708232622024523*^9}, {3.708233111988017*^9, 
+  3.7082331123570347`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{"\"\<hypersphere3D.gif\>\"", ",", "samples3D"}], "]"}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.708232654216609*^9, 3.708232655337592*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Combined", "Chapter",
+ CellChangeTimes->{{3.708233636422194*^9, 3.708233643759705*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"samplesTotal", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"GraphicsRow", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"samples2D", "[", 
+          RowBox[{"[", "i", "]"}], "]"}], ",", 
+         RowBox[{"samples3D", "[", 
+          RowBox[{"[", "i", "]"}], "]"}]}], "}"}], ",", 
+       RowBox[{"ImageSize", "\[Rule]", 
+        RowBox[{"{", 
+         RowBox[{"700", ",", "350"}], "}"}]}]}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "1", ",", 
+       RowBox[{"Length", "[", "samples2D", "]"}], ",", "1"}], "}"}]}], 
+    "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.708233572158815*^9, 3.708233581541966*^9}, {
+  3.708233784819594*^9, 3.708233786163125*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Animate", "[", 
+  RowBox[{
+   RowBox[{"samplesTotal", "[", 
+    RowBox[{"[", "i", "]"}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"i", ",", "1", ",", 
+     RowBox[{"Length", "[", "samplesTotal", "]"}], ",", "1"}], "}"}], ",", 
+   RowBox[{"DefaultDuration", "\[Rule]", "20"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.708233507903964*^9, 3.708233514950824*^9}, {
+  3.708233608774057*^9, 3.7082336129509277`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{"\"\<hypersphere.gif\>\"", ",", "samplesTotal"}], "]"}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.708233540374077*^9, 3.708233543390024*^9}}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1877, 1059},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"10.3 for Linux x86 (64-bit) (December 10, 2015)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 97, 1, 93, "Title"],
+Cell[CellGroupData[{
+Cell[702, 27, 148, 2, 66, "Chapter"],
+Cell[853, 31, 2822, 77, 92, "Input"],
+Cell[3678, 110, 613, 13, 31, "Input"],
+Cell[4294, 125, 479, 11, 31, "Input"],
+Cell[4776, 138, 301, 7, 31, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5114, 150, 149, 2, 66, "Chapter"],
+Cell[5266, 154, 4446, 115, 92, "Input"],
+Cell[9715, 271, 733, 14, 31, "Input"],
+Cell[10451, 287, 483, 11, 31, "Input"],
+Cell[10937, 300, 202, 5, 31, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11176, 310, 93, 1, 66, "Chapter"],
+Cell[11272, 313, 753, 21, 31, "Input"],
+Cell[12028, 336, 436, 10, 31, "Input"],
+Cell[12467, 348, 203, 5, 31, "Input"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

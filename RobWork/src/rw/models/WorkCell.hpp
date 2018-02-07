@@ -71,8 +71,10 @@ namespace rw { namespace models {
     class WorkCell {
     public:
 
-		//! @brief smart pointer type to this class
+		//! @brief Smart pointer type to a WorkCell object
 		typedef rw::common::Ptr<WorkCell> Ptr;
+		//! @brief Smart pointer type to a constant WorkCell object
+		typedef rw::common::Ptr<const WorkCell> CPtr;
 
 		typedef enum{STATE_DATA_ADDED,STATE_DATA_REMOVED,WORKCELL_CHANGED} WorkCellEventType;
 
@@ -275,7 +277,7 @@ namespace rw { namespace models {
 		std::vector<rw::common::Ptr<T> > findDevices() const{
 			std::vector<rw::common::Ptr<T> > result;
         	BOOST_FOREACH(rw::common::Ptr<Device> dev, _devices){
-				rw::common::Ptr<T> res = dev.cast<T>(dev);
+				rw::common::Ptr<T> res = dev.cast<T>();
         		if(res!=NULL)
         			result.push_back(res);
         	}

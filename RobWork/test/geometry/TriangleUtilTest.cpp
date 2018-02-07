@@ -28,7 +28,7 @@ using rw::math::Vector3D;
 BOOST_AUTO_TEST_CASE( DivideTriMeshBox ){
 	Box box;
 	TriMesh::Ptr trimesh = box.getTriMesh();
-	Plane plane(Vector3D<>(0,0,1), 0);
+	Plane plane(Vector3D<>(0,0,1), 0.1);
 	std::pair<TriMesh::Ptr, TriMesh::Ptr> frontAndBack = TriangleUtil::divide<Triangle<> >(trimesh, &plane);
 	//With the current algorithm for dividing we expect there to be 14 triangles in front and behind (after they have been cut)
 	BOOST_CHECK(frontAndBack.first->getSize() == 14);

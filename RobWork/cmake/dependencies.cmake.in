@@ -23,7 +23,7 @@ SET(DEPENDS_DIRS
     "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@"
 )
 
-SET(target "@rw_executable_name@")
+SET(target "$<TARGET_FILE:rw_loader-test>")
 SET(EXEPATH "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@")
 
 INCLUDE(InstallRequiredSystemLibraries)

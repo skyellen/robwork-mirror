@@ -461,7 +461,7 @@ namespace rw { namespace math {
 		 * @brief Convert to a standard vector.
 		 * @param v [out] the result.
 		 */
-	    void toStdVector(std::vector<double>& v){
+	    void toStdVector(std::vector<double>& v) const{
 	    	v.resize(size());
 	    	for (size_t i = 0; i<size(); i++) {
 	    		v[i] = _vec[i];
@@ -472,7 +472,7 @@ namespace rw { namespace math {
 	     * @brief Convert to a standard vector.
 	     * @return the result.
 	     */
-	    std::vector<double> toStdVector(){
+	    std::vector<double> toStdVector() const {
 	    	std::vector<double> v(size());
 	    	toStdVector(v);
 	    	return v;

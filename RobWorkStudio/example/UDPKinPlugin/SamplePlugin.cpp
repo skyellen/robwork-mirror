@@ -6,6 +6,7 @@
 
 #include <QTimer>
 
+#include <boost/array.hpp>
 #include <boost/bind.hpp>
 
 #include <sstream>

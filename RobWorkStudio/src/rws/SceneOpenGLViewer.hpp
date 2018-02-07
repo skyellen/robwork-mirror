@@ -36,8 +36,6 @@
 
 #include <rw/graphics/SceneCamera.hpp>
 
-#include <boost/thread/mutex.hpp>
-
 #include "CameraController.hpp"
 #include "SceneViewerWidget.hpp"
 
@@ -127,10 +125,10 @@ public:
     virtual void selectView(View::Ptr view);
 
     //! @copydoc SceneViewer::getCurrentView
-    virtual View::Ptr getCurrentView(){ return _currentView; };
+    virtual View::Ptr getCurrentView(){ return _currentView; }
 
     //! @copydoc SceneViewer::getViews
-    virtual std::vector<View::Ptr> getViews(){ return _views; };
+    virtual std::vector<View::Ptr> getViews(){ return _views; }
 
     //! @copydoc SceneViewer::renderView
     void renderView(View::Ptr);
@@ -162,7 +160,7 @@ public:
         _cameraCtrl->setTransform(t3d);
         getViewCamera()->setTransform(t3d);
         //updateGL();
-    };
+    }
 
     //! @copydoc SceneViewer::pickDrawable(int,int)
     rw::graphics::DrawableNode::Ptr pickDrawable(int x, int y);
@@ -245,14 +243,16 @@ protected:
         _wcscene = wcscene;
     }
 
+    //! @copydoc SceneViewer::zoom
+    void zoom(double amount);
+
+    //! @copydoc SceneViewer::autoZoom
+    void autoZoom();
+
 private:
     void init();
 
 	void propertyUpdated(rw::common::PropertyBase* base);
-
-	//void drawGLBackground();
-	//void drawGLForeground();
-    //void drawRWLogo();
 
     void setupCameraView(int camNr, bool setupViewport = true);
 
@@ -270,9 +270,6 @@ private:
 
     rw::common::Ptr<rw::kinematics::State> _state;
 
-    rw::common::Ptr<rw::models::WorkCell> _wc;
-
-    QFont _logoFont;
     std::string _viewLogo;
 
     int _width, _height;
@@ -288,8 +285,6 @@ private:
     rw::graphics::DrawableGeometryNode::Ptr _pivotDrawable;
     rw::graphics::GroupNode::Ptr _worldNode;
     rw::graphics::SceneGraph::RenderInfo _renderInfo;
-    boost::mutex _renderMutex;
-
 };
 
 }

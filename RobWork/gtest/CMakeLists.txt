@@ -82,23 +82,46 @@ SET(GEOMETRY_TEST_LIBRARIES
 )
 
 SET(GEOMETRY_TEST_SRC
+  geometry/HyperSphereTest.cpp
   geometry/IndexedTriMeshTest.cpp
+  geometry/IntersectUtilTest.cpp
+  geometry/PlaneTest.cpp
+  geometry/PolygonTest.cpp
   geometry/QHullTest.cpp
+  geometry/TriangulateTest.cpp
 )
 ADD_EXECUTABLE( rw_geometry-gtest ${GEOMETRY_TEST_SRC})       
 TARGET_LINK_LIBRARIES( rw_geometry-gtest ${GEOMETRY_TEST_LIBRARIES})
 ADD_RW_GTEST(rw_geometry-gtest)
 
 ########################################################################
+# Graphics
+########################################################################
+SET(GRAPHICS_TEST_LIBRARIES
+ ${GTEST_BOTH_LIBRARIES}
+ rw
+)
+
+SET(GRAPHICS_TEST_SRC
+  graphics/SceneGraphTest.cpp
+  graphics/WorkCellSceneTest.cpp
+)
+ADD_EXECUTABLE( rw_graphics-gtest ${GRAPHICS_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rw_graphics-gtest ${GRAPHICS_TEST_LIBRARIES})
+ADD_RW_GTEST(rw_graphics-gtest)
+
+########################################################################
 # Inverse Kinematics
 ########################################################################
 SET(INVKIN_TEST_LIBRARIES
- ${GTEST_BOTH_LIBRARIES}
+ rw-gtest-main
+ ${GTEST_LIBRARIES}
  rw
 )
 
 SET(INVKIN_TEST_SRC
   invkin/ClosedFormIKSolverKukaIIWATest.cpp
+  invkin/ParallelIKSolverTest.cpp
 )
 ADD_EXECUTABLE( rw_invkin-gtest ${INVKIN_TEST_SRC})       
 TARGET_LINK_LIBRARIES( rw_invkin-gtest ${INVKIN_TEST_LIBRARIES})
@@ -123,10 +146,47 @@ SET(LOADERS_TEST_SRC
   loaders/DOMProximitySetupSaver.cpp
   loaders/DOMPropertyMap.cpp
   loaders/ImageLoaderTest.cpp
+  loaders/PathLoaderCSVTest.cpp
 )
 ADD_EXECUTABLE( rw_loaders-gtest ${LOADERS_TEST_SRC})       
 TARGET_LINK_LIBRARIES( rw_loaders-gtest ${LOADERS_TEST_LIBRARIES})
 ADD_RW_GTEST(rw_loaders-gtest)
+
+########################################################################
+# Math
+########################################################################
+
+SET(MATH_TEST_LIBRARIES
+ ${GTEST_BOTH_LIBRARIES}
+ rw
+ )
+
+SET(MATH_TEST_SRC
+  math/PolynomialTest.cpp
+  math/StatisticsTest.cpp
+)
+ADD_EXECUTABLE( rw_math-gtest ${MATH_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rw_math-gtest ${MATH_TEST_LIBRARIES})
+ADD_RW_GTEST(rw_math-gtest)
+
+########################################################################
+# Models
+########################################################################
+
+SET(MODELS_TEST_LIBRARIES
+ rw-gtest-main
+ ${GTEST_LIBRARIES}
+ rw
+ )
+
+SET(MODELS_TEST_SRC
+  models/JointTest.cpp
+  models/ParallelDeviceTest.cpp
+  models/ParallelLegTest.cpp
+)
+ADD_EXECUTABLE( rw_models-gtest ${MODELS_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rw_models-gtest ${MODELS_TEST_LIBRARIES})
+ADD_RW_GTEST(rw_models-gtest)
 
 ########################################################################
 # Proximity
@@ -139,6 +199,11 @@ SET(PROXIMITY_TEST_LIBRARIES
  )
 
 SET(PROXIMITY_TEST_SRC
+  proximity/CollisionStrategy.cpp
+  proximity/CollisionToleranceStrategy.cpp
+  proximity/DistanceMultiStrategy.cpp
+  proximity/DistanceStrategy.cpp
+  proximity/ProximityStrategy.cpp
   proximity/DistanceCalculatorTest.cpp
 )
 ADD_EXECUTABLE( rw_proximity-gtest ${PROXIMITY_TEST_SRC})       

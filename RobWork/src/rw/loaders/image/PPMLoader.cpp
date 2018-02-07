@@ -285,7 +285,7 @@ rw::sensor::Image::Ptr PPMLoader::load(const std::string& filename)
 	else if(pixelMax < 65536) {
 		depth = Image::Depth16U;
 	}
-	else if(pixelMax < 4294967296) {
+	else if(pixelMax <= 4294967295) {
 		depth = Image::Depth32S;
 	}
 	else {

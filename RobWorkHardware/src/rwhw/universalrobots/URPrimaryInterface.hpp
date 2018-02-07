@@ -1,31 +1,32 @@
-/* */
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
 #ifndef RWHW_URPRIMARYINTERFACE_HPP
 #define RWHW_URPRIMARYINTERFACE_HPP
-
-
-/**
- * @file UniversalRobots.hpp
- */
 
 #include "UniversalRobotsData.hpp"
 #include "URMessage.hpp"
 
-#include <rw/math/Q.hpp>
 #include <rw/common/Ptr.hpp>
-#include <rw/models/Device.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rwlibs/task/Task.hpp>
-
 #include <boost/asio.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/thread.hpp>
 
 #include <queue>
-#include <fstream>
-
-
-
 
 namespace rwhw {
 
@@ -42,6 +43,9 @@ public:
 	 */
 	URPrimaryInterface();
 
+	/**
+	 * @brief Destructor
+	 */
 	~URPrimaryInterface();
 
 	/**
@@ -58,33 +62,79 @@ public:
 	 */
 	std::string getLocalIP();
 
+	/**
+	 * @brief Starts thread receiving data from the UR
+	 */
 	void start();
+
+	/**
+	 * @brief Stop the thread receiving data from the UR
+	 *
+	 * The method blocks until the thread has been stopped. Throws exception if unable to stop thread within a given timeout 
+	 */
 	void stop();
 
+	/**
+	 * @brief Send script file to the robot
+	 * param filename [in] Path and filename of the ur script to send
+	 * return true if succesfully sent
+	 */
 	bool sendScriptFile(const std::string& filename);
+
+	/**
+	* @brief Send script to the robot
+	* @param script [in] Script to send
+	* @return true if succesfully sent
+	*/
 	bool sendScript(const std::string& script);
 
+	/**
+	 * @brief Returns true if the robot is connected
+	 * @return Returns true if the robot is connected. False otherwise. 
+	 */
 	bool isConnected() const;
 
+	/** 
+	 * @brief Disconnect the socket communication with the robot.
+	 */
 	void disconnect();
 
+	/**
+	 * @brief Returns true if data is available
+	 */
 	bool hasData() const;
+
+	/** 
+	 * @brief Returns the last retrived data
+	 */
 	UniversalRobotsData getLastData() const;
 
+	/** 
+	 * @brief Returns the current time according to the driver
+	 */
 	double driverTime() const;
-	bool _lostConnection;
-	long _lastPackageTime;
 
+
+	/**
+	 * @brief Returns the URMessages received
+	 */
 	std::queue<URMessage> getMessages() {
 		return _messages;
 	}
 
+	/**
+	* @brief Clear the list of recieved URMessages
+	*/
 	void clearMessages() {
 		while (_messages.empty() == false)
 			_messages.pop();
 	}
 
 private:
+	bool _lostConnection;
+	long _lastPackageTime;
+
+
 	rw::common::Ptr<boost::thread> _thread;
 	mutable boost::mutex _mutex;
 	bool _stop;
@@ -99,7 +149,7 @@ private:
 	bool sendCommand(const std::string &str);
 
 	bool _haveReceivedSize;
-	uint32_t messageLength, messageOffset;
+	uint32_t _messageLength, _messageOffset;
 
 	boost::asio::ip::tcp::socket* _socket;
 	boost::asio::io_service _ioService;
@@ -108,14 +158,10 @@ private:
 
 	bool _connected;
 
-	static const unsigned int max_buf_len = 5000000;
-	char buf[max_buf_len];
 
 	//Data
 	bool _hasURData;
 	UniversalRobotsData _data;
-
-	//bool _lastTimeRunningProgram;
 
 	std::vector<char> _dataStorage;
 

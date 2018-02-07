@@ -63,7 +63,7 @@ namespace proximity {
 		void *_owner;
 	};
 
-#ifdef RW_USE_DEPRECATEd
+#ifdef RW_USE_DEPRECATED
 	typedef rw::common::Ptr<ProximityCache> ProximityCachePtr;
 #endif
 }

@@ -106,7 +106,7 @@ namespace rw { namespace math {
 			BoostBase m(r);
 			_jac.resize(m.size1(), m.size2());
 			for (size_t i = 0; i<size1(); i++)
-				for (size_t j = 0; j<size1(); j++)
+				for (size_t j = 0; j<size2(); j++)
 					_jac(i,j) = m(i,j);	
 		}
 

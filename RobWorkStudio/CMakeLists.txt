@@ -109,7 +109,6 @@ ENDIF(Subversion_FOUND)
 CONFIGURE_FILE(
   ${RWS_ROOT}/src/RobWorkStudioConfig.hpp.in
   "${RWS_ROOT}/src/RobWorkStudioConfig.hpp"
-  @ONLY
 )
 
 # next build information script
@@ -190,14 +189,19 @@ ENDIF()
 UNSET(QTDIR)
 
 # this will configure the dependency file that will be used if install is invoked
-GET_TARGET_PROPERTY(rwstudio_executable_name RobWorkStudio LOCATION)
+#GET_TARGET_PROPERTY(rwstudio_executable_name RobWorkStudio LOCATION) # not allowed anymore - must use generator expressions instead
 CONFIGURE_FILE(
    "${RWS_ROOT}/cmake/dependencies.cmake.in"
-   "${RWS_ROOT}/cmake/dependencies.cmake"
+   "${RWS_ROOT}/cmake/dependencies.cmake.gen"
    @ONLY
 )
 
-INSTALL(SCRIPT "${RWS_ROOT}/cmake/dependencies.cmake")
+# Disabled generation of the dependencies file (problem with multi-configuration generators like Visual Studio)
+#FILE(GENERATE
+#    OUTPUT "${RWS_ROOT}/cmake/dependencies.cmake"
+#    INPUT "${RWS_ROOT}/cmake/dependencies.cmake.gen"
+#)
+#INSTALL(SCRIPT "${RWS_ROOT}/cmake/dependencies.cmake")
 
 # Install the example directories
 INSTALL(DIRECTORY "${RWS_ROOT}/example/" DESTINATION "${RWS_INSTALL_DIR}/example/"
@@ -216,7 +220,12 @@ IF(doc_executable)
     ADD_CUSTOM_TARGET(qtrwdoc qhelpgenerator ${RW_ROOT}/../apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robwork-v${ROBWORKSTUDIO_VERSION}.qch)
     ADD_DEPENDENCIES(qtrwdoc apidoc)
   ENDIF()
-  
+
+  IF(TARGET qtrwdoc)
+    CONFIGURE_FILE(${RWS_ROOT}/docs/robwork_help.qhcp.in ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhcp)
+    ADD_CUSTOM_TARGET(robwork_help qcollectiongenerator ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhcp -o ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhc )
+    ADD_DEPENDENCIES(robwork_help qtrwdoc) 
+  ENDIF()
 ENDIF()
 
 # Packaging

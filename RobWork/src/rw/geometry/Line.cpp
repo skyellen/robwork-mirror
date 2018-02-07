@@ -76,23 +76,27 @@ rw::math::Vector3D<> Line::closestPoint(const rw::math::Vector3D<>& point) const
 	return point + c0 + t * u;
 }
 
-double Line::refit(std::vector<rw::math::Vector3D<> >& data) {
+double Line::refit(const std::vector<rw::math::Vector3D<> >& data) {
+	return refit(data.cbegin(), data.cend());
+}
+
+double Line::refit(const std::vector<rw::math::Vector3D<> >::const_iterator begin, const std::vector<rw::math::Vector3D<> >::const_iterator end) {
 	/* check for data size - we need at least two points to make a line */
-	if (data.size() < 2) {
+	if (std::distance(begin, end) < 2) {
 		RW_THROW("Data size must be 2 or more!");
 	}
 	
 	/* calculate centroid */
 	Vector3D<> centroid;
-	for (size_t i = 0; i < data.size(); ++i) {
-		centroid += data[i];
+	for (std::vector<rw::math::Vector3D<> >::const_iterator it = begin; it != end; ++it) {
+		centroid += (*it);
 	}
-	centroid /= static_cast<double>(data.size());
+	centroid /= static_cast<double>(std::distance(begin, end));
 	
 	/* perform singular value decomposition of data points */
 	// create covariance matrix
 	Eigen::MatrixXd covar(Eigen::MatrixXd::Zero(3, 3));
-	for (std::vector<Vector3D<> >::const_iterator it = data.begin(); it != data.end(); it++) {
+	for (std::vector<Vector3D<> >::const_iterator it = begin; it != end; it++) {
 		const Vector3D<>& p = *it;
 		for (size_t i = 0; i < 3; ++i) {
 			for (size_t j = 0; j < 3; ++j) {
@@ -110,17 +114,15 @@ double Line::refit(std::vector<rw::math::Vector3D<> >& data) {
 	/* choose the first eigenvector */	
 	Vector3D<> dir(V.col(0));
 	
-	//std::cout << "dir= " << dir << std::endl;
-	
 	/* find point on the line closest to the origin */
-	double t0 = -dot(data[0], dir) / dot(dir, dir);
-	_p1 = data[0] + t0 * dir;
+	double t0 = -dot((*begin), dir) / dot(dir, dir);
+	_p1 = (*begin) + t0 * dir;
 	_p2 = _p1 + normalize(dir);
 	
 	/* calculate fitting error */
 	double error = 0.0;
-	for (size_t i = 0; i < data.size(); ++i) {
-		double d = distance(data[i]);
+	for (std::vector<rw::math::Vector3D<> >::const_iterator it = begin; it != end; ++it) {
+		double d = distance(*it);
 		error += d * d;
 	}
 	

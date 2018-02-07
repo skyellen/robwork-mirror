@@ -30,7 +30,11 @@ IF( build )
 	SET_SOURCE_FILES_PROPERTIES(../rws.i PROPERTIES SWIG_FLAGS "-includeall")
 	
 	# lua interface generation
-    SWIG_ADD_MODULE(rws_lua lua ../rws.i Lua.cpp ../ScriptTypes.cpp)
+	IF ((CMAKE_VERSION VERSION_GREATER 3.8) OR (CMAKE_VERSION VERSION_EQUAL 3.8))
+		SWIG_ADD_LIBRARY(rws_lua MODULE LANGUAGE lua SOURCES ../rws.i Lua.cpp ../ScriptTypes.cpp)
+	ELSE()
+		SWIG_ADD_MODULE(rws_lua lua ../rws.i Lua.cpp ../ScriptTypes.cpp)
+	ENDIF()
     SWIG_LINK_LIBRARIES(rws_lua rws rws_rwstudioapp
                 ${RWS_COMPONENT_LIBRARIES} 
                 ${RWS_PLUGIN_LIBRARIES} 

@@ -91,6 +91,12 @@ bool PropertyMap::erase(const std::string& identifier)
     }
 }
 
+
+void PropertyMap::clear()
+{
+	_properties.clear();
+}
+
 size_t PropertyMap::size() const
 {
     return _properties.size();

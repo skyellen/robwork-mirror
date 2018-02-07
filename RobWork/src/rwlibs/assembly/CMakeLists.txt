@@ -27,6 +27,10 @@ IF(build)
       ./AssemblyTask.cpp
       ./CircularPiHControlStrategy.cpp
       ./CircularPiHParameterization.cpp
+      ./PiHParameterization.cpp
+      ./PiHStrategy.cpp
+      ./SpiralParameterization.cpp
+      ./SpiralStrategy.cpp
     )
     
     SET(SRC_FILES_HPP
@@ -39,6 +43,10 @@ IF(build)
       ./AssemblyTask.hpp
       ./CircularPiHControlStrategy.hpp
       ./CircularPiHParameterization.hpp
+      ./PiHParameterization.hpp
+      ./PiHStrategy.hpp
+      ./SpiralParameterization.hpp
+      ./SpiralStrategy.hpp
     )
       	  
     RW_ADD_LIBRARY(${SUBSYS_NAME} assembly ${SRC_FILES} ${SRC_FILES_HPP} ${LOADER_SRC_FILES_HPP})

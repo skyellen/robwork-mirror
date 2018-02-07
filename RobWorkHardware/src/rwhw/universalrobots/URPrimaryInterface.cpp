@@ -1,9 +1,19 @@
-/*
- * UniversalRobots.cpp
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
  *
- *  Created on: Apr 15, 2010
- *      Author: lpe
- */
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 
 #include "URPrimaryInterface.hpp"
 #include "URCommon.hpp"
@@ -15,20 +25,23 @@
 #include <boost/asio/write.hpp>
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <float.h>
 
-using namespace rw::models;
 using namespace rw::math;
 using namespace rw::common;
-using namespace rw::trajectory;
-
 using namespace rwhw;
 using namespace boost::asio::ip;
 
-URPrimaryInterface::URPrimaryInterface():
+URPrimaryInterface::URPrimaryInterface() :
+	_thread(NULL),
+	_stop(false),
 	_haveReceivedSize(false),
+	_messageLength(0),
+	_messageOffset(0),
 	_socket(0),
+	_hostName(""),
 	_connected(false),
 	_hasURData(false)
 {
@@ -36,6 +49,7 @@ URPrimaryInterface::URPrimaryInterface():
 
 URPrimaryInterface::~URPrimaryInterface() {
 	disconnect();
+	stop();
 }
 
 double URPrimaryInterface::driverTime() const {
@@ -61,6 +75,17 @@ void URPrimaryInterface::start() {
 
 void URPrimaryInterface::stop() {
 	_stop = true;
+	if (_thread != NULL) {
+		// Give the thread one second to stop
+		if (!_thread->timed_join(boost::posix_time::seconds(1))) {
+			// Failure, interrupt
+			RW_WARN("Interrupting URPrimaryInterface thread...");
+			_thread->interrupt();
+			if (!_thread->timed_join(boost::posix_time::seconds(1)))
+				RW_THROW("Failed to interrupt URPrimaryInterface thread");
+		}
+		_thread = NULL;
+	}
 }
 
 
@@ -73,7 +98,6 @@ bool URPrimaryInterface::isConnected() const {
 void URPrimaryInterface::connect(const std::string& ip, unsigned int port) {
 	if (_connected) {
 		RW_THROW("Already connected. Disconnect before connecting again!");
-
 	}
 
 	try {
@@ -110,19 +134,19 @@ bool URPrimaryInterface::sendScriptFile(const std::string& filename)
 	std::ifstream infile(filename.c_str());
 	// get length of file:
 	infile.seekg (0, std::ios::end);
-	long length = infile.tellg();
+	std::streampos length = infile.tellg();
 	infile.seekg (0, std::ios::beg);
 
 	// allocate memory:
-	char *buffer = new char [length+1];
+	char *buffer = new char [(int)length+1];
 
 	// read data as a block:
 	infile.read (buffer,length);
-    buffer[length] = 0;
+    buffer[(int)length] = 0;
 	
-    //std::cout<<"Send Script "<<buffer<<std::endl;
-
-    return sendScript(buffer); 
+    const bool ret = sendScript(buffer);
+    delete[] buffer;
+    return ret;
 
 }
 
@@ -139,6 +163,7 @@ void URPrimaryInterface::disconnect() {
 		_socket->close();
 		delete _socket;
 	}
+	_connected = false;
 	_socket = NULL;
 }
 
@@ -152,7 +177,7 @@ void URPrimaryInterface::run() {
 			}
 
 
-			long time = TimerUtil::currentTimeMs();
+			long time = static_cast<long>(TimerUtil::currentTimeMs());
 			if(time-_lastPackageTime>1000){
 				_lostConnection = true;
 			} else {
@@ -167,6 +192,7 @@ void URPrimaryInterface::run() {
 		}
 		_thread->yield();
 	}
+	RW_LOG_DEBUG("URPrimaryInterface thread stopped ");
 	_lastPackageTime = 666;
 }
 
@@ -177,18 +203,16 @@ bool URPrimaryInterface::sendCommand(const std::string &str) {
 		RW_THROW("Unable to send command before connecting.");
 		return false;
 	}
-	//std::cout<<"Send Command\n"<<str<<std::endl;
-        RW_LOG_DEBUG("Send Command:\n" << str);
 
-        std::size_t bytesTransfered = 0;
-        bytesTransfered = boost::asio::write(*_socket, boost::asio::buffer(str.c_str(), str.size()));
-        RW_LOG_DEBUG("Bytes to be transfered '" << str.size() << "' and bytes actually transfered '" << bytesTransfered << "'");
+    std::size_t bytesTransfered = 0;
+    bytesTransfered = boost::asio::write(*_socket, boost::asio::buffer(str.c_str(), str.size()));
+    RW_LOG_DEBUG("Bytes to be transfered '" << str.size() << "' and bytes actually transfered '" << bytesTransfered << "'");
 
-        if (str.size() == bytesTransfered) {
-            return true;
-        } else {
-            return false;
-        }
+    if (str.size() == bytesTransfered) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 //Read incomming data
@@ -209,40 +233,37 @@ bool URPrimaryInterface::readPrimaryInterfacePacket() {
 
 	//Initialise variables
 	if(!_haveReceivedSize) {
-		messageOffset = 0;
-		messageLength = 0;
+		_messageOffset = 0;
+		_messageLength = 0;
 	}
 
     //Get the length of the available data
-    uint32_t bytesReady = _socket->available();
-    //std::cout<<"bytes ready "<<bytesReady<<std::endl;
+    uint32_t bytesReady = static_cast<uint32_t>(_socket->available());
 	//Check if the data can contain an valid messages length
 	if(bytesReady < (uint32_t)sizeof(uint32_t))
 		 return false; //Wait for a whole int are ready
 
 	//Get the message length
 	if(!_haveReceivedSize) {
-		messageLength = URCommon::getUInt32(_socket, messageOffset);
+		_messageLength = URCommon::getUInt32(_socket, _messageOffset);
 		_haveReceivedSize = true;
 	}
-	//std::cout<<"Message Length = "<<messageLength<<std::endl;
-	_lastPackageTime = TimerUtil::currentTimeMs();
-
-	if (bytesReady < messageLength)
+	_lastPackageTime = static_cast<long>(TimerUtil::currentTimeMs());
+	
+	if (bytesReady < _messageLength)
 		return false; //Wait for a who packet are ready
 
 	//Receive the meassage type
-	unsigned char messageType = URCommon::getUChar(_socket, messageOffset);
+	unsigned char messageType = URCommon::getUChar(_socket, _messageOffset);
 
 	// read the rest of the message into a buffer
-	unsigned int dataLength = messageLength - messageOffset;
+	unsigned int dataLength = _messageLength - _messageOffset;
 	if(_dataStorage.size()<dataLength)
 		_dataStorage.resize(dataLength);
 
-	URCommon::getData(_socket,  messageLength-messageOffset,_dataStorage);
-	//std::cout<<"Message Type = "<<(int)messageType<<"  "<<messageOffset<<" < "<<messageLength<<" datalength = "<<_dataStorage.size()<<std::endl;
-	messageOffset = 0;
-	while(messageOffset<dataLength)
+	URCommon::getData(_socket,  _messageLength-_messageOffset,_dataStorage);
+	_messageOffset = 0;
+	while(_messageOffset<dataLength)
 	{
 		switch(messageType)
 		{
@@ -257,88 +278,146 @@ bool URPrimaryInterface::readPrimaryInterfacePacket() {
 				break;
 			case HMC_MESSAGE:
 			default:
-				uint32_t msglength =  URCommon::getUInt32(_dataStorage, messageOffset);
-				messageOffset += msglength;
+				uint32_t msglength =  URCommon::getUInt32(_dataStorage, _messageOffset);
+				_messageOffset += msglength;
 			break;
 		}
 	}
-
+	
 	_haveReceivedSize=false;
 	return true;
 }
 
 void URPrimaryInterface::readRobotMessage(const std::vector<char>& data, unsigned int messageLength)
 {
-	//uint32_t messageOffset = 0;
-	_data.controllerTimeStamp = URCommon::getUInt64(data, messageOffset);
-	//char source = URCommon::getUChar(data, messageOffset);
-	URCommon::getUChar(data, messageOffset);
-	char robotMessageType = URCommon::getUChar(data, messageOffset);
+	uint32_t startOffset = _messageOffset;
+	_data.controllerTimeStamp = static_cast<long>(URCommon::getUInt64(data, _messageOffset));
+	URCommon::getUChar(data, _messageOffset);
+	char robotMessageType = URCommon::getUChar(data, _messageOffset);
 
 	switch (robotMessageType) {
 
-	case URMessage::ROBOT_MESSAGE_VERSION:
-		_messages.push(URMessage(URMessage::ROBOT_MESSAGE_VERSION, 0,0,""));
+	case URMessage::ROBOT_MESSAGE_VERSION: {
+		int projectNameSize = (int)URCommon::getUChar(data, _messageOffset);
+		std::string projectName = URCommon::getString(data, projectNameSize, _messageOffset);
+		int majorVersion = (int)URCommon::getUChar(data, _messageOffset);
+		int minorVersion = (int)URCommon::getUChar(data, _messageOffset);
+		_messages.push(URMessage(URMessage::ROBOT_MESSAGE_VERSION, majorVersion, minorVersion, "Project Name: ", projectName));
+		_messageOffset = startOffset + messageLength;
+		}
 		break;
 	case URMessage::ROBOT_MESSAGE_SECURITY: {
-		int robotMessageCode = URCommon::getUInt32(data, messageOffset);
-		int robotMessageArgument = URCommon::getUInt32(data, messageOffset);
+		int robotMessageCode = URCommon::getUInt32(data, _messageOffset);
+		int robotMessageArgument = URCommon::getUInt32(data, _messageOffset);
 		std::string textmsg;
-		if (messageLength > messageOffset) {
-			size_t txtLength = messageLength - messageOffset;
+		char safetyModeType = URCommon::getUChar(data, _messageOffset);
+		std::string safetyModeTypeText = "";
+		switch (safetyModeType) {
+		case 1: 
+			safetyModeTypeText = "NORMAL";
+			break;
+		case 2:
+			safetyModeTypeText = "REDUCED";
+			break;
+		case 3:
+			safetyModeTypeText = "PROTECTIVE STOP";
+			break;
+		case 4:
+			safetyModeTypeText = "RECOVERY";
+			break;
+		case 5:
+			safetyModeTypeText = "SAFE GUARD STOP";
+			break;
+		case 6:
+			safetyModeTypeText = "SYSTEM EMERGENCY STOP";
+			break;
+		case 7:
+			safetyModeTypeText = "ROBOT EMERGENCY STOP";
+			break;
+		case 8:
+			safetyModeTypeText = "VIOLATION";
+			break;
+		case 9:
+			safetyModeTypeText = "FAULT";
+			break;
+		default:
+			safetyModeTypeText = "UNKNOWN";
+			break;
+		}
+		if (messageLength > _messageOffset) {
+			size_t txtLength = messageLength - _messageOffset;
 			char* msg = new char[txtLength + 1];
 			msg[txtLength] = 0;
 
 			for (size_t i = 0; i<txtLength; i++) {
-				msg[i] = URCommon::getUChar(data, messageOffset);
+				msg[i] = URCommon::getUChar(data, _messageOffset);
 			}
 			textmsg = msg;
 			delete[] msg;
 		}
-		_messages.push(URMessage(URMessage::ROBOT_MESSAGE_SECURITY, robotMessageCode, robotMessageArgument, textmsg));
+		_messages.push(URMessage(URMessage::ROBOT_MESSAGE_SECURITY, robotMessageCode, robotMessageArgument, textmsg, safetyModeTypeText));
 	}
 		break;
 	case URMessage::ROBOT_MESSAGE_ERROR_CODE: {
-		int robotMessageCode = URCommon::getUInt32(data, messageOffset);
-		int robotMessageArgument = URCommon::getUInt32(data, messageOffset);
+		int robotMessageCode = URCommon::getUInt32(data, _messageOffset);
+		int robotMessageArgument = URCommon::getUInt32(data, _messageOffset);
+		int warningLevel = URCommon::getUInt32(data, _messageOffset);
+		std::string levelMsg = "";
+		switch (warningLevel) {
+		case 1:
+			levelMsg = "INFO";
+			break;
+		case 2: 
+			levelMsg = "WARNING";
+			break;
+		case 3:
+			levelMsg = "VIOLATION";
+			break;
+		case 4:
+			levelMsg = "FAULT";
+			break;
+		default:
+			levelMsg = "UNKNOWN";
+			break;
+		}
 		std::string textmsg;
-		if (messageLength > messageOffset) {
-			size_t txtLength = messageLength - messageOffset;
+		if (messageLength > _messageOffset) {
+			size_t txtLength = messageLength - _messageOffset;
 			char* msg = new char[txtLength + 1];
 			msg[txtLength] = 0;
 
 			for (size_t i = 0; i<txtLength; i++) {
-				msg[i] = URCommon::getUChar(data, messageOffset);
+				msg[i] = URCommon::getUChar(data, _messageOffset);
 			}
 			textmsg = msg;
 			delete[] msg;
 		}
-		_messages.push(URMessage(URMessage::ROBOT_MESSAGE_ERROR_CODE, robotMessageCode, robotMessageArgument, textmsg));
+		_messages.push(URMessage(URMessage::ROBOT_MESSAGE_ERROR_CODE, robotMessageCode, robotMessageArgument, levelMsg, textmsg));
 	}
-		break;
+	break;
 	case URMessage::ROBOT_MESSAGE_KEY:
-		_messages.push(URMessage(URMessage::ROBOT_MESSAGE_KEY, 0, 0, ""));
+		_messages.push(URMessage(URMessage::ROBOT_MESSAGE_KEY, 0, 0, "ROBOT MESSAGE KEY", ""));
 		break;
 	case URMessage::ROBOT_MESSAGE_PROGRAM_LABEL:
-		_messages.push(URMessage(URMessage::ROBOT_MESSAGE_PROGRAM_LABEL, 0, 0, ""));
+		_messages.push(URMessage(URMessage::ROBOT_MESSAGE_PROGRAM_LABEL, 0, 0, "ROBOT_MESSAGE_PROGRAM_LABEL", ""));
 		break;
 	case URMessage::ROBOT_MESSAGE_POPUP: {
-		bool warning = URCommon::getBoolean(data, messageOffset);
-		bool error = URCommon::getBoolean(data, messageOffset);
-		unsigned int titleSize = URCommon::getUInt32(data, messageOffset);
+		bool warning = URCommon::getBoolean(data, _messageOffset);
+		bool error = URCommon::getBoolean(data, _messageOffset);
+		unsigned int titleSize = URCommon::getUInt32(data, _messageOffset);
 		char* title = new char[titleSize+1];
 		title[titleSize] = 0;
 		for (unsigned int i = 0; i<titleSize; i++) {
-			title[i] = URCommon::getUChar(data, messageOffset);
+			title[i] = URCommon::getUChar(data, _messageOffset);
 		}
 
-		size_t msgLength = messageLength - messageOffset;
+		size_t msgLength = messageLength - _messageOffset;
 		char* msg = new char[msgLength + 1];
 		msg[msgLength] = 0;
 		for (size_t i = 0; i<msgLength; i++) {
-			msg[i] = URCommon::getUChar(data, messageOffset);
+			msg[i] = URCommon::getUChar(data, _messageOffset);
 		}
-		_messages.push(URMessage(URMessage::ROBOT_MESSAGE_PROGRAM_LABEL, warning, error, std::string(title)+":"+std::string(msg)));
+		_messages.push(URMessage(URMessage::ROBOT_MESSAGE_PROGRAM_LABEL, warning, error, std::string(title), std::string(msg)));
 		delete[] msg;
 		delete[] title;
 
@@ -346,18 +425,18 @@ void URPrimaryInterface::readRobotMessage(const std::vector<char>& data, unsigne
 		break;
 	case URMessage::ROBOT_MESSAGE_TEXT: {
 		std::string textmsg;
-		if (messageLength > messageOffset) {
-			size_t txtLength = messageLength - messageOffset;
+		if (messageLength > _messageOffset) {
+			size_t txtLength = messageLength - _messageOffset;
 			char* msg = new char[txtLength + 1];
 			msg[txtLength] = 0;
 
 			for (size_t i = 0; i<txtLength; i++) {
-				msg[i] = URCommon::getUChar(data, messageOffset);
+				msg[i] = URCommon::getUChar(data, _messageOffset);
 			}
 			textmsg = msg;
 			delete[] msg;
 		}
-		_messages.push(URMessage(URMessage::ROBOT_MESSAGE_TEXT, 0, 0, textmsg));
+		_messages.push(URMessage(URMessage::ROBOT_MESSAGE_TEXT, 0, 0, "TEXT MESSAGE", textmsg));
 		}
 		break;
 	case URMessage::ROBOT_MESSAGE_VARIABLE:
@@ -365,7 +444,7 @@ void URPrimaryInterface::readRobotMessage(const std::vector<char>& data, unsigne
 	default:
 		break;
 	}
-
+	_messageOffset = startOffset + messageLength;
 }
 
 //Read the robot start
@@ -380,38 +459,38 @@ void URPrimaryInterface::readRobotsState(const std::vector<char>& data) {
 
 	_data.driverTimeStamp = driverTime();
 	//Get the packet length
-	uint32_t packetLength =  URCommon::getUInt32(data, messageOffset);
+	uint32_t packetLength =  URCommon::getUInt32(data, _messageOffset);
 	//Get the packet type
-	unsigned char packetType= URCommon::getUChar(data, messageOffset);
-	//std::cout<<"Package Length = "<<packetLength<<"  PacketType = "<<(int)packetType<<std::endl;
+	unsigned char packetType= URCommon::getUChar(data, _messageOffset);
+
 	switch(packetType) {
 	case ROBOT_MODE_DATA:
-		_data.controllerTimeStamp = URCommon::getUInt64(data, messageOffset);
-		_data.physical = URCommon::getBoolean(data, messageOffset);
-		_data.real = URCommon::getBoolean(data, messageOffset);
-		_data.robotPowerOn = URCommon::getBoolean(data, messageOffset);
-		_data.emergencyStopped = URCommon::getBoolean(data, messageOffset);
-		_data.securityStopped = URCommon::getBoolean(data, messageOffset);
-		_data.programRunning = URCommon::getBoolean(data, messageOffset);
-		_data.programPaused = URCommon::getBoolean(data, messageOffset);
-		_data.robotMode = URCommon::getUChar(data, messageOffset);
-		_data.speedFraction = URCommon::getDouble(data, messageOffset);
+		_data.controllerTimeStamp = static_cast<long>(URCommon::getUInt64(data, _messageOffset));
+		_data.physical = URCommon::getBoolean(data, _messageOffset);
+		_data.real = URCommon::getBoolean(data, _messageOffset);
+		_data.robotPowerOn = URCommon::getBoolean(data, _messageOffset);
+		_data.emergencyStopped = URCommon::getBoolean(data, _messageOffset);
+		_data.securityStopped = URCommon::getBoolean(data, _messageOffset);
+		_data.programRunning = URCommon::getBoolean(data, _messageOffset);
+		_data.programPaused = URCommon::getBoolean(data, _messageOffset);
+		_data.robotMode = URCommon::getUChar(data, _messageOffset);
+		_data.speedFraction = URCommon::getDouble(data, _messageOffset);
 		break;
 
 	case JOINT_DATA:
 		//For all 6 joints
 		for (unsigned int j = 0; j < 6; j++) {
 			//get rw::math::Q
-			jointPosition[j] = URCommon::getDouble(data, messageOffset);
-			targetJointPosition[j] = URCommon::getDouble(data, messageOffset);
-			jointSpeed[j] = URCommon::getDouble(data, messageOffset);
+			jointPosition[j] = URCommon::getDouble(data, _messageOffset);
+			targetJointPosition[j] = URCommon::getDouble(data, _messageOffset);
+			jointSpeed[j] = URCommon::getDouble(data, _messageOffset);
 
 			//store Array
-			_data.jointCurrent[j] = URCommon::getFloat(data, messageOffset);
-			_data.jointVoltage[j] = URCommon::getFloat(data, messageOffset);
-			_data.jointMotorTemperature[j] = URCommon::getFloat(data, messageOffset);
-			_data.jointMicroTemperature[j] = URCommon::getFloat(data, messageOffset);
-			_data.jointMode[j] = URCommon::getUChar(data, messageOffset);
+			_data.jointCurrent[j] = static_cast<float>(URCommon::getFloat(data, _messageOffset));
+			_data.jointVoltage[j] = static_cast<float>(URCommon::getFloat(data, _messageOffset));
+			_data.jointMotorTemperature[j] = static_cast<float>(URCommon::getFloat(data, _messageOffset));
+			_data.jointMicroTemperature[j] = static_cast<float>(URCommon::getFloat(data, _messageOffset));
+			_data.jointMode[j] = URCommon::getUChar(data, _messageOffset);
 		}
 		//Store rw::math::Q
 		//Encoder adjustment
@@ -425,99 +504,99 @@ void URPrimaryInterface::readRobotsState(const std::vector<char>& data) {
 
 	case TOOL_DATA:
 		//unsigned char Analog input range
-		_data.analogInputRange[2] = URCommon::getUChar(data, messageOffset);
-		_data.analogInputRange[3] = URCommon::getUChar(data, messageOffset);
+		_data.analogInputRange[2] = URCommon::getUChar(data, _messageOffset);
+		_data.analogInputRange[3] = URCommon::getUChar(data, _messageOffset);
 
 		// double Analog input
-		_data.analogIn[2] = URCommon::getDouble(data, messageOffset);
-		_data.analogIn[3] = URCommon::getDouble(data, messageOffset);
+		_data.analogIn[2] = URCommon::getDouble(data, _messageOffset);
+		_data.analogIn[3] = URCommon::getDouble(data, _messageOffset);
 
 		// float toolVoltage48V
-		_data.toolVoltage48V = URCommon::getFloat(data, messageOffset);
+		_data.toolVoltage48V = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 
 		// unsigned char tool_output_voltage (can only be 0, 12 or 24)
-		_data.toolOutputVoltage = URCommon::getUChar(data, messageOffset);
+		_data.toolOutputVoltage = URCommon::getUChar(data, _messageOffset);
 
 		// float tool_current
-		_data.toolCurrent = URCommon::getFloat(data, messageOffset);
+		_data.toolCurrent = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 
 		// float toolTemperature;
-		_data.toolTemperature = URCommon::getFloat(data, messageOffset);
+		_data.toolTemperature = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 
 		// uchar tool mode
-		_data.toolMode = URCommon::getUChar(data, messageOffset);
+		_data.toolMode = URCommon::getUChar(data, _messageOffset);
 		break;
 
 	case MASTERBOARD_DATA:
 	{
 		// unsigned short digitalInputBits;
-		tmp16 = URCommon::getUInt16(data, messageOffset);
+		tmp16 = URCommon::getUInt16(data, _messageOffset);
 		for(unsigned int i=0; i<10; ++i) // Tool bits are actually included here
 			_data.digitalIn[i] = extractBoolean(tmp16, i);
 
 		// unsigned short digitalOutputBits;
-		tmp16 = URCommon::getUInt16(data, messageOffset);
+		tmp16 = URCommon::getUInt16(data, _messageOffset);
 		for(unsigned int i=0; i<10; ++i) // Tool bits are actually included here
 			_data.digitalOut[i] = extractBoolean(tmp16, i);
 
 		// unsigned char analogInputRange[4]
-		_data.analogInputRange[0] = URCommon::getUChar(data, messageOffset);
-		_data.analogInputRange[1] = URCommon::getUChar(data, messageOffset);
+		_data.analogInputRange[0] = URCommon::getUChar(data, _messageOffset);
+		_data.analogInputRange[1] = URCommon::getUChar(data, _messageOffset);
 
 		//double analogInput[4];
-		_data.analogIn[0] = URCommon::getDouble(data, messageOffset);
-		_data.analogIn[1] = URCommon::getDouble(data, messageOffset);
+		_data.analogIn[0] = URCommon::getDouble(data, _messageOffset);
+		_data.analogIn[1] = URCommon::getDouble(data, _messageOffset);
 
 		// char analogOutputDomain[2]
-		_data.analogOutputDomain[0] = URCommon::getUChar(data, messageOffset);
-		_data.analogOutputDomain[1] = URCommon::getUChar(data, messageOffset);
+		_data.analogOutputDomain[0] = URCommon::getUChar(data, _messageOffset);
+		_data.analogOutputDomain[1] = URCommon::getUChar(data, _messageOffset);
 
 		//double analogOutput[2];
-		_data.analogOut[0] = URCommon::getDouble(data, messageOffset);
-		_data.analogOut[1] = URCommon::getDouble(data, messageOffset);
+		_data.analogOut[0] = URCommon::getDouble(data, _messageOffset);
+		_data.analogOut[1] = URCommon::getDouble(data, _messageOffset);
 
 		// float masterTemperature;
-		_data.masterTemperature = URCommon::getFloat(data, messageOffset);
+		_data.masterTemperature = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 
 		// float robotVoltage48V;
-		_data.robotVoltage48V = URCommon::getFloat(data, messageOffset);
+		_data.robotVoltage48V = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 
 		// float robotCurrent;
-		_data.robotCurrent = URCommon::getFloat(data, messageOffset);
+		_data.robotCurrent = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 
 		// float masterIOCurrent;
-		_data.masterIOCurrent = URCommon::getFloat(data, messageOffset);
+		_data.masterIOCurrent = static_cast<float>(URCommon::getFloat(data, _messageOffset));
 
 		// secret stuff, masterSafetyState, master
-		messageOffset+=2;
+		_messageOffset+=2;
 
-		//unsigned char euroMap = URCommon::getUChar(data, messageOffset);
-		URCommon::getUChar(data, messageOffset);
+		//unsigned char euroMap = URCommon::getUChar(data, _messageOffset);
+		URCommon::getUChar(data, _messageOffset);
 	/*	if(euroMap==1){
-			uint32_t it1 = euromapInputBits=getUINT32(messageOffset);
-			uint32_t it2 = data.euromapOutputBits=getUINT32(messageOffset);
-			uint16_t it3 = data.euromap24Voltage=getUINT16(messageOffset);
-			uint16_t it4 = data.euromap24Current=getUINT16(messageOffset);
+			uint32_t it1 = euromapInputBits=getUINT32(_messageOffset);
+			uint32_t it2 = data.euromapOutputBits=getUINT32(_messageOffset);
+			uint16_t it3 = data.euromap24Voltage=getUINT16(_messageOffset);
+			uint16_t it4 = data.euromap24Current=getUINT16(_messageOffset);
 		}*/
 		}
 		break;
 
 	case CARTESIAN_INFO:
-		messageOffset += packetLength-5;
+		_messageOffset += packetLength-5;
 		break;
 	case LASER_POINTER_POSITION:
-		messageOffset += packetLength-5;
+		_messageOffset += packetLength-5;
 		break;
 	default:
-		messageOffset += packetLength-5; //-5 because the header has already been read.
-		//RW_WARN("Unknown package type: "<<(int)packetType<<"  "<<packetLength<<" MessageOffset = "<<messageOffset<<std::endl);
+		_messageOffset += packetLength-5; //-5 because the header has already been read.
+		//RW_WARN("Unknown package type: "<<(int)packetType<<"  "<<packetLength<<" MessageOffset = "<<_messageOffset<<std::endl);
 	}
 }
 
 
 //Extract many booleans, max 16
 bool URPrimaryInterface::extractBoolean(uint16_t input, unsigned int bitNumber) {
-	uint16_t filter = 1<<bitNumber;
+	uint16_t filter = static_cast<uint16_t>(1<<bitNumber);
 	bool output = (input & filter)>0;
 	return output;
 }

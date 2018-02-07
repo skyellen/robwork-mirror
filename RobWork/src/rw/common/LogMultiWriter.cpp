@@ -39,21 +39,21 @@ void LogMultiWriter::addWriter(LogWriter::Ptr writer) {
 
 
 
-void LogMultiWriter::write(const std::string& str)
+void LogMultiWriter::doWrite(const std::string& str)
 {
 	BOOST_FOREACH(LogWriter::Ptr writer, _writers) {
 		writer->write(str);
 	}
 }
 
-void LogMultiWriter::flush()
+void LogMultiWriter::doFlush()
 {
 	BOOST_FOREACH(LogWriter::Ptr writer, _writers) {
 		writer->flush();
 	}
 }
 
-void LogMultiWriter::setTabLevel(int tabLevel) {
+void LogMultiWriter::doSetTabLevel(int tabLevel) {
 	BOOST_FOREACH(LogWriter::Ptr writer, _writers) {
 		writer->setTabLevel(tabLevel);
 	}

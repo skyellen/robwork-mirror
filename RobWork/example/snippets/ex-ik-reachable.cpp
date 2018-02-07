@@ -30,8 +30,6 @@ TransformPath getRandomTargets(const Device& device, State state, int targetCnt)
 }
 
 void printReachableTargets(
-    Device& device,
-    const State& state,
     const TransformPath& targets,
     QIKSampler& ik)
 {
@@ -52,10 +50,10 @@ void invkinExample(
     const TransformPath targets = getRandomTargets(device, state, 10);
 
     std::cout << "IK solutions found for targets:\n";
-    printReachableTargets(device, state, targets, *ik_any);
+    printReachableTargets(targets, *ik_any);
 
     std::cout << "Collision free IK solutions found for targets:\n";
-    printReachableTargets(device, state, targets, *ik_cfree);
+    printReachableTargets(targets, *ik_cfree);
 }
 
 int main(int argc, char** argv)

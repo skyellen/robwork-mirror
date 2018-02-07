@@ -25,9 +25,11 @@ SET(FILES_CPP
     IncrementalHull3D.cpp
     Contour2D.cpp
     IndexedPolygon.cpp 
+    PolygonUtil.cpp
     IntersectUtil.cpp
     Covariance.cpp
     ConvexHullND.cpp
+    Delaunay.cpp
     QHullND.cpp
     QHull3D.cpp
     TriTriIntersectDeviller.cpp
@@ -41,14 +43,13 @@ SET(FILES_CPP
     OBBFactory.cpp
     OBBToleranceCollider.cpp
     DistanceUtil.cpp
+    HyperSphere.cpp
     IndexedArray.cpp
     IndexedTriArray.cpp
     OBVDistanceCalc.cpp
     RectDistanceCalc.cpp
     RSSDistanceCalc.cpp
     SphereDistanceCalc.cpp
-    TriDistanceCalc.cpp
-    TriTriToleranceIntersect.cpp
     TriMeshSurfaceSampler.cpp
     PointCloud.cpp
 )
@@ -74,15 +75,19 @@ SET(FILES_HPP
     Line.hpp
     Ray.hpp
     Plane.hpp
-    ConvexHull2D.hpp
+	ConvexHull2D.hpp
     ConvexHull3D.hpp
     IncrementalHull3D.hpp
+    HyperSphere.hpp
     IndexedArray.hpp
 	IndexedPolygon.hpp
-    #GiftWrapHull3D.hpp
+    Polygon.hpp
+    PolygonUtil.hpp
+	#GiftWrapHull3D.hpp
     Contour2D.hpp
     Contour2DUtil.hpp
     Covariance.hpp
+    Delaunay.hpp
     QHullND.hpp
     QHull3D.hpp
     BVCollider.hpp
@@ -104,11 +109,20 @@ SET(FILES_HPP
     RectDistanceCalc.hpp
     RSSDistanceCalc.hpp
     SphereDistanceCalc.hpp
-    TriDistanceCalc.hpp
-    TriTriToleranceIntersect.hpp
     TriMeshSurfaceSampler.hpp
     PointCloud.hpp
 )
+
+IF (RW_HAVE_PQP)
+  SET(FILES_CPP ${FILES_CPP}
+    TriDistanceCalc.cpp
+    TriTriToleranceIntersect.cpp
+  )
+  SET(FILES_HPP ${FILES_HPP}
+    TriDistanceCalc.hpp
+    TriTriToleranceIntersect.hpp
+  )
+ENDIF()
 
 SOURCE_GROUP(geometry FILES ${FILES_CPP} ${FILES_HPP})
 

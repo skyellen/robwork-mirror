@@ -25,12 +25,12 @@ using namespace rw::common;
 using namespace rw::graphics;
 using namespace rwlibs::simulation;
 
-GLFrameGrabber::GLFrameGrabber(int width, int height, double fov,double near, double far)
+GLFrameGrabber::GLFrameGrabber(int width, int height, double fov,double nearArg, double farArg)
     :
     FrameGrabber(width,height,rw::sensor::Image::RGB),
     _fieldOfView(fov),_drawer(NULL),
     _perspTrans(rw::math::Transform3D<double>::identity()),
-    _near(near),_far(far)
+    _near(nearArg),_far(farArg)
 {
 }
 
@@ -39,7 +39,8 @@ GLFrameGrabber::~GLFrameGrabber(){
 
 void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
                           const rw::kinematics::State& state) {
-
+	if(_view.isNull())
+		RW_THROW("GLFrameGrabber must be initialized before grab is called!");
     rw::math::Transform3D<> wTf = rw::kinematics::Kinematics::worldTframe(frame, state);
     _view->_viewCamera->setTransform( wTf );
     // the image is grabbed in the negative z-axis
@@ -48,8 +49,9 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
 }
 
 void GLFrameGrabber::resize(int width, int height) {
+	if(_view.isNull())
+		RW_THROW("Resizing GLFrameGrabber must be done after initialization!");
     FrameGrabber::resize(width,height);
-
     _view->_camGroup->setOffscreenRenderColor(_colorCode);
     _view->_camGroup->setOffscreenRenderSize(getWidth(),getHeight());
     _view->_camGroup->setCopyToImage(_img);
@@ -57,6 +59,8 @@ void GLFrameGrabber::resize(int width, int height) {
 
 void GLFrameGrabber::resize(int width, int height, rw::sensor::Image::ColorCode colorCode)
 {
+	if(_view.isNull())
+		RW_THROW("Resizing GLFrameGrabber must be done after initialization!");
     FrameGrabber::resize(width,height, colorCode);
     _view->_camGroup->setOffscreenRenderColor(_colorCode);
     _view->_camGroup->setOffscreenRenderSize(getWidth(),getHeight());
@@ -64,11 +68,9 @@ void GLFrameGrabber::resize(int width, int height, rw::sensor::Image::ColorCode 
 }
 
 
-void GLFrameGrabber::init(rw::graphics::SceneViewer::Ptr drawer){
+bool GLFrameGrabber::init(rw::graphics::SceneViewer::Ptr drawer){
     _drawer = drawer;
-    std::cout << "initialize glframegrabber";
     SceneViewer::View::Ptr view = _drawer->createView("CameraSensorView");
-
     view->_viewCamera->setAspectRatioControl(SceneCamera::Scale);
     view->_viewCamera->setEnabled(true);
     view->_viewCamera->setClearBufferEnabled(true);
@@ -83,11 +85,17 @@ void GLFrameGrabber::init(rw::graphics::SceneViewer::Ptr drawer){
     view->_viewCamera->attachTo( drawer->getMainView()->_viewCamera->getRefNode() );
     view->_viewCamera->setDrawMask(DrawableNode::Physical);
     // render offscreen
-    view->_camGroup->setOffscreenRenderEnabled(true);
-    view->_camGroup->setOffscreenRenderColor(_colorCode);
-    view->_camGroup->setOffscreenRenderSize(getWidth(),getHeight());
-    view->_camGroup->setCopyToImage( _img);
-    view->_camGroup->setEnabled(true);
-    _view = view;
+    if (view->_camGroup->setOffscreenRenderEnabled(true)) {
+    	view->_camGroup->setOffscreenRenderColor(_colorCode);
+    	view->_camGroup->setOffscreenRenderSize(getWidth(),getHeight());
+    	view->_camGroup->setCopyToImage( _img);
+    	view->_camGroup->setEnabled(true);
+    	_view = view;
+    } else {
+    	_drawer->destroyView(view);
+    	RW_WARN("GLFrameGrabber could not be initialized as offscreen rendering is not supported.");
+    	return false;
+    }
+    return true;
 
 }

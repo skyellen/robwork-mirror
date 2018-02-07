@@ -116,6 +116,7 @@ private slots:
     void stateChanged(const rw::kinematics::State& state);
 
     void deviceConfigChanged(const rw::math::Q& q);
+    void deviceConfigChangedFull(const rw::math::Q& q);
     void frameConfigChanged(const rw::math::Transform3D<>& transform);
 
 private:
@@ -124,6 +125,7 @@ private:
     rw::kinematics::State _state;
 	rw::common::Ptr<rw::models::Device> _selectedDevice;
     JointSliderWidget* _jointSliderWidget;
+    JointSliderWidget* _jointSliderWidgetFull;
 
     rw::kinematics::MovableFrame* _selectedFrame;
     MovableFrameTab* _cartesianTab;

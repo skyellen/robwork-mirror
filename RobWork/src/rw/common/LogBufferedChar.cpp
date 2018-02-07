@@ -15,11 +15,11 @@
  * limitations under the License.
  ********************************************************************************/
 
-
+ 
 #include "LogBufferedChar.hpp"
 #include <iomanip>
 #include <cstring>
-
+ 
 using namespace rw::common;
 
 LogBufferedChar::LogBufferedChar(size_t size, std::ostream* stream, OverflowPolicy policy):
@@ -41,7 +41,7 @@ LogBufferedChar::~LogBufferedChar()
     flush();
 }
 
-void LogBufferedChar::write(const std::string& input) {
+void LogBufferedChar::doWrite(const std::string& input) {
 	std::stringstream sstr;
 	sstr << std::setw(_tabLevel)<<std::setfill(' ');
 	sstr<<input;
@@ -83,7 +83,7 @@ void LogBufferedChar::write(const std::string& input) {
     }
 }
 
-void LogBufferedChar::flush() {
+void LogBufferedChar::doFlush() {
     if (_overflow) {
     	_stream->write(get(_index), _size - _index);
         if(_index>0){
@@ -100,6 +100,6 @@ void LogBufferedChar::flush() {
 }
 
 
-void LogBufferedChar::setTabLevel(int tabLevel) {
+void LogBufferedChar::doSetTabLevel(int tabLevel) {
 	_tabLevel = tabLevel;
 }

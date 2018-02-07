@@ -35,7 +35,7 @@
         </item>
        </layout>
       </item>
-      <item row="7" column="0">
+      <item row="4" column="0">
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -48,62 +48,14 @@
         </property>
        </spacer>
       </item>
-      <item row="2" column="0">
-       <widget class="QGroupBox" name="groupBox_2">
-        <property name="title">
-         <string>Select grasp</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_5">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>Grasp</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QSpinBox" name="_taskSelectSpin"/>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QGroupBox" name="groupBox">
-        <property name="title">
-         <string>Show options</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="_successBox">
-           <property name="text">
-            <string>Success</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QCheckBox" name="_failedBox">
-           <property name="text">
-            <string>Failed</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QPushButton" name="btnRecordVideo">
+      <item row="1" column="0">
+       <widget class="QPushButton" name="_btnStrategyLibrary">
         <property name="text">
-         <string>Record Video</string>
+         <string>Library of Assembly Strategies</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="2" column="0">
        <widget class="QGroupBox" name="_taskBox">
         <property name="title">
          <string>Task</string>
@@ -116,20 +68,13 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <layout class="QFormLayout" name="_taskBoxLayout"/>
-         </item>
          <item row="1" column="0">
-          <widget class="QPushButton" name="_highlightButton">
-           <property name="text">
-            <string>Highlight</string>
-           </property>
-          </widget>
+          <layout class="QFormLayout" name="_taskBoxLayout"/>
          </item>
         </layout>
        </widget>
       </item>
-      <item row="6" column="0">
+      <item row="3" column="0">
        <widget class="QGroupBox" name="_resultBox">
         <property name="title">
          <string>Result</string>
@@ -200,13 +145,6 @@
           </widget>
          </item>
         </layout>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QProgressBar" name="_progress">
-        <property name="value">
-         <number>24</number>
-        </property>
        </widget>
       </item>
      </layout>

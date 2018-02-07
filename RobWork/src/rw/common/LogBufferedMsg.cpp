@@ -33,12 +33,12 @@ LogBufferedMsg::~LogBufferedMsg()
     flush();
 }
 
-void LogBufferedMsg::write(const std::string& msg)
+void LogBufferedMsg::doWrite(const std::string& msg)
 {
 	_buffer.push_back(std::make_pair(msg, _tabLevel));
 }
 
-void LogBufferedMsg::flush()
+void LogBufferedMsg::doFlush()
 {
 	typedef std::pair<std::string, int> StringIntPair;
 	BOOST_FOREACH(const StringIntPair& pair, _buffer) {
@@ -49,6 +49,6 @@ void LogBufferedMsg::flush()
     _buffer.clear();
 }
 
-void LogBufferedMsg::setTabLevel(int tablevel) {
+void LogBufferedMsg::doSetTabLevel(int tablevel) {
 	_tabLevel = tablevel;
 }

@@ -7,6 +7,7 @@ SET(FILES_CPP
   LogBufferedChar.cpp
   LogBufferedMsg.cpp
   LogStreamWriter.cpp
+  LogMultiWriter.cpp
   LogFileWriter.cpp
   Message.cpp
   Property.cpp
@@ -43,10 +44,11 @@ SET(FILES_CPP
   ExtensionPoint.cpp
   ExtensionRegistry.cpp
   Plugin.cpp
+
 )
 
 SET(FILES_HPP
-  AnyPtr.hpp
+  AnyPtr.hpp 
   Common.hpp
   ConcatVectorIterator.hpp
   IOUtil.hpp
@@ -55,6 +57,7 @@ SET(FILES_HPP
   LogBufferedChar.hpp
   LogBufferedMsg.hpp
   LogStreamWriter.hpp
+  LogMultiWriter.hpp
   LogFileWriter.hpp
   Message.hpp
   Property.hpp
@@ -92,6 +95,7 @@ SET(FILES_HPP
   ExtensionPoint.hpp
   ExtensionRegistry.hpp
   Plugin.hpp
+  
 )
 
 FILE(GLOB SRC_FILES_CPP ${FILES_CPP})

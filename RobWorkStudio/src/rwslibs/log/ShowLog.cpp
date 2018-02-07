@@ -43,72 +43,45 @@ using namespace rws;
     public:
         typedef std::pair<std::string, QColor> Message;
         WriterWrapper(ShowLog* slog, QColor color):
-            _slog(slog),_color(color)
+            _slog(slog),_color(color), _tabLevel(4)
         {
-
         }
 
         virtual ~WriterWrapper(){}
 
-        virtual void flush(){
-            //_slog->flush();
+		std::vector< std::pair<std::string, QColor> > _msgQueue;
+
+	protected:
+		/**
+		 * @copydoc LogWriter::doFlush
+		 */
+        virtual void doFlush() {
+            
         }
 
-        /**
-         * @brief Writes \b str to the log
-         * @param str [in] message to write
-         */
-        virtual void write(const std::string& input){
-            /*    	std::stringstream buf;
-
-
-            if(_isNewLine){
-                buf	<< "["<<_id<<"] : ";
-            }
-            size_t lpos = 0;
-            size_t pos = str.find("\n");
-            while(pos!=std::string::npos){
-                buf << str.substr(pos,pos-lpos) << "\n    ";
-                lpos = pos;
-                pos = str.find("\n", pos+1);
-            }
-            buf << str.substr(lpos) << "\n";
-
-            _slog->write(buf.str(),_color);
-            */
-            //_slog->write(str,_color);
-
+		/**
+	 	 * @copydoc LogWriter::doWrite
+		 */
+		virtual void doWrite(const std::string& input){
 			std::stringstream sstr;
 			sstr << std::setw(_tabLevel)<<std::setfill(' ');
 			sstr << input;
 
 			_msgQueue.push_back( Message(sstr.str().c_str(),_color) );
-            _isNewLine = false;
-            QApplication::postEvent( _slog, new QEvent((QEvent::Type)MESSAGE_ADDED_EVENT) );
-
-        }
-
-        virtual void writeln(const std::string& input){
-			std::stringstream sstr;
-			sstr << std::setw(_tabLevel)<<std::setfill(' ');
-			sstr << input;
-
-            _msgQueue.push_back( Message(sstr.str().c_str(),_color) );
-            //_slog->write(str,_color);
-            _isNewLine = true;
             QApplication::postEvent( _slog, new QEvent((QEvent::Type)MESSAGE_ADDED_EVENT) );
         }
 
-        std::vector< std::pair<std::string, QColor> > _msgQueue;
-
-		void setTabLevel(int tabLevel) {
+        
+		/**
+		 * @copydoc LogWriter::doSetTabLevel
+		 */
+		void doSetTabLevel(int tabLevel) {
 			_tabLevel = tabLevel;
 		}
 
     private:
         ShowLog *_slog;
         QColor _color;
-        bool _isNewLine;
 		int _tabLevel;
 
     };
@@ -177,21 +150,6 @@ void ShowLog::receiveMessage(
     const rw::common::Message& msg)
 {
 	RW_WARN("Deprecated function, use log().info() << \"your string\" instead");
-    /*std::stringstream buf;
-    buf
-        << id
-        << " ["
-        << plugin
-        << "] "
-        << "("
-        << msg.getFile()
-        << ":"
-        << msg.getLine()
-        << "):\n"
-        << msg.getText()
-        << "\n";
-    _editor->append(buf.str().c_str());
-    */
 }
 
 
@@ -201,10 +159,8 @@ void ShowLog::write(const std::string& str, const QColor& color){
     _editor->setTextCursor(*_endCursor);
     _editor->setTextColor( color );
 
-	//_endCursor->insertText(str.c_str());
 	_editor->insertPlainText( str.c_str() );
 	*_endCursor = _editor->textCursor();
-	//_editor->insertPlainText(  );
 }
 
 void ShowLog::frameSelectedListener(rw::kinematics::Frame* frame) {
@@ -218,10 +174,8 @@ void ShowLog::initialize() {
     getRobWorkStudio()->frameSelectedEvent().add(
     		boost::bind(&ShowLog::frameSelectedListener, this, _1), this);
 
-    log().setWriter(Log::Info, _writers[0]);
-    //log().setWriter(Log::Warning, _writers[1]);
-    //log().setWriter(Log::Error, _writers[2]);
-
+	
+    log().setWriterForMask(Log::AllMask, _writers[0]);
 }
 
 void ShowLog::flush(){

@@ -121,7 +121,7 @@ namespace rw { namespace proximity {
         virtual void clearFrame(const rw::kinematics::Frame* frame);
 
         /**
-           @brief Clear (remove all) model information for frame \b frame.
+           @brief Clear (remove all) model information for all frames.
          */
         virtual void clearFrames();
 
@@ -181,6 +181,11 @@ namespace rw { namespace proximity {
          * @brief Clears any stored model information
          */
         virtual void clear() = 0;
+
+    	/**
+    	 * @addtogroup extensionpoints
+    	 * @extensionpoint{rw::proximity::ProximityStrategy::Factory,rw::proximity::ProximityStrategy,rw.proximity.ProximityStrategy}
+    	 */
 
     	/**
     	 * @brief A factory for a ProximityStrategy. This factory also defines an ExtensionPoint.

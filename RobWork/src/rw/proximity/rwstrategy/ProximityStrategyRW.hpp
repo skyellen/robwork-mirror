@@ -66,11 +66,7 @@ namespace rw { namespace proximity {
      * For further information check out http://www.cs.unc.edu/~geom/SSV/
      */
     class ProximityStrategyRW :
-        public rw::proximity::CollisionStrategy,
-        public rw::proximity::CollisionToleranceStrategy,
-        public rw::proximity::DistanceStrategy
-        //public rw::proximity::DistanceToleranceStrategy
-        //public rw::proximity::DistanceThresholdStrategy
+        public rw::proximity::CollisionStrategy
 
     {
     public:
@@ -169,28 +165,6 @@ namespace rw { namespace proximity {
 			rw::proximity::ProximityModel::Ptr b,
             const rw::math::Transform3D<>& wTb,
             rw::proximity::ProximityStrategyData &data);
-
-        /**
-         * @copydoc rw::proximity::CollisionToleranceStrategy::doIsWithinDistance
-         */
-        bool doIsWithinDistance(
-            rw::proximity::ProximityModel::Ptr a,
-            const rw::math::Transform3D<>& wTa,
-            rw::proximity::ProximityModel::Ptr b,
-            const rw::math::Transform3D<>& wTb,
-            double tolerance,
-            rw::proximity::ProximityStrategyData &data);
-
-        /**
-         * @copydoc rw::proximity::DistanceStrategy::doDistance
-         */
-        DistanceStrategy::Result& doDistance(
-            rw::proximity::ProximityModel::Ptr a,
-            const math::Transform3D<>& wTa,
-            rw::proximity::ProximityModel::Ptr b,
-            const math::Transform3D<>& wTb,
-            rw::proximity::ProximityStrategyData& data);
-
 
         /**
          *  @copydoc rw::proximity::ProximityStrategy::clear

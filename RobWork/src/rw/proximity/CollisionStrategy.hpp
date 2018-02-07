@@ -90,7 +90,7 @@ namespace rw { namespace proximity {
                 int startIdx, size;
             };
 
-            //! @breif transformation from a to b
+            //! @brief transformation from a to b
             rw::math::Transform3D<> _aTb;
 
             //! @brief the collision pairs
@@ -111,6 +111,9 @@ namespace rw { namespace proximity {
              * @brief clear all result values
              */
             void clear(){
+                a = NULL;
+                b = NULL;
+                _aTb = rw::math::Transform3D<>::identity();
                 _collisionPairs.clear();
                 _geomPrimIds.clear();
                 _nrBVTests = 0;

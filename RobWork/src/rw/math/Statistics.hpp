@@ -29,31 +29,39 @@ public:
 		}
 		return (T)sum/data.size();		
 	}
+  
+  
+  /**
+   * @brief Calculates the mean for a list of angles.
+   */
+  template <class V>
+  static T angularMean(const V& data) {
+    T s = 0, c = 0;
+    BOOST_FOREACH (T d, data) {
+      s += sin(d);
+      c += cos(d);
+    }
+    return (T) atan2(s, c);
+  }
+  
 
 	/**
-	 * @brief Calcualtes the m4dian for a list of data
+	 * @brief Calcualtes the median for a list of data
 	 */
 	template <class V>
 	static T median(const V& data) {
 		std::vector<T> myvector(data.begin(), data.end());
-		std::cout<<"Contructed my vector "<<myvector.size()<<std::endl;
 		std::sort(myvector.begin(), myvector.end());
-		std::cout<<"Sorted vector"<<std::endl;		
-		BOOST_FOREACH(T& d, myvector) {
-			std::cout<<"d = "<<d<<std::endl;
-		}
 		if (myvector.size() == 0)
 			return 0;
 		if (myvector.size() == 1)
 			return myvector.front();
 
 		if (myvector.size() % 1 == 1) {			
-			std::cout<<"i1 = "<< std::floor(myvector.size() / 2.0) <<std::endl;
 			return myvector[std::floor(myvector.size() / 2.0)];
 		} else {
 			int i2 = myvector.size() / 2;
 			int i1 = i2-1;
-			std::cout<<"i1 = "<<i1<<" i2 = "<<i2<<std::endl;
 			return (myvector[i1] + myvector[i2])/2.0;
 		}
 	}
@@ -73,6 +81,22 @@ public:
 		}
 		return var/(data.size()-1);			
 	}
+  
+  
+  /**
+   * @brief Calculates the variance for a list of angles.
+   */
+  template <class V>
+  static T angularVariance(const V& data, const T& mean) {
+    T sm = sin(mean), cm = cos(mean);
+    T var = 0;
+    BOOST_FOREACH (T d, data) {
+      T sd = sin(d), cd = cos(d);
+      T angle = acos(sd * sm + cd * cm);
+      var += Math::sqr(angle);
+    }
+    return (T) var/(data.size()-1);
+  }
 
 	
 	/**
@@ -83,6 +107,17 @@ public:
 		T my = mean(data);
 		return std::make_pair(my, Statistics::variance(data, my));
 	}
+  
+  
+  /**
+	 * Calculates the mean and variance of a list of angles.
+	 */
+	template <class V>
+	static std::pair<T,T> angularMeanAndVariance(const V& data) {
+		T my = angularMean(data);
+		return std::make_pair(my, Statistics::angularVariance(data, my));
+	}
+  
 
 	/** 
 	 * @brief Finds the minimal value in \b data
@@ -144,6 +179,15 @@ public:
 	}
 
 	/**
+	 * @brief Returns the angular mean of the values added
+	 *
+	 * The angular mean is computed as @f$ \tan^{-1}\frac{\Sigma_{d\in data}\sin(d)}{\Sigma_{d\in data}\cos(d)} @f$
+	 */
+	T angularMean() const {
+		return Statistics::angularMean(_data);
+	}
+
+	/**
 	 * @brief Returns the median of the values added 
 	 *
 	 * Given an equal number of element, the mean is calculated as the average of the two center elements.
@@ -162,6 +206,15 @@ public:
 	}
 
 	/**
+	 * @brief Returns the angular variance of the values added
+	 * The variance is computed as @f$ \frac{1}{n-1} \Sigma_{d\in data}\left[\cos^{-1}(\sin(d)\sin(\mu)-\cos(d)\cos(\mu))\right]^2 @f$
+	 * where @f$ \mu @f$ is the angular mean of the data.
+	 */
+	T angularVariance() const {
+		return Statistics::angularVariance(_data, Statistics::angularMean(_data));
+	}
+
+	/**
 	 * @brief returns the mean and the variance of the data. 
 	 *
 	 * See documentation of Statistics::mean() and Statistics::variance() 
@@ -169,6 +222,16 @@ public:
 	 */
 	std::pair<T, T> meanAndVariance() const {
 		return Statistics::meanAndVariance(_data);
+	}
+
+	/**
+	 * @brief returns the angular mean and the variance of the data.
+	 *
+	 * See documentation of Statistics::angularMean() and Statistics::angularVariance()
+	 * for how the mean and variane are computed.
+	 */
+	std::pair<T, T> angularMeanAndVariance() const {
+		return Statistics::angularMeanAndVariance(_data);
 	}
 
 

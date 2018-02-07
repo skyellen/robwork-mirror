@@ -82,7 +82,8 @@ namespace
 
 TreeView::TreeView() :
     RobWorkStudioPlugin("TreeView", QIcon(":/treeview.png")),
-    _workcell(NULL)
+    _workcell(NULL),
+    _frameAxisSize(0.25)
 
 {
 	// Construct widget and layout for QDockWidget
@@ -120,6 +121,13 @@ TreeView::TreeView() :
 	_showFrameStructureAction->setChecked(true);
     connect(_showFrameStructureAction, SIGNAL(triggered()), this, SLOT(showFrameStructure()));
 
+    QAction* increaseFrameAxisSize = new QAction(QIcon(":/images/larger_frameaxis.png"), "Increase frame axis size", this); // owned
+    connect(increaseFrameAxisSize, SIGNAL(triggered()), this, SLOT(increaseFrameAxisSlot()));
+
+    QAction* decreaseFrameAxisSize = new QAction(QIcon(":/images/smaller_frameaxis.png"), "Decrease frame axis size", this); // owned
+    connect(decreaseFrameAxisSize, SIGNAL(triggered()), this, SLOT(decreaseFrameAxisSlot()));
+
+
     toolbar->addAction(collapseAllAction);
     toolbar->addAction(expandAllAction);
     toolbar->addAction(forceUpdateAction);
@@ -127,6 +135,9 @@ TreeView::TreeView() :
     toolbar->addAction(_showFrameStructureAction);
 	toolbar->addAction(_showWorkCellStructureAction);
     toolbar->addAction(_showDeviceStructureAction);
+    toolbar->addSeparator();
+    toolbar->addAction(increaseFrameAxisSize);
+    toolbar->addAction(decreaseFrameAxisSize);
 
     // Setup TreeWidget
     _treewidget = new QTreeWidget(this);
@@ -544,7 +555,7 @@ void TreeView::toggleFrameView(QTreeWidgetItem* item)
             RW_ASSERT(scene);
             if ( !scene->isFrameAxisVisible(frame) ) {
                 // Add new Drawable
-                scene->setFrameAxisVisible(true, frame);
+                scene->setFrameAxisVisible(true, frame, _frameAxisSize);
 
             } else { // Remove the DrawableFrame
                 scene->setFrameAxisVisible(false, frame);
@@ -584,6 +595,28 @@ void TreeView::toggleFramesSlot()
     getRobWorkStudio()->updateAndRepaint();
 }
 
+void TreeView::increaseFrameAxisSlot()
+{
+    if (_treewidget->currentItem() == NULL)
+        return;
+    _frameAxisSize += 0.05;
+    // Toggle frames twice to get new size
+    toggleFramesView(_treewidget->currentItem());
+    toggleFramesView(_treewidget->currentItem());
+    getRobWorkStudio()->updateAndRepaint();
+
+}
+void TreeView::decreaseFrameAxisSlot()
+{
+    if (_treewidget->currentItem() == NULL)
+        return;
+    _frameAxisSize -= 0.05;
+    // Toggle frames twice to get new size
+    toggleFramesView(_treewidget->currentItem());
+    toggleFramesView(_treewidget->currentItem());
+    getRobWorkStudio()->updateAndRepaint();
+
+}
 
 void TreeView::constructDrawableList(std::vector<DrawableNode::Ptr>& drawables)
 {

@@ -228,7 +228,7 @@ namespace dynamics {
          * @param name [in] the sensor
          * @return
          */
-        rwlibs::simulation::SimulatedSensor::Ptr findSensor(const std::string& name);
+        rwlibs::simulation::SimulatedSensor::Ptr findSensor(const std::string& name) const;
 
         /**
          * @brief find a sensor of a specific type.
@@ -236,7 +236,7 @@ namespace dynamics {
          * @return
          */
         template<class T>
-        rw::common::Ptr<T> findSensor(const std::string& name){
+        rw::common::Ptr<T> findSensor(const std::string& name) const {
             rwlibs::simulation::SimulatedSensor::Ptr sensor = findSensor(name);
             if(sensor==NULL) 
 		        return NULL;
@@ -273,7 +273,7 @@ namespace dynamics {
     	 * @param name [in] name of the controller.
     	 * @return the simulated controller if found, NULL otherwise.
     	 */
-    	rwlibs::simulation::SimulatedController::Ptr findController(const std::string& name);
+    	rwlibs::simulation::SimulatedController::Ptr findController(const std::string& name) const;
 
     	/**
     	 * @brief Find a simulated controller.
@@ -281,7 +281,7 @@ namespace dynamics {
     	 * @return the simulated controller if found, NULL otherwise.
     	 */
     	template<class T>
-    	rw::common::Ptr<T> findController(const std::string& name){
+    	rw::common::Ptr<T> findController(const std::string& name) const {
     	    rwlibs::simulation::SimulatedController::Ptr controller = findController(name);
               if(controller==NULL) return NULL;
               return controller.cast<T>();
@@ -410,7 +410,6 @@ namespace dynamics {
          * @return Reference to the StateChangedEvent
          */
         DWCChangedEvent& changedEvent() { return _changedEvent; }
-
 
     private:
         DWCChangedEvent _changedEvent;

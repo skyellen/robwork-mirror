@@ -118,7 +118,7 @@ public:
     //! @brief updates the 3d view
     void update(){
         _view->updateView();
-    };
+    }
 
     /**
      * @brief set the state of the view
@@ -136,7 +136,7 @@ public:
      * @brief Get the scene.
      * @return the scene.
      */
-    rw::graphics::WorkCellScene::Ptr getWorkCellScene(){ return _wcscene;};
+    rw::graphics::WorkCellScene::Ptr getWorkCellScene(){ return _wcscene;}
 
     /**
      * @brief Get the scene viewer.
@@ -193,6 +193,9 @@ private slots:
     void setDrawTypeSlot();
     void setTransparentSlot();
     void showPivotPointSlot();
+    void zoomInSlot();
+    void zoomOutSlot();
+    void zoomAutoSlot();
     void setCheckForCollision(bool);
     void setCheckAction();
     void setMaskCheckAction();
@@ -212,7 +215,7 @@ private:
             _far(f),
             _frame(fra),
             _action(NULL)
-        {};
+        {}
         rw::graphics::SceneViewer::View::Ptr _view;
         double _fovy, _width, _height, _near, _far;
         rw::kinematics::Frame *_frame;
@@ -267,6 +270,8 @@ private:
             *_user2MaskEnabled,
             *_user3MaskEnabled,
             *_user4MaskEnabled;
+
+    QAction *_zoomInAction, *_zoomOutAction, *_zoomAutoAction;
 
 
     QMenu *_customViewMenu, *_cameraViewMenu, *_drawMaskMenu;

@@ -55,31 +55,31 @@ public:
 
 }
 
-SimulatedCamera::SimulatedCamera(const std::string& name, double fov,
-		rw::kinematics::Frame* frame, FrameGrabber::Ptr frameGrabber) :
-		SimulatedSensor(
-				ownedPtr(
-						new CameraModel(
-								rw::math::ProjectionMatrix::makePerspective(fov,
-										frameGrabber->getWidth(),
-										frameGrabber->getHeight(), 0.01, 30),
-								name, frame, "SimulatedCamera with near 0.01 and far field 30"))), _frameRate(30), _dtSum(0.0), _frameGrabber(
-				frameGrabber), _isAcquired(false)
+SimulatedCamera::SimulatedCamera(const std::string& name, double fov, Frame* frame, FrameGrabber::Ptr frameGrabber):
+	SimulatedSensor(ownedPtr(new CameraModel(
+			rw::math::ProjectionMatrix::makePerspective(fov,frameGrabber->getWidth(),frameGrabber->getHeight(), 0.01, 30),
+			name, frame, "SimulatedCamera with near 0.01 and far field 30"
+	))),
+	_frameRate(30),
+	_dtSum(0.0),
+	_frameGrabber(frameGrabber),
+	_isAcquired(false),
+	_started(false),
+	_initialized(false),
+	_csensor(rw::common::ownedPtr(new CameraWrapper(this, name)))
 {
-	_csensor = rw::common::ownedPtr(new CameraWrapper(this,  name));
 }
 
-SimulatedCamera::SimulatedCamera(
-	rw::sensor::CameraModel::Ptr model,
-    FrameGrabber::Ptr frameGrabber)
-    :
-    SimulatedSensor( model ),
+SimulatedCamera::SimulatedCamera(CameraModel::Ptr model, FrameGrabber::Ptr frameGrabber):
+    SimulatedSensor(model),
     _frameRate(30),
     _dtSum(0.0),
     _frameGrabber(frameGrabber),
-    _isAcquired(false)
+    _isAcquired(false),
+	_started(false),
+	_initialized(false),
+	_csensor(rw::common::ownedPtr(new CameraWrapper(this, model->getName())))
 {
-    _csensor = rw::common::ownedPtr( new CameraWrapper(this,  model->getName()) );
 }
 
 SimulatedCamera::~SimulatedCamera()

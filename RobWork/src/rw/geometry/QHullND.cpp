@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Copyright 2009-2017 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
  * Faculty of Engineering, University of Southern Denmark
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
  ********************************************************************************/
 
 #include "QHullND.hpp"
-#include <RobWorkConfig.hpp>
 
 #if defined(__cplusplus)
 extern "C"
@@ -25,43 +24,14 @@ extern "C"
 #include <stdio.h>
 #include <stdlib.h>
 
-// This distinction is necessary because qhull changed structure at some point
-#ifdef HAVE_QHULL_2011
-#include <libqhull/libqhull.h>
-#include <libqhull/mem.h>
-#include <libqhull/qset.h>
-#include <libqhull/geom.h>
-#include <libqhull/merge.h>
-#include <libqhull/poly.h>
-#include <libqhull/io.h>
-#include <libqhull/stat.h>
-#else
-#include <qhull/qhull.h>
-#include <qhull/mem.h>
-#include <qhull/qset.h>
-#include <qhull/geom.h>
-#include <qhull/merge.h>
-#include <qhull/poly.h>
-#include <qhull/io.h>
-#include <qhull/stat.h>
-#endif
-
-//#include <qhull/libqhull.h>
+#include <libqhull_r/libqhull_r.h>
 
 #if defined(__cplusplus)
 }
 #endif
 
-#include <boost/numeric/ublas/vector.hpp>
-#include <boost/thread.hpp>
-
 using namespace std;
 using namespace rw::geometry;
-using namespace boost::numeric;
-// Contact pos, normal, hastighed, depth, idA, idB
-
-boost::mutex _qhullMutex;
-static bool firstCalll = true;
 
 void qhull::build(size_t dim,
                   double *coords,
@@ -71,8 +41,6 @@ void qhull::build(size_t dim,
                   std::vector<double>& faceNormals,
                   std::vector<double>& faceOffsets)
 {
-    boost::mutex::scoped_lock lock(_qhullMutex);
-
     vertIdxs.clear();
     faceIdxs.clear();
     faceNormals.clear();
@@ -83,62 +51,56 @@ void qhull::build(size_t dim,
     int curlong, totlong; /* used !qh_NOmem */
     int exitcode;
     boolT ismalloc = false;
-    int argc = 0;
-    char** argv = NULL;
+    qhT qh;
+    qhT * qhT_pointer = &qh; // allocate memory for qhull
 
-    #if qh_QHpointer==1
-    if( firstCalll ){
-    	qh_init_A(0, 0, stderr, argc, argv); /* sets qh qhull_command */
-    	firstCalll = false;
-    }
-	#else
-    	qh_init_A(0, 0, stderr, argc, argv); /* sets qh qhull_command */
-	#endif
+    //qh_init_A (stdin, stdout, stderr, argc, argv);  /* sets qh qhull_command */
+    //char flags[] = "qhull Qt Pp Qs";
 
-	//qh_init_A (stdin, stdout, stderr, argc, argv);  /* sets qh qhull_command */
-	//char flags[] = "qhull Qt Pp Qs";
+    //char flags[] = "qhull Pp n Qt Qx QJ C-0.0001";
+    //char flags[] = "qhull Pp Qs QJ C-0.0001 n";
+    //char flags[] = "qhull Qx Qs W1e-1 C1e-2 Qt Pp n"; //graspit
+    //char flags[] = "qhull Qs Pp Qt n";
 
-	//char flags[] = "qhull Pp n Qt Qx QJ C-0.0001";
-	//char flags[] = "qhull Pp Qs QJ C-0.0001 n";
-	//char flags[] = "qhull Qx Qs W1e-1 C1e-2 Qt Pp n"; //graspit
-	//char flags[] = "qhull Qs Pp Qt n";
+    char flags[] = "qhull Pp QJ";
 
-	char flags[] = "qhull Pp QJ";
+    // According to doc. in libqhull_r/user_r.c, the qhull memory should be cleared:
+    qh_zero(qhT_pointer, stderr);
 
-	// WHEN DYNAMIC LINKING qh_QHpointer gets set to 1. Requires some fixes
-	#if qh_QHpointer==1
-	// for some reason i had to apply this HACK in order to get QHull working...
-	qhT *qht = qh_save_qhull();
-	exitcode = qh_new_qhull((int)dim, (int)nrCoords, coords, ismalloc, flags, NULL, stderr);
-	#else
-	exitcode = qh_new_qhull((int)dim, (int)nrCoords, coords, ismalloc, flags, NULL, stderr);
-	#endif
+    // Then the object is constructed.
+    exitcode = qh_new_qhull(qhT_pointer, (int)dim, (int)nrCoords, coords, ismalloc, flags, NULL, stderr);
 
 
     if (!exitcode) {
         //        facetT *facet;
-        ublas::vector<double> center = ublas::zero_vector<double>(dim);
-        ublas::vector<double> vert = ublas::zero_vector<double>(dim);
-        size_t nrVerts = 0;
+        //ublas::vector<double> center = ublas::zero_vector<double>(dim);
+        //ublas::vector<double> vert = ublas::zero_vector<double>(dim);
+
+        // Loop through all vertices,
+        //size_t nrVerts = 0;
         vertexT *vertex;//, **vertexp;
-        FORALLvertices {
-            int vertexIdx = qh_pointid(vertex->point);
+        for (vertex=qhT_pointer->vertex_list;vertex && vertex->next;vertex= vertex->next)
+        {
+            int vertexIdx = qh_pointid(qhT_pointer,vertex->point);
             result.push_back(vertexIdx);
 
-            for(size_t i=0; i<dim; i++){
-                double val = vertex->point[i];
-                center[i] = center[i] + val;
-            }
-            nrVerts++;
+            //for(size_t i=0; i<dim; i++){
+                //double val = vertex->point[i];
+                //center[i] = center[i] + val;
+            //}
+            //nrVerts++;
             //result->push_back(contacts->at(vertexIdx));
             //contacts->at(vertexIdx)=NULL;
         }
-        center /= (double)nrVerts;
+        //center /= (double)nrVerts;
 
         // also find all facets, such that we can recreate the hull
-        ublas::vector<double> zerov = ublas::zero_vector<double>(dim);
+        //ublas::vector<double> zerov = ublas::zero_vector<double>(dim);
+
+        // For all facets:
         facetT *facet;
-        FORALLfacets {
+        for (facet=qhT_pointer->facet_list; facet && facet->next; facet = facet->next)
+        {
             /*
             std::cout << "CENTER: ";
             for(int i=0;i<dim;i++){
@@ -158,8 +120,9 @@ void qhull::build(size_t dim,
             faceOffsets.push_back(facet->offset);
 
             //int idx = 0;
-            FOREACHvertex_i_(facet->vertices){
-                int vertexIdx = qh_pointid(vertex->point);
+            FOREACHvertex_i_(qhT_pointer,facet->vertices)
+            {
+                int vertexIdx = qh_pointid(qhT_pointer,vertex->point);
                 faceIdxs.push_back(vertexIdx);
                 //idx = vertexIdx;
                 //std::cout << vertexIdx << " ";
@@ -180,22 +143,22 @@ void qhull::build(size_t dim,
             //std::cout << " }\n";
         }
 
-
     } else {
         cout<<"Not Exit Code!";
     }
-    if (qh VERIFYoutput && !qh FORCEoutput && !qh STOPpoint && !qh STOPcone)
-        qh_check_points();
 
-    qh_freeqhull( False );
-    qh_memfreeshort (&curlong, &totlong);
+    if (qhT_pointer->VERIFYoutput && !qhT_pointer->FORCEoutput && !qhT_pointer->STOPpoint && !qhT_pointer->STOPcone)
+        qh_check_points(qhT_pointer);
+
+    qh_freeqhull(qhT_pointer, False);
+    qh_memfreeshort (qhT_pointer,&curlong, &totlong);
     if (curlong || totlong)
         fprintf (stderr, "qhull internal warning (main): did not free %d bytes of long memory (%d pieces)\n",totlong, curlong);
     //delete[] coords;
 
-	#if qh_QHpointer
-	qh_restore_qhull(&qht);
-	#endif
+    #if qh_QHpointer
+    qh_restore_qhull(&qht);
+    #endif
 
 
 }

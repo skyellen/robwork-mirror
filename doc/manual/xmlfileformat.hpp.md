@@ -203,7 +203,11 @@ it also allows for multiple endeffectors.
 ### ParallelDevice ###
 The parallel device is like a number of serial devices (with same base) with all endeffectors
 rigidly connected together. The initial configuration of the robot is required
-to make all endeffectors align in the same pose.
+to make all endeffectors align in the same pose. For devices that are connected in multiple places,
+it is also possible to define so-called junctions. Each Junction must specify two or more chains,
+where each chain referes to a list of previously defined SerialChains. Notice that each of these
+chains must start and end in equivalent frames. If no junctions are defined, one implicit junction
+is created, assuming that each of the defined serial chains must end in the same endeffector frame.
 
 \b Attributes
 - \b name: a string identifying the device.
@@ -220,14 +224,45 @@ to make all endeffectors align in the same pose.
 - \b Property
 - \b SerialChain
 - \b CollisionSetup
+- \b Junction
 - \b Q
 
 \b Example
+
+Take the following kinematic structure as an example:
+\verbatim
+                                ___
+          /--------------------|-C |
+         /             ___     |   |
+    /-- B ------------|-D-|----|-E |
+   /    \     ___     |   |    |___|
+  /      \---|-F |    |   |
+ /           |   |    |   |
+A -----------|-G-|----|-H-|
+             |___|    |___|
+\endverbatim
+Each of the 8 serial chains, A to H, can contain one or more joints.
+The boxes show three places where the device must be connected. This can be specified in the device with Junction tags:
 \verbatim
 <ParallelDevice name="RobotHand">
 ...
+  <Junction>
+   <Chains>C</Chains>
+   <Chains>D E</Chains>
+  </Junction>
+  <Junction>
+   <Chains>B D</Chains>
+   <Chains>G H</Chains>
+  </Junction>
+  <Junction>
+   <Chains>B F</Chains>
+   <Chains>G</Chains>
+  </Junction>
+...
 </ParallelDevice>
 \endverbatim
+Notice that the first serial chain (A) was left out in all the cases, as it is equal for all chains.
+For the junction ending after chains C and E, both A and B was left out, as they do not provide any extra information.
 
 ### MobileDevice ###
 The mobile device defines a two wheeled mobile robot where the two
@@ -287,15 +322,12 @@ some width \b AxelWidth.
 \b Attributes
 - \b name: a string identifying the frame.
 - \b refframe: name of the parent frame (optional).
-- \b type: a joint type identifier (Prismatic|Revolute).
+- \b type: a joint type identifier (Prismatic|Revolute|Universal|Spherical|PrismaticUniversal|PrismaticSpherical).
 - \b state: joint state (optional)
 
 \b Child elements
 
-!((\b RPY >> \b Pos) | \b Transform)
->> *(\b PosLimit | \b VelLimit | \b AccLimit
-| Depend
-| \b Property | \b CollisionModel | \b Drawable)
+!((\b RPY >> \b Pos) | \b Transform) >> *(\b PosLimit | \b VelLimit | \b AccLimit | \b Depend | \b Property | \b CollisionModel | \b Drawable)
 
 \b Example
 
@@ -319,10 +351,7 @@ rule := name >> alpha >> a >> (d >> offset)|(theta >> offset);
 
 \b Child elements
 
-!((\b RPY >> \b Pos) | \b Transform)
->> *(\b PosLimit | \b VelLimit | \b AccLimit
-| \b Depend
-| \b Property | \b CollisionModel | \b Drawable)
+!((\b RPY >> \b Pos) | \b Transform) >> *(\b PosLimit | \b VelLimit | \b AccLimit | \b Depend | \b Property | \b CollisionModel | \b Drawable)
 
 \b Example
 
@@ -336,8 +365,7 @@ be used as collision model.
 
 \b Child Elements
 
-!((\b RPY >> \b Pos) | \b Transform)
->> *(Polytope | Sphere | Box | Cone | Cylinder)
+!((\b RPY >> \b Pos) | \b Transform) >> *(Polytope | Sphere | Box | Cone | Cylinder)
 
 \b Example
 
@@ -349,8 +377,7 @@ be used as collision model.
 
 \b Child Elements
 
-!((\b RPY >> \b Pos) | \b Transform)
->> *(Polytope | Sphere | Box | Cone | Cylinder)
+!((\b RPY >> \b Pos) | \b Transform) >> *(Polytope | Sphere | Box | Cone | Cylinder)
 
 \b Example
 

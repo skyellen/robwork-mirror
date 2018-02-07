@@ -120,7 +120,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		
 		_dx = dot(c, _normal);
 	} else {
-		_dx = x_plane.d();
+		_dx = -x_plane.d();
 	}
 	
 	if (best_plane != &y_plane) {
@@ -132,7 +132,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		
 		_dy = dot(c, _normal);
 	} else {
-		_dy = y_plane.d();
+		_dy = -y_plane.d();
 	}
 	
 	if (best_plane != &z_plane) {
@@ -144,7 +144,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		
 		_dz = dot(c, _normal);
 	} else {
-		_dz = z_plane.d();
+		_dz = -z_plane.d();
 	}
 	
 	// calculate fitting error

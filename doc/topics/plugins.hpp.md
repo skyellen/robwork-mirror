@@ -85,7 +85,6 @@ An extension to any of the four subtypes, should therefore also be available in 
 </td></tr>
 <tr><td>rw::proximity::DistanceStrategy::Factory</td><td>Proximity strategies that supports the rw::proximity::DistanceStrategy interface.</td><td>
   <ul>
-    <li>rw::proximity::ProximityStrategyRW</li>
     <li>rwlibs::proximitystrategies::ProximityStrategyBullet</li>
     <li>rwlibs::proximitystrategies::ProximityStrategyPQP</li>
     <li>rwlibs::proximitystrategies::ProximityStrategyFCL</li>

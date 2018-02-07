@@ -418,12 +418,14 @@ namespace {
             DummyCalibration _calibration;
 			DummyProximitySetup _psetup;
             QConfig _config;
+            QJunction _junction;
             const QConfig emptyConfig;
+            const QJunction emptyJunction;
             Transform3DParser t3d_p;
             rule<ScannerT> device_r, serialdevice_r, paralleldevice_r,
                            treedevice_r, joint_r,dhjoint_r,depend_r,
                            devicebody_r,chainbody_r,serialchain_r,
-                           jointstate_r, mobiledevice_r, configuration_r;
+                           jointstate_r, mobiledevice_r, configuration_r, junction_r;
 
             //rule<ScannerT, result_closure<DummyConveyorSegment>::context_t> conveyorsegment_r
 
@@ -526,6 +528,15 @@ namespace {
                 		*real_p[push_back_a( _config.q )]
                 	);
 
+                junction_r =
+                	XMLElem_p("Junction",
+                		*XMLElem_p("Chains",
+                                (*(anychar_p-(str_p("</") >> "Chains")))
+                                    [ push_back_a( _junction.chains ) ]
+
+                		)
+                	);
+
 
                 treedevice_r = eps_p[ var( _dev ) = construct_<DummyDevice>() ] >>
                     XMLAttElem_p("TreeDevice",
@@ -551,7 +562,11 @@ namespace {
                             [ var( _dev._name ) = arg1 ]
                             [ var( _dev._type ) = ParallelType ]
                             [ EnterScope(_scope) ]),
-                        devicebody_r
+                        chainbody_r >>
+                        (*junction_r[ AddJunctionToDevice( _junction, _dev) ]
+                                         [ var( _junction ) = var(emptyJunction) ]) >>
+                        (*configuration_r[ AddConfigToDevice( _config, _dev) ]
+                                         [ var( _config ) = var(emptyConfig) ])
                     )[ LeaveScope(_scope) ];
 
                 mobiledevice_r = eps_p[ var( _dev ) = construct_<DummyDevice>() ] >>

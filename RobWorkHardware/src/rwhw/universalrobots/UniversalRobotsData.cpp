@@ -1,12 +1,35 @@
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
 #include "UniversalRobotsData.hpp"
 
 using namespace rwhw;
 
 UniversalRobotsData::UniversalRobotsData()
 {
+	// connection
+	errorMessage = "";
+
     // timestamp
 	driverTimeStamp = 0;
 	controllerTimeStamp = 0;
+
+	// robot
+	robotMode = 0;
 
 	// joint
 	for(unsigned int i=0; i<6; i++)
@@ -61,18 +84,17 @@ UniversalRobotsData::UniversalRobotsData()
 	speedFraction = 1.0;
 
 	// true = real robot, false = simulated robot
-	 real = false;
+	real = false;
 
 	// true = physical real robot, false = simulated real robot
-	 physical = false;
-	 robotPowerOn = false;
-	 emergencyStopped = false;
-	 securityStopped = false;
-	 programRunning = false;
-	 programPaused = false;
+	physical = false;
+	robotPowerOn = false;
+	emergencyStopped = false;
+	securityStopped = false;
+	programRunning = false;
+	programPaused = false;
 
 	//script command input
 	command="";
 	newCommand = false;
 }
-

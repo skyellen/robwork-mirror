@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<ProximitySetup UseIncludeAll="true" UseExcludeStaticPairs="true">
+   <Exclude PatternA="Base" PatternB="*"/>
+   <Exclude PatternA="Left*" PatternB="Left*"/>
+   <Exclude PatternA="Right*" PatternB="Right*"/>
+   <Exclude PatternA="LeftMotor.MotorJoint" PatternB="RightMotor.MotorJoint"/>
+   <Exclude PatternA="LeftMotor.OuterLink" PatternB="RightMotor.OuterLink"/>
+   <Exclude PatternA="*Motor.MotorJoint" PatternB="*Motor.OuterLink"/>
+   <Exclude PatternA="*Motor.MotorJoint" PatternB="*Motor.Finger"/>
+   <Exclude PatternA="*Motor.MotorJoint" PatternB="*Passive.PassiveJoint"/>
+   <Exclude PatternA="*Motor.OuterLink" PatternB="*Motor.Finger"/>
+   <Exclude PatternA="*Motor.OuterLink" PatternB="*Passive.PassiveJoint"/>
+</ProximitySetup>

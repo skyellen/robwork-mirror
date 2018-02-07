@@ -81,8 +81,9 @@ namespace rwlibs { namespace simulation {
          * @brief initialize the grabber with a scene viewer. This registers the grabber
          * as a camera in the scene and enables rendering.
          * @param drawer [in] the scene viewer
+         * @return true if initialization succeeded, false otherwise (depends on the capabilities of the SceneViewer).
          */
-        void init(rw::graphics::SceneViewer::Ptr drawer);
+        bool init(rw::graphics::SceneViewer::Ptr drawer);
 
         //! @copydoc FrameGrabber::grab
         void grab(rw::kinematics::Frame* frame, const rw::kinematics::State& state);

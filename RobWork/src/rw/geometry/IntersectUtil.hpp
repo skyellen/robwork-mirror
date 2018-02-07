@@ -18,6 +18,11 @@
 #ifndef RW_GEOMETRY_INTERSECTUTIL_HPP_
 #define RW_GEOMETRY_INTERSECTUTIL_HPP_
 
+/**
+ * @file
+ * @copydoc rw::geometry::IntersectUtil
+ */
+
 #include <rw/math/Vector3D.hpp>
 #include "Triangle.hpp"
 

@@ -283,11 +283,9 @@ rw::trajectory::TimedStatePath::Ptr DOMPathLoader::getTimedStatePath() {
 
 
 void DOMPathLoader::readPath(DOMElem::Ptr element) {
-	std::cout << "Element Name = " << element->getName() << std::endl;
     if (element->isName(idQPath())) {
         _qPath = ownedPtr(new QPath());
 		read<Q, QPath::Ptr>(element, _qPath);
-		std::cout << "Read QPath " << _qPath->size() << std::endl;
         _type = QType;
     } else if (element->isName(idV3DPath())) {
         _v3dPath = ownedPtr(new Vector3DPath());

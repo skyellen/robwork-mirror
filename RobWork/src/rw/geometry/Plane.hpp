@@ -19,6 +19,11 @@
 #ifndef RW_GEOMETRY_PLANE_HPP_
 #define RW_GEOMETRY_PLANE_HPP_
 
+/**
+ * @file
+ * @copydoc rw::geometry::Plane
+ */
+
 #include "Primitive.hpp"
 
 #include <rw/math/Metric.hpp>
@@ -38,6 +43,7 @@ namespace geometry {
 		 */
 		typedef rw::common::Ptr<Plane> Ptr;
 
+		//! @brief The value type for a plane (double precision).
 		typedef double value_type;
 		
 		/**
@@ -57,6 +63,7 @@ namespace geometry {
 	     */
 		Plane(const rw::math::Q& q)
 		{
+            RW_ASSERT(q.size() == 4);
 		    _normal(0) = q(0);
 		    _normal(1) = q(1);
 		    _normal(2) = q(2);
@@ -69,7 +76,7 @@ namespace geometry {
 		 * @param d [in] distance from plane to (0,0,0) in direction of normal
 		 * @return
 		 */
-		Plane(const rw::math::Vector3D<>& n, double d):
+		Plane(const rw::math::Vector3D<>& n, const double d):
 			_normal(n) ,_d(d)
 		{}
 
@@ -84,11 +91,11 @@ namespace geometry {
 			  const rw::math::Vector3D<>& p3):
 				  _normal(normalize(cross(p2 - p1, p3 - p1)))
 		{
-			_d = dot(_normal, p1);
+			_d = -dot(_normal, p1);
 		}
 
 		//! @brief destructor
-		virtual ~Plane() {};
+		virtual ~Plane() {}
 
 		//! @brief get plane normal
 		inline rw::math::Vector3D<>& normal(){ return _normal; }
@@ -110,7 +117,7 @@ namespace geometry {
 		 *
 		 * @param point
 		 */
-		double distance(const rw::math::Vector3D<>& point){
+		double distance(const rw::math::Vector3D<>& point) const {
 		    return dot(point, _normal) + _d;
 		}
 
@@ -118,7 +125,7 @@ namespace geometry {
 		 * @brief Default metric for computing the difference between 2 planes
 		 * @param plane [in]
 		 */
-		double distance(const Plane& plane) {
+		double distance(const Plane& plane) const {
 			double ang = angle(_normal, plane.normal());
 			return (ang + fabs(_d - plane.d())) / 2.0;
 		}
@@ -130,10 +137,12 @@ namespace geometry {
 		 * largest extends are used for defining the plane. The error is the
 		 * sum of the squared mean of the points to the plane.
 		 *
+		 * The plane normal always points in the positive z-direction.
+		 *
 		 * @param data [in] a set of points
 		 * @return fitting error
 		 */
-		double refit(std::vector<rw::math::Vector3D<> >& data);
+		double refit(const std::vector<rw::math::Vector3D<> >& data);
 
 		/**
 		 * @brief Calculates the intersection between the line and plane.
@@ -144,7 +153,7 @@ namespace geometry {
 		 * @param p1 [in] point 1 on the line
 		 * @param p2 [in] point 2 on the line
 		 */
-		rw::math::Vector3D<> intersection(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2) {
+		rw::math::Vector3D<> intersection(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2) const {
 			double denominator = dot(_normal, p2-p1);
 			
 			if (fabs(denominator) < 1e-16) {
@@ -178,15 +187,6 @@ namespace geometry {
 
 		//! @copydoc Primitive::getType()
 		GeometryType getType() const { return PlanePrim; }
-
-		/**
-		 * @brief Computes the distance from point to plane.
-		 * @param p [in]
-		 */
-		double distance(const rw::math::Vector3D<>& p) const {
-			return fabs(dot(_normal, p) + _d);
-		}
-
 
 		/**
 		 * @brief Create a metric that can be used to compare distance between
@@ -225,6 +225,10 @@ namespace geometry {
 	 */
 	class PlaneMetric: public rw::math::Metric<Plane> {
 	public: // constructors
+		/**
+		 * @brief Constructor.
+		 * @param angToDistWeight [in] weighting of angle compared to linear distance.
+		 */
 		PlaneMetric(double angToDistWeight = 1.0) :
 			_angToDistWeight(angToDistWeight)
 		{}
@@ -264,8 +268,13 @@ namespace geometry {
 			return 0.5*ang*_angToDistWeight + 0.5*fabs(a.d() - d);
 		}
 
+        /**
+         * @copydoc rw::math::Metric::size
+         * @note this function always return -1.
+         */
         int doSize() const { return -1; }
 
+		//! @param weighting of angle compared to linear distance.
 		double _angToDistWeight;
 	};
 	// @}

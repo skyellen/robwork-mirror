@@ -30,7 +30,7 @@ using namespace rwlibs::algorithms;
 double PlaneModel::fitError(const rw::math::Vector3D<>& sample) const
 {
 	// return a distance of the sample to the model
-	return _model.distance(sample);
+	return std::fabs(_model.distance(sample));
 }
 
 

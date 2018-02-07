@@ -24,10 +24,6 @@
 using namespace rw::common;
 using namespace rw::math;
 
-// some explicit template specifications
-template class rw::math::Polynomial<double>;
-template class rw::math::Polynomial<float>;
-
 namespace rw{ namespace common { namespace serialization {
 
     template<class T>
@@ -50,3 +46,35 @@ namespace rw{ namespace common { namespace serialization {
     template<> void read(rw::math::Polynomial<float>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);}
 
 }}}
+
+Polynomial<> rw::math::operator*(const PolynomialND<Eigen::Matrix<double,1,3> >& a, const PolynomialND<Eigen::Matrix<double,3,1> >& b) {
+	return a.template multiply<double,Eigen::Vector3d>(b);
+}
+
+PolynomialND<Eigen::Vector3d> rw::math::operator*(const PolynomialND<Eigen::Vector3d>& polynomial, const Polynomial<>& p) {
+	return polynomial.template multiply<Eigen::Vector3d>(static_cast<PolynomialND<double> >(p));
+}
+
+PolynomialND<Eigen::Matrix<double,1,3> > rw::math::operator*(const PolynomialND<Eigen::Matrix<double,1,3> >& polynomial, const Polynomial<>& p) {
+	return polynomial.template multiply<Eigen::Matrix<double,1,3> >(static_cast<PolynomialND<double> >(p));
+}
+
+PolynomialND<Eigen::Matrix3d> rw::math::operator*(const PolynomialND<Eigen::Matrix3d >& polynomial, const Polynomial<>& p) {
+	return polynomial.template multiply<Eigen::Matrix3d>(static_cast<PolynomialND<double> >(p));
+}
+
+Polynomial<float> rw::math::operator*(const PolynomialND<Eigen::Matrix<float,1,3>,float>& a, const PolynomialND<Eigen::Matrix<float,3,1>,float>& b) {
+	return a.template multiply<float,Eigen::Vector3f>(b);
+}
+
+PolynomialND<Eigen::Vector3f,float> rw::math::operator*(const PolynomialND<Eigen::Vector3f,float>& polynomial, const Polynomial<float>& p) {
+	return polynomial.template multiply<Eigen::Vector3f>(static_cast<PolynomialND<float,float> >(p));
+}
+
+PolynomialND<Eigen::Matrix<float,1,3>,float> rw::math::operator*(const PolynomialND<Eigen::Matrix<float,1,3>,float>& polynomial, const Polynomial<float>& p) {
+	return polynomial.template multiply<Eigen::Matrix<float,1,3> >(static_cast<PolynomialND<float,float> >(p));
+}
+
+PolynomialND<Eigen::Matrix3f,float> rw::math::operator*(const PolynomialND<Eigen::Matrix3f,float>& polynomial, const Polynomial<float>& p) {
+	return polynomial.template multiply<Eigen::Matrix3f>(static_cast<PolynomialND<float,float> >(p));
+}

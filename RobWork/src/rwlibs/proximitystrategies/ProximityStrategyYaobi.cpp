@@ -175,10 +175,19 @@ bool ProximityStrategyYaobi::doInCollision(ProximityModel::Ptr aModel,
     YaobiProximityModel *a = (YaobiProximityModel*)aModel.get();
     YaobiProximityModel *b = (YaobiProximityModel*)bModel.get();
 
+    CollisionResult &cres = data.getCollisionData();
+    cres.clear();
+    cres.a = aModel;
+    cres.b = bModel;
+    cres._aTb = inverse(wTa)*wTb;
+
     yaobi::QueryType qtype = yaobi::FIRST_CONTACT_ONLY;
     if(!firstContact)
     	qtype = yaobi::ALL_CONTACTS;
     yaobi::CollideResult result;
+    size_t nrOfCollidingGeoms = 0;
+    int geoIdxA = 0;
+    int geoIdxB = 0;
     BOOST_FOREACH(const RWYaobiModel& ma, a->models) {
         BOOST_FOREACH(const RWYaobiModel& mb, b->models) {
             //! Search for all contacting triangles
@@ -187,12 +196,37 @@ bool ProximityStrategyYaobi::doInCollision(ProximityModel::Ptr aModel,
                 *mb.second, wTb * mb.first,
                 result, qtype);
 
-            // TODO: copy all colliding triangles into data
+            cres._nrBVTests += result.num_bv_tests;
+            cres._nrPrimTests += result.num_tri_tests;
+
+            if (result.IsColliding()) {
+            	nrOfCollidingGeoms++;
+           		cres._collisionPairs.resize(nrOfCollidingGeoms);
+                cres._collisionPairs.back().geoIdxA = geoIdxA;
+                cres._collisionPairs.back().geoIdxB = geoIdxB;
+
+
+            	int startIdx = static_cast<int>(cres._geomPrimIds.size());
+            	int size = result.num_pairs;
+            	cres._collisionPairs.back().startIdx = startIdx;
+            	cres._collisionPairs.back().size = size;
+
+            	cres._geomPrimIds.resize(startIdx+size);
+
+            	for(int j=0;j<size;j++){
+            		cres._geomPrimIds[startIdx+j].first = result.pairs[j].id1;
+            		cres._geomPrimIds[startIdx+j].second= result.pairs[j].id2;
+            	}
+            }
+
             if (firstContact && result.IsColliding())
             	return true;
 			if (result.IsColliding())
 				isColliding = true;
+
+	        geoIdxB++;
         }
+        geoIdxA++;
     }
 
     return isColliding;

@@ -30,7 +30,11 @@ IF( build )
 	SET_SOURCE_FILES_PROPERTIES(../rwsim.i PROPERTIES SWIG_FLAGS "-includeall")
 	
 	# lua interface generation
-    SWIG_ADD_MODULE(rwsim_lua lua ../rwsim.i ../ScriptTypes.cpp Lua.cpp)
+	IF ((CMAKE_VERSION VERSION_GREATER 3.8) OR (CMAKE_VERSION VERSION_EQUAL 3.8))
+		SWIG_ADD_LIBRARY(rwsim_lua MODULE LANGUAGE lua SOURCES ../rwsim.i ../ScriptTypes.cpp Lua.cpp)
+	ELSE()
+		SWIG_ADD_MODULE(rwsim_lua lua ../rwsim.i ../ScriptTypes.cpp Lua.cpp)
+	ENDIF()
 	SWIG_LINK_LIBRARIES(rwsim_lua rw ${ROBWORKSIM_LIBRARIES} ${ROBWORK_LIBRARIES})
 
     ADD_LIBRARY(rwsim_lua_s STATIC Lua.cpp ${swig_generated_sources} ${swig_other_sources})

@@ -279,8 +279,9 @@ namespace graphics {
         /**
          * @brief Enable/disable offscreen rendering.
          * @param enable [in] true to enable, false to disable.
+         * @return true if offscreen rendering was enabled, false if offscreen rendering is not possible.
          */
-        virtual void setOffscreenRenderEnabled( bool enable ) = 0;
+        virtual bool setOffscreenRenderEnabled( bool enable ) = 0;
 
         /**
          * @brief Check if offscreen rendering is enabled.

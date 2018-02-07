@@ -83,6 +83,7 @@ bool Triangulate::snip(const std::vector<rw::math::Vector2D<> >& contour,int u,i
 
     if ( EPSILON > (((Bx-Ax)*(Cy-Ay)) - ((By-Ay)*(Cx-Ax))) ) return false;
 
+    // Check if any point on the contour is within the triangle
     for (p=0;p<n;p++)
     {
         if( (p == u) || (p == v) || (p == w) ) continue;
@@ -95,23 +96,48 @@ bool Triangulate::snip(const std::vector<rw::math::Vector2D<> >& contour,int u,i
 }
 
 
-bool Triangulate::processPoints(const std::vector< Vector3D<> >& contour, std::vector<int>& result, double colinearCriteria) {
+bool Triangulate::processPolygon(Polygon<>::Ptr polygon, std::vector<int>& result, double colinearCriteria, double precision) 
+{
+	std::vector<Vector3D<> > contour;
+	for (size_t i = 0; i<polygon->size(); i++) {
+		contour.push_back(polygon->getVertex(i));
+	}
+
+	return processPoints(contour, result, colinearCriteria, precision);
+}
+
+
+bool Triangulate::processPoints(const std::vector< Vector3D<> >& contour, std::vector<int>& result, double colinearCriteria, double precision) {
 	//Compute plane of the contour 
 	if (contour.size() < 3) {
 		return false;
 	}
 
-	Vector3D<> v1 = normalize(contour[1]-contour[0]);
-	Vector3D<> v2;
-	size_t i = 2;
+	Vector3D<> v1;
+
+	size_t i = 0;
 	do {
-		v2 = normalize(contour[i]-contour[0]);
+		v1 = normalize(contour[i+1]-contour[0]);
 		i++;
-	} while (fabs(dot(v1, v2) - 1) < colinearCriteria && i<contour.size());
-	if (i == contour.size()) {
-		RW_THROW("The points on the contour appears to be colinear");
 	}
+	while (v1.norm2() < precision && i<contour.size());
+
+	if (i == contour.size()) {
+		RW_THROW("All contour points appear to have a distance of less than "<<precision<<".");
+	}
+
+	Vector3D<> v2;
+
+	do {
+		i++;
+
+		if (i == contour.size()) {
+			RW_THROW("The points on the contour appears to be colinear");
+		}
 	
+		v2 = normalize(contour[i]-contour[0]);
+	} while (fabs(dot(v1, v2) - 1) < colinearCriteria);
+
 	Vector3D<> normal = Math::abs(cross(v1, v2));
 	int maxIdx = 0;
 	if (normal[0] > normal[1] && normal[0] > normal[2]) {
@@ -141,7 +167,7 @@ bool Triangulate::processPoints(const std::vector< rw::math::Vector2D<> >& conto
     int n = (int)contour.size();
 
     if ( n < 3 ){
-    	//rw::common::Log::debugLog() << "Triangulate::processPoints has recieved polygon with less than 3 vertices" << std::endl;
+        rw::common::Log::debugLog() << "Triangulate::processPoints has recieved polygon with less than 3 vertices" << std::endl;
     	return false;
     }
 
@@ -190,6 +216,7 @@ bool Triangulate::processPoints(const std::vector< rw::math::Vector2D<> >& conto
 			w = 0;     /* next     */
 		}
 
+        // If no points on the contour is inside the triangle:
         if ( snip(contour,u,v,w,nv,V) )
         {
             int a,b,c,s,t;
@@ -205,12 +232,13 @@ bool Triangulate::processPoints(const std::vector< rw::math::Vector2D<> >& conto
             m++;
 
             /* remove v from remaining polygon */
+            // Todo: simplify this
             for(s=v,t=v+1;t<nv;s++,t++) {
 				V[s] = V[t]; 
 			}
 			nv--;
 
-            /* resest error detection counter */
+            /* reset error detection counter */
             count = 2*nv;
         }
     }

@@ -1,0 +1,31 @@
+<WorkCell name="Robotiq">
+	<Frame name="RobotiqFingerControl" refframe="WORLD">
+		<Pos>-0.1 0 0</Pos>
+		<RPY>180 0 90</RPY>
+	</Frame>
+	<Include file="robotiq_finger_control.xml" />
+
+	<Frame name="RobotiqDistanceControl" refframe="WORLD">
+		<Pos>0.1 0 0</Pos>
+		<RPY>180 0 90</RPY>
+	</Frame>
+	<Include file="robotiq_distance_control.xml" />
+	
+	<!-- Definition of frames for inverse kinematics (makes it possible to control rotations) -->
+	<Frame name="RobotiqFingerControlLeftIK" refframe="RobotiqFingerControl.LeftMotorEnd">
+		<Pos>0 0 0</Pos>
+		<RPY>0 -90 0</RPY>
+	</Frame>
+	<Frame name="RobotiqFingerControlRightIK" refframe="RobotiqFingerControl.RightMotorEnd">
+		<Pos>0 0 0</Pos>
+		<RPY>0 90 0</RPY>
+	</Frame>
+	<Frame name="RobotiqDistanceControlLeftIK" refframe="RobotiqDistanceControl.LeftMotorEnd">
+		<Pos>0 0 0</Pos>
+		<RPY>0 -90 0</RPY>
+	</Frame>
+	<Frame name="RobotiqDistanceControlRightIK" refframe="RobotiqDistanceControl.RightMotorEnd">
+		<Pos>0 0 0</Pos>
+		<RPY>0 90 0</RPY>
+	</Frame>
+</WorkCell>

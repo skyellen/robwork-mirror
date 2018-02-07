@@ -41,6 +41,8 @@ QState::~QState(){ }
 const double* QState::getQ(const StateData& data) const
 {
     const int pos = _setup->getOffset(data);
+    if (pos < 0)
+    	RW_THROW("The values can not be retrieved from this state, as this state does not appear to hold that data. Please make sure you use the correct State object.");
 
     // NB: This is _not_ the same as &_contents[pos] when pos ==
     // _contents.size(). It is OK to return a pointer to one element past the
@@ -51,6 +53,8 @@ const double* QState::getQ(const StateData& data) const
 double* QState::getQ(const StateData& data)
 {
     const int pos = _setup->getOffset(data);
+    if (pos < 0)
+    	RW_THROW("The values can not be retrieved from this state, as this state does not appear to hold that data. Please make sure you use the correct State object.");
 
     // NB: This is _not_ the same as &_contents[pos] when pos ==
     // _contents.size(). It is OK to return a pointer to one element past the
@@ -61,6 +65,8 @@ double* QState::getQ(const StateData& data)
 void QState::setQ(const StateData& data, const double* vals)
 {
     const int pos = _setup->getOffset(data);
+    if (pos < 0)
+    	RW_THROW("The new values can not be set in this state, as this state does not appear to hold that data. Please make sure you use the correct State object.");
     const int dof = data.size();
     // See above with regards to the (+ pos) expression.
     memmove(&_contents[0] + pos, vals, dof * sizeof(double));

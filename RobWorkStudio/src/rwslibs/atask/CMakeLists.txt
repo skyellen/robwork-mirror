@@ -9,27 +9,33 @@ RW_ADD_DOC(${SUBSYS_NAME})
 
 IF(build)    
     # if we want to use ui files add them here
-    SET(UIS_FILES ATaskVisPlugin.ui )
     IF(RWS_USE_QT5)
-      QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+      QT5_WRAP_UI(UIS_OUT_H_ATaskVisPlugin ATaskVisPlugin.ui)
+      QT5_WRAP_UI(UIS_OUT_H_StrategyLibraryDialog StrategyLibraryDialog.ui)
+      QT5_WRAP_UI(UIS_OUT_H_TaskSetupDialog TaskSetupDialog.ui)
     ELSE()
-      QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+      QT4_WRAP_UI(UIS_OUT_H_ATaskVisPlugin ATaskVisPlugin.ui)
+      QT4_WRAP_UI(UIS_OUT_H_StrategyLibraryDialog StrategyLibraryDialog.ui)
+      QT4_WRAP_UI(UIS_OUT_H_TaskSetupDialog TaskSetupDialog.ui)
     ENDIF()
+    SET(UIS_OUT_H ${UIS_OUT_H_ATaskVisPlugin} ${UIS_OUT_H_StrategyLibraryDialog} ${UIS_OUT_H_TaskSetupDialog})
 	#Need to add the current binary dir to the include directory because the generated source files are placed here
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
     # Standard cpp files to compile:
-    SET(SrcFiles ATaskVisPlugin.cpp)
-    SET(SRC_FILES_HPP ATaskVisPlugin.hpp)
+    SET(SrcFiles ATaskVisPlugin.cpp StrategyLibraryDialog.cpp TaskSetupDialog.cpp)
+    SET(SRC_FILES_HPP ATaskVisPlugin.hpp StrategyLibraryDialog.hpp TaskSetupDialog.hpp)
     
-    set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
+    set_source_files_properties(ATaskVisPlugin.cpp PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H_ATaskVisPlugin}")
+    set_source_files_properties(StrategyLibraryDialog.cpp PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H_StrategyLibraryDialog}")
+    set_source_files_properties(TaskSetupDialog.cpp PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H_TaskSetupDialog}")
     
     IF(RWS_USE_QT5)
-    	QT5_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+    	QT5_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP})
     	# Rcc the files:
     	QT5_ADD_RESOURCES(RccSrcFiles atask_resources.qrc)
     ELSE()
     # Header files to moc and compile:
-    	QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+    	QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_PLUS_HPP_INCLUDED -DBOOST_TT_HAS_PLUS_ASSIGN_HPP_INCLUDED -DBOOST_TT_HAS_MINUS_HPP_INCLUDED -DBOOST_TT_HAS_MINUS_ASSIGN_HPP_INCLUDED)
     	# Rcc the files:
     	QT4_ADD_RESOURCES(RccSrcFiles atask_resources.qrc)
     ENDIF()

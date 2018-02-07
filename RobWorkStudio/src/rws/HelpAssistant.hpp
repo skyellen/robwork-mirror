@@ -22,8 +22,17 @@ public:
      * @brief Show the help assistant.
      * @param paths [in] a list of paths to search for the documentation files.
      */
-    void showDocumentation(const QStringList &paths);
-    
+    bool showDocumentation(const QStringList &paths);
+
+    /**
+     * @brief Go to the given URL in documentation.
+     * @param url [in] the URL.
+     */
+    void gotoURL(const std::string& url);
+
+    //! @brief Show only the page and hide as much as possible else.
+    void minimumView();
+
 private:
     bool startAssistant(QString collectionFileName);
     QProcess *proc;

@@ -114,7 +114,19 @@ namespace geometry {
 			 * 
 			 * @return sum of the squares of point distances to the line
 			 */
-			double refit(std::vector<rw::math::Vector3D<> >& data);
+			double refit(const std::vector<rw::math::Vector3D<> >& data);
+
+			/**
+			 * @copybrief refit(const std::vector<rw::math::Vector3D<> >&)
+			 *
+			 * This version of refit makes it possible to fit only a subset of the points in a vector.
+			 *
+			 * @param begin [in] iterator to first element.
+			 * @param end [in] iterator to last element.
+			 * @return sum of the squares of point distances to the line.
+			 * @see refit(const std::vector<rw::math::Vector3D<> >&)
+			 */
+			double refit(const std::vector<rw::math::Vector3D<> >::const_iterator begin, const std::vector<rw::math::Vector3D<> >::const_iterator end);
 
 			// inherited from Primitive
 			//! @copydoc Primitive::createMesh

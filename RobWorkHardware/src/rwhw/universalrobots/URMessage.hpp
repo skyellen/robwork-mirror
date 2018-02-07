@@ -1,4 +1,20 @@
-/* */
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
 #ifndef RWHW_URMESSAGE_HPP
 #define RWHW_URMESSAGE_HPP
 
@@ -6,11 +22,12 @@
 
 class URMessage {
 public:
-	URMessage(int type, int code, int arg, const std::string& text):
+	URMessage(int type, int code, int arg, const std::string& header, const std::string& message):
 		_type(type),
 		_code(code),
 		_arg(arg),
-		_text(text)
+		_header(header),
+		_text(message)
 	{}
 
 
@@ -23,7 +40,7 @@ public:
     		os<<"ROBOT_MESSAGE_ERROR_CODE: ERROR_CODE = "<<msg._code<<" ERROR_ARG = "<<msg._arg<<" TEXT = "<<msg._text;
     		break;
     	case ROBOT_MESSAGE_SECURITY:
-    		os<<"ROBOT_MESSAGE_SECURITY: ERROR_CODE = "<<msg._code<<" ERROR_ARG = "<<msg._arg<<" TEXT = "<<msg._text;
+    		os<<"ROBOT_MESSAGE_SECURITY: ERROR_CODE = "<<msg._code<<" ERROR_ARG = "<<msg._arg<<"SAFETYMODE: "<<msg._header<<" Message = "<<msg._text;
     		break;
     	default:
     		os<<"TYPE = "<<msg._type<<" CODE = "<<msg._code<<" ARG = "<<msg._arg<<" TEXT = "<<msg._text;
@@ -45,6 +62,7 @@ private:
 	int _type;
 	int _code;
 	int _arg;
+	std::string _header;
 	std::string _text;
 };
 

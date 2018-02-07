@@ -30,6 +30,10 @@
 #include <rw/models/Joint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
+#include <rw/models/SphericalJoint.hpp>
+#include <rw/models/UniversalJoint.hpp>
+#include <rw/models/PrismaticSphericalJoint.hpp>
+#include <rw/models/PrismaticUniversalJoint.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/models/ParallelDevice.hpp>
 #include <rw/models/MobileDevice.hpp>
@@ -367,30 +371,68 @@ Frame* addModelToFrame(DummyModel& model, Frame *parent, StateStructure *tree, D
 	return modelframe;
 }
 
-void addLimit(const DummyLimit &limit, Joint* j) {
-	double convFactor = 1.0;
-	if (dynamic_cast<RevoluteJoint*>(j) != NULL) {
-		convFactor = Deg2Rad;
-	}
-	switch (limit._type) {
-	case (PosLimitType):
-		j->setBounds(std::pair<Q, Q>(Q(1, limit._min * convFactor), Q(1, limit._max * convFactor)));
-		break;
-	case (VelLimitType):
-		j->setMaxVelocity(Q(1, limit._max * convFactor));
-		break;
-	case (AccLimitType):
-		j->setMaxAcceleration(Q(1, limit._max * convFactor));
-		break;
-	default:
-		assert(0);
-		break;
-	}
-}
-
 void addLimits(std::vector<DummyLimit> &limits, Joint *j) {
-	for (size_t i = 0; i < limits.size(); i++)
-		addLimit(limits[i], j);
+	if (limits.size() == 0)
+		return;
+
+	std::vector<DummyLimit> posLimits;
+	std::vector<DummyLimit> velLimits;
+	std::vector<DummyLimit> accLimits;
+	Q convFactor(limits.size());
+	for (std::size_t i = 0; i < limits.size(); i++) {
+		convFactor[i] = 1;
+		switch(limits[i]._type) {
+		case PosLimitType:
+			posLimits.push_back(limits[i]);
+			break;
+		case VelLimitType:
+			velLimits.push_back(limits[i]);
+			break;
+		case AccLimitType:
+			accLimits.push_back(limits[i]);
+			break;
+		}
+	}
+
+	if (dynamic_cast<RevoluteJoint*>(j) != NULL) {
+		convFactor[0] = Deg2Rad;
+	} else if (dynamic_cast<SphericalJoint*>(j) != NULL) {
+		convFactor[0] = Deg2Rad;
+		convFactor[1] = Deg2Rad;
+		convFactor[2] = Deg2Rad;
+	} else if (dynamic_cast<PrismaticSphericalJoint*>(j) != NULL) {
+		convFactor[0] = Deg2Rad;
+		convFactor[1] = Deg2Rad;
+		convFactor[2] = Deg2Rad;
+	} else if (dynamic_cast<UniversalJoint*>(j) != NULL) {
+		convFactor[0] = Deg2Rad;
+		convFactor[1] = Deg2Rad;
+	} else if (dynamic_cast<PrismaticUniversalJoint*>(j) != NULL) {
+		convFactor[0] = Deg2Rad;
+		convFactor[1] = Deg2Rad;
+	}
+
+	Q minPos(posLimits.size());
+	Q maxPos(posLimits.size());
+	Q maxVel(velLimits.size());
+	Q maxAcc(accLimits.size());
+	for (std::size_t i = 0; i < posLimits.size(); i++) {
+		minPos[i] = posLimits[i]._min * convFactor[i];
+		maxPos[i] = posLimits[i]._max * convFactor[i];
+	}
+	for (std::size_t i = 0; i < velLimits.size(); i++) {
+		maxVel[i] = velLimits[i]._max * convFactor[i];
+	}
+	for (std::size_t i = 0; i < accLimits.size(); i++) {
+		maxAcc[i] = accLimits[i]._max * convFactor[i];
+	}
+	if (posLimits.size() > 0)
+		j->setBounds(std::pair<Q, Q>(minPos,maxPos));
+	if (velLimits.size() > 0)
+		j->setMaxVelocity(maxVel);
+	if (accLimits.size() > 0)
+		j->setMaxAcceleration(maxAcc);
+	return;
 }
 
 void addLimitsToFrame(std::vector<DummyLimit> &limits, Frame *f) {
@@ -407,8 +449,16 @@ Frame *createFrame(DummyFrame& dframe, DummySetup &setup) {
 	if (dframe._isDepend) {
 		std::map<std::string, Frame*>::iterator res = setup.frameMap.find(dframe.getDependsOn());
 		if (res == setup.frameMap.end()) {
-			RW_WARN("The frame: " << dframe.getName() << " Depends on an unknown frame: " << dframe.getDependsOn());
-			return NULL;
+			const std::string dependOn = dframe.getDependsOn().substr(dframe.getScoped("").size());
+			std::vector<std::string> scope = dframe._scope;
+			while(scope.size() > 0 && res == setup.frameMap.end()) {
+				res = setup.frameMap.find(createScopedName(dependOn,scope));
+				scope.resize(scope.size()-1);
+			}
+			if (res == setup.frameMap.end()) {
+				RW_WARN("The frame: " << dframe.getName() << " Depends on an unknown frame: " << dframe.getDependsOn());
+				return NULL;
+			}
 		}
 		// then the frame depends on another joint
 		Joint* owner = dynamic_cast<Joint*>((*res).second);
@@ -417,9 +467,15 @@ Frame *createFrame(DummyFrame& dframe, DummySetup &setup) {
 		}
 
 		if (dframe._type == "Revolute") {
-			frame = new DependentRevoluteJoint(dframe.getName(), dframe._transform, owner, dframe._gain, dframe._offset);
+			DependentRevoluteJoint* const joint = new DependentRevoluteJoint(dframe.getName(), dframe._transform, owner, dframe._gain, dframe._offset);
+			if (dframe._state != ActiveState || !owner->isActive())
+				joint->setActive(false);
+			frame = joint;
 		} else if (dframe._type == "Prismatic") {
-			frame = new DependentPrismaticJoint(dframe.getName(), dframe._transform, owner, dframe._gain, dframe._offset);
+			DependentPrismaticJoint* const joint = new DependentPrismaticJoint(dframe.getName(), dframe._transform, owner, dframe._gain, dframe._offset);
+			if (dframe._state != ActiveState || !owner->isActive())
+				joint->setActive(false);
+			frame = joint;
 		} else {
 			RW_THROW("Error: The type of frame: " << dframe.getName() << " cannot depend on another joint!!");
 		}
@@ -451,6 +507,34 @@ Frame *createFrame(DummyFrame& dframe, DummySetup &setup) {
 		if (dframe._state != ActiveState)
 			j->setActive(false);
 		//Accessor::activeJoint().set(*frame, true);
+	} else if (dframe._type == "Spherical") {
+		SphericalJoint *j = new SphericalJoint(dframe.getName(), dframe._transform);
+		addLimits(dframe._limits, j);
+		frame = j;
+
+		if (dframe._state != ActiveState)
+			j->setActive(false);
+	} else if (dframe._type == "PrismaticSpherical") {
+		PrismaticSphericalJoint *j = new PrismaticSphericalJoint(dframe.getName(), dframe._transform);
+		addLimits(dframe._limits, j);
+		frame = j;
+
+		if (dframe._state != ActiveState)
+			j->setActive(false);
+	} else if (dframe._type == "Universal") {
+		UniversalJoint *j = new UniversalJoint(dframe.getName(), dframe._transform);
+		addLimits(dframe._limits, j);
+		frame = j;
+
+		if (dframe._state != ActiveState)
+			j->setActive(false);
+	} else if (dframe._type == "PrismaticUniversal") {
+		PrismaticUniversalJoint *j = new PrismaticUniversalJoint(dframe.getName(), dframe._transform);
+		addLimits(dframe._limits, j);
+		frame = j;
+
+		if (dframe._state != ActiveState)
+			j->setActive(false);
 	} else if (dframe._type == "EndEffector") {
 		frame = new FixedFrame(dframe.getName(), dframe._transform);
 		//Accessor::frameType().set(*frame, rw::kinematics::FrameType::FixedFrame);
@@ -578,19 +662,47 @@ Device::Ptr createDevice(DummyDevice &dev, DummySetup &setup) {
 	} else if (dev._type == ParallelType) {
 		// a parallel device is composed of a number of serial chains
 		std::vector<std::vector<Frame*> > chains;
+		std::map<std::string, std::size_t> nameToChainIndex;
 		std::vector<Frame*> chain;
 		std::map<std::string, Frame*> addFramesMap;
 		Frame *parent = createFrame(dev._frames[0], setup); //base
 		RW_ASSERT(parent);
 		chain.push_back(parent);
 		addFramesMap[parent->getName()] = parent;
+		std::string chainName;
 		for (size_t i = 1; i < dev._frames.size(); i++) {
 			Frame *frame = NULL;
+			bool newLeg;
 			if (dev._frames[i].getRefFrame() == dev._frames[i - 1].getName()) {
+				newLeg = false;
+				// Start new leg anyway if other frames also refer to the same reference frame
+				for (std::size_t j = i+1; j < dev._frames.size() && !newLeg; j++) {
+					if (i >= 2 && dev._frames[j].getRefFrame() == dev._frames[i - 1].getName()) {
+						newLeg = true;
+					}
+				}
+				// Start new leg anyway if scope changes
+				if (!chainName.empty()) {
+					for (std::size_t j = i+1; j < dev._frames.size() && !newLeg; j++) {
+						if (dev._frames[j].getRefFrame() != dev._frames[j - 1].getName())
+							break;
+						if (dev._frames[j]._scope.back() == chainName || dev._frames[j]._scope.size() <= 1)
+							break;
+						newLeg = true;
+					}
+				}
+			} else {
+				newLeg = true;
+			}
+			if (!newLeg) {
 				// the last frame was parent frame
 				frame = createFrame(dev._frames[i], setup);
+				if (dev._frames[i]._scope.back() != dev._name)
+					chainName = dev._frames[i]._scope.back();
 			} else {
 				// a new serial leg has started, find the parent frame
+				nameToChainIndex[chainName] = chains.size();
+				chainName = "";
 				chains.push_back(chain);
 				parent = NULL;
 				std::map<std::string, Frame*>::iterator res = addFramesMap.find(dev._frames[i].getRefFrame());
@@ -606,12 +718,15 @@ Device::Ptr createDevice(DummyDevice &dev, DummySetup &setup) {
 					chain.push_back(parent);
 				}
 			}
+			if (frame == NULL)
+				RW_THROW("Could not create ParallelDevice! A frame could not be created.");
 			chain.push_back(frame);
 			//tree->addFrame(frame, parent);
 			addFramesMap[frame->getName()] = frame;
 			parent = frame;
 		}
 		//std::cout << "Remember to push back the last chain!!" << std::endl;
+		nameToChainIndex[chainName] = chains.size();
 		chains.push_back(chain);
 		// Add frames to tree
 		addToStateStructure(chains[0][0]->getName(), setup);
@@ -622,16 +737,41 @@ Device::Ptr createDevice(DummyDevice &dev, DummySetup &setup) {
 		}
 		// Create the parallel legs
 		std::vector<ParallelLeg*> legs;
+		std::vector<Joint*> joints;
 		//tree->addFrame(*(chains[0])[0]);
 		for (size_t i = 0; i < chains.size(); i++) {
 			//std::cout << "chain nr: " << i << std::endl;
-			legs.push_back(new ParallelLeg(chains[i]));
+			if (dev._junctions.size() == 0)
+				legs.push_back(new ParallelLeg(chains[i]));
+			for (std::size_t j = 0; j < chains[i].size(); j++) {
+				if (Joint* const joint = dynamic_cast<Joint*>(chains[i][j]))
+					joints.push_back(joint);
+			}
 		}
 		// And last create ParallelDevice
 		//State state( tree );
 		State state = setup.tree->getDefaultState();
-		model = ownedPtr(new ParallelDevice(legs, dev.getName(), state));
-		//std::cout << "parallel device created!!" << std::endl;
+		std::vector<ParallelDevice::Legs> junctions;
+		for (std::size_t i = 0; i < dev._junctions.size(); i++) {
+			ParallelDevice::Legs junctionChains;
+			for (std::size_t j = 0; j < dev._junctions[i].chains.size(); j++) {
+				const std::vector<std::string> split = StringUtil::words(dev._junctions[i].chains[j]);
+				std::vector<Frame*> totalChain;
+				for (std::size_t k = 0; k < split.size(); k++) {
+					const std::map<std::string, std::size_t>::const_iterator legIndex = nameToChainIndex.find(split[k]);
+					if (legIndex == nameToChainIndex.end())
+						RW_THROW("Could not find SerialChain with the name " << split[k] << " when creating junction.");
+					totalChain.insert(totalChain.end(),chains[legIndex->second].begin(),chains[legIndex->second].end());
+				}
+				junctionChains.push_back(new ParallelLeg(totalChain));
+			}
+			junctions.push_back(junctionChains);
+		}
+		if (junctions.size() == 0) {
+			model = ownedPtr(new ParallelDevice(legs, dev.getName(), state));
+		} else {
+			model = ownedPtr(new ParallelDevice(dev.getName(), junctions[0][0]->getBase(), junctions[0][0]->getEnd(), joints, state, junctions));
+		}
 	} else if (dev._type == TreeType) {
 		RW_ASSERT( dev._frames.size()!=0);
 		//std::cout << "TreeDevice not supported yet" << std::endl;

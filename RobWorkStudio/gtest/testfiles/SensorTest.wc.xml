@@ -1,0 +1,40 @@
+<WorkCell name="SensorTestWorkcell">
+
+<Frame name="Wall1" refframe="WORLD">
+	<RPY> 0 0 0 </RPY> <Pos> 1.05 -0.1 0 </Pos>
+	<Drawable name="Box2d">
+		<RPY> 0 0 0</RPY>
+		<Pos> 0 0 0</Pos>
+		<Box x="0.1" y="2" z="0.2" />
+	</Drawable>
+</Frame>
+<Frame name="Wall2" refframe="WORLD">
+	<RPY> 0 0 0 </RPY> <Pos> -1 0 0 </Pos>
+	<Drawable name="Box2d">
+		<RPY> 0 0 0</RPY>
+		<Pos> 0 0 0</Pos>
+		<Box x="0.1" y="2" z="0.2" />
+	</Drawable>
+</Frame>
+<Frame name="Wall3" refframe="WORLD">
+	<RPY> 0 0 0 </RPY> <Pos> 0 1 0 </Pos>
+	<Drawable name="Box2d">
+		<RPY> 0 0 0</RPY>
+		<Pos> 0 0 0</Pos>
+		<Box x="4" y="0.1" z="0.2" />
+	</Drawable>
+</Frame>
+
+<Frame name="Sensor1" refframe="WORLD">
+	<RPY> 0 0 90 </RPY> <Pos> 0 0 0 </Pos>
+
+</Frame>
+
+<Frame name="Sensor2" refframe="WORLD">
+	<RPY> 0 0 90 </RPY> <Pos> -0.25 -0.25 0 </Pos>
+
+</Frame>
+
+
+
+</WorkCell>
