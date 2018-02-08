@@ -51,7 +51,7 @@ namespace
 class SimulatedSensors_test : public ::testing::Test
 {
 public:
-    const string workcellFile = TestEnvironment::testfilesDir() + "/SensorTest.wc.xml";
+    const string workcellFile = TestEnvironment::testfilesDir() + "SensorTest.wc.xml";
 
     rw::models::WorkCell::Ptr wc;
 
