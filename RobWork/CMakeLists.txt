@@ -233,42 +233,6 @@ ENDIF()
 # Packaging
 INCLUDE(cmake/packing.cmake)
 
-# Check for supported MSVC compilers
-# TODO: relocate to test/CMakeLists.txt?
-IF(RW_BUILD_TESTS)
-  IF(MSVC)
-    IF(${MSVC_VERSION} EQUAL 1400)
-      SET(MSVC_SOLUTION_DIR ${RW_ROOT}/projects/VisualStudio2005/RobWork)
-    ELSEIF(${MSVC_VERSION} EQUAL 1500)
-      SET(MSVC_SOLUTION_DIR ${RW_ROOT}/projects/VisualStudio2008/RobWork)
-    ELSEIF(${MSVC_VERSION} EQUAL 1600)
-      SET(MSVC_SOLUTION_DIR ${RW_ROOT}/projects/VisualStudio2010/RobWork)
-    ENDIF()
-    SET(MSVC_SOLUTION_FILE ${MSVC_SOLUTION_DIR}/RobWork.sln) 
-    
-    # Set up tests for enclosed solutions
-    IF(EXISTS ${MSVC_SOLUTION_FILE})
-      MESSAGE(STATUS "Adding MSVC solution test...")
-      # 64-bit not supported for MSVC 2005 yet
-      IF(AMD64 AND NOT ${MSVC_VERSION} EQUAL 1400)
-        ADD_TEST(NAME msvc-solution-test
-                 CONFIGURATIONS Release
-                 COMMAND devenv ${MSVC_SOLUTION_FILE} /Rebuild "Release|x64")
-        SET_TESTS_PROPERTIES(msvc-solution-test PROPERTIES TIMEOUT 2000)
-      ELSE()
-        ADD_TEST(NAME msvc-solution-test
-                 CONFIGURATIONS Release
-                 COMMAND devenv ${MSVC_SOLUTION_FILE} /Rebuild "Release|Win32")
-        SET_TESTS_PROPERTIES(msvc-solution-test PROPERTIES TIMEOUT 2000)
-      ENDIF()
-    ENDIF()
-  ENDIF()
-ENDIF()
-
-
-
-
-
 string(REPLACE ";" "\n" TOFILE_DST "$ENV{RW_LIB_FILES_CPP}")
 file(WRITE "source_files" "${TOFILE_DST}")
 string(REPLACE ";" "\n" TOFILE_DST "${ROBWORK_INCLUDE_DIR}")

@@ -175,7 +175,9 @@ void ShowLog::initialize() {
     		boost::bind(&ShowLog::frameSelectedListener, this, _1), this);
 
 	
-    log().setWriterForMask(Log::AllMask, _writers[0]);
+    log().setWriterForMask(((Log::AllMask) ^ (Log::WarningMask | Log::DebugMask | Log::FatalMask | Log::CriticalMask | Log::ErrorMask)), _writers[0]);
+    log().setWriterForMask((Log::WarningMask | Log::DebugMask), _writers[1]);
+    log().setWriterForMask((Log::FatalMask | Log::CriticalMask | Log::ErrorMask), _writers[2]);
 }
 
 void ShowLog::flush(){

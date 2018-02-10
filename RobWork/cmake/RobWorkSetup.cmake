@@ -166,6 +166,7 @@ SET(RW_HAVE_XERCES False)
 FIND_PACKAGE(XercesC REQUIRED)
 IF( XERCESC_FOUND )
     SET(RW_HAVE_XERCES True)
+    MESSAGE(STATUS "RobWork: XERCES ENABLED! FOUND!")
 ELSE ()
     MESSAGE(SEND_ERROR "RobWork: Xerces NOT FOUND! Check if XERCESC_INCLUDE_DIR and XERCESC_LIB_DIR is set correctly!")
 ENDIF ()
@@ -389,6 +390,9 @@ CMAKE_DEPENDENT_OPTION(RW_USE_ASSIMP "Set to ON to include Assimp support.
                 to specify your own Assimp else RobWork Assimp will 
                 be used!"
       ON "NOT RW_DISABLE_ASSIMP" OFF)
+
+SET(ASSIMP_INCLUDE_DIRS "")
+SET(ASSIMP_LIBRARIES "")
 IF(RW_USE_ASSIMP)
 	# Now try to find Assimp
 	FIND_PACKAGE(Assimp 3.0 QUIET)
