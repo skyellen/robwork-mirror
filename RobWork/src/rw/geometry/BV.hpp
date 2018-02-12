@@ -27,6 +27,7 @@ namespace geometry {
 	class GeometryData;
 	class Primitive;
 	class TriMesh;
+	class Shell;
 
     /**
      * @brief a general bounding volume class for template inheritance. This class
@@ -78,21 +79,45 @@ namespace geometry {
     template<class BV>
     class BVFactory {
     public:
+    	//! @brief Smart pointer type to BVFactory<BV>.
         typedef rw::common::Ptr<BVFactory<BV> > Ptr;
 
-        virtual ~BVFactory(){};
+        //! @brief Destructor.
+        virtual ~BVFactory(){}
 
-        //! @brief create a BV
+        /**
+         * @brief Create a bounding volume for a triangle mesh.
+         * @param geom [in/out] the mesh to create bounding volume for.
+         * @return the bounding volume.
+         */
         virtual BV makeBV(rw::geometry::TriMesh& geom) = 0;
 
+        /**
+         * @brief Create a bounding volume for any type of geometry.
+         * @param geom [in/out] the geometry to create bounding volume for.
+         * @return the bounding volume.
+         */
         virtual BV makeBV(rw::geometry::GeometryData& geom) = 0;
 
+        /**
+         * @brief Create a bounding volume for a primitive.
+         * @param geom [in/out] the primitive to create bounding volume for.
+         * @return the bounding volume.
+         */
         virtual BV makeBV(rw::geometry::Primitive& geom) = 0;
+
+        /**
+         * @brief Create a bounding volume for a shell.
+         * @param geom [in/out] the shell to create bounding volume for.
+         * @return the bounding volume.
+         */
+        virtual BV makeBV(rw::geometry::Shell& geom) = 0;
 
 
         // TODO: at some point a collection of primitives should be supported
     protected:
-        BVFactory(){};
+        //! @brief Constructor.
+        BVFactory(){}
     };
 
 

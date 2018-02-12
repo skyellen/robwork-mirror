@@ -18,11 +18,12 @@
 #ifndef RW_GEOMETRY_OBBFACTORY_HPP_
 #define RW_GEOMETRY_OBBFACTORY_HPP_
 
+#include <rw/geometry/analytic/Shell.hpp>
 #include <rw/geometry/Covariance.hpp>
+#include <rw/geometry/QHull3D.hpp>
 #include <rw/math/EigenDecomposition.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/geometry/QHull3D.hpp>
 
 #include "BV.hpp"
 #include "OBB.hpp"
@@ -36,25 +37,36 @@ namespace geometry {
     template<class T>
     class OBBFactory: public BVFactory<OBB<T> > {
     public:
-        typedef enum{PCA, PCAHull, DITO14} FitMethod;
+    	//! @brief The supported methods to generate an oriented bounding box from a mesh.
+        typedef enum {
+        	PCA,      //!< Principal Component Analysis
+			PCAHull,  //!< Principal Component Analysis Hull
+			DITO14    //!< Ditretahedron method with 14 selected vertices.
+        } FitMethod;
 
-        OBBFactory(FitMethod method=DITO14):_method(method){}
+        /**
+         * @brief Constructor.
+         * @param method [in] (optional) the method to use. Default is the DITO14 method.
+         */
+        OBBFactory(FitMethod method = DITO14):_method(method){}
 
-        virtual ~OBBFactory(){};
+        //! @brief Destructor.
+        virtual ~OBBFactory(){}
 
-        //! @brief create a BV
-        virtual rw::geometry::OBB<T> makeBV(rw::geometry::TriMesh& mesh){
+        //! @copydoc BVFactory::makeBV(rw::geometry::TriMesh&)
+        virtual rw::geometry::OBB<T> makeBV(rw::geometry::TriMesh& geom){
             switch(_method){
-            case(DITO14): return makeDITO(mesh);
-            case(PCA):return makePCA(mesh);
-            case(PCAHull):return makePCAHull(mesh);
+            case(DITO14): return makeDITO(geom);
+            case(PCA):return makePCA(geom);
+            case(PCAHull):return makePCAHull(geom);
             default:
                 RW_THROW("Unsupported fitting method!");
                 break;
             }
-            return makePCA(mesh);
+            return makePCA(geom);
         }
 
+        //! @copydoc BVFactory::makeBV(rw::geometry::GeometryData&)
         rw::geometry::OBB<T> makeBV(rw::geometry::GeometryData& geom){
             rw::geometry::TriMesh* mesh = dynamic_cast<rw::geometry::TriMesh*>(&geom);
             if( mesh!=NULL ){
@@ -65,42 +77,48 @@ namespace geometry {
             return makeBV(*geommesh);
         }
 
+        //! @copydoc BVFactory::makeBV(rw::geometry::Primitive&)
         rw::geometry::OBB<T> makeBV(rw::geometry::Primitive& geom){
             // TODO: this might be very inefficient
             rw::common::Ptr<rw::geometry::TriMesh> geommesh = geom.getTriMesh(false);
             return makeBV(*geommesh);
         }
 
-        rw::geometry::OBB<T> makeDITO(rw::geometry::TriMesh& mesh);
+        rw::geometry::OBB<T> makeDITO(const rw::geometry::TriMesh& mesh) const;
+
+        //! @copydoc BVFactory::makeBV(rw::geometry::Shell&)
+        rw::geometry::OBB<T> makeBV(rw::geometry::Shell& geom) {
+        	return geom.obb();
+        }
 
         /**
          * @brief computes covariance over vertices in mesh and calculates the
          * eigen vectors of the covariance and use this as axes in the bounding box
-         * @param mesh
+         * @param mesh [in] the triangle mesh to create oriented bounding box for.
          * @return a tight fitting bounding box
          */
-        rw::geometry::OBB<T> makePCA(rw::geometry::TriMesh& mesh);
+        rw::geometry::OBB<T> makePCA(const rw::geometry::TriMesh& mesh) const;
 
         /**
          * @brief computes covariance over the vertices of the convex hull
          * of the  mesh and calculates the
          * eigen vectors of the covariance and use this as axes in the bounding box
-         * @param mesh
+         * @param mesh [in] the triangle mesh to create oriented bounding box for.
          * @return a tight fitting bounding box
          */
-        rw::geometry::OBB<T> makePCAHull(rw::geometry::TriMesh& mesh);
+        rw::geometry::OBB<T> makePCAHull(const rw::geometry::TriMesh& mesh) const;
 
     private:
         FitMethod _method;
     };
 
     template<class T>
-    rw::geometry::OBB<T> OBBFactory<T>::makeDITO(rw::geometry::TriMesh& mesh){
+    rw::geometry::OBB<T> OBBFactory<T>::makeDITO(const rw::geometry::TriMesh& mesh) const {
         return makePCAHull(mesh);
     }
 
     template<class T>
-    rw::geometry::OBB<T> OBBFactory<T>::makePCA(rw::geometry::TriMesh& mesh){
+    rw::geometry::OBB<T> OBBFactory<T>::makePCA(const rw::geometry::TriMesh& mesh) const {
         //return rw::geometry::OBB<T>::buildTightOBB(mesh);
 
         using namespace rw::math;
@@ -141,7 +159,7 @@ namespace geometry {
     }
 
     template<class T>
-    rw::geometry::OBB<T> OBBFactory<T>::makePCAHull(rw::geometry::TriMesh& meshInput){
+    rw::geometry::OBB<T> OBBFactory<T>::makePCAHull(const rw::geometry::TriMesh& meshInput) const {
         using namespace rw::math;
         
         QHull3D hullgen;

@@ -76,7 +76,7 @@ void build(size_t dim,
 			}
 		}
 	} else {
-		std::cout << "Not Exit Code!";
+		RW_THROW("Delaunay triangulation returned with exit code " << exitcode);
 	}
 
 	if (qhT_pointer->VERIFYoutput && !qhT_pointer->FORCEoutput && !qhT_pointer->STOPpoint && !qhT_pointer->STOPcone)
@@ -110,12 +110,10 @@ typename IndexedTriMeshN0<double,S>::Ptr makeMesh(const std::vector<Vector2D<> >
 
 		// Make sure the vertices order is correct according to right-hand rule. Otherwise flip v2 and v3.
 		const double dotProduct = dot(cross(v2-v1,v3-v2),Vector3D<>::z());
-		if (std::fabs(dotProduct) > 0.001) {
-			if (dotProduct < 0.0) {
-				(*meshTri)[i] = typename Mesh::tri_type(tempTri[0],tempTri[2],tempTri[1]);
-			} else {
-				(*meshTri)[i] = tempTri;
-			}
+		if (dotProduct < 0.0) {
+			(*meshTri)[i] = typename Mesh::tri_type(tempTri[0],tempTri[2],tempTri[1]);
+		} else {
+			(*meshTri)[i] = tempTri;
 		}
 	}
 

@@ -52,6 +52,25 @@ SET(FILES_CPP
     SphereDistanceCalc.cpp
     TriMeshSurfaceSampler.cpp
     PointCloud.cpp
+    
+	analytic/BREP.cpp
+	analytic/Curve.cpp
+	analytic/Face.cpp
+	analytic/GenericFace.cpp
+    analytic/ImplicitSurface.cpp
+    analytic/IndexedFaceArray.cpp
+	analytic/ParametricCurve.cpp
+	analytic/Shell.cpp
+	analytic/Surface.cpp
+	
+    analytic/quadratics/IndexedQuadraticFaceArray.cpp
+    analytic/quadratics/PlainQuadraticShell.cpp
+    analytic/quadratics/QuadraticBREP.cpp
+    analytic/quadratics/QuadraticCurve.cpp
+    analytic/quadratics/QuadraticFace.cpp
+    analytic/quadratics/QuadraticShell.cpp
+    analytic/quadratics/QuadraticSurface.cpp
+    analytic/quadratics/QuadraticUtil.cpp
 )
 
 SET(FILES_HPP
@@ -111,6 +130,25 @@ SET(FILES_HPP
     SphereDistanceCalc.hpp
     TriMeshSurfaceSampler.hpp
     PointCloud.hpp
+    
+	analytic/BREP.hpp
+	analytic/Curve.hpp
+	analytic/Face.hpp
+	analytic/GenericFace.hpp
+    analytic/ImplicitSurface.hpp
+    analytic/IndexedFaceArray.hpp
+	analytic/ParametricCurve.hpp
+	analytic/Shell.hpp
+	analytic/Surface.hpp
+	
+    analytic/quadratics/IndexedQuadraticFaceArray.hpp
+    analytic/quadratics/PlainQuadraticShell.hpp
+    analytic/quadratics/QuadraticBREP.hpp
+    analytic/quadratics/QuadraticCurve.hpp
+    analytic/quadratics/QuadraticFace.hpp
+    analytic/quadratics/QuadraticShell.hpp
+    analytic/quadratics/QuadraticSurface.hpp
+    analytic/quadratics/QuadraticUtil.hpp
 )
 
 IF (RW_HAVE_PQP)

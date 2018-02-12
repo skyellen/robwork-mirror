@@ -236,7 +236,7 @@ std::vector<Polygon<Vector2D<> > > PolygonUtil::convexDecomposition(const Polygo
 	return res;
 }
 
-bool PolygonUtil::isInsideConvex(const Vector2D<>& point, const Polygon<Vector2D<> >& polygon) {
+bool PolygonUtil::isInsideConvex(const Vector2D<>& point, const Polygon<Vector2D<> >& polygon, double eps) {
 	unsigned int pos = 0;
 	unsigned int neg = 0;
 
@@ -245,12 +245,16 @@ bool PolygonUtil::isInsideConvex(const Vector2D<>& point, const Polygon<Vector2D
 			return false;
 
 		const std::size_t iNext = (i == polygon.size()-1)? 0 : i+1;
-		const double d = (point[0]-polygon[i][0])*(polygon[iNext][1]-polygon[i][1]) - (point[1]-polygon[i][1])*(polygon[iNext][0]-polygon[i][0]);
+		//const double a = (point[0]-polygon[i][0])*(polygon[iNext][1]-polygon[i][1]) - (point[1]-polygon[i][1])*(polygon[iNext][0]-polygon[i][0]);
+		const Vector2D<> dP = point-polygon[i];
+		const Vector2D<> dNext = polygon[iNext]-polygon[i];
+		const double a = cross(dP,dNext);
+		const double d = (dP-dot(dP,dNext)*dNext).norm2();
 
-		if (std::fabs(d) < std::numeric_limits<double>::epsilon()*5)
+		if (d < eps)
 			return false;
-		if (d > 0) pos++;
-		if (d < 0) neg++;
+		if (a > 0) pos++;
+		if (a < 0) neg++;
 
 		//If the sign changes, then point is outside
 		if (pos > 0 && neg > 0)

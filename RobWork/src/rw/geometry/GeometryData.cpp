@@ -40,6 +40,7 @@ std::string GeometryData::toString(GeometryData::GeometryType type){
 	case(TubePrim): return "TubePrim";
 	case(PlanePrim): return "PlanePrim";
 	case(RayPrim): return "RayPrim";
+	case(Quadratic): return "Quadratic";
 	case(UserType): return "UserType";
 	default:
 		return "Not Supported!";

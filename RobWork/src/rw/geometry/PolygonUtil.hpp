@@ -67,9 +67,10 @@ public:
 	 * @brief Check if point lies inside convex polygon.
 	 * @param point [in] the point.
 	 * @param polygon [in] the polygon.
+	 * @param eps [in] distance threshold for when to consider a point inside the polygon.
 	 * @return true if \b point is strictly inside the \b polygon, or false if on the border or outside.
 	 */
-	static bool isInsideConvex(const rw::math::Vector2D<>& point, const Polygon<rw::math::Vector2D<> >& polygon);
+	static bool isInsideConvex(const rw::math::Vector2D<>& point, const Polygon<rw::math::Vector2D<> >& polygon, double eps);
 
 	/**
 	 * @brief Get the signed area of a 2D polygon.
