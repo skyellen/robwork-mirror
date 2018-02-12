@@ -123,7 +123,7 @@ TEST(PolygonUtil, IsInside) {
 	polygon.addVertex(Vector2D<>(0.45, -0.4));
 	polygon.addVertex(Vector2D<>(0.275, -0.2));
 
-	EXPECT_TRUE(PolygonUtil::isInsideConvex(Vector2D<>(0.4,-0.3),polygon));
-	EXPECT_FALSE(PolygonUtil::isInsideConvex(Vector2D<>(0.29,-0.35),polygon));
-	EXPECT_FALSE(PolygonUtil::isInsideConvex(Vector2D<>(0.45,-0.4),polygon));
+	EXPECT_TRUE(PolygonUtil::isInsideConvex(Vector2D<>(0.4,-0.3),polygon,std::numeric_limits<double>::epsilon()*5));
+	EXPECT_FALSE(PolygonUtil::isInsideConvex(Vector2D<>(0.29,-0.35),polygon,std::numeric_limits<double>::epsilon()*5));
+	EXPECT_FALSE(PolygonUtil::isInsideConvex(Vector2D<>(0.45,-0.4),polygon,std::numeric_limits<double>::epsilon()*5));
 }
