@@ -61,9 +61,11 @@ std::string StringUtil::getDirectoryName(const std::string& path)
 
 std::string StringUtil::getRelativeDirectoryName(const std::string& path, std::string dir_name)
 {
-    if (!dir_name.empty())
-    {
-        dir_name.pop_back();
+    while(!dir_name.empty()) {
+    	if (dir_name.back() == '/' || dir_name.back() == '\\')
+    		dir_name.pop_back();
+    	else
+    		break;
     }
     std::string new_dir = std::string();
     const std::string::size_type pos = dir_name.find_last_of("/\\");
@@ -73,10 +75,18 @@ std::string StringUtil::getRelativeDirectoryName(const std::string& path, std::s
     std::string key_path(new_dir);
     std::string new_path = getDirectoryName(path); // remove the filename
     const std::string::size_type pos_path = new_path.find(key_path);
-    if (pos_path != std::string::npos)
-        return new_path.substr(pos_path+key_path.length()+1);
-    else
+    if (pos_path != std::string::npos) {
+    	new_path = new_path.substr(pos_path+key_path.length()+1);
+        while(!new_path.empty()) {
+        	if (new_path.front() == '/' || new_path.front() == '\\')
+        		new_path = new_path.substr(1);
+        	else
+        		break;
+        }
+        return new_path;
+    } else {
         return std::string();
+    }
 }
 
 
