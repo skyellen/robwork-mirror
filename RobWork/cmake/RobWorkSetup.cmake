@@ -163,12 +163,12 @@ INCLUDE(CMakeDependentOption)
 # For some of the xml parsing we need xerces, though it is OPTIONAL
 #
 SET(RW_HAVE_XERCES False)
-FIND_PACKAGE(XercesC REQUIRED)
+FIND_PACKAGE(XercesC QUIET)
 IF( XERCESC_FOUND )
     SET(RW_HAVE_XERCES True)
     MESSAGE(STATUS "RobWork: XERCES ENABLED! FOUND!")
 ELSE ()
-    MESSAGE(SEND_ERROR "RobWork: Xerces NOT FOUND! Check if XERCESC_INCLUDE_DIR and XERCESC_LIB_DIR is set correctly!")
+    MESSAGE(STATUS "RobWork: Xerces NOT FOUND! Xerces code disabled! (Check if XERCESC_INCLUDE_DIR and XERCESC_LIB_DIR is set correctly if you need it)!")
 ENDIF ()
 
 #

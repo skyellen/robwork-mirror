@@ -2,18 +2,12 @@ SET(SUBSYS_NAME rw_assembly)
 set(SUBSYS_DESC "Assembly task and result formats and strategies.")
 SET(SUBSYS_DEPS rw rw_task)
 
-if( RW_HAVE_XERCES )
-    set(DEFAULT TRUE)
-    set(REASON)
-else()
-    set(DEFAULT FALSE)
-    set(REASON "Xerces not found.")
-endif()
-
+SET(DEFAULT TRUE)
+SET(REASON)
 
 SET(build TRUE)
 RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
-RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS xerces)
+RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 RW_ADD_DOC(${SUBSYS_NAME})
 
 IF(build)

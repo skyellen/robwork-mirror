@@ -21,8 +21,8 @@
 #include "AssemblyRegistry.hpp"
 
 #include <rwlibs/task/Task.hpp>
-#include <rwlibs/task/loader/XMLTaskLoader.hpp>
-#include <rwlibs/task/loader/XMLTaskSaver.hpp>
+#include <rwlibs/task/loader/TaskLoader.hpp>
+#include <rwlibs/task/loader/TaskSaver.hpp>
 
 #include <fstream>
 
@@ -136,8 +136,8 @@ void AssemblyTask::saveRWTask(std::vector<AssemblyTask::Ptr> tasks, const std::s
         root->addTask(ctask);
     }
     try {
-        XMLTaskSaver saver;
-        saver.save(root, outfile );
+		const TaskSaver::Ptr saver = TaskSaver::Factory::getTaskSaver("xml");
+		saver->save(root, outfile );
     } catch (const Exception& exp) {
         RW_THROW("Unable to save task: " << exp.what());
     }
@@ -152,9 +152,9 @@ std::vector<AssemblyTask::Ptr> AssemblyTask::load(const std::string& filename, A
 	rwlibs::task::CartesianTask::Ptr root;
 
 	if(firstelem=="CartesianTask"){
-		XMLTaskLoader loader;
-		loader.load( file );
-		root = loader.getCartesianTask();
+		const TaskLoader::Ptr loader = TaskLoader::Factory::getTaskLoader("xml");
+		loader->load( file );
+		root = loader->getCartesianTask();
 	} else {
 		RW_THROW("Could not load AssemblyTaks (must be CartesianTask)");
 	}
@@ -185,9 +185,9 @@ std::vector<AssemblyTask::Ptr> AssemblyTask::load(std::istringstream& inputStrea
 	rwlibs::task::CartesianTask::Ptr root;
 
 	if(firstelem=="CartesianTask"){
-		XMLTaskLoader loader;
-		loader.load( inputStream );
-		root = loader.getCartesianTask();
+		const TaskLoader::Ptr loader = TaskLoader::Factory::getTaskLoader("xml");
+		loader->load( inputStream );
+		root = loader->getCartesianTask();
 	} else {
 		RW_THROW("Could not load AssemblyTaks (must be CartesianTask)");
 	}

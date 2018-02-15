@@ -38,13 +38,12 @@ First, install the boost libraries:
  
 	sudo apt-get install libboost-dev libboost-date-time-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev libboost-serialization-dev libboost-system-dev libboost-test-dev libboost-thread-dev
 
-Then, install Xerces:
+## ¤ RobWork Optional Dependencies ## {#sec_ubuntu_dependencies_rw_optional}
+
+Xerces can be used some places in RobWork for opening XML files. It is no longer a strict requirement, as RobWork is now able to use a Boost parser instead.
+If you enable compilation of non-standard parts of RobWork, or need to compile old RobWork-dependent projects, it might be a good idea to compile Xerces:
 
 	sudo apt-get install libxerces-c3.1 libxerces-c-dev
-
-Xerces is used some places in RobWork for opening XML files. It is still a requirement, but it is the intention that this dependency will one day become optional.
-
-## ¤ RobWork Optional Dependencies ## {#sec_ubuntu_dependencies_rw_optional}
 
 SWIG (optional) is a tool that makes it possible to generate a LUA script interface for RobWork.
 Python and Java interfaces are also possible, but require that Python or Java SDK is installed as well.

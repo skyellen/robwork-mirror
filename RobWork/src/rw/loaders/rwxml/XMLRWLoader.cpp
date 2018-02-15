@@ -54,7 +54,7 @@
 #include <rw/common/macros.hpp>
 
 #include <rw/loaders/colsetup/CollisionSetupLoader.hpp>
-#include <rw/loaders/xml/XMLProximitySetupLoader.hpp>
+#include <rw/loaders/dom/DOMProximitySetupLoader.hpp>
 #include <rw/loaders/Model3DFactory.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
 #include <rw/proximity/ProximitySetup.hpp>
@@ -1148,7 +1148,7 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname) {
 			//std::cout << "Colsetup prefix: " << prefix << std::endl;
 			//std::cout << "Colsetup file  : " << filename << std::endl;
 
-			ProximitySetup s = XMLProximitySetupLoader::load(filename);
+			ProximitySetup s = DOMProximitySetupLoader::load(filename);
 			proximitySetup.merge(s, prefix);
 		}
 

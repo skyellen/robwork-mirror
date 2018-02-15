@@ -44,8 +44,8 @@
 #include <rw/models/WorkCell.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
-#include <rw/loaders/xml/XMLPropertyLoader.hpp>
-#include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/loaders/dom/DOMPropertyMapLoader.hpp>
+#include <rw/loaders/dom/DOMPropertyMapSaver.hpp>
 #include <rw/loaders/rwxml/XMLRWLoader.hpp>
 #include <rw/loaders/dom/DOMWorkCellSaver.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
@@ -121,7 +121,7 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
         try {
             //settings = XMLPropertyLoader::load("rwsettings.xml");
             //_propMap.set<std::string>("SettingsFileName", "rwsettings.xml");
-            _propMap = XMLPropertyLoader::load("rwsettings.xml");
+            _propMap = DOMPropertyMapLoader::load("rwsettings.xml");
         } catch(rw::common::Exception &e){
             RW_WARN("Could not load settings from 'rwsettings.xml': " << e.getMessage().getText() << "\n Using default settings!");
         } catch(std::exception &e){
@@ -260,7 +260,7 @@ void RobWorkStudio::closeEvent( QCloseEvent * e ){
     if( !_propMap.get<PropertyMap>("cmdline").has("NoSave") ){
         _propMap.set("cmdline", PropertyMap());
         try {
-            XMLPropertySaver::save(_propMap, "rwsettings.xml");
+            DOMPropertyMapSaver::save(_propMap, "rwsettings.xml");
         } catch(const rw::common::Exception& e) {
             RW_WARN("Error saving settings file: " << e);
         } catch(...) {

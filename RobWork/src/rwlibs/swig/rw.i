@@ -1,11 +1,12 @@
 %module rw
 
 %{
+#include <RobWorkConfig.hpp>
 #include <rwlibs/swig/ScriptTypes.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
-#include <rw/loaders/xml/XMLPropertyLoader.hpp>
-#include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/loaders/dom/DOMPropertyMapLoader.hpp>
+#include <rw/loaders/dom/DOMPropertyMapSaver.hpp>
 #if defined (SWIGLUA)
 #include <rwlibs/swig/lua/Lua.hpp>
 #endif
@@ -198,9 +199,9 @@ public:
 		PropertyMap& getMap(const std::string& id){ return $self->get<PropertyMap>(id); }
 		void setMap(const std::string& id, PropertyMap p){  $self->set<PropertyMap>(id, p); }
 		void set(const std::string& id, PropertyMap p){  $self->set<PropertyMap>(id, p); }
-		
-		void load(const std::string& filename){ *($self) = rw::loaders::XMLPropertyLoader::load(filename); }
-		void save(const std::string& filename){ rw::loaders::XMLPropertySaver::save( *($self), filename ); }
+
+		void load(const std::string& filename){ *($self) = rw::loaders::DOMPropertyMapLoader::load(filename); }
+		void save(const std::string& filename){ rw::loaders::DOMPropertyMapSaver::save( *($self), filename ); }
 		
 	}    
  
@@ -1031,6 +1032,8 @@ class Image {
 
 %template (ImagePtr) rw::common::Ptr<Image>;
 
+#if defined(RW_HAVE_XERCES)
+
 class XMLTrajectoryLoader
 {
 public:
@@ -1059,6 +1062,8 @@ public:
 private:
     XMLTrajectorySaver();
 };
+
+#endif
 
 /********************************************
  * MATH

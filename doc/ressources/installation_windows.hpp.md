@@ -4,7 +4,7 @@ Installation on Windows {#page_rw_installation_windows}
 
 # Introduction # {#sec_rw_install_win_intro}
 This guide shows the steps for building the RobWork packages on a Windows platform.
-The guide is written based on a setup with Windows 7 and Visual Studio 2015 and the guide is last revised in May 2017.
+The guide is written based on a setup with Windows 7 and Visual Studio 2015 and the guide is last revised in February 2018.
 If you have any suggestions or additions to the guide, please post them on the issue tracker at https://gitlab.com/caro-sdu/RobWork/issues .
 
 RobWork is basically multiple projects:
@@ -47,6 +47,8 @@ If you already have an older version of CMake installed, please check that it is
 
 | CMake Version | Maximum Visual Studio Version Supported | Maximum Boost Version Supported |
 |---------------|-----------------------------------------|---------------------------------|
+| 3.10.2*       | Visual Studio 15 2017                   | 1.65.1                          |
+| 3.9.3         | Visual Studio 15 2017                   | 1.65.1                          |
 | 3.8.0         | Visual Studio 15 2017                   | 1.64.0                          |
 | 3.7.2         | Visual Studio 15 2017                   | 1.63.0                          |
 | 3.7.0-3.7.1   | Visual Studio 15 2017                   | 1.62.0                          |
@@ -56,6 +58,8 @@ If you already have an older version of CMake installed, please check that it is
 | 3.1.0         | Visual Studio 14 2015                   | 1.56.0                          |
 | 3.0.2         | Visual Studio 12 2013                   | 1.56.0                          |
 | 2.8.12        | Visual Studio 12 2013                   | 1.56.0                          |
+
+* Newest at time of writing.
 
 ## ¤ RobWork Required Dependencies ## {#sec_win_dependencies_rw}
 Boost is the most important dependency in RobWork, and it is recommended to always use the latest possible version of Boost when possible.
@@ -71,14 +75,14 @@ It is also possible to compile the Boost libraries from source. From a command p
 
 Here -j gives the number of threads to use for compilation. Run with -help, -help-options or \-\-show-libraries to get more information about the various options.
 
-Xerces is used some places in RobWork for opening XML files. It is still a requirement, but it is the intention that this dependency will one day become optional.
-It is necessary to compile the Xerces library:
- -# Go to http://xerces.apache.org and download the latest source distribution.
+## ¤ RobWork Optional Dependencies ## {#sec_win_dependencies_rw_optional}
+
+Xerces can be used some places in RobWork for opening XML files. It is no longer a strict requirement, as RobWork is now able to use a Boost parser instead.
+If you enable compilation of non-standard parts of RobWork, or need to compile old RobWork-dependent projects, it might be a good idea to compile Xerces:
+ -# Go to http://xerces.apache.org and download the source distribution (we do not yet support version 3.2.0).
  -# Unpack it where you want Xerces installed.
  -# Open xerces-c-3.1.4/projects/Win32/VCxx/xerces-all.sln in Visual Studio (substitute VCxx with your Visual Studio version - see https://en.wikipedia.org/wiki/Microsoft_Visual_Studio#History for overview).
  -# Choose 64-bit Release build configuration, and build the XercesLib target.
-
-## ¤ RobWork Optional Dependencies ## {#sec_win_dependencies_rw_optional}
 
 SWIG (optional) is a tool that makes it possible to generate a LUA script interface for RobWork.
 Python and Java interfaces are also possible, but require that Python or Java SDK is installed as well. The SWIG tool is easily downloaded from:
