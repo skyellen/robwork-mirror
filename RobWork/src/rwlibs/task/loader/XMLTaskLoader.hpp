@@ -19,8 +19,7 @@
 #ifndef RWLIBS_TASK_XMLTASKLOADER_HPP
 #define RWLIBS_TASK_XMLTASKLOADER_HPP
 
-
-
+#include "TaskLoader.hpp"
 #include "../Task.hpp"
 #include "../Entity.hpp"
 
@@ -38,22 +37,55 @@ namespace task {
 
 /** @addtogroup task */
 /*@{*/
-
-
-class XMLTaskLoader {
+/**
+ * @brief Loader for the XML task format, based on Xerces.
+ *
+ * Please consider using the newer DOMTaskLoader instead.
+ */
+class XMLTaskLoader: public TaskLoader {
 public:
-	XMLTaskLoader();
-	virtual ~XMLTaskLoader();
+	//! @brief Constructor.
+	XMLTaskLoader() {}
 
+	//! @brief Destructor.
+	virtual ~XMLTaskLoader() {}
 
+	//! @copydoc TaskLoader::load(const std::string&, const std::string&)
 	void load(const std::string& filename, const std::string& schemaFileName = "");
+
+	//! @copydoc TaskLoader::load(std::istream&, const std::string&)
 	void load(std::istream& instream, const std::string& schemaFileName = "");
 
+	//! @copydoc TaskLoader::getQTask
+	rwlibs::task::QTask::Ptr getQTask();
+
+	//! @copydoc TaskLoader::getCartesianTask
+	rwlibs::task::CartesianTask::Ptr getCartesianTask();
+
+	//! @copydoc TaskLoader::getTask
+	rwlibs::task::TaskBase::Ptr getTask();
+
+	//! @copydoc TaskLoader::clone
+	TaskLoader::Ptr clone() const;
+
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the XMLTaskLoader is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if XMLTaskLoader is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
+	public:
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
+
+private:
 	rwlibs::task::TaskBasePtr readTask(xercesc::DOMElement* element);
-
-//	static rw::task3::TaskBasePtr readTargets(xercesc::DOMElement* element);
-
-
 
 	void readEntityData(xercesc::DOMElement* element, rw::common::Ptr<rwlibs::task::Entity> entity);
 
@@ -80,35 +112,11 @@ public:
 	template <class T>
 	typename rwlibs::task::Task<T>::Ptr readTemplateTask(xercesc::DOMElement* element);
 
-	rwlibs::task::QTask::Ptr getQTask();
-
-	rwlibs::task::CartesianTask::Ptr getCartesianTask();
-
-	rwlibs::task::TaskBase::Ptr getTask();
-
-	/**
-	 * @brief Utility class which initializes local static variables.
-	 *
-	 * If the XMLTaskLoader is used outside main (as a part of global initialization/destruction), the Initializer
-	 * should be used explicitly to control the static initialization/destruction order.
-	 *
-	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
-	 * be necessary to specify the initializer explicitly if XMLTaskLoader is to be used in local static
-	 * initialization/destruction.
-	 */
-	class Initializer {
-	public:
-	    //! @brief Initializes when constructed.
-		Initializer();
-	};
-
 private:
 	static const Initializer initializer;
 
 	typedef std::map<std::string, rwlibs::task::TargetBase::Ptr> TargetMap;
 	TargetMap _targetMap;
-
-
 
 	rwlibs::task::QTask::Ptr _qTask;
 	rwlibs::task::CartesianTask::Ptr _cartTask;

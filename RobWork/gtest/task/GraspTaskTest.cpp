@@ -21,6 +21,15 @@
 
 #include <rwlibs/task/GraspTask.hpp>
 
+#include <RobWorkConfig.hpp>
+
+#include <rwlibs/task/loader/DOMTaskLoader.hpp>
+#include <rwlibs/task/loader/DOMTaskSaver.hpp>
+#ifdef RW_HAVE_XERCES
+#include <rwlibs/task/loader/XMLTaskLoader.hpp>
+#include <rwlibs/task/loader/XMLTaskSaver.hpp>
+#endif
+
 using rw::common::ownedPtr;
 using rw::common::Ptr;
 using namespace rw::math;
@@ -170,7 +179,7 @@ void checkTask(GraspTask::Ptr task) {
 }
 }
 
-TEST(GraspTask, saveAndLoadRWXML) {
+TEST(GraspTask, saveAndLoadXML) {
 	std::ostringstream stream;
 	{
 		const GraspTask::Ptr task = makeReferenceTask();
@@ -189,3 +198,82 @@ TEST(GraspTask, saveAndLoadRWXML) {
 		checkTask(task);
 	}
 }
+
+TEST(TaskLoaderSaver, DOMParser) {
+	TaskLoader::Ptr loader;
+	TaskSaver::Ptr saver;
+
+	loader = TaskLoader::Factory::getTaskLoader("xml","");
+	saver = TaskSaver::Factory::getTaskSaver("xml","");
+	EXPECT_FALSE(loader.cast<DOMTaskLoader>().isNull());
+	EXPECT_FALSE(saver.cast<DOMTaskSaver>().isNull());
+
+	loader = TaskLoader::Factory::getTaskLoader("xml","DOM");
+	saver = TaskSaver::Factory::getTaskSaver("xml","DOM");
+	ASSERT_FALSE(loader.cast<DOMTaskLoader>().isNull());
+	ASSERT_FALSE(saver.cast<DOMTaskSaver>().isNull());
+
+	std::ostringstream stream;
+	{
+
+		const GraspTask::Ptr task = makeReferenceTask();
+		const CartesianTask::Ptr ctask = task->toCartesianTask();
+		EXPECT_TRUE(saver->save(ctask,stream));
+	}
+	{
+		std::istringstream istream(stream.str());
+		loader->load(istream);
+		const CartesianTask::Ptr ctask = loader->getCartesianTask();
+		ASSERT_FALSE(ctask.isNull());
+		const GraspTask::Ptr task = ownedPtr(new GraspTask(ctask));
+		SCOPED_TRACE("Checking restore of XML previously saved.");
+		checkTask(task);
+	}
+	{
+		std::istringstream istream(getGraspTaskXML());
+		loader->load(istream);
+		const CartesianTask::Ptr ctask = loader->getCartesianTask();
+		ASSERT_FALSE(ctask.isNull());
+		const GraspTask::Ptr task = ownedPtr(new GraspTask(ctask));
+		SCOPED_TRACE("Checking loading of compiled XML reference file.");
+		checkTask(task);
+	}
+}
+
+#ifdef RW_HAVE_XERCES
+TEST(TaskLoader, Xerces) {
+	TaskLoader::Ptr loader;
+	TaskSaver::Ptr saver;
+
+	loader = TaskLoader::Factory::getTaskLoader("xml","Xerces");
+	saver = TaskSaver::Factory::getTaskSaver("xml","Xerces");
+	ASSERT_FALSE(loader.cast<DOMTaskLoader>().isNull());
+	ASSERT_FALSE(saver.cast<DOMTaskSaver>().isNull());
+
+	std::ostringstream stream;
+	{
+
+		const GraspTask::Ptr task = makeReferenceTask();
+		const CartesianTask::Ptr ctask = task->toCartesianTask();
+		EXPECT_TRUE(saver->save(ctask,stream));
+	}
+	{
+		std::istringstream istream(stream.str());
+		loader->load(istream);
+		const CartesianTask::Ptr ctask = loader->getCartesianTask();
+		ASSERT_FALSE(ctask.isNull());
+		const GraspTask::Ptr task = ownedPtr(new GraspTask(ctask));
+		SCOPED_TRACE("Checking restore of XML previously saved.");
+		checkTask(task);
+	}
+	{
+		std::istringstream istream(getGraspTaskXML());
+		loader->load(istream);
+		const CartesianTask::Ptr ctask = loader->getCartesianTask();
+		ASSERT_FALSE(ctask.isNull());
+		const GraspTask::Ptr task = ownedPtr(new GraspTask(ctask));
+		SCOPED_TRACE("Checking loading of compiled XML reference file.");
+		checkTask(task);
+	}
+}
+#endif

@@ -20,6 +20,7 @@
 #ifndef RWLIBS_TASK_XMLTASKSAVER_HPP
 #define RWLIBS_TASK_XMLTASKSAVER_HPP
 
+#include "TaskSaver.hpp"
 #include "../Task.hpp"
 
 #include <xercesc/util/XercesDefs.hpp>
@@ -36,25 +37,50 @@ namespace task {
 
 /** @addtogroup task */
 /*@{*/
-
-
-class XMLTaskSaver {
+/**
+ * @brief Saver for the XML task format, based on Xerces.
+ *
+ * Please consider using the newer DOMTaskSaver instead.
+ */
+class XMLTaskSaver: public TaskSaver {
 public:
+	//! @brief Constructor.
 	XMLTaskSaver();
+
+	//! @brief Destructor.
 	virtual ~XMLTaskSaver();
 
+    //! @copydoc TaskSaver::save(QTask::Ptr, std::ostream&)
+	bool save(rwlibs::task::QTask::Ptr task, std::ostream& outstream);
 
-	static bool save(rwlibs::task::QTask::Ptr task, std::ostream& outstream);
+    //! @copydoc TaskSaver::save(CartesianTask::Ptr, std::ostream&)
+	bool save(rwlibs::task::CartesianTask::Ptr task, std::ostream& outstream);
 
-	static bool save(rwlibs::task::CartesianTask::Ptr task, std::ostream& outstream);
+    //! @copydoc TaskSaver::save(QTask::Ptr, const std::string&)
+	bool save(rwlibs::task::QTask::Ptr task, const std::string& filename);
 
-	static bool save(rwlibs::task::QTask::Ptr task, const std::string& filename);
+    //! @copydoc TaskSaver::save(CartesianTask::Ptr, const std::string&)
+	bool save(rwlibs::task::CartesianTask::Ptr task, const std::string& filename);
 
-	static bool save(rwlibs::task::CartesianTask::Ptr task, const std::string& filename);
-
-	void writeTask(rwlibs::task::TaskBase::Ptr task, xercesc::DOMElement* parent, xercesc::DOMDocument* doc);
+	/**
+	 * @brief Utility class which initializes local static variables.
+	 *
+	 * If the XMLTaskSaver is used outside main (as a part of global initialization/destruction), the Initializer
+	 * should be used explicitly to control the static initialization/destruction order.
+	 *
+	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
+	 * be necessary to specify the initializer explicitly if XMLTaskSaver is to be used in local static
+	 * initialization/destruction.
+	 */
+	class Initializer {
+	public:
+	    //! @brief Initializes when constructed.
+		Initializer();
+	};
 
 private:
+	void writeTask(rwlibs::task::TaskBase::Ptr task, xercesc::DOMElement* parent, xercesc::DOMDocument* doc);
+
 	template <class T>
 	bool saveImpl(typename rwlibs::task::Task<T>::Ptr task, xercesc::XMLFormatTarget* target);
 
@@ -84,22 +110,6 @@ private:
 
 
 	std::map<rwlibs::task::TargetBase::Ptr, std::string> _targetMap;
-
-	/**
-	 * @brief Utility class which initializes local static variables.
-	 *
-	 * If the XMLTaskSaver is used outside main (as a part of global initialization/destruction), the Initializer
-	 * should be used explicitly to control the static initialization/destruction order.
-	 *
-	 * Notice that the Initializer is automatically defined as a global variable, hence it should not
-	 * be necessary to specify the initializer explicitly if XMLTaskSaver is to be used in local static
-	 * initialization/destruction.
-	 */
-	class Initializer {
-	public:
-	    //! @brief Initializes when constructed.
-		Initializer();
-	};
 
 private:
 	static const Initializer initializer;

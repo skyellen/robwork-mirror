@@ -232,12 +232,12 @@ namespace rwlibs {
         @copydoc rw::plugin
     @}
 
-    @defgroup trajectory trajectory
+    @defgroup trajectory Trajectory
     @{
         @copydoc rw::trajectory
     @}
 
-    @defgroup task task
+    @defgroup task Task
     @{
         @copydoc rw::task
     @}

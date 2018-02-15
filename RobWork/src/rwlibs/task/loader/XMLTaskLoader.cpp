@@ -70,16 +70,6 @@ XMLTaskLoader::Initializer::Initializer() {
 
 const XMLTaskLoader::Initializer XMLTaskLoader::initializer;
 
-XMLTaskLoader::XMLTaskLoader() {
-	// TODO Auto-generated constructor stub
-
-}
-
-XMLTaskLoader::~XMLTaskLoader() {
-	// TODO Auto-generated destructor stub
-}
-
-
 namespace {
 
 int readIntAttribute(xercesc::DOMElement* element, const XMLCh* id) {
@@ -413,3 +403,6 @@ TaskBase::Ptr XMLTaskLoader::getTask() {
 
 }
 
+TaskLoader::Ptr XMLTaskLoader::clone() const {
+	return ownedPtr(new XMLTaskLoader());
+}

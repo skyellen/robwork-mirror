@@ -2,18 +2,12 @@ SET(SUBSYS_NAME rw_task)
 set(SUBSYS_DESC "Generic Task description")
 SET(SUBSYS_DEPS rw)
 
-if( RW_HAVE_XERCES )
-    set(DEFAULT TRUE)
-    set(REASON)
-else()
-    set(DEFAULT FALSE)
-    set(REASON "Xerces not found.")
-endif()
-
+SET(DEFAULT TRUE)
+SET(REASON)
 
 SET(build TRUE)
 RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
-RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS xerces)
+RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 RW_ADD_DOC(${SUBSYS_NAME})
 
 IF(build)
@@ -30,6 +24,11 @@ IF(build)
       ./GraspTarget.cpp
       ./GraspResult.cpp
       ./GraspSubTask.cpp
+      ./loader/DOMTaskFormat.cpp
+      ./loader/DOMTaskLoader.cpp
+      ./loader/DOMTaskSaver.cpp
+      ./loader/TaskLoader.cpp
+      ./loader/TaskSaver.cpp
     )
     
     
@@ -45,9 +44,14 @@ IF(build)
       ./GraspTarget.hpp
       ./GraspResult.hpp
       ./GraspSubTask.hpp
+      ./loader/DOMTaskFormat.hpp
+      ./loader/DOMTaskLoader.hpp
+      ./loader/DOMTaskSaver.hpp
+      ./loader/TaskLoader.hpp
+      ./loader/TaskSaver.hpp
     )
     
-    
+    IF(RW_HAVE_XERCES)
 	set(SRC_FILES ${SRC_FILES}
 	  ./loader/XMLTaskFormat.cpp
   	  ./loader/XMLTaskLoader.cpp
@@ -58,6 +62,7 @@ IF(build)
   	  ./loader/XMLTaskLoader.hpp
   	  ./loader/XMLTaskSaver.hpp
    )
+   ENDIF()
       	  
     RW_ADD_LIBRARY(${SUBSYS_NAME} task ${SRC_FILES} ${SRC_FILES_HPP} ${LOADER_SRC_FILES_HPP})
     RW_ADD_INCLUDES(task "rwlibs/task" ${SRC_FILES_HPP})     

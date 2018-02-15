@@ -1,18 +1,20 @@
 #include "GraspTask.hpp"
 
 #include <rw/math/Quaternion.hpp>
+#include <rw/trajectory/Path.hpp>
 
-#include <rwlibs/task/loader/XMLTaskSaver.hpp>
-#include <rwlibs/task/loader/XMLTaskLoader.hpp>
+#include <rwlibs/task/loader/DOMTaskSaver.hpp>
+#include <rwlibs/task/loader/DOMTaskLoader.hpp>
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
-USE_ROBWORK_NAMESPACE
-using namespace robwork;
+using namespace rw::common;
+using namespace rw::math;
+using namespace rw::trajectory;
+using namespace rwlibs::task;
 using namespace boost::numeric;
 using namespace boost::property_tree;
-using namespace rwlibs::task;
 
 namespace {
 void writeOutcome(std::ostream& out, GraspTarget& target) {
@@ -292,8 +294,9 @@ rwlibs::task::CartesianTask::Ptr GraspTask::toCartesianTask() {
 						GraspResult::ObjectDropped);
 			}
 
-			ctarget->getPropertyMap().set<std::vector<rw::math::Transform3D<> > >(
-					"InterferenceTs", result->interferenceTs);
+
+			ctarget->getPropertyMap().set<Transform3DPath>(
+					"InterferenceTs", Transform3DPath(result->interferenceTs));
 			ctarget->getPropertyMap().set<std::vector<double> >(
 					"InterferenceDistances", result->interferenceDistances);
 			ctarget->getPropertyMap().set<std::vector<double> >(
@@ -319,7 +322,7 @@ void GraspTask::saveRWTask(GraspTask::Ptr task, const std::string& name) {
 void GraspTask::saveRWTask(GraspTask::Ptr task, std::ostream& stream) {
 	rwlibs::task::CartesianTask::Ptr ctask = task->toCartesianTask();
 	try {
-		XMLTaskSaver saver;
+		DOMTaskSaver saver;
 		saver.save(ctask, stream);
 	} catch (const Exception& exp) {
 		RW_THROW("Unable to save task: " << exp.what());
@@ -756,7 +759,7 @@ GraspTask::Ptr GraspTask::load(const std::string& filename) {
 	rwlibs::task::CartesianTask::Ptr grasptask;
 
 	if (firstelem == "CartesianTask") {
-		XMLTaskLoader loader;
+		DOMTaskLoader loader;
 		loader.load(file);
 		grasptask = loader.getCartesianTask();
 	} else {
@@ -796,7 +799,7 @@ GraspTask::Ptr GraspTask::load(std::istringstream& inputStream) {
 	rwlibs::task::CartesianTask::Ptr grasptask;
 
 	if (firstelem == "CartesianTask") {
-		XMLTaskLoader loader;
+		DOMTaskLoader loader;
 		loader.load(inputStream);
 		grasptask = loader.getCartesianTask();
 	} else {
@@ -924,7 +927,7 @@ GraspTask::GraspTask(rwlibs::task::CartesianTask::Ptr task) {
 				}
 			}
 
-			result->interferenceTs = ctarget->getPropertyMap().get<std::vector<rw::math::Transform3D<> > >("InterferenceTs",std::vector<rw::math::Transform3D<> >());
+			result->interferenceTs = ctarget->getPropertyMap().get<Transform3DPath>("InterferenceTs",Transform3DPath());
 			result->interferenceDistances = ctarget->getPropertyMap().get<std::vector<double> >("InterferenceDistances",std::vector<double>());
 			result->interferenceAngles = ctarget->getPropertyMap().get<std::vector<double> >("InterferenceAngles",std::vector<double>());
 			result->interferences = ctarget->getPropertyMap().get<std::vector<double> >("Interferences",std::vector<double>());
