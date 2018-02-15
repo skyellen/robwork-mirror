@@ -130,7 +130,7 @@ template<> std::string ElementReader<std::string>::readElement(xercesc::DOMEleme
 
 
 
-void XMLTaskLoader::readEntityData(xercesc::DOMElement* element, Ptr<Entity> entity) {
+void XMLTaskLoader::readEntityData(xercesc::DOMElement* element, Entity::Ptr entity) {
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 

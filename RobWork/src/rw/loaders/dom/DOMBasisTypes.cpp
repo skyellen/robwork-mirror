@@ -933,7 +933,7 @@ DOMElem::Ptr DOMBasisTypes::createRotation3D(const Rotation3D<>& r, DOMElem::Ptr
     // check if rotation is proper orthogonal before saving it
     //RW_ASSERT( fabs(LinearAlgebra::det( target.R().m() ))-1.0 < 0.00000001 );
 	double detVal = r.e().determinant();
-    if( fabs(detVal-1.0) > 0.0000001 ){
+    if( fabs(detVal-1.0) > 0.000001 ){
         RW_WARN("A rotation matrix that is being streamed does not have a determinant of 1, det="<<detVal << ", difference: " << fabs(detVal-1.0));
     }
 

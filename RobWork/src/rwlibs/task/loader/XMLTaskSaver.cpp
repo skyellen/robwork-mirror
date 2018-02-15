@@ -137,10 +137,10 @@ void XMLTaskSaver::writeTargets(typename Task<T>::Ptr task, xercesc::DOMElement*
     xercesc::DOMElement* targetsElement = doc->createElement(XMLTaskFormat::idTargets());
     element->appendChild(targetsElement);
 
-	std::vector<Ptr<Target<T> > > targets = task->getTargets();
+	std::vector<rw::common::Ptr<Target<T> > > targets = task->getTargets();
 
 	int targetId = 0;
-	BOOST_FOREACH(Ptr<Target<T> > target, targets) {
+	BOOST_FOREACH(rw::common::Ptr<Target<T> > target, targets) {
 		xercesc::DOMElement* targetElement = doc->createElement(Identifiers<T>::targetId());
 		targetsElement->appendChild(targetElement);
 
@@ -279,7 +279,7 @@ bool XMLTaskSaver::saveImpl(typename Task<T>::Ptr task, XMLFormatTarget* target)
 		
         try
         {
-			Ptr<xercesc::DOMDocument> doc = NULL;
+			rw::common::Ptr<xercesc::DOMDocument> doc = NULL;
              doc = ownedPtr(impl->createDocument(0,               // root element namespace URI.
                                         Identifiers<T>::taskId(), // root element name
                                         0));                   	  // We do not wish to specify a document type

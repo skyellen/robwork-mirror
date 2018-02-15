@@ -61,8 +61,10 @@ XMLPropertySaver::Initializer::Initializer() {
 const XMLPropertySaver::Initializer XMLPropertySaver::initializer;
 
 xercesc::DOMElement* XMLPropertySaver::save(PropertyBase::Ptr property, xercesc::DOMDocument* doc) {
-    if( property->getType().getId()==PropertyType::Unknown )
+	if (property->getType().getId()==PropertyType::Unknown) {
+		RW_WARN("Ignoring property \"" << property->getIdentifier() << "\" which has unknown property type!");
         return NULL;
+	}
 
     xercesc::DOMElement* root = doc->createElement(XMLPropertyFormat::idProperty());
 
