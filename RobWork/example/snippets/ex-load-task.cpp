@@ -1,5 +1,5 @@
 #include <rwlibs/task/Task.hpp>
-#include <rwlibs/task/loader/XMLTaskLoader.hpp>
+#include <rwlibs/task/loader/TaskLoader.hpp>
 
 #include <string>
 #include <iostream>
@@ -9,9 +9,9 @@ using namespace rwlibs::task;
 int main(int argc, char** argv) {
     if (argc == 2) {
         const std::string taskFile = argv[1];
-        XMLTaskLoader taskloader;
-        taskloader.load(taskFile);
-        const TaskBase::Ptr task = taskloader.getTask();
+        TaskLoader::Ptr taskloader = TaskLoader::Factory::getTaskLoader("xml");
+        taskloader->load(taskFile);
+        const TaskBase::Ptr task = taskloader->getTask();
 
         std::cout << "Task succesfully loaded. (1)\n";
     }
