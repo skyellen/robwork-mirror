@@ -62,7 +62,8 @@ ProximitySetup DOMProximitySetupLoader::readProximitySetup(DOMElem::Ptr element)
 		} else if (child->isName("Include")) {
 			setup.addProximitySetupRule(ProximitySetupRule::makeInclude(readFramePatternAttributes(child)));
 		} else {
-			RW_THROW("Unknown element \"" << child->getName() << "\" in ProximitySetup, should be Include or Exclude!");
+			if(!child->isName("<xmlcomment>"))
+				RW_THROW("Unknown element \"" << child->getName() << "\" in ProximitySetup, should be Include or Exclude!");
 		}
 	}
 	return setup ;
