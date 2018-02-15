@@ -1012,15 +1012,17 @@ DOMElem::Ptr DOMBasisTypes::createString(const std::string& str, DOMElem::Ptr do
 }
 
 DOMElem::Ptr DOMBasisTypes::createStringList(const std::vector<std::string>& strings, DOMElem::Ptr doc){
-    DOMElem::Ptr element = doc->addChild(idStringList());
-    std::stringstream sstr;
-    sstr << strings[0];
-    for(size_t i=1; i<strings.size();i++){
-    	sstr << ";" << strings[i];
+	DOMElem::Ptr element = doc->addChild(idStringList());
+	std::stringstream sstr;
+	if (strings.size() > 0) {
+		sstr << strings[0];
+		for(size_t i=1; i<strings.size();i++){
+			sstr << ";" << strings[i];
 
-    }
-    element->setValue(sstr.str());
-    return element;
+		}
+	}
+	element->setValue(sstr.str());
+	return element;
 }
 
 

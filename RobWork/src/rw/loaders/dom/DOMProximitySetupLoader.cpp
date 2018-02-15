@@ -31,7 +31,8 @@ ProximitySetup DOMProximitySetupLoader::load(const std::string& filename, const 
     parser->setSchema(schemaFileName);
     parser->load(filename);
     DOMElem::Ptr root = parser->getRootElement();
-    return readProximitySetup(root);
+    DOMElem::Ptr psetupRoot = root->getChild("ProximitySetup", false);
+    return readProximitySetup(psetupRoot);
 }
 
 
@@ -40,7 +41,8 @@ ProximitySetup DOMProximitySetupLoader::load(std::istream& instream, const std::
     parser->setSchema(schemaFileName);
     parser->load(instream);
     DOMElem::Ptr root = parser->getRootElement();
-    return readProximitySetup(root);
+    DOMElem::Ptr psetupRoot = root->getChild("ProximitySetup", false);
+    return readProximitySetup(psetupRoot);
 }
 
 

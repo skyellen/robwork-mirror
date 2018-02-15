@@ -259,6 +259,7 @@ void RobWorkStudio::closeEvent( QCloseEvent * e ){
 
     if( !_propMap.get<PropertyMap>("cmdline").has("NoSave") ){
         _propMap.set("cmdline", PropertyMap());
+        _propMap.erase("LuaState");
         try {
             DOMPropertyMapSaver::save(_propMap, "rwsettings.xml");
         } catch(const rw::common::Exception& e) {
