@@ -6,7 +6,7 @@
 #include <rw/loaders/GeometryFactory.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rwlibs/task/Task.hpp>
-#include <rwlibs/task/loader/XMLTaskSaver.hpp>
+#include <rwlibs/task/loader/TaskSaver.hpp>
 
 using namespace std;
 using namespace rw::common;
@@ -150,8 +150,8 @@ int main(int argc, char** argv)
 	}
 
     try {
-        XMLTaskSaver saver;
-        saver.save(&tasks, outfile);
+        const TaskSaver::Ptr saver = TaskSaver::Factory::getTaskSaver("xml");
+        saver->save(&tasks, outfile);
     } catch (const Exception& exp) {
        // QMessageBox::information(this, "Task Execution Widget", "Unable to save tasks");
     }

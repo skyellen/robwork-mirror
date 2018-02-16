@@ -4,11 +4,11 @@
 #include <rw/geometry/Box.hpp>
 #include <rw/geometry/Triangle.hpp>
 #include <rw/geometry/TriMesh.hpp>
-#include <rw/loaders/xml/XMLPropertyLoader.hpp>
-#include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/loaders/dom/DOMPropertyMapLoader.hpp>
+#include <rw/loaders/dom/DOMPropertyMapSaver.hpp>
 #include <rw/math/Random.hpp>
 #include <rwlibs/opengl/DrawableUtil.hpp>
-#include <rwlibs/task/loader/XMLTaskLoader.hpp>
+#include <rwlibs/task/loader/TaskLoader.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
@@ -342,7 +342,7 @@ void SimTaskVisPlugin::loadConfig(bool automatic){
         log().info() << "Loading tasks: ";
         log().info() << "\t-Filename: " << simTaskConfigFile;
         try {
-            _config = XMLPropertyLoader::load( simTaskConfigFile );
+            _config = DOMPropertyMapLoader::load( simTaskConfigFile );
         } catch(...) {
             QMessageBox::information(this, "SimTaskVisPlugin", "SimTaskConfig could not be loaded!");
         }
@@ -448,7 +448,7 @@ void SimTaskVisPlugin::saveConfig(){
     log().info() << "\t-Filename: " << simConfigFile << "\n";
 
     try {
-        XMLPropertySaver::save(_config, simConfigFile);
+        DOMPropertyMapSaver::save(_config, simConfigFile);
     } catch(...) {
         QMessageBox::information(this, "SimTaskVisPlugin", "SimTaskConfig could not be loadet!");
     }
@@ -490,9 +490,9 @@ void SimTaskVisPlugin::loadTasks(bool automatic){
     log().info() << "\t-Filename: " << taskFile;
     rwlibs::task::CartesianTask::Ptr task;
     try {
-        XMLTaskLoader loader;
-        loader.load( taskFile );
-        task = loader.getCartesianTask();
+        const TaskLoader::Ptr loader = TaskLoader::Factory::getTaskLoader("xml");
+        loader->load( taskFile );
+        task = loader->getCartesianTask();
     } catch (const Exception& exp) {
         QMessageBox::information(this, "SimTaskVisPlugin", "Unable to load tasks from file");
         return;

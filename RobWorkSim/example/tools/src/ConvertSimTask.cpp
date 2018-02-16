@@ -5,14 +5,12 @@
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Quaternion.hpp>
-//#include <rw/loaders/rwxml/XML.hpp>
-#include <rwlibs/task/loader/XMLTaskLoader.hpp>
-#include <rwlibs/task/loader/XMLTaskSaver.hpp>
+#include <rwlibs/task/loader/TaskLoader.hpp>
+#include <rwlibs/task/loader/TaskSaver.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-//#include <boost/optional.hpp>
 #include <boost/foreach.hpp>
 
 using namespace std;
@@ -329,15 +327,15 @@ void writePose(std::ostream& out, const Transform3D<>& pose){
 
 void writeRW(const std::string& taskFile, const std::string& outfile){
     rwlibs::task::CartesianTask::Ptr task = readGraspTask(taskFile);
-    XMLTaskSaver saver;
-    saver.save(task, outfile);
+    const TaskSaver::Ptr saver = TaskSaver::Factory::getTaskSaver("xml");
+    saver->save(task, outfile);
 }
 
 void writeUIBK(const std::string& taskFile, const std::string& outfile){
-    XMLTaskLoader loader;
-    loader.load( taskFile );
+	const TaskLoader::Ptr loader = TaskLoader::Factory::getTaskLoader("xml");
+    loader->load( taskFile );
 
-    rwlibs::task::CartesianTask::Ptr task = loader.getCartesianTask();
+    rwlibs::task::CartesianTask::Ptr task = loader->getCartesianTask();
     Transform3D<> wTe_n = task->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
     //Unused: Transform3D<> wTe_home = task->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
     //Unused: Vector3D<> approach = task->getPropertyMap().get<Vector3D<> >("Approach", Vector3D<>(0,0,0));
@@ -414,9 +412,9 @@ void mergeRW(const std::string& tasksDir, const std::string& outfile){
     RW_WARN("1");
     rwlibs::task::CartesianTask::Ptr mergedtask;
     {
-        XMLTaskLoader loader;
-        loader.load(files[0]);
-        mergedtask = loader.getCartesianTask();
+        const TaskLoader::Ptr loader = TaskLoader::Factory::getTaskLoader("xml");
+        loader->load(files[0]);
+        mergedtask = loader->getCartesianTask();
     }
     for(std::size_t i=1;i<files.size();i++){
         RW_WARN("1");
@@ -425,9 +423,9 @@ void mergeRW(const std::string& tasksDir, const std::string& outfile){
         //Unused: int fcount = 0;
         rwlibs::task::CartesianTask::Ptr task;
         {
-            XMLTaskLoader loader;
-            loader.load(taskfile);
-            task = loader.getCartesianTask();
+            const TaskLoader::Ptr loader = TaskLoader::Factory::getTaskLoader("xml");
+            loader->load(taskfile);
+            task = loader->getCartesianTask();
         }
         RW_WARN("1");
         //BOOST_FOREACH(rwlibs::task::CartesianTask::Ptr subtask, task->getTasks()){
@@ -443,8 +441,8 @@ void mergeRW(const std::string& tasksDir, const std::string& outfile){
         RW_WARN("1");
     }
     RW_WARN("1");
-    XMLTaskSaver saver;
-    saver.save(mergedtask, outfile);
+    const TaskSaver::Ptr saver = TaskSaver::Factory::getTaskSaver("xml");
+    saver->save(mergedtask, outfile);
 
 }
 

@@ -3,15 +3,15 @@
 #include <rw/graspplanning/CMDistCCPMeasure3D.hpp>
 #include <rw/graspplanning/Grasp3D.hpp>
 #include <rw/graspplanning/GWSMeasure3D.hpp>
-#include <rw/loaders/xml/XMLPropertyLoader.hpp>
-#include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/loaders/dom/DOMPropertyMapLoader.hpp>
+#include <rw/loaders/dom/DOMPropertyMapSaver.hpp>
 #include <rw/math/MetricUtil.hpp>
 #include <rwlibs/control/JointController.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
-#include <rwlibs/task/loader/XMLTaskLoader.hpp>
-#include <rwlibs/task/loader/XMLTaskSaver.hpp>
+#include <rwlibs/task/loader/TaskLoader.hpp>
+#include <rwlibs/task/loader/TaskSaver.hpp>
 
 #include <rws/RobWorkStudio.hpp>
 #include <rws/propertyview/PropertyViewEditor.hpp>
@@ -370,7 +370,7 @@ void SimTaskPlugin::loadConfig(bool automatic){
         log().info() << "Loading tasks: ";
         log().info() << "\t-Filename: " << simTaskConfigFile;
         try {
-            _config = XMLPropertyLoader::load( simTaskConfigFile );
+            _config = DOMPropertyMapLoader::load( simTaskConfigFile );
         } catch(...) {
             QMessageBox::information(this, "SimTaskPlugin", "SimTaskConfig could not be loaded!");
         }
@@ -524,7 +524,7 @@ void SimTaskPlugin::saveConfig(){
     log().info() << "\t-Filename: " << simConfigFile << "\n";
 
     try {
-        XMLPropertySaver::save(_config, simConfigFile);
+        DOMPropertyMapSaver::save(_config, simConfigFile);
     } catch(...) {
         QMessageBox::information(this, "SimTaskPlugin", "SimTaskConfig could not be loadet!");
     }
@@ -570,9 +570,9 @@ void SimTaskPlugin::loadTasks(bool automatic){
     log().info() << "\t-Filename: " << taskFile;
     rwlibs::task::CartesianTask::Ptr task;
     try {
-        XMLTaskLoader loader;
-        loader.load( taskFile );
-        task = loader.getCartesianTask();
+        const TaskLoader::Ptr loader = TaskLoader::Factory::getTaskLoader("xml");
+        loader->load( taskFile );
+        task = loader->getCartesianTask();
     } catch (const Exception& exp) {
         QMessageBox::information(this, "SimTaskPlugin", "Unable to load tasks from file");
         return;
@@ -1299,8 +1299,8 @@ void SimTaskPlugin::saveTasks(bool automatic){
     log().info() << "\t-Filename: " << taskFile << "\n";
 
     try {
-        XMLTaskSaver saver;
-        saver.save(_roottask, taskFile );
+        const TaskSaver::Ptr saver = TaskSaver::Factory::getTaskSaver("xml");
+        saver->save(_roottask, taskFile );
 
     } catch (const Exception& exp) {
         QMessageBox::information(this, "Task Execution Widget", "Unable to save tasks");
