@@ -42,6 +42,11 @@ namespace pathoptimization{
 class ClearanceCalculator
 {
 public:
+	//! A pointer to a ClearanceCalculator.
+	typedef typename rw::common::Ptr< ClearanceCalculator > Ptr;
+	//! A pointer to a const ClearanceCalculator.
+	typedef typename rw::common::Ptr< const ClearanceCalculator > CPtr;
+
 	/**
 	 * @brief Destructor
 	 */
@@ -53,7 +58,7 @@ public:
      * @param state [in] State for which to calculate the clearance
      * @return The clearance.
      */
-	virtual double clearance(rw::kinematics::State& state) = 0;
+	virtual double clearance(const rw::kinematics::State& state) const = 0;
 };
 
 /**

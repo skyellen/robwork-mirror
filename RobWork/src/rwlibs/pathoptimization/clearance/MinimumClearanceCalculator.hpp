@@ -39,6 +39,11 @@ namespace pathoptimization {
 class MinimumClearanceCalculator: public ClearanceCalculator
 {
 public:
+    //! A pointer to a MinimumClearanceCalculator.
+	typedef typename rw::common::Ptr< MinimumClearanceCalculator > Ptr;
+	//! A pointer to a const MinimumClearanceCalculator.
+	typedef typename rw::common::Ptr< const MinimumClearanceCalculator > CPtr;
+    
     /**
      * @brief Constructs a MinimumClearanceCalculator using the \b DistanceCalculator provided.
      *
@@ -64,7 +69,7 @@ public:
 	/**
 	 * @copydoc ClearanceCalculator::clearance
 	 */
-	double clearance(rw::kinematics::State& state);
+	double clearance(const rw::kinematics::State& state) const;
 
 private:
 	rw::common::Ptr<rw::proximity::DistanceCalculator> _distancecalculator;

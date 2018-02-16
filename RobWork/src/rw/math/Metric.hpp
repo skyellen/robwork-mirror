@@ -51,6 +51,8 @@ namespace rw { namespace math {
 
         //! A pointer to a Metric<T>.
         typedef typename rw::common::Ptr<Metric<T> > Ptr;
+		//! A pointer to a const Metric<T>.
+		typedef typename rw::common::Ptr<const Metric<T> > CPtr;
 
         /**
            @brief Destructor

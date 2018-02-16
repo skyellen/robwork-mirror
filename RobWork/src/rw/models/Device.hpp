@@ -65,6 +65,8 @@ namespace rw { namespace models {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<Device> Ptr;
+		//! @brief const smart pointer type to this class
+		typedef rw::common::Ptr< const Device > CPtr;
 
         //! Lower and upper corner of a box shaped configuration space.
         typedef std::pair<math::Q, math::Q> QBox;

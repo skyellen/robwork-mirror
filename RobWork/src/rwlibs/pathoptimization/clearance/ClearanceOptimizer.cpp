@@ -83,6 +83,9 @@ QPath ClearanceOptimizer::optimize(const QPath& inputPath) {
 }
 
 QPath ClearanceOptimizer::optimize(const QPath& inputPath, double stepsize, size_t maxcount, double maxtime) {
+	if(maxcount == 0 && maxtime <= 0) {
+		RW_THROW("No stopping criteria was set.");
+	}
     _stepsize = stepsize;
 	if (inputPath.size() <= 2)
 		return inputPath;
@@ -93,16 +96,8 @@ QPath ClearanceOptimizer::optimize(const QPath& inputPath, double stepsize, size
 
 	subDivideAndAugmentPath(inputPath, path);
 
-	std::cout<<"Path subdivided into "<<path.size()<<" in "<<timer.getTime()<<std::endl;
-
-	//double newClearance = calcAvgClearance(path);
-	//double oldClearance = 0;
 	size_t cnt = 0;
-	std::cout<<"Ready to while loop "<<timer.getTime()<<std::endl;
-	while ( (cnt == 0 || cnt < maxcount) && (maxtime == 0 || timer.getTime() < maxtime)) {
-	    std::cout<<".";
-	    //std::cout<<"AvgClearance = "<<newClearance<<std::endl;
-	    //oldClearance = newClearance;
+	while ( (maxcount == 0 || cnt < maxcount) && (maxtime <= 0 || timer.getTime() < maxtime)) {
 		AugmentedPath newPath = path;
 		Q dir = randomDirection();
 		for (AugmentedPath::iterator it = ++(newPath.begin()); it != --(newPath.end()); ++it) {
@@ -118,12 +113,8 @@ QPath ClearanceOptimizer::optimize(const QPath& inputPath, double stepsize, size
 
 		path = validatePath(newPath, path);
 		removeBranches(path);
-
-		//newClearance = calcAvgClearance(path);
 		cnt++;
 	}
-	std::cout<<"Finished While Loop"<<std::endl;
-
 
 	QPath result;
 	for (AugmentedPath::iterator it = path.begin(); it != path.end(); ++it) {

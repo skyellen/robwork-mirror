@@ -58,7 +58,7 @@ MinimumClearanceCalculator::MinimumClearanceCalculator(WorkCell::Ptr workcell,
 MinimumClearanceCalculator::~MinimumClearanceCalculator()
 {}
 
-double MinimumClearanceCalculator::clearance(State& state)
+double MinimumClearanceCalculator::clearance(const State& state) const
 {
     DistanceStrategy::Result result = _distancecalculator->distance(state);
     return result.distance;

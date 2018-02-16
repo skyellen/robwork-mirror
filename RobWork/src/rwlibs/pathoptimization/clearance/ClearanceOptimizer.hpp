@@ -85,7 +85,7 @@ public:
 	 * @param path [in] Path to optimize
 	 * @param stepsize [in] Maximum size between configurations in the dense path
      * @param maxcount [in] Number of time to attempt optimizing the path using the random direction. If \b maxcount=0 only the maxtime will be used.
-	 * @param maxtime [in] The maximal time allowed to optimize. If \b maxtime=0 only the \b maxcount will be used
+	 * @param maxtime [in] The maximal time allowed to optimize. If \b maxtime<=0 only the \b maxcount will be used
 	 * @return The optimized path with node no further than \b stepsize apart
 	 */
 	rw::trajectory::QPath optimize(const rw::trajectory::QPath& path,
