@@ -5,7 +5,6 @@
 
 #include <rw/math/EAA.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rwlibs/task.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 
 #include <boost/program_options/options_description.hpp>

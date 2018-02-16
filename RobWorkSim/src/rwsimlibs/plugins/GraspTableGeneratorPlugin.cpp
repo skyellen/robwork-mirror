@@ -6,8 +6,8 @@
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
-#include <rw/loaders/xml/XMLPropertyLoader.hpp>
-#include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/loaders/dom/DOMPropertyMapLoader.hpp>
+#include <rw/loaders/dom/DOMPropertyMapSaver.hpp>
 
 #include <rws/RobWorkStudio.hpp>
 
@@ -218,7 +218,7 @@ void GraspTableGeneratorPlugin::loadConfiguration(const std::string& file){
 
     PropertyMap map;
     try {
-        map = XMLPropertyLoader::load(configFile);
+        map = DOMPropertyMapLoader::load(configFile);
     } catch (const Exception& exp) {
         QMessageBox::information(
             NULL,
@@ -384,7 +384,7 @@ void GraspTableGeneratorPlugin::saveConfiguration(const std::string& file){
     }
 
     if(!filename.isEmpty()){
-    	XMLPropertySaver::save(_config, filename.toStdString());
+    	DOMPropertyMapSaver::save(_config, filename.toStdString());
     }
 }
 

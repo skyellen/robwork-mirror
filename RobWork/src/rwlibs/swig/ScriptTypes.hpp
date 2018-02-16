@@ -18,6 +18,7 @@
 #ifndef RWLIBS_SWIG_SCRIPTTYPES_HPP_
 #define RWLIBS_SWIG_SCRIPTTYPES_HPP_
 
+#include <RobWorkConfig.hpp>
 #include <rw/RobWork.hpp>
 
 #include <rw/common.hpp>
@@ -37,8 +38,10 @@
 #include <rw/loaders/ImageLoader.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/loaders/model3d/STLFile.hpp>
+#ifdef RW_HAVE_XERCES
 #include <rw/loaders/xml/XMLTrajectoryLoader.hpp>
 #include <rw/loaders/xml/XMLTrajectorySaver.hpp>
+#endif
 
 #include <rwlibs/assembly/AssemblyControlResponse.hpp>
 #include <rwlibs/assembly/AssemblyControlStrategy.hpp>
@@ -145,8 +148,10 @@ namespace swig {
 	typedef rw::loaders::ImageLoader::Factory ImageLoaderFactory;
 	typedef rw::loaders::WorkCellLoader WorkCellLoader;
 	typedef rw::loaders::WorkCellLoader::Factory WorkCellLoaderFactory;
+#ifdef RW_HAVE_XERCES
 	typedef rw::loaders::XMLTrajectoryLoader XMLTrajectoryLoader;
 	typedef rw::loaders::XMLTrajectorySaver XMLTrajectorySaver;
+#endif
 
 	typedef rw::loaders::STLFile STLFile;
 

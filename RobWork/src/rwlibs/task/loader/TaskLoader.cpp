@@ -16,8 +16,11 @@
  ********************************************************************************/
 
 #include "TaskLoader.hpp"
+#include <RobWorkConfig.hpp>
 #include "DOMTaskLoader.hpp"
+#ifdef RW_HAVE_XERCES
 #include "XMLTaskLoader.hpp"
+#endif
 
 #include <rw/common/StringUtil.hpp>
 
@@ -42,8 +45,10 @@ TaskLoader::Ptr TaskLoader::Factory::getTaskLoader(const std::string& format, co
 			return rw::common::ownedPtr( new DOMTaskLoader() );
 		else if (StringUtil::toUpper(id) == "DOM")
 			return rw::common::ownedPtr( new DOMTaskLoader() );
+#ifdef RW_HAVE_XERCES
 		else if (StringUtil::toUpper(id) == "XERCES")
 			return rw::common::ownedPtr( new DOMTaskLoader() );
+#endif
 	}
 	return NULL;
 }

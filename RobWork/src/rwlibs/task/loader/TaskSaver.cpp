@@ -16,8 +16,11 @@
  ********************************************************************************/
 
 #include "TaskSaver.hpp"
+#include <RobWorkConfig.hpp>
 #include "DOMTaskSaver.hpp"
+#ifdef RW_HAVE_XERCES
 #include "XMLTaskSaver.hpp"
+#endif
 
 #include <rw/common/StringUtil.hpp>
 
@@ -42,8 +45,10 @@ TaskSaver::Ptr TaskSaver::Factory::getTaskSaver(const std::string& format, const
 			return rw::common::ownedPtr( new DOMTaskSaver() );
 		else if (StringUtil::toUpper(id) == "DOM")
 			return rw::common::ownedPtr( new DOMTaskSaver() );
+#ifdef RW_HAVE_XERCES
 		else if (StringUtil::toUpper(id) == "XERCES")
 			return rw::common::ownedPtr( new DOMTaskSaver() );
+#endif
 	}
 	return NULL;
 }

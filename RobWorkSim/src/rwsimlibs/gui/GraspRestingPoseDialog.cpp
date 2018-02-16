@@ -3,8 +3,8 @@
 #include <boost/foreach.hpp>
 
 #include <rw/loaders/path/PathLoader.hpp>
-#include <rw/loaders/xml/XMLPropertyLoader.hpp>
-#include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/loaders/dom/DOMPropertyMapLoader.hpp>
+#include <rw/loaders/dom/DOMPropertyMapSaver.hpp>
 #include <rw/graspplanning/CMDistCCPMeasure3D.hpp>
 #include <rw/graspplanning/WrenchMeasure3D.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
@@ -348,7 +348,7 @@ GraspRestingPoseDialog::GraspRestingPoseDialog(const rw::kinematics::State& stat
 
     XMLPropertySaver::save(map, "GraspTableConfig.xml");
 */
-    map = XMLPropertyLoader::load( "GraspTableConfig.xml" );
+    map = DOMPropertyMapLoader::load( "GraspTableConfig.xml" );
     _ui->_lowRollSpin->setValue(map.get<int>("R_low",-180));
     _ui->_highRollSpin->setValue(map.get<int>("R_high",180));
     _ui->_lowPitchSpin->setValue(map.get<int>("P_low",-180));
@@ -419,14 +419,14 @@ void GraspRestingPoseDialog::initializeStart(){
 
     PropertyMap pmap;
     try {
-    	pmap = XMLPropertyLoader::load( pmap_filename.str() );
+    	pmap = DOMPropertyMapLoader::load( pmap_filename.str() );
     } catch(...){
     	std::cout << "File not found!" << std::endl;
     }
     int progressid = pmap.get<int>("PROGRESS_COUNT",0);
     progressid++;
     pmap.set<int>("PROGRESS_COUNT",progressid);
-    XMLPropertySaver::save( pmap, pmap_filename.str() );
+    DOMPropertyMapSaver::save( pmap, pmap_filename.str() );
 
     std::stringstream sstemp;
     sstemp << progressid;
