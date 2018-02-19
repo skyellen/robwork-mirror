@@ -25,6 +25,8 @@
 
 #include <Eigen/Eigenvalues>
 
+#include <list>
+
 using rw::common::ownedPtr;
 using namespace rw::geometry;
 using namespace rw::math;

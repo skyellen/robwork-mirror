@@ -19,6 +19,8 @@
 #include "Curve.hpp"
 #include "Surface.hpp"
 
+#include <list>
+
 using namespace rw::geometry;
 using namespace rw::math;
 

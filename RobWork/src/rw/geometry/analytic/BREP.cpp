@@ -24,6 +24,8 @@
 
 #include <rw/geometry/PlainTriMesh.hpp>
 
+#include <list>
+
 using rw::common::ownedPtr;
 using namespace rw::geometry;
 using namespace rw::math;

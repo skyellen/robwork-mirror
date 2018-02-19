@@ -28,6 +28,8 @@
 #include <rw/geometry/OBB.hpp>
 #include <rw/math/Vector3D.hpp>
 
+#include <list>
+
 namespace rw {
 namespace geometry {
 //! @addtogroup geometry
