@@ -327,7 +327,7 @@ TriMesh::Ptr QuadraticSurface::getTriMeshDiagonal(const std::vector<Vector3D<> >
 			std::list<std::vector<std::size_t> >& listA = borderFront;
 			const std::list<std::vector<std::size_t> >& listB = borderBack;
 
-			for (std::list<std::vector<std::size_t> >::const_iterator it = listA.begin(); it != listA.end();) {
+			for (std::list<std::vector<std::size_t> >::iterator it = listA.begin(); it != listA.end();) { // do not use const_iterator (first supported with list.erase() from GCC 4.9)
 				bool within = true;
 				for (std::size_t i = 0; i < (*it).size() && within; i++) {
 					if (std::abs(border[(*it)[i]][e]) > EPS) {
@@ -386,7 +386,7 @@ TriMesh::Ptr QuadraticSurface::getTriMeshDiagonal(const std::vector<Vector3D<> >
 			std::list<std::vector<std::size_t> >& listA = borderBack;
 			const std::list<std::vector<std::size_t> >& listB = borderFront;
 
-			for (std::list<std::vector<std::size_t> >::const_iterator it = listA.begin(); it != listA.end();) {
+			for (std::list<std::vector<std::size_t> >::iterator it = listA.begin(); it != listA.end();) { // do not use const_iterator (first supported with list.erase() from GCC 4.9)
 				bool within = true;
 				for (std::size_t i = 0; i < (*it).size() && within; i++) {
 					if (std::abs(border[(*it)[i]][e]) > EPS) {
