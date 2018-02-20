@@ -132,13 +132,10 @@ namespace common {
                 _cond.wait(lock);
             }
 
-            std::cout << "-------------------------" << std::endl;
             std::queue<T> tmpQ = _queue;
             while(!tmpQ.empty()){
                 T val = tmpQ.front();
                 tmpQ.pop();
-                std::cout << val << std::endl;
-
             }
 
 
@@ -146,7 +143,6 @@ namespace common {
             _queue.pop();
             _size--;
 
-            std::cout << "-------------------------" << std::endl;
             return true;
         }
 
