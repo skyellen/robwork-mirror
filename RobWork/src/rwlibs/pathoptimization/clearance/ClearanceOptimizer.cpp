@@ -50,9 +50,9 @@ ClearanceOptimizer::ClearanceOptimizer(//WorkCell::Ptr workcell,
 	_qlower = _device->getBounds().first;
 	_qupper = _device->getBounds().second;
 
-    _propertymap.add(PROP_STEPSIZE, "Step Size", 0.1);
-    _propertymap.add(PROP_LOOPCOUNT, "Maximal Number of Loops", 20);
-    _propertymap.add(PROP_MAXTIME, "Maximal Time to use (seconds)", 200);
+    _propertymap.add<double>(PROP_STEPSIZE, "Step Size", 0.1);
+    _propertymap.add<int>(PROP_LOOPCOUNT, "Maximal Number of Loops", 20);
+    _propertymap.add<double>(PROP_MAXTIME, "Maximal Time to use (seconds)", 200.);
 
 }
 

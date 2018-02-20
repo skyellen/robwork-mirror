@@ -103,15 +103,24 @@ public:
 	 */
 	rw::trajectory::QPath optimize(const rw::trajectory::QPath& path);
 
-   //!Property key for the maximal number of loops. Set LOOPCOUNT=0 to deactivate it
+    //! Property key for the maximal number of loops. Set LOOPCOUNT=0 to deactivate it
     static const std::string PROP_LOOPCOUNT;
-    //!Property key for max time. Set MAXTIME=0 to deactivate it
+    //! Property key for max time. Set MAXTIME=0 to deactivate it
     static const std::string PROP_MAXTIME;
-    //!Property key for step size
+    //! Property key for step size
     static const std::string PROP_STEPSIZE;
 
     /**
-     * @brief Returns the PropertyMap associated with the optimizer
+     * @brief Returns the PropertyMap associated with the optimizer.
+     *
+     * The PropertyMap defines the following parameters used by the optimizer:
+	 *
+	 *  Property Name                      | Type   | Default value
+	 *  ---------------------------------- | ------ | -------------
+	 *  ClearanceOptimizer::PROP_LOOPCOUNT | int    | 20
+	 *  ClearanceOptimizer::PROP_MAXTIME   | double | 200
+	 *  ClearanceOptimizer::PROP_STEPSIZE  | double | 0.1
+	 *
      * @return The PropertyMap
      */
 	rw::common::PropertyMap& getPropertyMap();
