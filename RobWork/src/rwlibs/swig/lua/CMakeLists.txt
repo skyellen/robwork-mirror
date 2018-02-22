@@ -1,8 +1,3 @@
-# Setting CMP0046 to OLD, because the yaobi, pqp and assimp libraries in add_dependencies can point to non-existing targets when using the external libraries (e.g. '/usr/lib/x86_64-linux-gnu/libassimp.so' and not those distributed with RobWork 'assimp')
-if(POLICY CMP0046)
-  cmake_policy(SET CMP0046 OLD)
-endif()
-
 SET(SUBSYS_NAME rw_lua )
 SET(SUBSYS_DESC "Interface for accessing RobWorkSim from lua." )
 SET(SUBSYS_DEPS rw )
@@ -42,46 +37,19 @@ IF( build )
 	ELSE()
 		SWIG_ADD_MODULE(rw_lua lua ../rw.i ../ScriptTypes.cpp Lua.cpp LuaState.cpp)
 	ENDIF()
-	
-	SWIG_LINK_LIBRARIES(rw_lua rw_algorithms
-                              rw_pathplanners
-                              rw_pathoptimization
-                              rw_simulation
-                              rw_opengl
-                              rw_assembly
-                              ${LUA_LIBRARIES}
-                              rw_proximitystrategies
-                              rw_task
-                              ${YAOBI_LIBRARIES}
-                              ${PQP_LIBRARIES}  
-                              rw
-                              ${OPENGL_LIBRARIES}
-                              ${XERCESC_LIBRARIES}
-                              ${ASSIMP_LIBRARIES}
-                              ${ZLIB_LIBRARIES}
-                              ${MINIZIP_LIBRARIES}
-                              ${Boost_LIBRARIES}
-                              ${LAPACK_LIBRARIES} 
-                              ${BLAS_LIBRARIES}
-                              rw_qhull)
-    ADD_DEPENDENCIES(rw_lua rw_algorithms
-                          rw_pathplanners
-                          rw_pathoptimization
-                          rw_simulation
-                          rw_opengl
-                          rw_proximitystrategies
-                          rw_task
-                          ${YAOBI_LIBRARIES}
-                          ${PQP_LIBRARIES}  
-                          rw
-                          rw_qhull
-                          ${ASSIMP_LIBRARIES}
-                          ${ZLIB_LIBRARIES}
-                          ${MINIZIP_LIBRARIES}
-)
+
+    SWIG_LINK_LIBRARIES(rw_lua
+    	rw_pathplanners
+    	rw_pathoptimization
+    	rw_assembly
+    	rw
+    )
+    IF((CMAKE_COMPILER_IS_GNUCC) OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
+      SET_TARGET_PROPERTIES(${SWIG_MODULE_rw_jni_REAL_NAME} PROPERTIES LINK_FLAGS -Wl,--no-undefined)
+    ENDIF()
     
     ADD_LIBRARY(rw_lua_s STATIC Lua.cpp LuaState.cpp ${swig_generated_sources} ${swig_other_sources})
-    LINK_LIBRARIES(rw_lua_s rw)
+    TARGET_LINK_LIBRARIES(rw_lua_s rw_pathplanners rw_pathoptimizatio rw_assembly rw)
 
 	# the dynamic version
     #ADD_LIBRARY(rw_lua DYNAMIC Lua.cpp ${swig_generated_sources} ${swig_other_sources})

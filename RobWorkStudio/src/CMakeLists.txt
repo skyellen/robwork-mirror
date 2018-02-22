@@ -48,10 +48,13 @@ ELSE()
 	        DESTINATION ${BIN_INSTALL_DIR}
 	        RENAME "RobWorkStudio.ini"
     )
-    CONFIGURE_FILE("${RWS_ROOT}/bin/RobWorkStudio.ini.shared"
-                   "${RWS_ROOT}/bin/${RWS_BUILD_TYPE}/RobWorkStudio.ini"
-                   COPYONLY
-    )    
+    #CONFIGURE_FILE("${RWS_ROOT}/bin/RobWorkStudio.ini.shared"
+    #               "${RWS_ROOT}/bin/${RWS_BUILD_TYPE}/RobWorkStudio.ini"
+    #               COPYONLY
+    #)
+    FILE(GENERATE OUTPUT $<TARGET_FILE_DIR:RobWorkStudio>/RobWorkStudio.ini
+    	INPUT "${RWS_ROOT}/bin/RobWorkStudio.ini.shared"
+    )
 ENDIF()
 
 # Install all headerfiles

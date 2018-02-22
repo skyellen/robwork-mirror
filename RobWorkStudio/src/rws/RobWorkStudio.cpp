@@ -672,6 +672,10 @@ void RobWorkStudio::setupPlugin(const QString& pathname, const QString& filename
 	QString pfilename = pathname+ "/" + filename + "." + OS::getDLLExtension().c_str();
 	bool e1 = boost::filesystem::exists( filename.toStdString() );
 	if(!e1){
+		pfilename = pathname+ "/" + filename;
+		e1 = boost::filesystem::exists( pfilename.toStdString() );
+	}
+	if(!e1){
 		pfilename = pathname+ "/" + filename + ".so";
 		e1 = boost::filesystem::exists( pfilename.toStdString() );
 	}

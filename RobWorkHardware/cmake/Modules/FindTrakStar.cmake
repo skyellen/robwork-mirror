@@ -7,11 +7,6 @@
 #
 #    TRAKSTAR_FOUND
 
-if (POLICY CMP0045)
-	# allow non-existent target in get_target_property
-	cmake_policy(SET CMP0045 OLD)
-endif()
-
 IF( UNIX AND NOT CYGWIN )
     FIND_PATH(TRAKSTAR_INCLUDE_DIR ATC3DG.h
        # TODO paths?
@@ -49,8 +44,8 @@ FIND_LIBRARY(TRAKSTAR_LIBRARIES
 
 IF (TRAKSTAR_INCLUDE_DIR AND TRAKSTAR_LIBRARIES)
     SET (TRAKSTAR_FOUND 1)
-    GET_TARGET_PROPERTY(libATC3D_location libATC3D LOCATION)
-    IF( libATC3D_location )
+    #GET_TARGET_PROPERTY(libATC3D_location libATC3D LOCATION) # deprecated (fails on non-existing targets)
+    IF(TARGET libATC3D)
         # target allready exists
     ELSE()
         ADD_LIBRARY(libATC3D SHARED IMPORTED)

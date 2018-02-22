@@ -1,8 +1,3 @@
-IF(POLICY CMP0046)
-  # TEST_DEPENDENCIES is listed to contain too many targets that can't be found (such as paths to actual system libraries, etc.)
-  cmake_policy(SET CMP0046 OLD)
-ENDIF()
-
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.hpp.in
   ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.hpp)
@@ -50,36 +45,27 @@ SET(DYNAMICS_TEST_SRC
   dynamics/ConstraintTest.cpp
 )
 
-SET(TEST_DEPENDENCIES 
-    ${ROBWORKSIM_LIBRARIES}
-)
-  
 # Repeat for each test 
 ADD_EXECUTABLE( rwsim_common-test ${DO_EXCLUDE} test-main.cpp ${COMMON_TEST_SRC})       
 TARGET_LINK_LIBRARIES( rwsim_common-test ${TEST_LIBRARIES} )
 ADD_TEST( rwsim_common-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_common-test )
-ADD_DEPENDENCIES(rwsim_common-test ${TEST_DEPENDENCIES})
 
 ADD_EXECUTABLE( rwsim_dynamics-test ${DO_EXCLUDE} test-main.cpp ${DYNAMICS_TEST_SRC})       
 TARGET_LINK_LIBRARIES( rwsim_dynamics-test ${TEST_LIBRARIES} )
 ADD_TEST( rwsim_dynamics-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_dynamics-test )
-ADD_DEPENDENCIES(rwsim_dynamics-test ${TEST_DEPENDENCIES})
 
 ADD_EXECUTABLE( rwsim_tasksimulation-test ${DO_EXCLUDE} test-main.cpp tasksimulation/GraspTaskSimulation.cpp)       
 TARGET_LINK_LIBRARIES( rwsim_tasksimulation-test ${TEST_LIBRARIES} )
 ADD_TEST( rwsim_tasksimulation-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_tasksimulation-test )
-ADD_DEPENDENCIES(rwsim_tasksimulation-test ${TEST_DEPENDENCIES})
 
 ADD_EXECUTABLE( rwsim_sensors-test ${DO_EXCLUDE} test-main.cpp sensors/FTSensorTest.cpp sensors/TactileArraySensorTest.cpp)       
 TARGET_LINK_LIBRARIES( rwsim_sensors-test ${TEST_LIBRARIES} )
 ADD_TEST( rwsim_sensors-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_sensors-test )
-ADD_DEPENDENCIES(rwsim_sensors-test ${TEST_DEPENDENCIES})
 
 IF(RWSIM_HAVE_ODE)
 	ADD_EXECUTABLE( rwsim_ode-test ${DO_EXCLUDE} test-main.cpp ode/ODEControlTest.cpp ) #  ode/ODESimpleTest.cpp        
 	TARGET_LINK_LIBRARIES( rwsim_ode-test ${TEST_LIBRARIES} )
 	ADD_TEST( rwsim_ode-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_ode-test )
-	ADD_DEPENDENCIES(rwsim_ode-test ${TEST_DEPENDENCIES})
 ENDIF()
 
 ADD_CUSTOM_TARGET(tests ctest -V 

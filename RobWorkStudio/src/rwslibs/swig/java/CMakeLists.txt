@@ -37,16 +37,18 @@ IF( build )
     SET(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/java_src/dk/robwork)
     # SWIG
 	IF ((CMAKE_VERSION VERSION_GREATER 3.8) OR (CMAKE_VERSION VERSION_EQUAL 3.8))
-		SWIG_ADD_LIBRARY(rws_jni MODULE LANGUAGE java SOURCES ../rws.i)
+		SWIG_ADD_LIBRARY(rws_jni MODULE LANGUAGE java SOURCES ../rws.i ../ScriptTypes.cpp)
 	ELSE()
-		SWIG_ADD_MODULE(rws_jni java ../rws.i)
+		SWIG_ADD_MODULE(rws_jni java ../rws.i ../ScriptTypes.cpp)
 	ENDIF()
-    SWIG_LINK_LIBRARIES(rws_jni rws rws_rwstudioapp 
-        ${RWS_COMPONENT_LIBRARIES} 
-        ${RWS_PLUGIN_LIBRARIES} 
-        ${ROBWORKSTUDIO_LIBRARIES}
+    SWIG_LINK_LIBRARIES(rws_jni 
+        ${RWS_COMPONENT_LIBRARIES}
+        ${RWS_PLUGIN_LIBRARIES}
+        rws
         ${ROBWORK_LIBRARIES} )
-    ADD_DEPENDENCIES(rws_jni rws_luaeditor rws_rwstudioapp)
+    IF((CMAKE_COMPILER_IS_GNUCC) OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
+      SET_TARGET_PROPERTIES(${SWIG_MODULE_rws_jni_REAL_NAME} PROPERTIES LINK_FLAGS -Wl,--no-undefined)
+    ENDIF()
     # Force removal of previous Java compilation and source when interface file changes
     # This is required as types may be removed or change name
     # (in this case previous java classes would interfere with current compilation).

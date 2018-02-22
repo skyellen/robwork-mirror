@@ -39,7 +39,6 @@ namespace rws {
 class ShowLog : public RobWorkStudioPlugin
 {
     Q_OBJECT
-#define RWS_USE_STATIC_LINK_PLUGINS
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
     Q_INTERFACES(rws::RobWorkStudioPlugin)
 #if RWS_USE_QT5

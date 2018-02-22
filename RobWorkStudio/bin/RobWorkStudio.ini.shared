@@ -1,42 +1,42 @@
 [Plugins]
 
 Lua\DockArea=2
-Lua\Filename=rws_luapl
-Lua\Path=.
+Lua\Filename=$<TARGET_SONAME_FILE_NAME:rws_luapl>
+Lua\Path=$<TARGET_FILE_DIR:rws_luapl>
 Lua\Visible=false
 
 Sensors\DockArea=2
-Sensors\Filename=rws_sensors
-Sensors\Path=.
+Sensors\Filename=$<TARGET_SONAME_FILE_NAME:rws_sensors>
+Sensors\Path=$<TARGET_FILE_DIR:rws_sensors>
 Sensors\Visible=false
 
 Jog\DockArea=1
-Jog\Filename=rws_jog
-Jog\Path=.
+Jog\Filename=$<TARGET_FILE_NAME:rws_jog>
+Jog\Path=$<TARGET_FILE_DIR:rws_jog>
 Jog\Visible=false
 
 Log\DockArea=1
-Log\Filename=rws_log
-Log\Path=.
+Log\Filename=$<TARGET_SONAME_FILE_NAME:rws_log>
+Log\Path=$<TARGET_FILE_DIR:rws_log>
 Log\Visible=false
 
 Planning\DockArea=1
-Planning\Filename=rws_planning
-Planning\Path=.
+Planning\Filename=$<TARGET_SONAME_FILE_NAME:rws_planning>
+Planning\Path=$<TARGET_FILE_DIR:rws_planning>
 Planning\Visible=false
 
 PlayBack\DockArea=8
-PlayBack\Filename=rws_playback
-PlayBack\Path=.
+PlayBack\Filename=$<TARGET_SONAME_FILE_NAME:rws_playback>
+PlayBack\Path=$<TARGET_FILE_DIR:rws_playback>
 PlayBack\Visible=false
 
 PropertyView\DockArea=2
-PropertyView\Filename=rws_propertyview
-PropertyView\Path=.
+PropertyView\Filename=$<TARGET_SONAME_FILE_NAME:rws_propertyview>
+PropertyView\Path=$<TARGET_FILE_DIR:rws_propertyview>
 PropertyView\Visible=false
 
 TreeView\DockArea=1
-TreeView\Filename=rws_treeview
-TreeView\Path=.
+TreeView\Filename=$<TARGET_SONAME_FILE_NAME:rws_treeview>
+TreeView\Path=$<TARGET_FILE_DIR:rws_treeview>
 TreeView\Visible=false
 

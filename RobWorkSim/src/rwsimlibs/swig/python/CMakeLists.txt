@@ -39,8 +39,13 @@ INCLUDE(UseSWIG)
 	ELSE()
 		SWIG_ADD_MODULE(rwsim python ../rwsim.i ../ScriptTypes.cpp)
 	ENDIF()
-    SWIG_LINK_LIBRARIES(rwsim rwsim
-        ${ROBWORK_LIBRARIES} 
+    SWIG_LINK_LIBRARIES(rwsim
+        ${RWSIM_ODE_LIBRARY}
+        rwsim
+        ${ROBWORK_LIBRARIES}
         ${PYTHON_LIBRARIES} )
+    IF((CMAKE_COMPILER_IS_GNUCC) OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
+      SET_TARGET_PROPERTIES(${SWIG_MODULE_rwsim_REAL_NAME} PROPERTIES LINK_FLAGS -Wl,--no-undefined)
+    ENDIF()
      
 ENDIF()

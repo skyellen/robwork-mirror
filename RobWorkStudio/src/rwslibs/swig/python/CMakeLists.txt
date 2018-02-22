@@ -39,11 +39,14 @@ INCLUDE(UseSWIG)
 	ELSE()
 		SWIG_ADD_MODULE(rws python ../rws.i ../ScriptTypes.cpp)
 	ENDIF()
-    SWIG_LINK_LIBRARIES(rws rws rws_rwstudioapp 
+    SWIG_LINK_LIBRARIES(rws
         ${RWS_COMPONENT_LIBRARIES} 
         ${RWS_PLUGIN_LIBRARIES} 
-        ${ROBWORKSTUDIO_LIBRARIES} 
+        rws
         ${ROBWORK_LIBRARIES} 
         ${PYTHON_LIBRARIES} )
+    IF((CMAKE_COMPILER_IS_GNUCC) OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
+      SET_TARGET_PROPERTIES(${SWIG_MODULE_rws_REAL_NAME} PROPERTIES LINK_FLAGS -Wl,--no-undefined)
+    ENDIF()
      
 ENDIF()

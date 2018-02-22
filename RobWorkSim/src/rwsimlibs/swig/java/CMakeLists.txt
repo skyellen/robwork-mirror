@@ -37,11 +37,14 @@ IF( build )
     SET(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/java_src/dk/robwork)
     # SWIG
 	IF ((CMAKE_VERSION VERSION_GREATER 3.8) OR (CMAKE_VERSION VERSION_EQUAL 3.8))
-		SWIG_ADD_LIBRARY(rwsim_jni MODULE LANGUAGE java SOURCES ../rwsim.i ThreadSimulatorStepCallbackEnv.cpp)
+		SWIG_ADD_LIBRARY(rwsim_jni MODULE LANGUAGE java SOURCES ../rwsim.i ThreadSimulatorStepCallbackEnv.cpp ../ScriptTypes.cpp)
 	ELSE()
-		SWIG_ADD_MODULE(rwsim_jni java ../rwsim.i ThreadSimulatorStepCallbackEnv.cpp)
+		SWIG_ADD_MODULE(rwsim_jni java ../rwsim.i ThreadSimulatorStepCallbackEnv.cpp ../ScriptTypes.cpp)
 	ENDIF()
-    SWIG_LINK_LIBRARIES(rwsim_jni rwsim ${ROBWORKSIM_LIBRARIES} ${ROBWORK_LIBRARIES} )
+    SWIG_LINK_LIBRARIES(rwsim_jni ${RWSIM_ODE_LIBRARY} rwsim ${ROBWORK_LIBRARIES} )
+    IF((CMAKE_COMPILER_IS_GNUCC) OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
+      SET_TARGET_PROPERTIES(${SWIG_MODULE_rwsim_jni_REAL_NAME} PROPERTIES LINK_FLAGS -Wl,--no-undefined)
+    ENDIF()
     # Force removal of previous Java compilation and source when interface file changes
     # This is required as types may be removed or change name
     # (in this case previous java classes would interfere with current compilation).

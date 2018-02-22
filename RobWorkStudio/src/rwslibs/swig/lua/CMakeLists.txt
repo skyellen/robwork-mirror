@@ -35,20 +35,26 @@ IF( build )
 	ELSE()
 		SWIG_ADD_MODULE(rws_lua lua ../rws.i Lua.cpp ../ScriptTypes.cpp)
 	ENDIF()
-    SWIG_LINK_LIBRARIES(rws_lua rws rws_rwstudioapp
-                ${RWS_COMPONENT_LIBRARIES} 
-                ${RWS_PLUGIN_LIBRARIES} 
-                ${ROBWORKSTUDIO_LIBRARIES} 
+    SWIG_LINK_LIBRARIES(rws_lua
+                ${RWS_COMPONENT_LIBRARIES}
+                ${RWS_PLUGIN_LIBRARIES}
+                rws
                 ${ROBWORK_LIBRARIES}
-                ${BOOST_LIBRARIES})
-    
-    ADD_DEPENDENCIES(rws_lua rws_luaeditor rws_rwstudioapp)
-    
+    )
+    IF((CMAKE_COMPILER_IS_GNUCC) OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
+      SET_TARGET_PROPERTIES(${SWIG_MODULE_rws_lua_REAL_NAME} PROPERTIES LINK_FLAGS -Wl,--no-undefined)
+    ENDIF()
+
+	MESSAGE("RWS_COMPONENT_LIBRARIES ${RWS_COMPONENT_LIBRARIES}")
+	MESSAGE("RWS_PLUGIN_LIBRARIES ${RWS_PLUGIN_LIBRARIES}")
     ADD_LIBRARY(rws_lua_s STATIC ${swig_generated_sources} ${swig_other_sources})
-    LINK_LIBRARIES(rws_lua_s rws ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
-    
-    ADD_DEPENDENCIES(rws_lua_s rws ) # Should this depend on the same as rws_lua depends on?
-    
+    TARGET_LINK_LIBRARIES(rws_lua_s
+                ${RWS_COMPONENT_LIBRARIES}
+                ${RWS_PLUGIN_LIBRARIES}
+                rws
+                ${ROBWORK_LIBRARIES}
+    )
+
     SET(ENV{RWS_COMPONENT_LIBRARIES} "$ENV{RWS_COMPONENT_LIBRARIES}rws_lua_s;")
     #MESSAGE("${ROBWORKSTUDIO_LIBRARIES} \n ROBWORK ${ROBWORK_LIBRARIES}" )
     # this is used to indicate static linking to Visual Studio or mingw 
@@ -61,7 +67,10 @@ IF( build )
     	
     	
 	ADD_LIBRARY(rwslua_plugin.rwplugin MODULE LuaPlugin.cpp LuaPlugin.hpp)
-    TARGET_LINK_LIBRARIES(rwslua_plugin.rwplugin rws_lua_s rws_rwstudioapp ${RWS_PLUGIN_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
+    TARGET_LINK_LIBRARIES(rwslua_plugin.rwplugin rws_lua_s ${ROBWORK_LIBRARIES})
+    IF((CMAKE_COMPILER_IS_GNUCC) OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
+      SET_TARGET_PROPERTIES(rwslua_plugin.rwplugin PROPERTIES LINK_FLAGS -Wl,--no-undefined)
+    ENDIF()
 	
 	
 ENDIF()

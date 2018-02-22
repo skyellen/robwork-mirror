@@ -1,5 +1,5 @@
 if(POLICY CMP0046)
-  cmake_policy(SET CMP0046 OLD)
+  cmake_policy(SET CMP0046 NEW)
 endif()
 
 SET(SUBSYS_NAME rw_java )
@@ -41,22 +41,19 @@ IF( build )
     SET(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/java_src/dk/robwork)
     # SWIG
 	IF ((CMAKE_VERSION VERSION_GREATER 3.8) OR (CMAKE_VERSION VERSION_EQUAL 3.8))
-		SWIG_ADD_LIBRARY(rw_jni MODULE LANGUAGE java SOURCES ../rw.i)
+		SWIG_ADD_LIBRARY(rw_jni MODULE LANGUAGE java SOURCES ../rw.i ../ScriptTypes.cpp)
 	ELSE()
-		SWIG_ADD_MODULE(rw_jni java ../rw.i)
+		SWIG_ADD_MODULE(rw_jni java ../rw.i ../ScriptTypes.cpp)
 	ENDIF()
-    SWIG_LINK_LIBRARIES(rw_jni ${ROBWORK_LIBRARIES} )
-    ADD_DEPENDENCIES(rw_jni rw_algorithms
-                  rw_pathplanners
-                  rw_pathoptimization
-                  rw_simulation
-                  rw_opengl
-                  rw_proximitystrategies
-                  rw_task
-                  ${YAOBI_LIBRARIES}
-                  ${PQP_LIBRARIES}  
-                  rw
-                  rw_qhull)
+    SWIG_LINK_LIBRARIES(rw_jni
+    	rw_pathplanners
+    	rw_pathoptimization
+    	rw_assembly
+    	rw
+    )
+    IF((CMAKE_COMPILER_IS_GNUCC) OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
+      SET_TARGET_PROPERTIES(${SWIG_MODULE_rw_jni_REAL_NAME} PROPERTIES LINK_FLAGS -Wl,--no-undefined)
+    ENDIF()
     # Force removal of previous Java compilation and source when interface file changes
     # This is required as types may be removed or change name
     # (in this case previous java classes would interfere with current compilation).

@@ -1,6 +1,6 @@
 SET(SUBSYS_NAME rws_luaeditor)
 set(SUBSYS_DESC "A lua editor plugin")
-SET(SUBSYS_DEPS rws rws_lua_s)
+SET(SUBSYS_DEPS rws)
 
 SET(build ${RWS_HAVE_LUA})
 RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${RWS_HAVE_LUA})
@@ -42,6 +42,6 @@ IF(build)
             
     RWS_ADD_COMPONENT(${SUBSYS_NAME} components ${SrcFiles} ${MocSrcFiles} ${UIS_OUT_H})
     RW_ADD_INCLUDES(components "rwslibs/luaeditor" ${SRC_FILES_HPP}) 
-    ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
+    TARGET_LINK_LIBRARIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 ENDIF()

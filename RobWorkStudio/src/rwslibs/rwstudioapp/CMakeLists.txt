@@ -1,9 +1,12 @@
 SET(SUBSYS_NAME rws_rwstudioapp)
 set(SUBSYS_DESC "A rwstudio application that may be started in a thread.")
-SET(SUBSYS_DEPS rws rws_jog rws_log rws_planning rws_playback rws_sensors rws_treeview)
+SET(SUBSYS_DEPS rws)
 
-IF( RWS_HAVE_LUA )
-    LIST(APPEND SUBSYS_DEPS rws_luaeditor rws_lua_s) 
+IF( RWS_USE_STATIC_LINK_PLUGINS )
+    LIST(APPEND SUBSYS_DEPS rws_jog rws_log rws_planning rws_playback rws_sensors rws_treeview rws_propertyview)
+	IF ( RWS_HAVE_LUA )
+    	LIST(APPEND SUBSYS_DEPS rws_luaeditor rws_luapl)
+    ENDIF() 
 ENDIF()
 
 SET(build TRUE)
@@ -18,7 +21,7 @@ IF(build)
     
     RWS_ADD_COMPONENT(${SUBSYS_NAME} plugins ${SrcFiles})
     RW_ADD_INCLUDES(plugins "rwslibs/rwstudioapp" ${SRC_FILES_HPP}) 
-    ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
+    TARGET_LINK_LIBRARIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
 ENDIF()
 
 
