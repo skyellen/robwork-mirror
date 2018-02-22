@@ -31,7 +31,6 @@ IF( build )
 	
 	# lua interface generation
 	SET(SWIG_MODULE_rw_lua_EXTRA_DEPS ../rwmath.i ../rwplanning.i)
-	STRING(REPLACE "rw_lua" "" LIBS_WITHOUT_RW_LUA ${ROBWORK_LIBRARIES})
 	IF ((CMAKE_VERSION VERSION_GREATER 3.8) OR (CMAKE_VERSION VERSION_EQUAL 3.8))
 		SWIG_ADD_LIBRARY(rw_lua MODULE LANGUAGE lua SOURCES ../rw.i ../ScriptTypes.cpp Lua.cpp LuaState.cpp)
 	ELSE()
@@ -43,6 +42,7 @@ IF( build )
     	rw_pathoptimization
     	rw_assembly
     	rw
+		${LUA_LIBRARIES}
     )
     IF((CMAKE_COMPILER_IS_GNUCC) OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
       SET_TARGET_PROPERTIES(${SWIG_MODULE_rw_jni_REAL_NAME} PROPERTIES LINK_FLAGS -Wl,--no-undefined)
@@ -50,6 +50,7 @@ IF( build )
     
     ADD_LIBRARY(rw_lua_s STATIC Lua.cpp LuaState.cpp ${swig_generated_sources} ${swig_other_sources})
     TARGET_LINK_LIBRARIES(rw_lua_s rw_pathplanners rw_pathoptimizatio rw_assembly rw)
+	ADD_DEPENDENCIES(rw_lua_s rw_lua) # avoid using the source files before they have been generated
 
 	# the dynamic version
     #ADD_LIBRARY(rw_lua DYNAMIC Lua.cpp ${swig_generated_sources} ${swig_other_sources})

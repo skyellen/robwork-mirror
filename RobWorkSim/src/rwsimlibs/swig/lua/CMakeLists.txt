@@ -42,6 +42,7 @@ IF( build )
 
     ADD_LIBRARY(rwsim_lua_s STATIC Lua.cpp ${swig_generated_sources} ${swig_other_sources})
 	TARGET_LINK_LIBRARIES(rwsim_lua_s ${RWSIM_ODE_LIBRARY} rwsim ${ROBWORK_LIBRARIES})
+	ADD_DEPENDENCIES(rwsim_lua_s rwsim_lua) # avoid using the source files before they have been generated
 	# this is used to indicate static linking to Visual Studio or mingw
 	IF (DEFINED MSVC) 
 	    SET_TARGET_PROPERTIES(rwsim_lua_s PROPERTIES COMPILE_FLAGS "/DSTATIC_LINKED")
