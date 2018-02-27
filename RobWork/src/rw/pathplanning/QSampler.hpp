@@ -46,6 +46,8 @@ namespace rw { namespace pathplanning {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<QSampler> Ptr;
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr< const QSampler > CPtr;
 
         /**
            @brief Sample a configuration.

@@ -64,6 +64,8 @@ namespace rw { namespace pathplanning {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<QEdgeConstraint> Ptr;
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr< const QEdgeConstraint > CPtr;
 
         /**
            @brief Destructor
@@ -98,7 +100,7 @@ namespace rw { namespace pathplanning {
 		   \param resolution [in] The test resolution
         */
 		static QEdgeConstraint::Ptr make(rw::common::Ptr<QConstraint> constraint,
-										 rw::math::QMetric::Ptr metric,
+										 rw::math::QMetric::CPtr metric,
 										 double resolution);
 
         /**
@@ -110,7 +112,7 @@ namespace rw { namespace pathplanning {
            resolution.
         */
 		static QEdgeConstraint::Ptr makeDefault(rw::common::Ptr<QConstraint> constraint,
-			rw::common::Ptr<rw::models::Device> device);
+			rw::common::Ptr< const rw::models::Device > device);
 
 
 		/**

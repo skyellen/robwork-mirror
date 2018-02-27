@@ -91,7 +91,7 @@ namespace rw { namespace invkin {
          * @param device [in] the device to do inverse kinematics for.
          * @param state [in] the initial state.
          */
-        JacobianIKSolver(rw::common::Ptr<rw::models::Device> device, const kinematics::State& state);
+        JacobianIKSolver(rw::common::Ptr< const rw::models::Device > device, const kinematics::State& state);
 
         /**
          * @brief Constructs JacobianIKSolver for device, where the frame \b foi will
@@ -100,8 +100,8 @@ namespace rw { namespace invkin {
          * @param foi [in] end effector frame.
          * @param state [in] the initial state.
          */
-        JacobianIKSolver(rw::common::Ptr<rw::models::Device> device,
-                     rw::kinematics::Frame *foi,
+        JacobianIKSolver(rw::common::Ptr< const rw::models::Device > device,
+                     const rw::kinematics::Frame *foi,
                      const kinematics::State& state);
 
         /**
@@ -161,7 +161,7 @@ namespace rw { namespace invkin {
         }
 
     private:
-        rw::common::Ptr<rw::models::Device> _device;
+        rw::common::Ptr< const rw::models::Device > _device;
         double _interpolationStep;
         kinematics::FKRange _fkrange;
         rw::common::Ptr<models::JacobianCalculator> _devJac;

@@ -50,7 +50,8 @@ namespace rw { namespace proximity {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<DistanceCalculator> Ptr;
-
+        //! @brief smart pointer type to this const class
+		typedef rw::common::Ptr< const DistanceCalculator > CPtr;
         /**
          * @brief Distance calculations for a given tree, collision setup and
          * primitive distance calculator. Uses proximity strategy given by the workcell.

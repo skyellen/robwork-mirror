@@ -61,6 +61,8 @@ namespace rw { namespace pathplanning {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<PlannerConstraint> Ptr;
+		//! @brief smart pointer type to this const class
+		typedef rw::common::Ptr< const PlannerConstraint > CPtr;
 
 		/**
 		 * @brief Default constructed without constraints initialized
@@ -118,7 +120,7 @@ namespace rw { namespace pathplanning {
            resolution.
         */
 		static PlannerConstraint make(rw::common::Ptr<rw::proximity::CollisionDetector> detector,
-				rw::common::Ptr<rw::models::Device> device,
+				rw::common::Ptr< const rw::models::Device > device,
 				const rw::kinematics::State& state);
 
 		/**
@@ -131,7 +133,7 @@ namespace rw { namespace pathplanning {
         */
 		static PlannerConstraint make(rw::common::Ptr<rw::proximity::CollisionStrategy> strategy,
 			rw::common::Ptr<rw::models::WorkCell> workcell,
-			rw::common::Ptr<rw::models::Device> device,
+			rw::common::Ptr< const rw::models::Device > device,
 			const rw::kinematics::State& state);
 
         /**
@@ -144,7 +146,7 @@ namespace rw { namespace pathplanning {
 		static PlannerConstraint make(rw::common::Ptr<rw::proximity::CollisionStrategy> strategy,
 			const rw::proximity::CollisionSetup& setup,
 			rw::common::Ptr<rw::models::WorkCell> workcell,
-			rw::common::Ptr<rw::models::Device> device,
+			rw::common::Ptr< const rw::models::Device > device,
 			const rw::kinematics::State& state);
 
     private:

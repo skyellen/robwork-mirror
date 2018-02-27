@@ -35,7 +35,7 @@ using namespace rw::common;
 using namespace rw::invkin;
 using namespace rw::trajectory;
 
-JacobianIKSolver::JacobianIKSolver(Device::Ptr device, Frame *foi, const State& state):
+JacobianIKSolver::JacobianIKSolver(Device::CPtr device, const Frame *foi, const State& state):
     _device(device),
     _interpolationStep(0.21),
     _fkrange( device->getBase(), foi, state),
@@ -48,7 +48,7 @@ JacobianIKSolver::JacobianIKSolver(Device::Ptr device, Frame *foi, const State& 
     setMaxIterations(15);
 }
 
-JacobianIKSolver::JacobianIKSolver(Device::Ptr device, const State& state):
+JacobianIKSolver::JacobianIKSolver(Device::CPtr device, const State& state):
     _device(device),
     _interpolationStep(0.21),
     _fkrange( device->getBase(), device->getEnd(), state),

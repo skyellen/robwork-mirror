@@ -44,6 +44,8 @@ namespace rw { namespace models {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<SerialDevice> Ptr;
+		//! @brief smart pointer type to this const class
+		typedef rw::common::Ptr< const SerialDevice > CPtr;
 
         /**
          * @brief Constructor

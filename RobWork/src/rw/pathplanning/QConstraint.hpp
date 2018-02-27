@@ -45,6 +45,8 @@ namespace rw { namespace pathplanning {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<QConstraint> Ptr;
+		//! @brief smart pointer type to this const class
+		typedef rw::common::Ptr< const QConstraint > CPtr;
 
 
 		/**
@@ -91,7 +93,7 @@ namespace rw { namespace pathplanning {
         */
 		static QConstraint::Ptr make(
 			rw::common::Ptr<StateConstraint> detector,
-			rw::models::Device::Ptr device,
+			rw::models::Device::CPtr device,
             const rw::kinematics::State& state);
 
         /**
@@ -99,7 +101,7 @@ namespace rw { namespace pathplanning {
         */
 		static QConstraint::Ptr make(
 			rw::common::Ptr<rw::proximity::CollisionDetector> detector,
-			rw::models::Device::Ptr device,
+			rw::models::Device::CPtr device,
             const rw::kinematics::State& state);
 
         /**

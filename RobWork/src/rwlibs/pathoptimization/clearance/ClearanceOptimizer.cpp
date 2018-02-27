@@ -102,7 +102,7 @@ QPath ClearanceOptimizer::optimize(const QPath& inputPath, double stepsize, size
 		Q dir = randomDirection();
 		for (AugmentedPath::iterator it = ++(newPath.begin()); it != --(newPath.end()); ++it) {
 			Q qnew = (*it).first + dir;
-			if (isValid(qnew) && (*it).second < 0.1) {
+			if (isValid(qnew) && (*it).second < _minClearance) {
 			    double newClearance = clearance(qnew);
 			    if ((*it).second < newClearance) {
 			        (*it).first = qnew;
@@ -254,4 +254,15 @@ Q ClearanceOptimizer::randomDirection() {
 
 PropertyMap& ClearanceOptimizer::getPropertyMap() {
     return _propertymap;
+}
+
+void ClearanceOptimizer::setMinimumClearance(const double dist) {
+	if(dist < 0){
+		RW_THROW("Minimum clearance must be greater or equal to zero.");
+	}
+	_minClearance = dist;
+}
+    
+double ClearanceOptimizer::getMinimumClearance() const {
+	return _minClearance;
 }

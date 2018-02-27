@@ -46,7 +46,7 @@ PlannerConstraint PlannerConstraint::make(QConstraint::Ptr constraint, QEdgeCons
 }
 
 PlannerConstraint PlannerConstraint::make(CollisionDetector::Ptr detector,
-		rw::common::Ptr<Device> device,
+		rw::common::Ptr< const Device > device,
 		const State& state)
 {
 	QConstraint::Ptr constraint =
@@ -61,7 +61,7 @@ PlannerConstraint PlannerConstraint::make(CollisionDetector::Ptr detector,
 PlannerConstraint PlannerConstraint::make(
 	rw::common::Ptr<CollisionStrategy> strategy,
 	rw::common::Ptr<WorkCell> workcell,
-	rw::common::Ptr<Device> device,
+	rw::common::Ptr< const Device > device,
     const State& state)
 {
 	CollisionDetector::Ptr cdect = ownedPtr(new CollisionDetector(workcell, strategy));
@@ -72,7 +72,7 @@ PlannerConstraint PlannerConstraint::make(
 	rw::common::Ptr<CollisionStrategy> strategy,
     const CollisionSetup& setup,
 	rw::common::Ptr<WorkCell> workcell,
-	rw::common::Ptr<Device> device,
+	rw::common::Ptr< const Device > device,
     const State& state)
 {
 	BasicFilterStrategy::Ptr bpfilter = ownedPtr(new BasicFilterStrategy(workcell, setup));

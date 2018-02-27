@@ -198,7 +198,7 @@ namespace rw { namespace common {
         /**
            @brief Support for implicit conversion to bool.
         */
-        operator void* () const { return get(); }
+        operator const void* () const { return get(); }
 
         /**
          * @brief equallity operator, this only tests if the pointers to the referenced objects are the same

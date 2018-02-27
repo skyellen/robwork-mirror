@@ -38,7 +38,7 @@ namespace
     {
     public:
         StateConstraintWrapper(StateConstraint::Ptr detector,
-			Device::Ptr device,
+			Device::CPtr device,
             const State& state)
             :
             _detector(detector),
@@ -67,7 +67,7 @@ namespace
 
     private:
 		StateConstraint::Ptr _detector;
-		Device::Ptr _device;
+		Device::CPtr _device;
         State _state;
     };
 
@@ -203,7 +203,7 @@ QConstraint::Ptr QConstraint::makeFixed(bool value)
 
 QConstraint::Ptr QConstraint::make(
 	StateConstraint::Ptr detector,
-	Device::Ptr device,
+	Device::CPtr device,
     const State& state)
 {
     return ownedPtr(
@@ -214,7 +214,7 @@ QConstraint::Ptr QConstraint::make(
 }
 
 QConstraint::Ptr QConstraint::make(rw::common::Ptr<CollisionDetector> detector,
-	Device::Ptr device,
+	Device::CPtr device,
     const State& state)
 {
     return make(

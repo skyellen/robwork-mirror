@@ -125,6 +125,22 @@ public:
      */
 	rw::common::PropertyMap& getPropertyMap();
 
+	/**
+	 * @brief Sets the minimum clearance optimized for.
+     * Points on the path with clearance greater than \b _minClearance are not optimized further.
+     * Class default value is 0.1 meters.
+     * Value must be equal to or greater than zero.
+	 *
+	 * @param dist [in] Minimum clearance.
+	 */
+    void setMinimumClearance(const double dist);
+    
+    /**
+     * @brief Returns the minimum clearance optimized for.
+     * @return The minimum clearance.
+     */
+    double getMinimumClearance() const;
+    
 private:
 
     //AugmentedQ is a configuration and its clearance
@@ -169,6 +185,8 @@ private:
 
 	rw::math::Q _qupper;
 	rw::math::Q _qlower;
+    
+    double _minClearance = 0.1;
 
 };
 

@@ -40,7 +40,7 @@ namespace
     {
     public:
         ExpandedBinary(rw::common::Ptr<QConstraint> constraint,
-				QMetric::Ptr metric,
+				QMetric::CPtr metric,
 				double resolution)
             :
             _metric(metric),
@@ -102,7 +102,7 @@ namespace
         }
     private:
         // These are fixed.
-		QMetric::Ptr _metric;
+		QMetric::CPtr _metric;
         double _resolution;
         rw::common::Ptr<QConstraint> _constraint;
     };
@@ -127,14 +127,14 @@ namespace
 }
 
 QEdgeConstraint::Ptr QEdgeConstraint::make(rw::common::Ptr<QConstraint> constraint,
-	QMetric::Ptr metric,
+	QMetric::CPtr metric,
     double resolution)
 {
     return ownedPtr(new ExpandedBinary(constraint, metric, resolution));
 }
 
 QEdgeConstraint::Ptr QEdgeConstraint::makeDefault(rw::common::Ptr<QConstraint> constraint,
-												  Device::Ptr device)
+												  Device::CPtr device)
 {
     // We can be much more clever here, but this is what we are currently using:
 	QMetric::Ptr metric = PlannerUtil::normalizingInfinityMetric(device->getBounds());

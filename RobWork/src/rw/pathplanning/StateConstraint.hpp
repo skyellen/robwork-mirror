@@ -49,7 +49,8 @@ namespace rw { namespace pathplanning {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<StateConstraint> Ptr;
-
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr< const StateConstraint > CPtr;
 
 		/**
 		 * @brief Set the log to be used for writing debug info

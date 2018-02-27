@@ -78,6 +78,8 @@ class CollisionDetector
 public:
 	//! @brief smart pointer type to this class
 	typedef rw::common::Ptr<CollisionDetector> Ptr;
+	//! @brief smart pointer type to this const class
+	typedef rw::common::Ptr< const CollisionDetector > CPtr;
 
     //! @brief types of collision query
     typedef enum

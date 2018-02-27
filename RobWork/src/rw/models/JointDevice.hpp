@@ -53,6 +53,8 @@ namespace rw { namespace models {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<JointDevice> Ptr;
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr< const JointDevice > CPtr;
 
         /**
          @brief Construct the device for a sequence of joints.
