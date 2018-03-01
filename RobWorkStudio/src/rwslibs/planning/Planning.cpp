@@ -15,37 +15,31 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #include "Planning.hpp"
 
 #include <RobWorkStudio.hpp>
 
 #include <rw/common/Exception.hpp>
-#include <rw/common/StringUtil.hpp>
 #include <rw/common/Message.hpp>
+#include <rw/common/StringUtil.hpp>
+#include <rw/loaders/path/PathLoader.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/math/MetricFactory.hpp>
-#include <rw/proximity/DistanceCalculator.hpp>
 #include <rw/models/CompositeDevice.hpp>
 #include <rw/models/Models.hpp>
-#include <rw/loaders/path/PathLoader.hpp>
+#include <rw/pathplanning/PathAnalyzer.hpp>
+#include <rw/proximity/DistanceCalculator.hpp>
 #include <rw/trajectory/TimedUtil.hpp>
 
-//#include <rw/proximity/ProximityStrategyFactory.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
-#include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
-#include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
-#include <rwlibs/pathplanners/prm/PRMPlanner.hpp>
 #include <rwlibs/pathoptimization/clearance/ClearanceOptimizer.hpp>
 #include <rwlibs/pathoptimization/clearance/MinimumClearanceCalculator.hpp>
 #include <rwlibs/pathoptimization/pathlength/PathLengthOptimizer.hpp>
+#include <rwlibs/pathplanners/prm/PRMPlanner.hpp>
+#include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
+#include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 
 //#include <rws/components/propertyview/PropertyInspector.hpp>
-
-
-#include <rw/pathplanning/PathAnalyzer.hpp>
-
-#include <vector>
 
 #include <QGridLayout>
 #include <QPushButton>
@@ -55,23 +49,22 @@
 #include <QCheckBox>
 #include <QFileDialog>
 
-using namespace rw::kinematics;
+#include <vector>
+
+using namespace rw::common;
+using rw::kinematics::State;
+using rw::loaders::PathLoader;
 using namespace rw::models;
 using namespace rw::math;
-using namespace rw::proximity;
 using namespace rw::pathplanning;
-using namespace rw::loaders;
-using namespace rw::common;
-using namespace rw::trajectory;
-
 using namespace rw::proximity;
-using namespace rwlibs::proximitystrategies;
-using namespace rwlibs::pathplanners;
+using rw::trajectory::TimedUtil;
+
 using namespace rwlibs::pathoptimization;
+using namespace rwlibs::pathplanners;
+using rwlibs::proximitystrategies::ProximityStrategyFactory;
 
 using namespace rws;
-
-using namespace boost::numeric::ublas;
 
 namespace {
     const QString CLEARANCE = "Clearance";
@@ -83,9 +76,9 @@ namespace {
     const QString SBL = "SBL";
     const QString PRM = "PRM";
 
-    boost::shared_ptr<QMetric> getMetric()
+    QMetric::CPtr getMetric()
     {
-        return boost::shared_ptr<QMetric>(new EuclideanMetric<Q>());
+        return ownedPtr(new EuclideanMetric<Q>());
     }
 
 	QToQPlanner::Ptr getPlanner(
