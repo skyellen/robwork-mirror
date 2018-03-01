@@ -22,11 +22,14 @@
 #include <rw/common/Timer.hpp>
 #include <rw/math/Random.hpp>
 #include <rw/models/Device.hpp>
+#include <rw/pathplanning/StateConstraint.hpp>
+#include <rw/pathplanning/QConstraint.hpp>
 
 using namespace rw::math;
 using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::models;
+using namespace rw::pathplanning;
 using namespace rw::trajectory;
 using namespace rwlibs::pathoptimization;
 
@@ -34,12 +37,10 @@ const std::string ClearanceOptimizer::PROP_STEPSIZE = "StepSize";
 const std::string ClearanceOptimizer::PROP_LOOPCOUNT = "LoopCount";
 const std::string ClearanceOptimizer::PROP_MAXTIME = "MaxTime";
 
-ClearanceOptimizer::ClearanceOptimizer(//WorkCell::Ptr workcell,
-									   Device::Ptr device,
+ClearanceOptimizer::ClearanceOptimizer(Device::CPtr device,
                                        const State& state,
-									   QMetric::Ptr metric,
-                                       ClearanceCalculatorPtr clearanceCalculator) :
-	//_workcell(workcell),
+									   QMetric::CPtr metric,
+                                       ClearanceCalculator::CPtr clearanceCalculator) :
 	_device(device),
 	_state(state),
 	_metric(metric),
@@ -47,8 +48,7 @@ ClearanceOptimizer::ClearanceOptimizer(//WorkCell::Ptr workcell,
 	_stepsize(0.1)
 {
 	_dof = device->getDOF();
-	_qlower = _device->getBounds().first;
-	_qupper = _device->getBounds().second;
+	_qConstraint = rw::pathplanning::QConstraint::makeBounds(device->getBounds());
 
     _propertymap.add<double>(PROP_STEPSIZE, "Step Size", 0.1);
     _propertymap.add<int>(PROP_LOOPCOUNT, "Maximal Number of Loops", 20);
@@ -58,14 +58,6 @@ ClearanceOptimizer::ClearanceOptimizer(//WorkCell::Ptr workcell,
 
 ClearanceOptimizer::~ClearanceOptimizer()
 {
-}
-
-bool ClearanceOptimizer::isValid(const Q& q) {
-	for (size_t i = 0; i<q.size(); i++) {
-		if (q(i) < _qlower(i) || q(i) > _qupper(i))
-			return false;
-	}
-	return true;
 }
 
 double ClearanceOptimizer::clearance(const Q& q) {
@@ -102,8 +94,15 @@ QPath ClearanceOptimizer::optimize(const QPath& inputPath, double stepsize, size
 		Q dir = randomDirection();
 		for (AugmentedPath::iterator it = ++(newPath.begin()); it != --(newPath.end()); ++it) {
 			Q qnew = (*it).first + dir;
-			if (isValid(qnew) && (*it).second < _minClearance) {
-			    double newClearance = clearance(qnew);
+			if (!_qConstraint->inCollision(qnew) && (*it).second < _minClearance) {
+				_device->setQ(qnew, _state);
+				if (_stateConstraint != nullptr && _stateConstraint->inCollision(_state)) {
+					continue;
+				}
+				if (_qConstraintUser != nullptr && _qConstraintUser->inCollision(qnew)) {
+					continue;
+				}
+			    const double newClearance = _clearanceCalculator->clearance(_state);
 			    if ((*it).second < newClearance) {
 			        (*it).first = qnew;
 			        (*it).second = newClearance;
@@ -265,4 +264,12 @@ void ClearanceOptimizer::setMinimumClearance(const double dist) {
     
 double ClearanceOptimizer::getMinimumClearance() const {
 	return _minClearance;
+}
+
+void ClearanceOptimizer::setStateConstraint(const StateConstraint::CPtr stateConstraint) {
+	_stateConstraint = stateConstraint;
+}
+
+void ClearanceOptimizer::setQConstraint(const QConstraint::CPtr qConstraint) {
+	_qConstraintUser = qConstraint;
 }

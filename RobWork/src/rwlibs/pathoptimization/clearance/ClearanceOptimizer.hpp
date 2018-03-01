@@ -28,6 +28,7 @@
 
 namespace rw { namespace kinematics { class State; } }
 namespace rw { namespace models { class Device; } }
+namespace rw { namespace pathplanning { class StateConstraint; class QConstraint; } }
 
 namespace rwlibs {
 namespace pathoptimization {
@@ -51,9 +52,6 @@ namespace pathoptimization {
  */
 class ClearanceOptimizer {
 public:
-
-
-
     /**
      * @brief Constructs clearance optimizer
      *
@@ -64,11 +62,10 @@ public:
      * @param metric [in] Metric to use for computing distance betweem configurations
      * @param clearanceCalculator [in] Calculator for calculating the clearance
      */
-	ClearanceOptimizer(//rw::models::WorkCell::Ptr workcell,
-		rw::common::Ptr<rw::models::Device> device,
+	ClearanceOptimizer(rw::common::Ptr< const rw::models::Device > device,
 		const rw::kinematics::State& state,
-		rw::math::QMetric::Ptr metric,
-		rw::common::Ptr<ClearanceCalculator> clearanceCalculator);
+		rw::math::QMetric::CPtr metric,
+		rw::common::Ptr< const ClearanceCalculator > clearanceCalculator);
 
     /**
      * @brief Destructor
@@ -140,7 +137,25 @@ public:
      * @return The minimum clearance.
      */
     double getMinimumClearance() const;
-    
+
+	/**
+	* @brief Set a state constraint in the clearance optimizer.
+	*
+	* The optimizer will not generate a path with configurations that is in collision according to the state constraint.
+	*
+	* @param stateConstraint [in] the constraint.
+	*/
+	void setStateConstraint(rw::common::Ptr< const rw::pathplanning::StateConstraint > stateConstraint);
+
+	/**
+	* @brief Set a configuration constraint in the clearance optimizer.
+	*
+	* The optimizer will not generate a path with configurations that is in collision according to the constraint.
+	*
+	* @param qConstraint [in] the constraint.
+	*/
+	void setQConstraint(rw::common::Ptr< const rw::pathplanning::QConstraint > qConstraint);
+
 private:
 
     //AugmentedQ is a configuration and its clearance
@@ -148,9 +163,6 @@ private:
 
     //Path of AugmentedQ's
     typedef std::list<AugmentedQ > AugmentedPath;
-
-    //Returns whether a q is valid, that is within bounds
-	bool isValid(const rw::math::Q& q);
 
 	//Calculated the clearance for a configuration q
 	double clearance(const rw::math::Q& q);
@@ -176,18 +188,21 @@ private:
 	rw::common::PropertyMap _propertymap;
 
 	//rw::models::WorkCell::Ptr _workcell;
-	rw::common::Ptr<rw::models::Device> _device;
+	rw::common::Ptr< const rw::models::Device > _device;
 	rw::kinematics::State _state;
-	rw::math::QMetric::Ptr _metric;
-	rw::common::Ptr<ClearanceCalculator> _clearanceCalculator;
+	rw::math::QMetric::CPtr _metric;
+	rw::common::Ptr< const ClearanceCalculator> _clearanceCalculator;
 	double _stepsize;
 	size_t _dof;
 
-	rw::math::Q _qupper;
-	rw::math::Q _qlower;
-    
+	//! @brief Value determining the clearance needed for a path being OK.
     double _minClearance = 0.1;
-
+	//! @brief Used to determine if a state is allowed or not.
+	rw::common::Ptr< const rw::pathplanning::StateConstraint > _stateConstraint = nullptr;
+	//! @brief Used to determine if a configuration is allowed or not.
+	rw::common::Ptr< const rw::pathplanning::QConstraint > _qConstraintUser = nullptr;
+	//! @brief Used to determine if a configuration is within device limits.
+	rw::common::Ptr< const rw::pathplanning::QConstraint > _qConstraint = nullptr;
 };
 
 /** @} */
