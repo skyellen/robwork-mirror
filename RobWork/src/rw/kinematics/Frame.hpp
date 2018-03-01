@@ -269,7 +269,7 @@ namespace rw { namespace kinematics {
          * @param state [in] the state.
          * @return transform of frame \b to relative to this frame.
          */
-        rw::math::Transform3D<> fTf(Frame* to, const rw::kinematics::State& state) const;
+        rw::math::Transform3D<> fTf(const Frame* to, const rw::kinematics::State& state) const;
 
     protected:
         /**

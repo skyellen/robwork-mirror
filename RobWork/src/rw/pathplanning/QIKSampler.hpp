@@ -47,6 +47,8 @@ namespace rw { namespace pathplanning {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<QIKSampler> Ptr;
+		//! @brief smart pointer type to this const class
+		typedef rw::common::Ptr< const QIKSampler > CPtr;
 
         /**
            @brief Sample a configuration that solves an IK problem for \b

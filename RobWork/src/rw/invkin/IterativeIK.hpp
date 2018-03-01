@@ -61,6 +61,8 @@ namespace rw { namespace invkin {
 
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<IterativeIK> Ptr;
+		//! @brief smart pointer type to this const class
+		typedef rw::common::Ptr< const IterativeIK > CPtr;
 
 		/**
 		 * @brief Destructor

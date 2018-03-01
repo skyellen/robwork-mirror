@@ -63,7 +63,7 @@ const std::string PathLengthOptimizer::PROP_SUBDIVLENGTH = "SubDivideLength";
 
 PathLengthOptimizer::PathLengthOptimizer(
     const PlannerConstraint& constraint,
-	QMetric::Ptr metric)
+	QMetric::CPtr metric)
     :
     _constraint(constraint),
     _metric(metric)

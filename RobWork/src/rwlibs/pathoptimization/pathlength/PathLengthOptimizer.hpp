@@ -66,7 +66,7 @@ namespace rwlibs { namespace pathoptimization {
            @param metric [in] Distance metric for edge lengths
         */
         PathLengthOptimizer(const rw::pathplanning::PlannerConstraint& constraint,
-			rw::math::QMetric::Ptr metric);
+			rw::math::QMetric::CPtr metric);
 
         /**
            @brief Destructor
@@ -163,7 +163,7 @@ namespace rwlibs { namespace pathoptimization {
 
     private:
         rw::pathplanning::PlannerConstraint _constraint;
-		rw::math::QMetric::Ptr _metric;
+		rw::math::QMetric::CPtr _metric;
         rw::common::PropertyMap _propertyMap;
 
         void pathPruning(QList& path);

@@ -44,6 +44,8 @@ namespace rw { namespace pathplanning {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<QToQPlanner> Ptr;
+		//! @brief smart pointer type to this const class
+		typedef rw::common::Ptr<const QToQPlanner> CPtr;
 
         /**
            @brief Construct a path planner from a region planner.

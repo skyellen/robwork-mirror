@@ -108,7 +108,7 @@ rw::math::Transform3D<> Frame::wTf(const rw::kinematics::State& state) const
     return Kinematics::worldTframe( this, state );
 }
 
-rw::math::Transform3D<> Frame::fTf(Frame* to, const rw::kinematics::State& state) const
+rw::math::Transform3D<> Frame::fTf(const Frame* to, const rw::kinematics::State& state) const
 {
     return Kinematics::frameTframe( this, to, state );
 }

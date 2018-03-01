@@ -171,7 +171,7 @@ namespace
     public:
         ConstrainedSampler(
 			QSampler::Ptr sampler,
-			QConstraint::Ptr constraint,
+			QConstraint::CPtr constraint,
             int maxAttempts)
             :
             _sampler(sampler),
@@ -199,7 +199,7 @@ namespace
 
     private:
 		QSampler::Ptr _sampler;
-		QConstraint::Ptr _constraint;
+		QConstraint::CPtr _constraint;
         int _maxAttempts;
     };
 
@@ -247,7 +247,7 @@ QSampler::Ptr QSampler::makeUniform(
     return makeUniform(device.getBounds());
 }
 
-QSampler::Ptr QSampler::makeUniform(Device::Ptr device)
+QSampler::Ptr QSampler::makeUniform(Device::CPtr device)
 {
     return makeUniform(device->getBounds());
 }
@@ -265,7 +265,7 @@ QSampler::Ptr QSampler::make(QIKSampler::Ptr sampler,
 }
 
 QSampler::Ptr QSampler::makeConstrained(QSampler::Ptr sampler,
-									    QConstraint::Ptr constraint,
+									    QConstraint::CPtr constraint,
     int maxAttempts)
 {
     return ownedPtr(new ConstrainedSampler(sampler, constraint, maxAttempts));

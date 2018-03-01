@@ -46,7 +46,7 @@ namespace rw { namespace pathplanning {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<QSampler> Ptr;
-		//! @brief smart pointer type to this class
+		//! @brief smart pointer type to this const class
 		typedef rw::common::Ptr< const QSampler > CPtr;
 
         /**
@@ -123,7 +123,7 @@ namespace rw { namespace pathplanning {
         /**
            @brief Uniform random sampling for a device.
         */
-		static QSampler::Ptr makeUniform(rw::models::Device::Ptr device);
+		static QSampler::Ptr makeUniform(rw::models::Device::CPtr device);
 
         /**
            @brief Map a sampler of standard configurations into a sampler of
@@ -155,7 +155,7 @@ namespace rw { namespace pathplanning {
         */
 		static QSampler::Ptr makeConstrained(
 			QSampler::Ptr sampler,
-			rw::common::Ptr<QConstraint> constraint,
+			rw::common::Ptr<const QConstraint> constraint,
             int maxAttempts = -1);
 
         /**

@@ -83,6 +83,11 @@ namespace rw { namespace invkin {
     class JacobianIKSolver : public IterativeIK
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<JacobianIKSolver> Ptr;
+		//! @brief smart pointer type to this const class
+		typedef rw::common::Ptr< const JacobianIKSolver > CPtr;
+
         //! @brief the type of jacobian solver
         typedef enum{Transpose, SVD, DLS, SDLS} JacobianSolverType;
 
