@@ -443,11 +443,6 @@ namespace rw { namespace common {
 
     };
 
-#ifdef RW_USE_DEPRECATED
-    //! deprecated smart pointer
-    typedef rw::common::Ptr<Log> LogPtr;
-#endif 
-
     /*@}*/
 }} // end namespaces
 #endif /*LOG_HPP_*/

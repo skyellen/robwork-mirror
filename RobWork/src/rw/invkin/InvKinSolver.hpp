@@ -68,12 +68,6 @@ public:
 
 };
 
-#ifdef RW_USE_DEPRECATED
-/**
- * @brief Definition of rw::common::Ptr to InvKinSolver
- */
-typedef rw::common::Ptr<InvKinSolver> InvKinSolverPtr;
-#endif
 /** @} */
 
 } //end namespace invkin

@@ -35,13 +35,6 @@ namespace rwlibs { namespace pathplanners {
     /** @addtogroup pathplanning */
     /** @{*/
 
-#ifdef RW_USE_DEPRECATED
-    class ARWExpand;
-
-    //! A pointer to a ARWExpand.
-    typedef rw::common::Ptr<ARWExpand> ARWExpandPtr;
-#endif
-
     /**
        @brief ARWExpand expands a random walk in the configuration space by one
        step.

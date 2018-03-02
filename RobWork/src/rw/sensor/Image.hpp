@@ -604,9 +604,6 @@ protected:
 
 };
 
-#ifdef RW_USE_DEPRECATED
-typedef rw::common::Ptr<Image> ImagePtr;
-#endif
 /* @} */
 }
 } // end namespaces

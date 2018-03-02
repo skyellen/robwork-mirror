@@ -176,24 +176,6 @@ typedef Trajectory<math::Rotation3D<> > Rotation3DTrajectory;
 //! A trajectory on a rw::math::Transform3D
 typedef Trajectory<math::Transform3D<> > Transform3DTrajectory;
 
-#ifdef RW_USE_DEPRECATED
-
-//! A pointer to a StateTrajectory.
-typedef rw::common::Ptr<StateTrajectory> StateTrajectoryPtr;
-
-//! A pointer to a QTrajectory.
-typedef rw::common::Ptr<QTrajectory> QTrajectoryPtr;
-
-//! A pointer to a Vector3DTrajectory.
-typedef rw::common::Ptr<Vector3DTrajectory> Vector3DTrajectoryPtr;
-
-//! A pointer to a Rotation3DTrajectory.
-typedef rw::common::Ptr<Rotation3DTrajectory> Rotation3DTrajectoryPtr;
-
-//! A pointer to a Transform3DTrajectory.
-typedef rw::common::Ptr<Transform3DTrajectory> Transform3DTrajectoryPtr;
-#endif
-
 /** @} */
 
 } //end namespace trajectory

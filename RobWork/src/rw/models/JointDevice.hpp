@@ -152,10 +152,6 @@ namespace rw { namespace models {
         JacobianCalculatorPtr _baseJCend;
     };
 
-#ifdef RW_USE_DEPRECATED
-    //! deprecated smart pointer type
-    typedef rw::common::Ptr<JointDevice> JointDevicePtr;
-#endif
     /*@}*/
 }} // end namespaces
 

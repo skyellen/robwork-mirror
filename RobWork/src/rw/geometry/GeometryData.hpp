@@ -82,10 +82,6 @@ namespace rw { namespace geometry {
 		 */
 		static std::string toString(GeometryType type);
 	};
-#ifdef RW_USE_DEPRECATED
-	//! @brief Ptr to GeometryData
-	typedef rw::common::Ptr<GeometryData> GeometryDataPtr;
-#endif
 	//! @}
 }
 }

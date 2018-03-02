@@ -135,11 +135,6 @@ namespace rw { namespace common {
         LogWriter& operator=(const LogWriter&);
 		boost::mutex _mutex;
     };
-
-#ifdef RW_USE_DEPRECATED
-    //! deprecated smart pointer type
-    typedef rw::common::Ptr<rw::common::LogWriter> LogWriterPtr;
-#endif
 	/* @} */
 
 

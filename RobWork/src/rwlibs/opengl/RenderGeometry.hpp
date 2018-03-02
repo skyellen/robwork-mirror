@@ -96,12 +96,6 @@ namespace opengl {
         float _r, _g, _b;
     };
 
-#ifdef RW_USE_DEPRECATED
-	/**
-	 * @brief Definition of smartpointer to RenderGeometry
-	 */
-	typedef rw::common::Ptr<RenderGeometry> RenderGeometryPtr;
-#endif
     //! @}
 
 } //end namespace opengl

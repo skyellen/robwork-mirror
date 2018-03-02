@@ -149,33 +149,6 @@ std::vector<Frame*> Kinematics::parentToChildChain(Frame* parent, Frame* child,
     return result;
 }
 
-#ifdef RW_USE_DEPRECATED
-Kinematics::FrameMap Kinematics::buildFrameMap(Frame& root, const State& state)
-{
-    FrameMap result;
-    BOOST_FOREACH(Frame* frame, Kinematics::findAllFrames(&root, state))
-    {
-        result.insert(std::make_pair(frame->getName(), frame));
-    }
-    return result;
-}
-
-Frame& Kinematics::worldFrame(Frame& frame, const State& state)
-{
-    Frame* parent = &frame;
-    while (parent->getParent(state))
-        parent = parent->getParent(state);
-    return *parent;
-}
-
-const Frame& Kinematics::worldFrame(const Frame& frame, const State& state)
-{
-    // Forward to non-const version.
-    return worldFrame(const_cast<Frame&> (frame), state);
-}
-
-#endif
-
 std::map<std::string, Frame*> Kinematics::buildFrameMap(Frame* root, const State& state)
 {
     std::map<std::string, Frame*> result;
@@ -238,50 +211,6 @@ namespace {
         attachMovableFrame(state, getMovableFrame(frame), parent, transform);
     }
 }
-
-
-#ifdef RW_USE_DEPRECATED
-
-bool Kinematics::isDAF(const Frame& frame)
-{
-    // Unfortunately this reports the world frame to be a DAF!
-    return (frame.getParent() == NULL);
-}
-
-bool Kinematics::isFixedFrame(const Frame& frame)
-{
-    return dynamic_cast<const FixedFrame*>(&frame) != 0;
-}
-
-void Kinematics::gripFrame(State& state, Frame& item, Frame& gripper)
-{
-    const Transform3D<>& relative = frameToFrame(gripper, item, state);
-    attachFrame(state, item, gripper, relative);
-}
-
-State Kinematics::grippedFrame(const State& state, Frame& item, Frame& gripper)
-{
-    State result = state;
-    gripFrame(result, item, gripper);
-    return result;
-}
-
-void Kinematics::gripMovableFrame(State& state, MovableFrame& item,
-                                  Frame& gripper)
-{
-    const Transform3D<>& relative = frameToFrame(gripper, item, state);
-    attachMovableFrame(state, item, gripper, relative);
-}
-
-State Kinematics::grippedMovableFrame(const State& state, MovableFrame& item,
-                                      Frame& gripper)
-{
-    State result = state;
-    gripMovableFrame(result, item, gripper);
-    return result;
-}
-
-#endif
 
 bool Kinematics::isDAF(const Frame* frame)
 {

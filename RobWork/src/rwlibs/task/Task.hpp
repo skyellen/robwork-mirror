@@ -493,13 +493,6 @@ protected:
 
 	};
 
-#ifdef RW_USE_DEPRECATED
-	/**
-	 * @brief Definition of rw::common::Ptr to a GenericTask working on the base classes
-	 * of Task, Target and Motion.
-	 */
-	typedef rw::common::Ptr<GenericTask<TaskBase, TargetBase, MotionBase> > GenericTaskPtr;
-#endif
 	/**
 	 * @brief Template based implementation of Task
 	 */
@@ -687,17 +680,6 @@ protected:
 	 */
 	typedef Task<rw::math::Transform3D<> > CartesianTask;
 
-#ifdef RW_USE_DEPRECATED
-	/**
-	 * Definition of rw::common::Ptr to QTask
-	 */
-	typedef rw::common::Ptr<QTask> QTaskPtr;
-
-	/**
-	 * Definition of rw::common::Ptr to CartesianTask
-	 */
-	typedef rw::common::Ptr<CartesianTask> CartesianTaskPtr;
-#endif
 	/** @} */
 
 } //end namespace task

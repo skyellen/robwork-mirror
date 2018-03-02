@@ -53,9 +53,6 @@ namespace proximity {
 
 	};
 
-#ifdef RW_USE_DEPRECATED
-	typedef rw::common::Ptr<ProximityFilter> ProximityFilterPtr;
-#endif
 }
 }
 

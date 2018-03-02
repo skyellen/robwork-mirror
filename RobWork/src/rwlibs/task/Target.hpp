@@ -84,16 +84,6 @@ protected:
     Type _targetType;
 };
 
-
-
-#ifdef RW_USE_DEPRECATED
-
-/**
- * Definition of pointer to target
- */
-typedef rw::common::Ptr<TargetBase> TargetPtr;
-
-#endif 
 /**
  * @brief Template class implementing Target
  */
@@ -146,18 +136,6 @@ typedef Target<rw::math::Q> QTarget;
  * Definition of Target with type rw::math::Transform3D
  */
 typedef Target<rw::math::Transform3D<> > CartesianTarget;
-
-#ifdef RW_USE_DEPRECATED
-/**
- * Definition of rw::common::Ptr to QTarget
- */
-typedef rw::common::Ptr<QTarget> QTargetPtr;
-
-/**
- * Definition of rw::common::Ptr to CartesianTarget
- */
-typedef rw::common::Ptr<CartesianTarget> CartesianTargetPtr;
-#endif
 
 template <class T>
 T& TargetBase::getValue()

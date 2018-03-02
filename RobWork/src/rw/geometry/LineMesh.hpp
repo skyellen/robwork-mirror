@@ -162,12 +162,6 @@ namespace geometry {
 
 
 	};
-
-#ifdef RW_USE_DEPRECATED
-	//! @brief Ptr to TriMesh
-	typedef rw::common::Ptr<TriMesh> TriMeshPtr;
-#endif
-
 	//! @}
 } // geometry
 } // rw

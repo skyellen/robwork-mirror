@@ -93,13 +93,6 @@ namespace rw { namespace models {
         std::vector<kinematics::Frame*> _kinematicChain;
     };
 
-#ifdef RW_USE_DEPRECATED
-    /**
-     * @brief Definition of rw::common::Ptr to a SerialDevice
-     */
-    typedef rw::common::Ptr<SerialDevice> SerialDevicePtr;
-#endif
-
     /*@}*/
 }} // end namespaces
 

@@ -232,11 +232,6 @@ namespace rw { namespace proximity {
         void initializeDistancePairs();
     };
 
-#ifdef RW_USE_DEPRECATED
-    //! A pointer to a DistanceCalculator.
-    typedef rw::common::Ptr<DistanceCalculator> DistanceCalculatorPtr;
-#endif
-
 } } // End of namespace
 
 #endif /*RW_PROXIMITY_DISTANCECALCULATOR_HPP*/

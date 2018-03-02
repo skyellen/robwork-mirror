@@ -34,12 +34,7 @@ namespace rw { namespace pathplanning {
 
     /** @addtogroup pathplanning */
     /*@{*/
-#ifdef RW_USE_DEPRECATED
-    class QEdgeConstraint;
 
-    //! A pointer to a QEdgeConstraint.
-    typedef rw::common::Ptr<QEdgeConstraint> QEdgeConstraintPtr;
-#endif
     /**
        @brief Edge constraint interface.
 

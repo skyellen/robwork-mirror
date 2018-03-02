@@ -242,10 +242,6 @@ namespace rw { namespace trajectory {
 
 
     private:
-#ifdef RW_USE_DEPRECATED
-        typedef rw::common::Ptr<Blend<T> > BlendTPtr;
-        typedef rw::common::Ptr<Interpolator<T> > InterpolatorTPtr;
-#endif
         /**
          * @brief Describes a segment consisting of an interpolator and how to blend
          * onto and away from it.
@@ -505,12 +501,6 @@ namespace rw { namespace trajectory {
      */
      typedef InterpolatorTrajectory<rw::math::Q> QInterpolatorTrajectory;
 
-#ifdef RW_USE_DEPRECATED
-    /**
-     * @brief Pointer to QInterpolatorTrajectory
-     */
-    typedef rw::common::Ptr<QInterpolatorTrajectory> QInterpolatorTrajectoryPtr;
-#endif
     /** @} */
 
 }} // end namespaces

@@ -123,12 +123,6 @@ private:
     int _actionType;
 };
 
-#ifdef RW_USE_DEPRECATED
-/**
- * @brief Definition of a rw::common::Ptr to an Action.
- */
-typedef rw::common::Ptr<Action> ActionPtr;
-#endif
 /** @} */
 
 } //end namespace task

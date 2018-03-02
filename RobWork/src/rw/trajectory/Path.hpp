@@ -123,45 +123,6 @@ typedef Path<TimedQ> TimedQPath;
 */
 typedef Path<TimedState> TimedStatePath;
 
-#ifdef RW_USE_DEPRECATED
-
-    /**
-     * @brief Pointer to QPath
-     */
-    typedef rw::common::Ptr<QPath> QPathPtr;
-
-    /**
-     * @brief Pointer to Vector3DPath
-     */
-    typedef rw::common::Ptr<Vector3DPath> Vector3DPathPtr;
-
-	/**
-     * @brief Pointer to Rotation3DPath
-     */
-    typedef rw::common::Ptr<Rotation3DPath> Rotation3DPathPtr;
-
-	/**
-     * @brief Pointer to Transform3DPath
-     */
-    typedef rw::common::Ptr<Transform3DPath> Transform3DPathPtr;
-
-    /**
-     * @brief Pointer to StatePath
-     */
-    typedef rw::common::Ptr<StatePath> StatePathPtr;
-
-
-	/**
-     * @brief Pointer to TimedQPath
-     */
-    typedef rw::common::Ptr<TimedQPath> TimedQPathPtr;
-
-    /**
-     * @brief Pointer to TimedStatePath
-     */
-    typedef rw::common::Ptr<TimedStatePath> TimedStatePathPtr;
-#endif
-
 }} // end namespaces
 
 #endif // end include guard

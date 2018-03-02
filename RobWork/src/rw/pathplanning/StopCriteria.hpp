@@ -31,13 +31,6 @@ namespace rw { namespace pathplanning {
 
     /** @addtogroup pathplanning */
     /** @{*/
-
-#ifdef RW_USE_DEPRECATED
-    class StopCriteria;
-
-    //! A pointer to a StopCriteria.
-    typedef rw::common::Ptr<StopCriteria> StopCriteriaPtr;
-#endif
     /**
        @brief StopCriteria is a class for specifying an instant a compution
        should be aborted.

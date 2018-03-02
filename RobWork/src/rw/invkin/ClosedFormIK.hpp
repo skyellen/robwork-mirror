@@ -32,12 +32,6 @@ namespace rw { namespace invkin {
     /** \addtogroup invkin */
     /*@{*/
 
-#ifdef RW_USE_DEPRECATED
-    class ClosedFormIK;
-
-    //! A pointer to a ClosedFormIK solver.
-    typedef rw::common::Ptr<ClosedFormIK> ClosedFormIKPtr;
-#endif
     /**
      * @brief Interface for closed form inverse kinematics algorithms.
      *

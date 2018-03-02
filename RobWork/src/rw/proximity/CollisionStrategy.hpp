@@ -42,12 +42,7 @@ namespace rw { namespace proximity {
 
     /** @addtogroup proximity */
     /*@{*/
-#ifdef RW_USE_DEPRECATED
-    class CollisionStrategy;
 
-    //! A pointer to a CollisionStrategy.
-    typedef rw::common::Ptr<CollisionStrategy> CollisionStrategyPtr;
-#endif
     /**
      * @brief An interface that defines methods to test collision between
      * two objects.

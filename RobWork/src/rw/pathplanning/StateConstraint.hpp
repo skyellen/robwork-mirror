@@ -35,12 +35,6 @@ namespace rw { namespace pathplanning {
 
     /** @addtogroup pathplanning */
     /** @{*/
-#ifdef RW_USE_DEPRECATED
-    class StateConstraint;
-
-    //! A pointer to a StateConstraint.
-    typedef rw::common::Ptr<StateConstraint> StateConstraintPtr;
-#endif
     /**
        @brief Interface for the checking for collisions for work cell states.
     */

@@ -117,40 +117,6 @@ public:
 	 */
 	ProximitySetup& getProximitySetup();
 
-	#ifdef RW_USE_DEPRECATED
-
-    /**
-     * @brief adds the \b framepair to the framelist
-     */
-    void include(const kinematics::FramePair& framepair);
-
-    /**
-     * @brief adds all possible framepairs containing the frame \b frame to the framelist
-     */
-    void include(kinematics::Frame* frame, const std::vector<kinematics::Frame*>& frames);
-
-    /**
-     * @brief removes the \b framepair from the framepair list
-     */
-    void exclude(const kinematics::FramePair& framepair);
-
-    /**
-     * @brief removes all possible framepairs containing the frame \b frame from the framelist
-     */
-    void exclude(kinematics::Frame* frame);
-
-	/**
-	 * @copydoc BroadPhaseStrategy::addModel
-	 */
-	std::string addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom);
-
-	/**
-	 * @copydoc BroadPhaseStrategy::removeModel
-	 */
-	void removeModel(rw::kinematics::Frame* frame, const std::string& geoid);
-
-#endif //#ifdef RW_USE_DEPRECATED
-
 	/**
 	 * @copydoc ProximityFilterStrategy::addGeometry
 	 */

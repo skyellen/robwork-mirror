@@ -340,12 +340,6 @@ namespace rw { namespace proximity {
         DistanceStrategy();
     };
 
-#ifdef RW_USE_DEPRECATED
-    /**
-     * @brief Pointer to a DistanceStrategy
-     */
-    typedef rw::common::Ptr<DistanceStrategy> DistanceStrategyPtr;
-#endif
     /*@}*/
 }} // end namespaces
 

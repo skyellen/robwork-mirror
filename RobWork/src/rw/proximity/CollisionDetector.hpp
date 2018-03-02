@@ -49,13 +49,6 @@ namespace proximity {
 /** @addtogroup proximity */
 /*@{*/
 
-#ifdef RW_USE_DEPRECATED
-class CollisionDetector;
-
-//! A pointer to a CollisionDetector.
-typedef rw::common::Ptr<CollisionDetector> CollisionDetectorPtr;
-#endif
-
 /**
  @brief The CollisionDetector implements an efficient way of checking a
  complete frame tree for collisions.

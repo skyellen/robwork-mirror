@@ -190,9 +190,6 @@ namespace rw { namespace invkin {
         rw::math::Q getRandomConfig() const;
     };
 
-#ifdef RW_USE_DEPRECATED
-    typedef rw::common::Ptr<IKMetaSolver> IKMetaSolverPtr;
-#endif
 	/*@}*/
 
 }} // end namespaces

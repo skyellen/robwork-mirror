@@ -82,13 +82,6 @@ namespace geometry {
 		double _dx,_dy,_dz;
 	};
 	//! @}
-
-#ifdef RW_USE_DEPRECATED
-    /**
-     * @brief Pointer to Box
-     */
-    typedef rw::common::Ptr<Box> BoxPtr;
-#endif
 } // geometry
 } // rw
 

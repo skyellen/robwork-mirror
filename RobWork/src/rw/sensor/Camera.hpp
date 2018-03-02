@@ -273,12 +273,6 @@ namespace rw { namespace sensor {
 
     /* @} */
 
-#ifdef RW_USE_DEPRECATED
-    /**
-     * @brief Smart pointer to Camera
-     */
-    typedef rw::common::Ptr<Camera> CameraPtr;
-#endif
 }} // end namespaces
 
 #endif // end include guard

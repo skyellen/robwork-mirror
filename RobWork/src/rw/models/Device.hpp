@@ -45,13 +45,6 @@ namespace rw { namespace models {
     /** @addtogroup models */
     /*@{*/
 
-#ifdef RW_USE_DEPRECATED
-    class Device;
-
-    //! A pointer to a Device.
-    typedef rw::common::Ptr<Device> DevicePtr;
-#endif
-
     /**
      * @brief An abstract device class
      *

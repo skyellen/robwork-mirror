@@ -36,13 +36,6 @@ namespace rw { namespace invkin {
     /** \addtogroup invkin */
     /*@{*/
 
-#ifdef RW_USE_DEPRECATED
-    class IterativeIK;
-
-    //! A pointer to a IterativeIK solver.
-    typedef rw::common::Ptr<IterativeIK> IterativeIKPtr;
-#endif
-
     /**
      * @brief Interface for iterative inverse kinematics algorithms
      *
