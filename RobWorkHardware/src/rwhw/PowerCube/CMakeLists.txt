@@ -17,7 +17,7 @@ IF( build )
     SET(SRC_HPP CubePort.hpp Cube.hpp PCubeProtocol.hpp)
 
     RW_ADD_LIBRARY(rwhw_pcube pcube ${SRC_CPP} ${SRC_HPP})
-    TARGET_LINK_LIBRARIES(rwhw_pcube ${ROBWORK_LIBRARIES})
+    TARGET_LINK_LIBRARIES(rwhw_pcube PUBLIC ${ROBWORK_LIBRARIES})
     RW_ADD_INCLUDES(pcube "rwhw/PowerCube" ${SRC_HPP})
     set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_pcube;")
 ENDIF()

@@ -16,7 +16,7 @@ IF( build )
     SET(SRC_FILES_HPP RobolabFTDriver.hpp)
     
     RW_ADD_LIBRARY(rwhw_robolabFT robolabFT ${SRC_FILES} ${SRC_FILES_HPP})
-    TARGET_LINK_LIBRARIES(rwhw_robolabFT rwhw_serialport ${ROBWORK_LIBRARIES})
+    TARGET_LINK_LIBRARIES(rwhw_robolabFT PUBLIC rwhw_serialport ${ROBWORK_LIBRARIES})
     RW_ADD_INCLUDES(robolabFT "rwhw/robolabFT" ${SRC_FILES_HPP})
     
     SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_robolabFT;")

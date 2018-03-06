@@ -12,7 +12,7 @@ RW_ADD_DOC( ${SUBSYS_NAME} )
 
 IF( build )
     RW_ADD_LIBRARY(rwhw_serialport serialport SerialPort.cpp)
-    TARGET_LINK_LIBRARIES(rwhw_serialport ${ROBWORK_LIBRARIES})
+    TARGET_LINK_LIBRARIES(rwhw_serialport PUBLIC ${ROBWORK_LIBRARIES})
     RW_ADD_INCLUDES(serialport "rwhw/serialport" SerialPort.hpp)
     
     SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_serialport;")

@@ -17,7 +17,7 @@ IF( build )
     LIST(APPEND SRC_HPP DSACON32.hpp TactileMatrix.hpp TactileMaskMatrix.hpp ConvertUtil.hpp)
     
     RW_ADD_LIBRARY(rwhw_tactile tactile ${SRC_CPP} ${SRC_HPP})
-    TARGET_LINK_LIBRARIES(rwhw_tactile ${ROBWORK_LIBRARIES})
+    TARGET_LINK_LIBRARIES(rwhw_tactile PUBLIC ${ROBWORK_LIBRARIES})
     RW_ADD_INCLUDES(tactile "rwhw/tactile" ${SRC_HPP})
     set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_tactile;")
 ENDIF()

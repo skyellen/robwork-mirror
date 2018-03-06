@@ -57,7 +57,7 @@ IF( build )
     ENDIF()
     
     RW_ADD_LIBRARY(rwhw_camera camera ${SRC_CPP} ${SRC_HPP} )
-    TARGET_LINK_LIBRARIES(rwhw_camera ${ROBWORK_LIBRARIES} ${DC1394_LIBRARY})
+    TARGET_LINK_LIBRARIES(rwhw_camera PUBLIC ${ROBWORK_LIBRARIES} ${DC1394_LIBRARY})
     RW_ADD_INCLUDES(camera "rwhw/camera" ${SRC_HPP})
     set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_camera;")
     
