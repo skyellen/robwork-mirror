@@ -236,6 +236,9 @@ MACRO(RW_OPTIONS)
     ENDIF()
     option(PROJECT_SHARED_LIBS "Build shared libraries." ${PROJECT_SHARED_LIBS})
     if(PROJECT_SHARED_LIBS)
+      IF(WIN32 AND MSVC AND CMAKE_VERSION VERSION_LESS 3.4)
+      	MESSAGE(FATAL_ERROR "It is not currently possible to compile shared libraries for Windows with CMake versions below 3.4.")
+      ENDIF()
       set(PROJECT_LIB_PREFIX ${CMAKE_SHARED_LIBRARY_PREFIX})
       set(PROJECT_LIB_SUFFIX ${CMAKE_SHARED_LIBRARY_SUFFIX})
       set(PROJECT_LIB_TYPE "SHARED")
@@ -281,7 +284,7 @@ ENDMACRO(RW_ADD_INCLUDE_DIRS)
 MACRO(RW_ADD_LIBRARY _name _component)
     ADD_LIBRARY(${_name} ${PROJECT_LIB_TYPE} ${ARGN})
     # must link explicitly against boost.
-    target_link_libraries(${_name} ${Boost_LIBRARIES})
+    target_link_libraries(${_name} PUBLIC ${Boost_LIBRARIES})
     
     # Only link if needed
     if(WIN32 AND MSVC)

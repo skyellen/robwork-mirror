@@ -49,6 +49,8 @@ IF( build )
     	rw_pathplanners
     	rw_pathoptimization
     	rw_assembly
+    	rw_task
+    	rw_proximitystrategies
     	rw
     )
     IF((CMAKE_COMPILER_IS_GNUCC) OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))

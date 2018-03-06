@@ -43,6 +43,8 @@ INCLUDE(UseSWIG)
     	rw_pathplanners
     	rw_pathoptimization
     	rw_assembly
+    	rw_task
+    	rw_proximitystrategies
     	rw
     	${PYTHON_LIBRARIES}
     )
