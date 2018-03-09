@@ -405,7 +405,7 @@ Executing the CMake command will look like the following:
 \image html installation/RW_cmakecmd.png "Running CMake for RobWork in a Visual Studio Prompt."
 
 Look carefully through the CMake output and check that there is no errors, and that the required dependencies are correctly found.
-Now that the CMake files has been built, we are ready to compile the project. In the Build\RW folder there will now be a RobWork.sln solution that can be opened in Visual Studio.
+Now that the CMake files has been built, we are ready to compile the project. In the Build\\RW folder there will now be a RobWork.sln solution that can be opened in Visual Studio.
 Choose the correct configuration (Release for instance) and build the solution.
 
 If errors are encountered, try to decode them and adjust the paths if that is what is needed. CMake caches the result for the following runs of CMake. It is often a good idea to delete the CMakeCache.txt file to force CMake to run from scratch. The benefit of the cache is that you can run the CMake without specifying all the paths, as long as it has been run once before with the paths given. The disadvantage is that it might cause things to behave odd if you later change essential options CMake. If you update RobWork to a newer revision from the SVN server, it is also possible that options can change (even though it is rare). If you encounter problems after such an update, always try to remove the CMakeCache.txt, rerun CMake and try to compile again.
