@@ -11,6 +11,7 @@
 #include <string.h>
 
 #define lua_c
+#define LUA_CORE
 
 #include "lua.h"
 
@@ -372,7 +373,7 @@ static int pmain (lua_State *L) {
 }
 
 
-int run_lua_main (int argc, char **argv) {
+LUA_API int run_lua_main (int argc, char **argv) {
   int status;
   struct Smain s;
   lua_State *L = lua_open();  /* create state */

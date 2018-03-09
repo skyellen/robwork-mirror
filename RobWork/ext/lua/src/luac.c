@@ -183,7 +183,7 @@ static int pmain(lua_State* L)
  return 0;
 }
 
-int run_luac_main(int argc, char* argv[])
+LUA_API int run_luac_main(int argc, char* argv[])
 {
  lua_State* L;
  struct Smain s;

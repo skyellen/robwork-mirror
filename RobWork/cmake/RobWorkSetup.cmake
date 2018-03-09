@@ -168,7 +168,7 @@ IF( XERCESC_FOUND )
     SET(RW_HAVE_XERCES True)
     MESSAGE(STATUS "RobWork: XERCES ENABLED! FOUND!")
 ELSE ()
-    MESSAGE(STATUS "RobWork: Xerces NOT FOUND! Xerces code disabled! (Check if XERCESC_INCLUDE_DIR and XERCESC_LIB_DIR is set correctly if you need it)!")
+    MESSAGE(STATUS "RobWork: Xerces NOT FOUND! Xerces code disabled! (Check if XERCESC_ROOT or XERCESC_INCLUDE_DIR and XERCESC_LIB_DIR is set correctly if you need it)!")
 ENDIF ()
 
 #
@@ -457,6 +457,7 @@ IF(RW_USE_GTEST)
 	SET(gtest_force_shared_crt ON CACHE BOOL "Use /MD on Windows systems.")
 	FIND_PACKAGE(GTest QUIET)
 	IF( GTEST_FOUND )
+		SET(GTEST_SHARED_LIBS ${BUILD_SHARED_LIBS})
 		MESSAGE(STATUS "RobWork: Google Test installation FOUND!")
 		SET(RW_HAVE_GTEST TRUE)
 	ELSE()
@@ -728,7 +729,7 @@ SET(ROBWORK_LIBRARY_DIRS
     ${RW_CMAKE_LIBRARY_OUTPUT_DIRECTORY} 
     ${RW_CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
     ${Boost_LIBRARY_DIRS}
-    ${XERCESC_LIBRARY_DIRS}
+    ${XERCESC_LIB_DIR}
     ${YAOBI_LIBRARY_DIRS}
     ${PQP_LIBRARY_DIRS}
     ${FCL_LIBRARY_DIRS}

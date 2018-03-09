@@ -15,6 +15,9 @@ MACRO(ADD_RWSIM_GTEST target)
 		DEPENDS ${target} ${target}_report-makedir
 	)
 	SET(REPORT_TARGETS ${REPORT_TARGETS} ${target}_report)
+	IF(RW_BUILD_WITH_GTEST_SHARED_LIBS)
+	  TARGET_COMPILE_DEFINITIONS(rwsim_simulator-gtest PRIVATE GTEST_LINKED_AS_SHARED_LIBRARY=1)
+	ENDIF()
 ENDMACRO(ADD_RWSIM_GTEST)
 
 ########################################################################

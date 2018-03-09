@@ -33,6 +33,9 @@ endif(WIN32)
 add_library(rw_unzip ${SOURCE} ${HEADERS})
 
 target_link_libraries(rw_unzip ${ZLIB_LIBRARIES} )
+if(BUILD_SHARED_LIBS)
+	target_compile_definitions(rw_unzip PRIVATE ZLIB_DLL ZLIB_INTERNAL)
+endif()
 
 INSTALL(TARGETS rw_unzip DESTINATION "${LIB_INSTALL_DIR}" )
 INSTALL(FILES ${HEADERS} DESTINATION "${INCLUDE_INSTALL_DIR}/ext/unzip/")

@@ -1,5 +1,5 @@
 SET(SUBSYS_NAME rws_lua )
-SET(SUBSYS_DESC "Interface for accessing RobWorkSim from lua." )
+SET(SUBSYS_DESC "Interface for accessing RobWorkStudio from lua." )
 SET(SUBSYS_DEPS rw )
 
 # make sure that SDH can be found

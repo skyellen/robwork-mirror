@@ -25,6 +25,9 @@ ELSE()
 	OPTION(PROJECT_SHARED_LIBS "Build shared libraries." ON)
 ENDIF()
 
+# Set the CMake default library type. This is, for instance, used for the ext libraries.
+OPTION(BUILD_SHARED_LIBS "Build shared libraries." ${PROJECT_SHARED_LIBS})
+
 # RobWork has prebuilt libraries for BLAS and LAPACK
 # which can be used on win32. Adding the library directory to the path
 # will make RobWork detect these libraries. Add your own if you want

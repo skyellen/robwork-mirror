@@ -1,5 +1,5 @@
 SET(SUBSYS_NAME rw_python )
-SET(SUBSYS_DESC "Interface for accessing RobWorkSim from python." )
+SET(SUBSYS_DESC "Interface for accessing RobWork from python." )
 SET(SUBSYS_DEPS rw rw_algorithms)
 
 # make sure that SDH can be found

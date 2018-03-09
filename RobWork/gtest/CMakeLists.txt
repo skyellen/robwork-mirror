@@ -15,6 +15,9 @@ MACRO(ADD_RW_GTEST target)
 		DEPENDS ${target} ${target}_report-makedir
 	)
 	SET(REPORT_TARGETS ${REPORT_TARGETS} ${target}_report)
+	IF(GTEST_SHARED_LIBS)
+	  TARGET_COMPILE_DEFINITIONS(rw_common-gtest PRIVATE GTEST_LINKED_AS_SHARED_LIBRARY=1)
+	ENDIF()
 ENDMACRO(ADD_RW_GTEST)
 
 ########################################################################

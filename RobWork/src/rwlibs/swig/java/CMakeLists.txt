@@ -3,7 +3,7 @@ if(POLICY CMP0046)
 endif()
 
 SET(SUBSYS_NAME rw_java )
-SET(SUBSYS_DESC "Interface for accessing RobWorkSim from java." )
+SET(SUBSYS_DESC "Interface for accessing RobWork from java." )
 SET(SUBSYS_DEPS rw )
 
 SET(build TRUE)
