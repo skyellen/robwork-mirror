@@ -246,13 +246,16 @@ ENDIF()
 FIND_PACKAGE(Eigen3 QUIET)
 IF( EIGEN3_FOUND )
     MESSAGE(STATUS "RobWork: EIGEN3 installation FOUND! - version ${EIGEN3_VERSION}")
+	IF(EIGEN3_VERSION VERSION_LESS 3.1.0)
+		# We need to add this to enable compilation on default ubuntu 12.04 eigen
+		# (only for Eigen versions lower than 3.1.0)
+		ADD_DEFINITIONS("-DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET=1")
+	ENDIF()
 ELSE ()
     SET(RW_ENABLE_INTERNAL_EIGEN_TARGET ON)
     MESSAGE(STATUS "RobWork: EIGEN3 installation NOT FOUND! Using RobWork ext EIGEN3.")
     SET(EIGEN3_INCLUDE_DIR "${RW_ROOT}/ext/eigen3")
 ENDIF ()
-# We need to add this to enable compilation on default ubuntu 12.04 eigen
-ADD_DEFINITIONS("-DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET=1")
 
 
 # find package disabled, in order to use reentrant qhull
@@ -673,14 +676,12 @@ MESSAGE(STATUS "RobWork: RW linker flags: ${RW_LINKER_FLAGS}")
 #MESSAGE(" ${Boost_MAJOR_VERSION} ${Boost_MINOR_VERSION} ")
 IF(${Boost_MINOR_VERSION} VERSION_LESS 41 ) 
     # proerty tree is not included in earlier versions 1.41 of boost
-    # so we include it from our own
-    SET(ADDITIONAL_BOOST_BINDINGS "${RW_ROOT}/ext/deprecated")
-    MESSAGE(STATUS "RobWork: Boost ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION} found, no support for property_tree. Adding from ext!")   
+    MESSAGE(FATAL_ERROR "RobWork: Boost ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION} found, no support for property_tree. Please choose Boost version 1.41 or newer!")   
 ENDIF()
 
-IF(${Boost_MINOR_VERSION} VERSION_LESS 44 ) 
+IF(${Boost_MINOR_VERSION} VERSION_LESS 44 )
     ADD_DEFINITIONS("-DBOOST_FILESYSTEM_VERSION=2")
-ELSE()
+ELSEIF(${Boost_MINOR_VERSION} VERSION_LESS 46) # version 3 is the default for Boost 1.46 and later
     ADD_DEFINITIONS("-DBOOST_FILESYSTEM_VERSION=3")
 ENDIF()
 
