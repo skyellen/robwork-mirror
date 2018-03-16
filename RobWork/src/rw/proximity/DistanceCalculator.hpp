@@ -102,7 +102,7 @@ namespace rw { namespace proximity {
          * @param pairs [in] Pairs of frame to check
          * @param strategy [in] the distance calculation strategy to use
          */
-        DistanceCalculator(kinematics::FramePairList pairs,
+        DistanceCalculator(const kinematics::FramePairList& pairs,
 			DistanceStrategy::Ptr strategy);
 
 		/**

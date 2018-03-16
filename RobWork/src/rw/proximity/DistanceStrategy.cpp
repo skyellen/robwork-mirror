@@ -69,8 +69,10 @@ DistanceStrategy::Result DistanceStrategy::distance(
 		const Transform3D<>& wTb,
 		double threshold)
 {
-	if(getModel(a)==NULL || getModel(b)==NULL)
-		RW_THROW("Frame must have a Collision model attached!");
+	if (getModel(a) == NULL)
+		RW_THROW("Frame " << a->getName() << " has no Collision model attached!");
+	if (getModel(b) == NULL)
+		RW_THROW("Frame " << b->getName() << " has no Collision model attached!");
 	ProximityStrategyData data;
 	return distance(getModel(a), wTa, getModel(b), wTb, threshold, data);
 }
@@ -83,8 +85,10 @@ DistanceStrategy::Result& DistanceStrategy::distance(
 		double threshold,
 		ProximityStrategyData &data)
 {
-	if(getModel(a)==NULL || getModel(b)==NULL)
-		RW_THROW("Frame must have a Collision model attached!");
+	if (getModel(a) == NULL)
+		RW_THROW("Frame " << a->getName() << " has no Collision model attached!");
+	if (getModel(b) == NULL)
+		RW_THROW("Frame " << b->getName() << " has no Collision model attached!");
 	return distance(getModel(a), wTa, getModel(b), wTb, threshold, data);
 }
 

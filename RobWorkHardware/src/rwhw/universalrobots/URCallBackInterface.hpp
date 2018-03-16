@@ -317,18 +317,18 @@ private:
 	    {
 		}
 
-		CmdType _type;
+		CmdType _type = DO_NOTHING;
 		rw::math::Q _q;
 		rw::math::Transform3D<> _transform;
 		//rw::math::VelocityScrew6D<> _velocity;
 		rw::math::Q _selection;
 		rw::math::Wrench6D<> _wrench;
 		rw::math::Q _limits;
-		float _speed;
-		float _blend;
-	    int _id;
-	    bool _bValue;
-	    float _mass;
+		float _speed = 0.0;
+		float _blend = 0.0;
+	    int _id = -1;
+	    bool _bValue = true;
+	    float _mass = 0.0;
 	    rw::math::Vector3D<> _centerOfGravity;
 	};
 

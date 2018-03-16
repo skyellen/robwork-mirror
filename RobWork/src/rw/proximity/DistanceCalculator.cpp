@@ -55,7 +55,7 @@ namespace
     bool isInList(const FramePair& pair,
     			  const FramePairList& pairs)
     {
-        return std::find(pairs.begin(), pairs.end(), pair) != pairs.end();
+        return std::find(pairs.cbegin(), pairs.cend(), pair) != pairs.cend();
     }
 }
 
@@ -104,7 +104,7 @@ DistanceCalculator::DistanceCalculator(Frame* root,
     initializeDistancePairs();
 }
 
-DistanceCalculator::DistanceCalculator(FramePairList pairs,
+DistanceCalculator::DistanceCalculator(const FramePairList& pairs,
 									   DistanceStrategy::Ptr strategy):
                                        _strategy(strategy),
                                        _distancePairs(pairs)
@@ -123,7 +123,7 @@ void DistanceCalculator::initializeGeometry(rw::common::Ptr<const WorkCell> wc)
     State state = wc->getDefaultState();
     BOOST_FOREACH(Object::Ptr object, objects) {
         BOOST_FOREACH(geometry::Geometry::Ptr geom, object->getGeometry( state ) ){
-            Frame* frame = geom->getFrame(); // this is not const - should it be?
+            const Frame* frame = geom->getFrame(); // this is not const - should it be?
             RW_ASSERT(frame);
             _strategy->addModel(frame, geom);
             //_frameToModels[*frame] = _npstrategy->getModel(frame);
@@ -144,10 +144,10 @@ void DistanceCalculator::initializeDistancePairs()
     // All pairs of frames.
     FramePairList pairs;
     typedef std::vector<Frame*>::const_iterator I;
-    for (I from = frames.begin(); from != frames.end(); ++from) {
+    for (I from = frames.cbegin(); from != frames.cend(); ++from) {
         if (_strategy->hasModel(*from)) {
             I to = from;
-            for (++to; to != frames.end(); ++to) {
+            for (++to; to != frames.cend(); ++to) {
                 if (_strategy->hasModel(*to)) {
                     pairs.push_back(FramePair(*from, *to));
                 }
@@ -161,7 +161,7 @@ void DistanceCalculator::initializeDistancePairs()
     const StringPairList& exclude = _setup.getExcludeList();
 
     typedef StringPairList::const_iterator EI;
-    for (EI p = exclude.begin(); p != exclude.end(); ++p) {
+    for (EI p = exclude.cbegin(); p != exclude.cend(); ++p) {
         Frame* first = lookupFrame(frameMap, p->first);
         Frame* second = lookupFrame(frameMap, p->second);
         exclude_pairs.push_back(FramePair(first, second));
@@ -171,7 +171,7 @@ void DistanceCalculator::initializeDistancePairs()
     // Include in the final list only the pairs that are not present in the
     // exclude list.
     typedef FramePairList::const_iterator PLI;
-    for (PLI p = pairs.begin(); p != pairs.end(); ++p) {
+    for (PLI p = pairs.cbegin(); p != pairs.cend(); ++p) {
         if (!isInList(*p, exclude_pairs))
             _distancePairs.push_back(*p);
     }
@@ -198,7 +198,7 @@ DistanceStrategy::Result DistanceCalculator::distance(const State& state,
     distance.distance = DBL_MAX;
 
 	typedef FramePairList::const_iterator I;
-	for (I p = _distancePairs.begin(); p != _distancePairs.end(); ++p) {
+	for (I p = _distancePairs.cbegin(); p != _distancePairs.cend(); ++p) {
         const Frame* a = p->first;
         const Frame* b = p->second;
 
@@ -295,7 +295,7 @@ DistanceStrategy::Result DistanceCalculator::distance(const State& state,
     DistanceStrategy::Result distance;
     distance.distance = DBL_MAX;	
     typedef FramePairList::const_iterator I;
-    for (I p = _distancePairs.begin(); p != _distancePairs.end(); ++p) {
+    for (I p = _distancePairs.cbegin(); p != _distancePairs.cend(); ++p) {
         const Frame* a = p->first;
         const Frame* b = p->second;
 

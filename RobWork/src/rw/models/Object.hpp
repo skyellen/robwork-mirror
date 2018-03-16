@@ -45,6 +45,8 @@ namespace rw { namespace models {
     public:
     	//! smart pointer
         typedef rw::common::Ptr<Object> Ptr;
+		//! const smart pointer
+		typedef rw::common::Ptr<const Object> CPtr;
 
     protected:
         //! constructor

@@ -41,6 +41,8 @@ namespace rw { namespace geometry {
 	public:
         //! @brief smart pointer type to this class
         typedef rw::common::Ptr<Geometry> Ptr;
+		//! @brief smart pointer type to this const class
+		typedef rw::common::Ptr<const Geometry> CPtr;
 
         /**
          * @brief A geometry may belong to a specific group of geometries. These groups
