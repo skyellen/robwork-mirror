@@ -427,4 +427,35 @@ TEST(SceneGraph, Test) {
     EXPECT_TRUE(group1->hasChild("Leaf1"));
     scene->removeChild("Leaf11",group3);
     EXPECT_FALSE(group3->hasChild("Leaf11"));
+
+    // There are circular dependencies between parent and child nodes.
+    // The smart pointers can not destruct the objects, unless we unlink them manually:
+
+    //root->removeChild(group1);
+    root->removeChild(group2);
+    root->removeChild(group3);
+    group1->removeChild(group4);
+    group2->removeChild(group5);
+    group2->removeChild(group6);
+    group5->removeChild(group7);
+    group5->removeChild(group8);
+    group5->removeChild(group9);
+
+    group1->removeChild(leaf1);
+    group4->removeChild(leaf2);
+    group4->removeChild(leaf3);
+    group4->removeChild(leaf4);
+    group7->removeChild(leaf5);
+    group7->removeChild(leaf6);
+    group8->removeChild(leaf7);
+    group8->removeChild(leaf8);
+    group9->removeChild(leaf9);
+    group9->removeChild(leaf10);
+    group6->removeChild(leaf11);
+    group3->removeChild(leaf1);
+    group3->removeChild(leaf2);
+    group3->removeChild(leaf8);
+    //group3->removeChild(leaf11);
+    root->removeChild(leaf6);
+    root->removeChild(leaf5);
 }

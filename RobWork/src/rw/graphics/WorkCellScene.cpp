@@ -132,13 +132,11 @@ WorkCellScene::WorkCellScene(SceneGraph::Ptr scene):
     setWorkCell(NULL);
 }
 
-WorkCellScene::~WorkCellScene()
-{
+WorkCellScene::~WorkCellScene() {
     clearCache();
 }
 
-void WorkCellScene::clearCache()
-{
+void WorkCellScene::clearCache() {
     _frameNodeMap.clear();
 }
 
@@ -151,7 +149,6 @@ void WorkCellScene::workCellChangedListener(int){
     updateSceneGraph( state );
 }
 
-
 void WorkCellScene::setWorkCell(rw::models::WorkCell::Ptr wc){
     if(_wc==wc)
         return;
@@ -163,6 +160,29 @@ void WorkCellScene::setWorkCell(rw::models::WorkCell::Ptr wc){
         BOOST_FOREACH(StateMapData& data, _frameStateMap){
             fnameToStateMap[ data.first->getName() ] = data.second;
         }
+    }
+
+    // Unlink nodes in existing SceneGraph, so they can be destructed.
+    if (!_wc.isNull()) {
+		const State state = _wc->getDefaultState();
+    	std::stack<Frame*> frames;
+    	frames.push( _wc->getWorldFrame() );
+
+    	while(!frames.empty()){
+    		Frame *frame = frames.top();
+    		frames.pop();
+    		FrameNodeMap::iterator it =  _frameNodeMap.find(frame);
+    		if(it !=_frameNodeMap.end()) {
+    			GroupNode::Ptr parentNode = _frameNodeMap[frame->getParent(state)];
+    			parentNode->removeChild(it->second);
+    			_scene->removeDrawables(it->second);
+    		}
+    		Frame::iterator_pair iter = frame->getChildren(state);
+    		for(;iter.first!=iter.second; ++iter.first ){
+    			Frame* child = &(*iter.first);
+    			frames.push(child);
+    		}
+    	}
     }
 
     _frameStateMap.clear();
@@ -259,10 +279,12 @@ void WorkCellScene::updateSceneGraph(State& state){
     _nodeFrameMap[_scene->getRoot()] = NULL;
     RW_ASSERT(_scene->getRoot()!=NULL);
     std::stack<Frame*> frames;
+    std::set<Frame*> exists;
     frames.push( _wc->getWorldFrame() );
 
     while(!frames.empty()){
         Frame *frame = frames.top();
+        exists.insert(frame);
         frames.pop();
         //std::cout << "Frame: " << frame->getName() << std::endl;
         // make sure that the frame is in the scene
@@ -373,8 +395,41 @@ void WorkCellScene::updateSceneGraph(State& state){
     //std::cout << "_opaqueDrawables: " << _opaqueDrawables.size()  << std::endl;
     //std::cout << "_translucentDrawables: " << _translucentDrawables.size()  << std::endl;
     _worldNode = _frameNodeMap[_wc->getWorldFrame()];
-}
 
+    // Removing non-exsisting frames from NodeFrameMap
+    std::set<GroupNode::Ptr> doesntExist;
+    for(NodeFrameMap::iterator elem = _nodeFrameMap.begin(); elem != _nodeFrameMap.end();) {
+    	if(!(exists.find(elem->second) != exists.end() || elem->second == NULL)) {
+    		doesntExist.insert(elem->first);
+    		elem = _nodeFrameMap.erase(elem);
+    	} else {
+    		elem++;
+    	}
+    }
+    // Removing non-exsisting nodes from FrameNodeMap
+    typedef std::map<const rw::kinematics::Frame*, GroupNode::Ptr> FrameNodeMap;
+    for(FrameNodeMap::iterator elem = _frameNodeMap.begin(); elem != _frameNodeMap.end();) {
+    	if(doesntExist.find(elem->second) != doesntExist.end()) {
+    		const GroupNode::Ptr gnode = elem->second;
+    		elem = _frameNodeMap.erase(elem);
+    		if(gnode->_childNodes.size() != 0){
+    			RW_WARN("The deleted frame has undeleted children");
+    		}
+    		// Removing SceneNode parents
+    		std::list< SceneNode::Ptr > parent = gnode->_parentNodes;
+    		while(parent.size() > 0) {
+    			for(auto par : _frameNodeMap){
+    				if(par.second->getName() == parent.back()->getName()) {
+    					par.second->removeChild(gnode);
+    				}
+    			}
+    			parent.pop_back();
+    		}
+    	} else {
+    		elem++;
+    	}
+    }
+}
 
 void WorkCellScene::setVisible(bool visible, const Frame* f) {
     if(_frameNodeMap.find(f)==_frameNodeMap.end())
@@ -433,7 +488,10 @@ void WorkCellScene::setFrameAxisVisible(bool visible, Frame* f, double size) {
 
         // Add a frame axis of specified size
         DrawableNode::Ptr frameAxisNode = _scene->makeDrawableFrameAxis("FrameAxis", size, DrawableNode::Virtual);
-        addDrawable(frameAxisNode, f);
+        if (!frameAxisNode.isNull()) {
+        	frameAxisNode->setName("FrameAxis");
+        	addDrawable(frameAxisNode, f);
+        }
         //_frameDrawableMap[f].push_back(dnode);
         //node->addChild( dnode );
         _scene->update();
@@ -496,7 +554,6 @@ unsigned int WorkCellScene::getDrawMask(const Frame* f) const {
     else
     	return DrawableNode::SOLID;
 }
-
 
 void WorkCellScene::setTransparency(double alpha, const Frame* f) {
     if(_frameNodeMap.find(f)==_frameNodeMap.end())
@@ -599,7 +656,6 @@ DrawableGeometryNode::Ptr WorkCellScene::addLines(const std::string& name,const 
     addDrawable(drawable, frame);
     return drawable;
 }
-
 
 DrawableNode::Ptr WorkCellScene::addRender(const std::string& name, Render::Ptr render, Frame* frame, int dmask) {
     DrawableNode::Ptr drawable = _scene->makeDrawable(name, render);

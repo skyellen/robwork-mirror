@@ -127,7 +127,7 @@ void StateStructure::addFrame(Frame * const frame, Frame * const parent_arg){
 
     // and parent must exist in the tree, but not the frame
     if( has(frame) ){
-        RW_THROW("The frame has allready been added to the state structure!");
+        RW_THROW("The frame has already been added to the state structure!");
     }
 
     if( !has(parent) ){
@@ -136,7 +136,7 @@ void StateStructure::addFrame(Frame * const frame, Frame * const parent_arg){
 
     // and lastly we must check if the frame has been added to other StateStructure
     if( frame->getID()!=-1  ){
-        RW_THROW("The frame has allready been added to another state structure");
+        RW_THROW("The frame has already been added to another state structure");
     }
     // check if frame name is unique
     if( findFrame(frame->getName())!=NULL )
