@@ -17,6 +17,8 @@ SET(ROBWORKSTUDIO_VERSION 0.7.0)
 SET(RWS_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 MESSAGE(STATUS "RobWorkStudio version ${ROBWORKSTUDIO_VERSION}")
 
+SET(CMAKE_MODULE_PATH ${RWS_ROOT}/cmake/Modules ${CMAKE_MODULE_PATH})
+
 # lets start by finding RobWork since this is the primary dependency and because we
 # want to use the macros available in RobWork
 # if RW_ROOT is defined then we use that, else we try finding it the traditional way
@@ -89,16 +91,14 @@ ELSE ()
 ENDIF()
 
 ###############################################################
-# Try to find the current revision 
-#
-FIND_PACKAGE(Subversion QUIET)
-IF(Subversion_FOUND)
-    Subversion_WC_INFO(${RWS_ROOT} RobWorkStudio)
-    MESSAGE(STATUS "RobWorkStudio: Current revision is ${RobWorkStudio_WC_REVISION}")
-    SET(ROBWORKSTUDIO_REVISION ${RobWorkStudio_WC_REVISION})
-ELSE()
-    MESSAGE(STATUS "RobWorkStudio: No revision info!")
-ENDIF(Subversion_FOUND)
+## Try to find the current revision
+FIND_PACKAGE(Git)
+IF(Git_FOUND)
+    include(GitInfo)
+    git_describe(GIT_DESCR --dirty --always)
+    MESSAGE(STATUS "RobWorkStudio: Current revision is ${GIT_DESCR}")
+    SET(ROBWORKSTUDIO_REVISION ${GIT_DESCR})
+ENDIF(Git_FOUND)
 
 ###############################################################
 # CONFIGURATION

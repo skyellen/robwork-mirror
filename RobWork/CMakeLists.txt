@@ -100,12 +100,13 @@ ELSE ()
 ENDIF()
 
 # Try to find the current revision 
-FIND_PACKAGE(Subversion)
-IF(Subversion_FOUND)
-    Subversion_WC_INFO(${RW_ROOT} RobWork)
-    MESSAGE(STATUS "RobWork: Current revision is ${RobWork_WC_REVISION}")
-    SET(ROBWORK_REVISION ${RobWork_WC_REVISION})
-ENDIF(Subversion_FOUND)
+FIND_PACKAGE(Git)
+IF(Git_FOUND)
+    include(GitInfo)
+    git_describe(GIT_DESCR --dirty --always)
+    MESSAGE(STATUS "RobWork: Current revision is ${GIT_DESCR}")
+    SET(ROBWORK_REVISION ${GIT_DESCR})
+ENDIF(Git_FOUND)
 
 # Store the test results in a RobWorkConfig.hpp file.
 CONFIGURE_FILE(

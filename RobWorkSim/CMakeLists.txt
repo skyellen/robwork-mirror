@@ -48,7 +48,7 @@ RW_OPTIONS(RWSIM)
 #                  "${CMAKE_BINARY_DIR}/uninstall_target.cmake")
 
 # add the RWSIM modules to the module path
-SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${RWSIM_ROOT}/cmake/Modules/")
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${RWSIM_ROOT}/cmake/Modules/)
 
 # This sets up ROBWORKSIM_INCLUDE_DIR and ROBWORKSIM_LIBRARIES
 # RobWork dependencies are included in these vars
