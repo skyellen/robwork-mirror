@@ -79,7 +79,7 @@ QPath ClearanceOptimizer::optimize(const QPath& inputPath, double stepsize, size
 		RW_THROW("No stopping criteria was set.");
 	}
     _stepsize = stepsize;
-	if (inputPath.size() <= 2)
+	if (inputPath.size() < 2)
 		return inputPath;
 	Timer timer;
 	timer.reset();
@@ -87,6 +87,8 @@ QPath ClearanceOptimizer::optimize(const QPath& inputPath, double stepsize, size
 	AugmentedPath path;
 
 	subDivideAndAugmentPath(inputPath, path);
+	if (path.size() <= 2)
+		return inputPath;
 
 	size_t cnt = 0;
 	while ( (maxcount == 0 || cnt < maxcount) && (maxtime <= 0 || timer.getTime() < maxtime)) {
@@ -190,38 +192,32 @@ double ClearanceOptimizer::calcAvgClearance(const AugmentedPath& path) {
     for (AugmentedPath::const_iterator it = path.begin(); it != path.end(); ++it) {
         sum += (*it).second;
     }
-    sum /= (double)path.size();
+    sum /= static_cast<double>(path.size());
     return sum;
 }
 
 //Interpolates between to nodes. At some point we experiment with other ways of
 //interpolating, which is why it is left as a seperate method.
 Q ClearanceOptimizer::interpolate(const Q& q1, const Q& q2, double ratio) {
-    return q1*ratio+(1-ratio)*q2;
+    return q1*ratio+(1.0-ratio)*q2;
 }
 
 
 void ClearanceOptimizer::subDivideAndAugmentPath(const QPath& path, AugmentedPath& result) {
     Timer timer1;
     Timer timer2;
-    timer1.reset(); timer1.resume();
-    timer2.reset();
+    timer1.reset();
+	timer2.resetAndPause();
 	QPath::const_iterator itstart = path.begin();
 	QPath::const_iterator itnext = path.begin();
 	itnext++;
-	//while (it != --(path.end())) {
-	for ( ; itnext != path.end(); itstart++, itnext++) {
-	 //   std::cout<<".";
-		//Q start = *it;
-		//Q next = *(++it);
-	    Q start = *itstart;
-	    Q next = *itnext;
-		Q delta = next-start;
+	for ( ; itnext != path.cend(); itstart++, itnext++) {
+		Q delta = (*itnext) - (*itstart);
 		const double fraction = _metric->distance(delta)/_stepsize;
-		double divisions = (int)ceil(fraction);
-		for (int i = 0; i<(int)divisions; i++) {
-		    Q q = start + delta*(double)i/divisions;
-		    //result.push_back(AugmentedQ(q, 0.1));
+		double divisions = static_cast<int>(ceil(fraction));
+		delta /= divisions;
+		for (int i = 0; i < static_cast<int>(divisions); i++) {
+		    const Q q = (*itstart) + delta*static_cast<double>(i);
 		    timer2.resume();
 		    double dist = clearance(q);
 		    timer2.pause();
@@ -246,7 +242,7 @@ Q ClearanceOptimizer::randomDirection() {
 	        q(i) = Random::ran(-_stepsize, _stepsize);
 	} while (_metric->distance(q) > _stepsize);
 
-	q *= _stepsize / _metric->distance(q);
+	q *= (_stepsize / _metric->distance(q));
 	return q;
 }
 
