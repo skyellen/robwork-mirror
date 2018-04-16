@@ -455,36 +455,11 @@ namespace rw { namespace math {
         /**
          * @brief Takes the 1-norm of the wrench. All elements both
          * force and torque are given the same weight.
-         *
-         * @param wrench [in] the wrench
-         * @return the 1-norm
-         */
-        friend T norm1(const Wrench6D& wrench)
-        {
-            return wrench.norm1();
-        }
-
-        /**
-         * @brief Takes the 1-norm of the wrench. All elements both
-         * force and torque are given the same weight.
          * @return the 1-norm
          */
         T norm1() const {
 			return fabs(_wrench[0])+fabs(_wrench[1])+fabs(_wrench[2])+fabs(_wrench[3])+fabs(_wrench[4])+fabs(_wrench[5]);
             //return _wrench.template lpNorm<1>();
-        }
-
-
-        /**
-         * @brief Takes the 2-norm of the wrench. All elements both
-         * force and tporque are given the same weight
-         *
-         * @param wrench [in] the wrench
-         * @return the 2-norm
-         */
-        friend T norm2(const Wrench6D& wrench)
-        {
-            return wrench.norm2();
         }
 
         /**
@@ -500,45 +475,11 @@ namespace rw { namespace math {
          * @brief Takes the infinite norm of the wrench. All elements
          * both force and torque are given the same weight.
          *
-         * @param wrench [in] the wrench
-         *
-         * @return the infinite norm
-         */
-        friend T normInf(const Wrench6D& wrench)
-        {
-            return wrench.normInf();
-        }
-
-        /**
-         * @brief Takes the infinite norm of the wrench. All elements
-         * both force and torque are given the same weight.
-         *
          * @return the infinite norm
          */
         T normInf() const {
 			return std::max(fabs(_wrench[0]), std::max(fabs(_wrench[1]), std::max(fabs(_wrench[2]), std::max(fabs(_wrench[3]), std::max(fabs(_wrench[4]),fabs(_wrench[5]))))));
         }
-
-        /**
-         * @brief Casts Wrench6D<T> to Wrench6D<Q>
-         *
-         * @param vs [in] Wrench6D with type T
-         *
-         * @return Wrench6D with type Q
-         */
-        template<class Q>
-        friend const Wrench6D<Q> cast(const Wrench6D<T>& vs)
-        {
-            return Wrench6D<Q>(
-                static_cast<Q>(vs(0)),
-                static_cast<Q>(vs(1)),
-                static_cast<Q>(vs(2)),
-                static_cast<Q>(vs(3)),
-                static_cast<Q>(vs(4)),
-                static_cast<Q>(vs(5)));
-        }
-
-
 
         /**
            @brief Converter to Boost type.
@@ -579,6 +520,65 @@ namespace rw { namespace math {
         }
 
     };
+
+	/**
+	* @brief Takes the 1-norm of the wrench. All elements both
+	* force and torque are given the same weight.
+	*
+	* @param wrench [in] the wrench
+	* @return the 1-norm
+	*/
+	template <class T>
+	T norm1(const Wrench6D<T>& wrench)
+	{
+		return wrench.norm1();
+	}
+
+	/**
+	* @brief Takes the 2-norm of the wrench. All elements both
+	* force and tporque are given the same weight
+	*
+	* @param wrench [in] the wrench
+	* @return the 2-norm
+	*/
+	template <class T>
+	T norm2(const Wrench6D<T>& wrench)
+	{
+		return wrench.norm2();
+	}
+
+	/**
+	* @brief Takes the infinite norm of the wrench. All elements
+	* both force and torque are given the same weight.
+	*
+	* @param wrench [in] the wrench
+	*
+	* @return the infinite norm
+	*/
+	template <class T>
+	T normInf(const Wrench6D<T>& wrench)
+	{
+		return wrench.normInf();
+	}
+
+	/**
+	* @brief Casts Wrench6D<T> to Wrench6D<Q>
+	*
+	* @param vs [in] Wrench6D with type T
+	*
+	* @return Wrench6D with type Q
+	*/
+	template<class Q, class T>
+	const Wrench6D<Q> cast(const Wrench6D<T>& vs)
+	{
+		return Wrench6D<Q>(
+			static_cast<Q>(vs(0)),
+			static_cast<Q>(vs(1)),
+			static_cast<Q>(vs(2)),
+			static_cast<Q>(vs(3)),
+			static_cast<Q>(vs(4)),
+			static_cast<Q>(vs(5)));
+	}
 
     /*@}*/
 }} // end namespaces

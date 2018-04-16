@@ -504,35 +504,10 @@ namespace rw { namespace math {
          * @brief Takes the 1-norm of the velocity screw. All elements both
          * angular and linear are given the same weight.
          *
-         * @param screw [in] the velocity screw
-         * @return the 1-norm
-         */
-        friend T norm1(const VelocityScrew6D& screw)
-        {
-            return screw.norm1();
-        }
-
-        /**
-         * @brief Takes the 1-norm of the velocity screw. All elements both
-         * angular and linear are given the same weight.
-         *
          * @return the 1-norm
          */
         T norm1() const {
 			return fabs(_screw[0])+fabs(_screw[1])+fabs(_screw[2])+fabs(_screw[3])+fabs(_screw[4])+fabs(_screw[5]);
-        }
-
-
-        /**
-         * @brief Takes the 2-norm of the velocity screw. All elements both
-         * angular and linear are given the same weight
-         *
-         * @param screw [in] the velocity screw
-         * @return the 2-norm
-         */
-        friend T norm2(const VelocityScrew6D& screw)
-        {
-            return screw.norm2();
         }
 
         /**
@@ -549,42 +524,10 @@ namespace rw { namespace math {
          * @brief Takes the infinite norm of the velocity screw. All elements
          * both angular and linear are given the same weight.
          *
-         * @param screw [in] the velocity screw
-         *
-         * @return the infinite norm
-         */
-        friend T normInf(const VelocityScrew6D& screw)
-        {			
-            return screw.normInf();
-        }
-
-        /**
-         * @brief Takes the infinite norm of the velocity screw. All elements
-         * both angular and linear are given the same weight.
-         *
          * @return the infinite norm
          */
         T normInf() const {
 			return std::max(fabs(_screw[0]), std::max(fabs(_screw[1]), std::max(fabs(_screw[2]), std::max(fabs(_screw[3]), std::max(fabs(_screw[4]),fabs(_screw[5]))))));
-        }
-
-        /**
-         * @brief Casts VelocityScrew6D<T> to VelocityScrew6D<Q>
-         *
-         * @param vs [in] VelocityScrew6D with type T
-         *
-         * @return VelocityScrew6D with type Q
-         */
-        template<class Q>
-        friend const VelocityScrew6D<Q> cast(const VelocityScrew6D<T>& vs)
-        {
-            return VelocityScrew6D<Q>(
-                static_cast<Q>(vs(0)),
-                static_cast<Q>(vs(1)),
-                static_cast<Q>(vs(2)),
-                static_cast<Q>(vs(3)),
-                static_cast<Q>(vs(4)),
-                static_cast<Q>(vs(5)));
         }
 
         /**
@@ -625,6 +568,65 @@ namespace rw { namespace math {
 
 
     };
+
+	/**
+	* @brief Takes the 1-norm of the velocity screw. All elements both
+	* angular and linear are given the same weight.
+	*
+	* @param screw [in] the velocity screw
+	* @return the 1-norm
+	*/
+	template <class T>
+	T norm1(const VelocityScrew6D<T>& screw)
+	{
+		return screw.norm1();
+	}
+
+	/**
+	* @brief Takes the 2-norm of the velocity screw. All elements both
+	* angular and linear are given the same weight
+	*
+	* @param screw [in] the velocity screw
+	* @return the 2-norm
+	*/
+	template <class T>
+	T norm2(const VelocityScrew6D<T>& screw)
+	{
+		return screw.norm2();
+	}
+
+	/**
+	* @brief Takes the infinite norm of the velocity screw. All elements
+	* both angular and linear are given the same weight.
+	*
+	* @param screw [in] the velocity screw
+	*
+	* @return the infinite norm
+	*/
+	template <class T>
+	T normInf(const VelocityScrew6D<T>& screw)
+	{
+		return screw.normInf();
+	}
+
+	/**
+	* @brief Casts VelocityScrew6D<T> to VelocityScrew6D<Q>
+	*
+	* @param vs [in] VelocityScrew6D with type T
+	*
+	* @return VelocityScrew6D with type Q
+	*/
+	template<class Q, class T>
+	const VelocityScrew6D<Q> cast(const VelocityScrew6D<T>& vs)
+	{
+		return VelocityScrew6D<Q>(
+			static_cast<Q>(vs(0)),
+			static_cast<Q>(vs(1)),
+			static_cast<Q>(vs(2)),
+			static_cast<Q>(vs(3)),
+			static_cast<Q>(vs(4)),
+			static_cast<Q>(vs(5)));
+	}
 
     /*@}*/
 }} // end namespaces

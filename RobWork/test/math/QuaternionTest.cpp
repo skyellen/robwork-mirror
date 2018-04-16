@@ -238,8 +238,12 @@ BOOST_AUTO_TEST_CASE(QuaternionTest){
     BOOST_CHECK (a != Quaternion<>(1,2,3,0) );
 
 
-    Quaternion<float> af = cast<float>(a);
-    for (size_t i = 0; i<4; i++)
-	BOOST_CHECK((float)(a(i)) == af(i));
+	Quaternion<float> af;
+	af = cast<float>(a);
+	for (size_t i = 0; i<4; i++)
+		BOOST_CHECK((float)(a(i)) == af(i));
+	af = rw::math::cast<float>(a); // qualified lookup
+	for (size_t i = 0; i<4; i++)
+		BOOST_CHECK((float)(a(i)) == af(i));
 
 }

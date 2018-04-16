@@ -265,38 +265,6 @@ namespace rw { namespace math {
         }
 
         /**
-         * @brief Calculates the 2D vector cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
-         *
-         * @param v1 [in] @f$ \mathbf{v1} @f$
-         *
-         * @param v2 [in] @f$ \mathbf{v2} @f$
-         *
-         * @return the cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
-         *
-         * The 2D vector cross product is defined as:
-         *
-         * @f$
-         * \mathbf{v1} \times \mathbf{v2} =  v1_x * v2_y - v1_y * v2_x
-         * @f$
-         */
-        friend T cross(const Vector2D<T>& v1, const Vector2D<T>& v2)
-        {
-            return  v1(0) * v2(1) - v1(1) * v2(0);
-        }
-
-        /**
-         * @brief Calculates the dot product @f$ \mathbf{v1} . \mathbf{v2} @f$
-         * @param v1 [in] @f$ \mathbf{v1} @f$
-         * @param v2 [in] @f$ \mathbf{v2} @f$
-         *
-         * @return the dot product @f$ \mathbf{v1} . \mathbf{v2} @f$
-         */
-        friend double dot(const Vector2D<T>& v1, const Vector2D<T>& v2)
-        {
-            return v1(0)*v2(0) + v1(1)*v2(1);
-        }
-
-        /**
          * @brief returns the counter clock-wise angle between
          * this vector and the x-axis vector (1,0). The angle
          * returned will be in the interval [-Pi,Pi]
@@ -304,34 +272,6 @@ namespace rw { namespace math {
         double angle()
         {
             return atan2(_vec[1],_vec[0]);
-        }
-
-        /**
-         * @brief calculates the ounter clock-wise angle from v1 to
-         * v2. the value returned will be in the interval [-2Pi,2Pi]
-         */
-        friend double angle(const Vector2D<T>& v1, const Vector2D<T>& v2)
-        {
-            return atan2(v2(1),v2(0)) - atan2(v1(1),v1(0));
-        }
-
-        /**
-         * @brief Returns the normalized vector
-         * \f$\mathbf{n}=\frac{\mathbf{v}}{\|\mathbf{v}\|} \f$.
-         *
-         * If \f$ \| \mathbf{v} \| = 0\f$ then the zero vector is returned.
-         *
-         * @param v [in] \f$ \mathbf{v} \f$ which should be normalized
-         *
-         * @return the normalized vector \f$ \mathbf{n} \f$
-         */
-        friend const Vector2D<T> normalize(const Vector2D<T>& v)
-        {
-            T length = v.norm2();
-            if (length != 0)
-                return Vector2D<T>(v(0)/length, v(1)/length);
-            else
-                return Vector2D<T>(0,0);
         }
 
         /**
@@ -375,7 +315,71 @@ namespace rw { namespace math {
 
     private:
 		T _vec[2];
-    };
+	};
+
+	/**
+	* @brief Calculates the 2D vector cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
+	*
+	* @param v1 [in] @f$ \mathbf{v1} @f$
+	*
+	* @param v2 [in] @f$ \mathbf{v2} @f$
+	*
+	* @return the cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
+	*
+	* The 2D vector cross product is defined as:
+	*
+	* @f$
+	* \mathbf{v1} \times \mathbf{v2} =  v1_x * v2_y - v1_y * v2_x
+	* @f$
+	*/
+	template <class T>
+	T cross(const Vector2D<T>& v1, const Vector2D<T>& v2)
+	{
+		return  v1(0) * v2(1) - v1(1) * v2(0);
+	}
+
+	/**
+	* @brief Calculates the dot product @f$ \mathbf{v1} . \mathbf{v2} @f$
+	* @param v1 [in] @f$ \mathbf{v1} @f$
+	* @param v2 [in] @f$ \mathbf{v2} @f$
+	*
+	* @return the dot product @f$ \mathbf{v1} . \mathbf{v2} @f$
+	*/
+	template <class T>
+	double dot(const Vector2D<T>& v1, const Vector2D<T>& v2)
+	{
+		return v1(0)*v2(0) + v1(1)*v2(1);
+	}
+
+	/**
+	* @brief calculates the ounter clock-wise angle from v1 to
+	* v2. the value returned will be in the interval [-2Pi,2Pi]
+	*/
+	template <class T>
+	double angle(const Vector2D<T>& v1, const Vector2D<T>& v2)
+	{
+		return atan2(v2(1), v2(0)) - atan2(v1(1), v1(0));
+	}
+
+	/**
+	* @brief Returns the normalized vector
+	* \f$\mathbf{n}=\frac{\mathbf{v}}{\|\mathbf{v}\|} \f$.
+	*
+	* If \f$ \| \mathbf{v} \| = 0\f$ then the zero vector is returned.
+	*
+	* @param v [in] \f$ \mathbf{v} \f$ which should be normalized
+	*
+	* @return the normalized vector \f$ \mathbf{n} \f$
+	*/
+	template <class T>
+	const Vector2D<T> normalize(const Vector2D<T>& v)
+	{
+		T length = v.norm2();
+		if (length != 0)
+			return Vector2D<T>(v(0) / length, v(1) / length);
+		else
+			return Vector2D<T>(0, 0);
+	}
 
     /**
      * @brief Casts Vector2D<T> to Vector2D<Q>
@@ -391,7 +395,21 @@ namespace rw { namespace math {
             static_cast<Q>(v(0)),
             static_cast<Q>(v(1)));
     }
-
+	/**
+         * @brief Calculates the 2D vector cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
+         *
+         * @param v1 [in] @f$ \mathbf{v1} @f$
+         *
+         * @param v2 [in] @f$ \mathbf{v2} @f$
+         *
+         * @return the cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
+         *
+         * The 2D vector cross product is defined as:
+         *
+         * @f$
+         * \mathbf{v1} \times \mathbf{v2} =  v1_x * v2_y - v1_y * v2_x
+         * @f$
+         */
     /**
        @brief Compares \b a and \b b for equality.
 

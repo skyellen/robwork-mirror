@@ -579,23 +579,6 @@ namespace rw { namespace math {
 
         }
 
-
-
-        /**
-         * @brief Casts Quaternion<T> to Quaternion<Q>
-         * @param quaternion [in] Quarternion with type T
-         * @return Quaternion with type Q
-         */
-        template<class Q>
-        inline friend const Quaternion<Q> cast(const Quaternion<T>& quaternion)
-        {
-            return Quaternion<Q>(
-                static_cast<Q>(quaternion(0)),
-                static_cast<Q>(quaternion(1)),
-                static_cast<Q>(quaternion(2)),
-                static_cast<Q>(quaternion(3)));
-        }
-
         /**
          * @brief Convert to an Eigen Quaternion.
          * @return Eigen Quaternion representation.
@@ -633,6 +616,21 @@ private:
             << v(3)
             << "}";
     }
+
+	/**
+	* @brief Casts Quaternion<T> to Quaternion<Q>
+	* @param quaternion [in] Quarternion with type T
+	* @return Quaternion with type Q
+	*/
+	template<class Q, class T>
+	inline const Quaternion<Q> cast(const Quaternion<T>& quaternion)
+	{
+		return Quaternion<Q>(
+			static_cast<Q>(quaternion(0)),
+			static_cast<Q>(quaternion(1)),
+			static_cast<Q>(quaternion(2)),
+			static_cast<Q>(quaternion(3)));
+	}
 
     /*@}*/
 }} // end namespaces

@@ -209,26 +209,26 @@ namespace rw { namespace math {
                 << ")";
         }
 
-        /**
-         * @brief Cast Transform2D<T> to Transform2D<Q>
-         * @param trans [in] Transform2D with type T
-         * @return Transform2D with type Q
-         */
-        template<class Q>
-        friend const Transform2D<Q> cast(const Transform2D<T>& trans)
-        {
-            Transform2D<Q> res;
-            for (size_t i = 0; i < 2; i++)
-                for (size_t j = 0; j < 3; j++)
-                    res(i,j) = static_cast<Q>(trans(i, j));
-
-            return res;
-        }
-
     private:
         Vector2D<T> _d;
         Rotation2D<T> _R;
     };
+
+	/**
+	* @brief Cast Transform2D<T> to Transform2D<Q>
+	* @param trans [in] Transform2D with type T
+	* @return Transform2D with type Q
+	*/
+	template<class Q, class T>
+	const Transform2D<Q> cast(const Transform2D<T>& trans)
+	{
+		Transform2D<Q> res;
+		for (size_t i = 0; i < 2; i++)
+			for (size_t j = 0; j < 3; j++)
+				res(i, j) = static_cast<Q>(trans(i, j));
+
+		return res;
+	}
 
     /**
      * @brief Calculates @f$ \robabx{b}{a}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}}^{-1} @f$

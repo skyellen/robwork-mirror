@@ -186,23 +186,23 @@ namespace rw { namespace math {
         const Transform3D<T> toTransform3D() const {
             return Transform3D<T>(_position, _orientation);
         }
-
-        /**
-         * @brief Casts Pose6D<T> to Pose6D<Q>
-         * @param pose [in] Pose6D with type T
-         * @return Pose6D with type Q
-         */
-        template<class Q>
-        friend const Pose6D<Q> cast(const Pose6D<T>& pose) {
-            return Pose6D<Q>(
-                static_cast<Q>(pose.get(0)),
-                static_cast<Q>(pose.get(1)),
-                static_cast<Q>(pose.get(2)),
-                static_cast<Q>(pose.get(3)),
-                static_cast<Q>(pose.get(4)),
-                static_cast<Q>(pose.get(5)));
-        }
     };
+
+	/**
+	* @brief Casts Pose6D<T> to Pose6D<Q>
+	* @param pose [in] Pose6D with type T
+	* @return Pose6D with type Q
+	*/
+	template<class Q, class T>
+	const Pose6D<Q> cast(const Pose6D<T>& pose) {
+		return Pose6D<Q>(
+			static_cast<Q>(pose.get(0)),
+			static_cast<Q>(pose.get(1)),
+			static_cast<Q>(pose.get(2)),
+			static_cast<Q>(pose.get(3)),
+			static_cast<Q>(pose.get(4)),
+			static_cast<Q>(pose.get(5)));
+	}
 
     /**
      * @brief Streaming operator.

@@ -63,9 +63,13 @@ BOOST_AUTO_TEST_CASE(RPYTest)
     rpy1(0) = -2.5;
     rpy1(1) = 0.4;
     rpy1(2) = 4.2;
-    RPY<float> rpyf = cast<float>(rpy1);
-    for (size_t i = 0; i<3; i++)
-        BOOST_CHECK(rpyf(i) == (float)rpy1(i));
+	RPY<float> rpyf;
+	rpyf = cast<float>(rpy1);
+	for (size_t i = 0; i<3; i++)
+		BOOST_CHECK(rpyf(i) == (float)rpy1(i));
+	rpyf = rw::math::cast<float>(rpy1); // qualified lookup
+	for (size_t i = 0; i<3; i++)
+		BOOST_CHECK(rpyf(i) == (float)rpy1(i));
 
     /* Test comparison operators operator== and operator!= */
     const RPY<double> comp1(1.1, -2.2, 3.3);

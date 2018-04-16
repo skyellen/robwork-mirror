@@ -32,7 +32,11 @@ BOOST_AUTO_TEST_CASE(Pose6DTest){
     BOOST_CHECK_CLOSE(p(4),5.5,1e-15);
     BOOST_CHECK_CLOSE(p(5),6.6,1e-15);
 
-    Pose6D<float> pf = cast<float>(p);
+	Pose6D<float> pf;
+	pf = cast<float>(p);
     for (size_t i = 0; i<6; i++)
         BOOST_CHECK_CLOSE(pf(i), (float)p(i), 1e-15f);
+	pf = rw::math::cast<float>(p); // qualified lookup
+	for (size_t i = 0; i<6; i++)
+		BOOST_CHECK_CLOSE(pf(i), (float)p(i), 1e-15f);
 }

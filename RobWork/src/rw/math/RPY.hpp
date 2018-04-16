@@ -162,24 +162,24 @@ namespace rw { namespace math {
             //return os << rpy._rpy;
         }
 
-        /**
-         * @brief Casts RPY<T> to RPY<Q>
-         *
-         * @param rpy [in] RPY with type T
-         *
-         * @return RPY with type Q
-         */
-        template<class Q>
-        friend const RPY<Q> cast(const RPY<T>& rpy) {
-            return RPY<Q>(
-                static_cast<Q>(rpy(0)),
-                static_cast<Q>(rpy(1)),
-                static_cast<Q>(rpy(2)));
-        }
-
     private:
         Vector3D<T> _rpy;
     };
+
+	/**
+	* @brief Casts RPY<T> to RPY<Q>
+	*
+	* @param rpy [in] RPY with type T
+	*
+	* @return RPY with type Q
+	*/
+	template<class Q, class T>
+	const RPY<Q> cast(const RPY<T>& rpy) {
+		return RPY<Q>(
+			static_cast<Q>(rpy(0)),
+			static_cast<Q>(rpy(1)),
+			static_cast<Q>(rpy(2)));
+	}
 
     /*@}*/
 }} // end namespaces

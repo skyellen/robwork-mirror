@@ -135,10 +135,15 @@ BOOST_AUTO_TEST_CASE(Rotation2DTest)
     const Vector2D<> v1(1, 2);
     BOOST_CHECK_SMALL( MetricUtil::normInf(v1 - r1 * v1), 0.0000001);
 
-    const Rotation2D<int> ri = cast<int>(r1);
-    for (size_t i = 0; i < 2; i++)
-        for (size_t j = 0; j < 2; j++)
-            BOOST_CHECK((int)r1(i, j) == ri(i, j));
+	Rotation2D<int> ri;
+	ri = cast<int>(r1);
+	for (size_t i = 0; i < 2; i++)
+		for (size_t j = 0; j < 2; j++)
+			BOOST_CHECK((int)r1(i, j) == ri(i, j));
+	ri = rw::math::cast<int>(r1); // qualified lookup
+	for (size_t i = 0; i < 2; i++)
+		for (size_t j = 0; j < 2; j++)
+			BOOST_CHECK((int)r1(i, j) == ri(i, j));
 
     /* Test comparison operators operator== and operator!= */
     const Rotation2D<> rotcomp1(1.1, -2.2, 3.3, 4.4);
@@ -177,10 +182,15 @@ BOOST_AUTO_TEST_CASE(Rotation3DTest)
     BOOST_CHECK(r1 == r1);
     BOOST_CHECK(!(r1 == r3));
 
-    const Rotation3D<int> ri = cast<int>(r3);
-    for (size_t i = 0; i < 3; i++)
-        for (size_t j = 0; j < 3; j++)
-            BOOST_CHECK((int)r3(i, j) == ri(i, j));
+	Rotation3D<int> ri;
+	ri = cast<int>(r3);
+	for (size_t i = 0; i < 3; i++)
+		for (size_t j = 0; j < 3; j++)
+			BOOST_CHECK((int)r3(i, j) == ri(i, j));
+	ri = rw::math::cast<int>(r3); // qualified lookup
+	for (size_t i = 0; i < 3; i++)
+		for (size_t j = 0; j < 3; j++)
+			BOOST_CHECK((int)r3(i, j) == ri(i, j));
 
     /* Test comparison operators operator== and operator!= */
     const EAA<> eaacomp1(Pi / 2, 0, 0);

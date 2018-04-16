@@ -372,21 +372,6 @@ namespace rw { namespace math {
         }
 
         /**
-         * @brief Cast Transform3D<T> to Transform3D<Q>
-         * @param trans [in] Transform3D with type T
-         * @return Transform3D with type Q
-         */
-        template<class Q>
-        friend const Transform3D<Q> cast(const Transform3D<T>& trans)
-        {
-            Transform3D<Q> res;
-            for (size_t i = 0; i<3; i++)
-                for (size_t j = 0; j<4; j++)
-                    res(i,j) = static_cast<Q>(trans(i,j));
-            return res;
-        }
-
-        /**
            @brief Write to \b result the product \b a * \b b.
         */
         static inline void multiply(const Transform3D<T>& a,
@@ -552,6 +537,21 @@ namespace rw { namespace math {
             -(inverse(aTb.R()) * aTb.P()),
             inverse(aTb.R()));
     }
+
+	/**
+	* @brief Cast Transform3D<T> to Transform3D<Q>
+	* @param trans [in] Transform3D with type T
+	* @return Transform3D with type Q
+	*/
+	template<class Q, class T>
+	const Transform3D<Q> cast(const Transform3D<T>& trans)
+	{
+		Transform3D<Q> res;
+		for (size_t i = 0; i<3; i++)
+			for (size_t j = 0; j<4; j++)
+				res(i, j) = static_cast<Q>(trans(i, j));
+		return res;
+	}
 
     /*@}*/
 

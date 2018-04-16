@@ -25,6 +25,17 @@
 #include <rw/math/Math.hpp>
 #include <rw/math/Constants.hpp>
 
+BOOST_AUTO_TEST_CASE(EAATest_ADL) {
+	rw::math::Vector3D<> vec1(0.1, 0.2, 0.3);
+	rw::math::EAA<> eaa2(0.4, 0.5, 0.6);
+	rw::math::Vector3D<> c;
+
+	c = cross(vec1, eaa2);
+	BOOST_CHECK(fabs(c[0] - (0.2*0.6 - 0.3*0.5)) < 1e-15);
+	BOOST_CHECK(fabs(c[1] - (0.1*0.6 - 0.3*0.4)) < 1e-15);
+	BOOST_CHECK(fabs(c[2] - (0.1*0.5 - 0.4*0.2)) < 1e-15);
+}
+
 using namespace rw::math;
 
 namespace
@@ -37,6 +48,35 @@ namespace
 
 BOOST_AUTO_TEST_CASE( EAATest ){
     BOOST_TEST_MESSAGE("- Testing EAA");
+
+	// Test casting
+	{
+		EAA<> eaacast(0.1, 0.2, 0.3);
+		EAA<float> eaaf;
+		eaaf = cast<float>(eaacast);
+		for (size_t i = 0; i < 3; i++)
+			BOOST_CHECK(eaaf(i) == (float)eaacast(i));
+		eaaf = rw::math::cast<float>(eaacast); // qualified lookup
+		for (size_t i = 0; i < 3; i++)
+			BOOST_CHECK(eaaf(i) == (float)eaacast(i));
+	}
+
+	// Test cross product
+	{
+		Vector3D<> vec1(0.1, 0.2, 0.3);
+		EAA<> eaa2(0.4, 0.5, 0.6);
+		Vector3D<> c;
+
+		c = cross(vec1, eaa2);
+		BOOST_CHECK(fabs(c[0] - (0.2*0.6 - 0.3*0.5)) < 1e-15);
+		BOOST_CHECK(fabs(c[1] - (0.1*0.6 - 0.3*0.4)) < 1e-15);
+		BOOST_CHECK(fabs(c[2] - (0.1*0.5 - 0.4*0.2)) < 1e-15);
+		c = rw::math::cross(vec1, eaa2); // qualified lookup
+		BOOST_CHECK(fabs(c[0] - (0.2*0.6 - 0.3*0.5)) < 1e-15);
+		BOOST_CHECK(fabs(c[1] - (0.1*0.6 - 0.3*0.4)) < 1e-15);
+		BOOST_CHECK(fabs(c[2] - (0.1*0.5 - 0.4*0.2)) < 1e-15);
+	}
+
     // 0 degree
     EAA<> e0(0.0, 0.0, 0.0);
     BOOST_CHECK(e0.angle() == 0);
