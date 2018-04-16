@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(EAATest_ADL) {
 
 	c = cross(vec1, eaa2);
 	BOOST_CHECK(fabs(c[0] - (0.2*0.6 - 0.3*0.5)) < 1e-15);
-	BOOST_CHECK(fabs(c[1] - (0.1*0.6 - 0.3*0.4)) < 1e-15);
+	BOOST_CHECK(fabs(c[1] + (0.1*0.6 - 0.3*0.4)) < 1e-15);
 	BOOST_CHECK(fabs(c[2] - (0.1*0.5 - 0.4*0.2)) < 1e-15);
 }
 
@@ -69,11 +69,11 @@ BOOST_AUTO_TEST_CASE( EAATest ){
 
 		c = cross(vec1, eaa2);
 		BOOST_CHECK(fabs(c[0] - (0.2*0.6 - 0.3*0.5)) < 1e-15);
-		BOOST_CHECK(fabs(c[1] - (0.1*0.6 - 0.3*0.4)) < 1e-15);
+		BOOST_CHECK(fabs(c[1] + (0.1*0.6 - 0.3*0.4)) < 1e-15);
 		BOOST_CHECK(fabs(c[2] - (0.1*0.5 - 0.4*0.2)) < 1e-15);
 		c = rw::math::cross(vec1, eaa2); // qualified lookup
 		BOOST_CHECK(fabs(c[0] - (0.2*0.6 - 0.3*0.5)) < 1e-15);
-		BOOST_CHECK(fabs(c[1] - (0.1*0.6 - 0.3*0.4)) < 1e-15);
+		BOOST_CHECK(fabs(c[1] + (0.1*0.6 - 0.3*0.4)) < 1e-15);
 		BOOST_CHECK(fabs(c[2] - (0.1*0.5 - 0.4*0.2)) < 1e-15);
 	}
 
