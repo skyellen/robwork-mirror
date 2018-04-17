@@ -395,21 +395,7 @@ namespace rw { namespace math {
             static_cast<Q>(v(0)),
             static_cast<Q>(v(1)));
     }
-	/**
-         * @brief Calculates the 2D vector cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
-         *
-         * @param v1 [in] @f$ \mathbf{v1} @f$
-         *
-         * @param v2 [in] @f$ \mathbf{v2} @f$
-         *
-         * @return the cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
-         *
-         * The 2D vector cross product is defined as:
-         *
-         * @f$
-         * \mathbf{v1} \times \mathbf{v2} =  v1_x * v2_y - v1_y * v2_x
-         * @f$
-         */
+
     /**
        @brief Compares \b a and \b b for equality.
 
