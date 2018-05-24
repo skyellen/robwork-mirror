@@ -8,9 +8,8 @@ def rwhw_urscript():
     global speed = 0.75
     global time = 0.0
     global blend = 0.0
-    global thrd  = -1
     global motionFinished = 0
-    global isServoing = 0
+    global isServoing = 1
     global isStopped = 1
     global receive_buffer = [9, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     global receive_buffer18 = [18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -23,74 +22,14 @@ def rwhw_urscript():
     global center_of_gravity = [0, 0, 0]
 	
     def stopRobot():
-        enter_critical	  
-        if thrd != -1:
-            kill thrd
-            thrd = -1
-        end
-        exit_critical
-        textmsg("Stop Robot")
-        stopj(10)
+        textmsg("Stopping Robot, decelerating joint speeds to zero!")
+        stopj(10) # decelerate with 10 rad/s^2
         isServoing = 0
         isStopped = 1
     end
 
-
-    #Thread for running the movej command
-    thread moveJthread():
-        textmsg("Calls movej")
-        textmsg(qtarget)
-        textmsg(speed)
-        textmsg(blend)
-        movej(qtarget, acceleration, speed, time, blend)
-        textmsg("MoveJ called")
-        #We reset our thread handle to -1 to indicate that the motion is finish.
-        #This is done in a critical section to avoid race conditions
-        enter_critical
-        thrd = -1
-        motionFinished = 1
-        exit_critical
-        textmsg("MoveJ done")
-    end
-
-    #Thread for running the movel command
-    thread moveLthread():
-        textmsg("Calls moveT")
-        textmsg(posetarget)
-        textmsg(speed)
-        textmsg(blend)
-        movel(posetarget, tool_acceleration, speed, time, blend)
-
-        #We reset our thread handle to -1 to indicate that the motion is finish.
-        #This is done in a critical section to avoid race conditions
-        enter_critical	
-        thrd = -1
-        motionFinished = 1
-        exit_critical
-    end
-
-
-    #Thread for running the servoj comand. The thread constantly updates the target 
-    #of the servoj command to the most recently given target.
-    thread servoQthread():
-        textmsg("Start ServoQ Thread")
-        while 1 == 1:
-            enter_critical
-            q = qtarget
-            exit_critical
-            #textmsg("Calls ServoJ")
-            servoj(q, 3, 0.75, 0.008)            
-        end
-        enter_critical
-        thrd = -1
-        motionFinished = 1
-        exit_critical
-    end
-
-
-
     def moveQ():
-        textmsg("MoveQ")
+        textmsg("MoveQ:")
         cnt = 0           
         enter_critical  
         motionFinished = 0      
@@ -100,38 +39,24 @@ def rwhw_urscript():
         end
         exit_critical
         textmsg(qtarget)
-        textmsg("Get Speed")
+
+        # Set speed and blend
         speed = receive_buffer[8]*FLOAT_SCALE
-      	textmsg("speed ")
-        textmsg(speed)
-        textmsg("Get Blend")
         blend = receive_buffer[9]*FLOAT_SCALE
-        textmsg("blend ")
-        textmsg(blend)
+
+        textmsg("calling movej")
+        movej(qtarget, acceleration, speed, time, blend)
         enter_critical
-        if thrd != -1:			
-            textmsg("Kills old thread")
-            kill thrd
-            isServoing = 0
-            textmsg("Continues after kill")
-            thrd = -1
-        end
+        motionFinished = 1
         exit_critical
-        
-        enter_critical
-        #We only wish to start a new thread if our previous motion is finished
-        if thrd == -1:
-            thrd = run moveJthread()
-        end
-        exit_critical
+        textmsg("movej done")
     end
 
     def moveT():
-		textmsg("MOVET")
-        #Reads in x,y,z,ax,ay,az,speed
-        motionFinished = 0
-		cnt = 0
+		textmsg("MoveT:")
+        cnt = 0
 		enter_critical
+		motionFinished = 0
         while cnt < 6:
             posetarget[cnt] = receive_buffer[cnt+2]*FLOAT_SCALE
             cnt = cnt + 1
@@ -139,29 +64,18 @@ def rwhw_urscript():
 		exit_critical
 		
         textmsg(posetarget)
-        textmsg("Get Speed")
+
+        # Set speed and blend
         speed = receive_buffer[8]*FLOAT_SCALE
-        textmsg("speed ")
-        textmsg(speed)
-        textmsg("Get Blend")
         blend = receive_buffer[9]*FLOAT_SCALE
-        textmsg("blend ")
-        textmsg(blend)
-    
-		enter_critical		
-        if thrd != -1:			
-            kill thrd
-            isServoing = 0
-            thrd = -1
-        end
-        exit_critical
-        
+
+        textmsg("calling movel")
+        movel(posetarget, tool_acceleration, speed, time, blend)
+
         enter_critical
-        #We only wish to start a new thread if our previous motion is finished
-        if thrd == -1:
-            thrd = run moveLthread()
-        end
+        motionFinished = 1
         exit_critical
+        textmsg("movel done")
     end
 
     def servoQ():
@@ -173,23 +87,25 @@ def rwhw_urscript():
         end
         exit_critical
 
-  		#textmsg(isServoing)
+        # Output target
+        textmsg(qtarget)
+
+        # We only servo if isServoing is 1, this is default and is changed by stopRobot
+        if isServoing == 1:
+            enter_critical
+            q = qtarget
+            exit_critical
+$CB3        servoj(q, a=0, v=0, t=0.008, lookahead_time=0.1, gain=300)
+$CB2        servoj(q, 3, 0.75, 0.008)
+        end
 
         enter_critical
-        if isServoing == 0:
-            textmsg(qtarget)
-            isServoing = 1 
-            if thrd == -1:
-                textmsg("Start ServoQThread")
-                thrd = run servoQthread()
-            end
-        end
+        motionFinished = 1
         exit_critical
     end
 
     def force_mode_start():
-        cnt = 0           
-        #enter_critical        
+        cnt = 0
         while cnt < 6:
             force_frame[cnt] = receive_buffer[cnt+2]*FLOAT_SCALE
             cnt = cnt + 1
@@ -214,22 +130,17 @@ def rwhw_urscript():
         textmsg("Force Limits:")
         textmsg(force_limits)
         force_mode(force_frame, force_selection, wrench, 2, force_limits)
-
-        #exit_critical
     end
 
 	
     def force_mode_update():
-        cnt = 0           
-        #enter_critical        
+        cnt = 0
         while cnt < 6:
             wrench[cnt] = receive_buffer[cnt+2]*FLOAT_SCALE
             cnt = cnt + 1
         end
 
         force_mode(force_frame, force_selection, wrench, 2, force_limits)
-
-        #exit_critical
     end
 	
 	
@@ -253,17 +164,17 @@ $CB3    end_teach_mode()
 		id = receive_buffer[2]
 		onoff = receive_buffer[3]
 		if onoff == 1:
-	$CB3	set_standard_digital_out(id, True)
-	$CB2	set_digital_out(id, True)
+$CB3    	set_standard_digital_out(id, True)
+$CB2    	set_digital_out(id, True)
 		else:
-	$CB3	set_standard_digital_out(id, False)
-	$CB2	set_digital_out(id, False)
+$CB3    	set_standard_digital_out(id, False)
+$CB2    	set_digital_out(id, False)
 		end	
 	end
 	
 	
 	def set_tcp_payload():
-		textmsg("Setting payload")
+		textmsg("Setting TCP payload")
     	cnt = 0
 		mass = receive_buffer[cnt+2]*FLOAT_SCALE
 		cnt = cnt + 1
@@ -279,7 +190,6 @@ $CB3    end_teach_mode()
 		
 		set_payload(mass, center_of_gravity) 
     end
-
 	
 #
 # The main loop is running below
@@ -328,8 +238,7 @@ $CB3    end_teach_mode()
         elif receive_buffer[1] == 2: #2: Move to T
 			isStopped = 0
             moveT()
-        elif receive_buffer[1] == 3: #3: Servo to T
-			textmsg("servo")
+        elif receive_buffer[1] == 3: #3: Servo to Q
 			isStopped = 0
             servoQ()
         elif receive_buffer[1] == 4: #4: Start Force Mode Base
@@ -354,14 +263,7 @@ $CB3    end_teach_mode()
             #Right motion already taken
         end
 
-
-		
-        #if motionFinished == 1:
-        #textmsg("Sends finished")
-        #socket_set_var("FIN", 1)
-        #motionFinished = 0
-        #end
-    end #end for While True:
+    end
     textmsg("Program Finished")
 end
 run program

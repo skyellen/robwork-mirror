@@ -91,7 +91,7 @@ void URPrimaryInterface::stop() {
 
 
 bool URPrimaryInterface::isConnected() const {
-	return _connected;
+	return _connected && !_lostConnection;
 }
 
 
@@ -173,7 +173,7 @@ void URPrimaryInterface::run() {
 	while (!_stop) {
 		if (_connected) {
 			if (readPrimaryInterfacePacket()) {
-				boost::this_thread::sleep(boost::posix_time::milliseconds(50));
+				boost::this_thread::sleep(boost::posix_time::milliseconds(20));
 			}
 
 
