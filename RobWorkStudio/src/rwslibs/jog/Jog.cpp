@@ -476,10 +476,12 @@ void Jog::constructTabs(Device::Ptr device) {
     _jointSliderWidget->setup(titles, device->getBounds(), device->getQ(_state), enablers);
 
     QPushButton* btnPasteQ = new QPushButton("Paste", _jointSliderWidget);
+    QPushButton* btnCopyQ = new QPushButton("Copy", _jointSliderWidget);
     QHBoxLayout* btnlayout = new QHBoxLayout();
-    btnlayout->addWidget(new QLabel(""));
+    btnlayout->addWidget(btnCopyQ);
     btnlayout->addWidget(btnPasteQ);
     connect(btnPasteQ, SIGNAL(clicked()), _jointSliderWidget, SLOT(paste()));
+    connect(btnCopyQ, SIGNAL(clicked()), _jointSliderWidget, SLOT(copy()));
     
     QVBoxLayout* tablayout = new QVBoxLayout();
     tablayout->addLayout(btnlayout);
@@ -513,10 +515,12 @@ void Jog::constructTabs(Device::Ptr device) {
         _jointSliderWidgetFull->setup(titles, pdevice->getAllBounds(), pdevice->getFullQ(_state), false);
 
         QPushButton* btnPasteQ = new QPushButton("Paste", _jointSliderWidgetFull);
+        QPushButton* btnCopyQ = new QPushButton("Copy", _jointSliderWidgetFull);
         QHBoxLayout* btnlayout = new QHBoxLayout();
-        btnlayout->addWidget(new QLabel(""));
+        btnlayout->addWidget(btnCopyQ);
         btnlayout->addWidget(btnPasteQ);
         connect(btnPasteQ, SIGNAL(clicked()), _jointSliderWidgetFull, SLOT(paste()));
+        connect(btnCopyQ, SIGNAL(clicked()), _jointSliderWidgetFull, SLOT(copy()));
 
         QVBoxLayout* tablayout = new QVBoxLayout();
         tablayout->addLayout(btnlayout);

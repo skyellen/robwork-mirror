@@ -27,6 +27,8 @@
 #include <QInputDialog>
 #include <QLabel>
 #include <QSlider>
+#include <QClipboard>
+#include <QApplication>
 
 #include "SliderTab.hpp"
 
@@ -331,11 +333,13 @@ MovableFrameTab::MovableFrameTab(const std::pair<rw::math::Q, rw::math::Q>& boun
     _transformSliderWidget = new TransformSliderWidget(bounds, Kinematics::frameTframe(_refframe, _frame, _state));
     
     QPushButton* btnPasteQ = new QPushButton("Paste", _transformSliderWidget);
+    QPushButton* btnCopyQ = new QPushButton("Copy", _transformSliderWidget);
     QHBoxLayout* btnlayout = new QHBoxLayout();
-    btnlayout->addWidget(new QLabel(""));
+    btnlayout->addWidget(btnCopyQ);
     btnlayout->addWidget(btnPasteQ);
     tablayout->addLayout(btnlayout, 1, 0);
     connect(btnPasteQ, SIGNAL(clicked()), _transformSliderWidget, SLOT(paste()));
+    connect(btnCopyQ, SIGNAL(clicked()), _transformSliderWidget, SLOT(copy()));
     
     connect(_transformSliderWidget,
             SIGNAL(valueChanged(const rw::math::Transform3D<>&)),
@@ -465,6 +469,19 @@ void JointSliderWidget::paste() {
 		}
 	} while (true);
 
+}
+
+void JointSliderWidget::copy() {
+    Q q(_sliders.size());
+      
+    for(size_t i = 0; i < _sliders.size(); ++i) {
+        q[i] = _sliders[i]->value();
+    }
+
+    std::stringstream ss;
+    ss << q;
+    
+    QApplication::clipboard()->setText(QString(ss.str().c_str()));
 }
 
 void JointSliderWidget::setUnits(const std::vector<double>& converters, const std::vector<std::string>& descriptions) {
@@ -623,6 +640,10 @@ void TransformSliderWidget::paste() {
   _jointSliderWidget->paste();
 }
 
+void TransformSliderWidget::copy() {
+  _jointSliderWidget->copy();
+}
+
 CartesianDeviceTab::CartesianDeviceTab(const std::pair<rw::math::Q, rw::math::Q>& bounds,
 									   Device::Ptr device,
                                        WorkCell* workcell,
@@ -672,12 +693,14 @@ CartesianDeviceTab::CartesianDeviceTab(const std::pair<rw::math::Q, rw::math::Q>
     _transformSliderWidget = new TransformSliderWidget(bounds, Kinematics::frameTframe(_refFrame, _tcpFrame, _state), !enablers, enablers);
     
     QPushButton* btnPasteQ = new QPushButton("Paste", _transformSliderWidget);
+    QPushButton* btnCopyQ = new QPushButton("Copy", _transformSliderWidget);
     QHBoxLayout* btnlayout = new QHBoxLayout();
-    btnlayout->addWidget(new QLabel(""));
+    btnlayout->addWidget(btnCopyQ);
     btnlayout->addWidget(btnPasteQ);
     tablayout->addLayout(btnlayout, 1, 0);
     connect(btnPasteQ, SIGNAL(clicked()), _transformSliderWidget, SLOT(paste()));    
-    
+    connect(btnCopyQ, SIGNAL(clicked()), _transformSliderWidget, SLOT(copy()));    
+
     connect(_transformSliderWidget,
             SIGNAL(valueChanged(const rw::math::Transform3D<>&)),
             this,

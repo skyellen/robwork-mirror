@@ -198,7 +198,8 @@ signals:
 public slots:
 	//! @brief Opens up input dialog for pasting a new set of values.
     void paste();
-
+    //! @brief Puts the Q into the clipboard.
+    void copy();
 private slots:
 	void valueChanged();
 	void angularChanged(int state);
@@ -264,7 +265,8 @@ signals:
 public slots:
 	//! @brief Opens up dialog for easy pasting of a new pose.
     void paste();
-    
+    //! @brief Copys the pose into the clipboard.
+    void copy();
 private slots:
     void valueChanged(const rw::math::Q& q);
     
