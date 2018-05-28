@@ -191,6 +191,11 @@ namespace rw { namespace invkin {
          */
         void setClampToBounds(bool enableClamping);
 
+        /**
+         * @copydoc InvKinSolver::getTCP
+         */
+        virtual rw::common::Ptr< const rw::kinematics::Frame > getTCP() const;                   
+
     private:
         void updateDeltaX(const std::vector<Target>& targets, const rw::kinematics::FramePairMap<rw::common::Ptr<rw::models::ParallelLeg> >& targetLegs, const rw::kinematics::State& state, rw::math::Q& deltaX, const Eigen::MatrixXd::Index nCon) const;
         void updateJacobian(const std::vector<Target>& targets, const rw::kinematics::FramePairMap<rw::common::Ptr<rw::models::ParallelLeg> >& targetLegs, const rw::kinematics::State& state, rw::math::Jacobian& jacobian) const;

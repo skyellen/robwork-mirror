@@ -90,6 +90,11 @@ namespace rw { namespace invkin {
          * @copydoc InvKinSolver::setCheckJointLimits
          */
         virtual void setCheckJointLimits(bool check);
+        
+        /**
+         * @copydoc InvKinSolver::getTCP
+         */
+        virtual rw::common::Ptr< const rw::kinematics::Frame > getTCP() const;            
 
     private:
         std::vector<rw::models::DHParameterSet> _dhparams;

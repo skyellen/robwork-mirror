@@ -72,6 +72,11 @@ public:
 	//! @copydoc InvKinSolver::setCheckJointLimits
     void setCheckJointLimits(bool check);
 
+    /**
+     * @copydoc InvKinSolver::getTCP
+     */
+    virtual rw::common::Ptr< const rw::kinematics::Frame > getTCP() const;            
+
 private:
 	std::pair<double,double> findBaseAngles(const rw::math::Vector2D<> &pos, const rw::kinematics::State& state) const;
 

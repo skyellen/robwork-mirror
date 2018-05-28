@@ -304,3 +304,7 @@ Vector3D<> ClosedFormIKSolverUR::getPerpendicularVector(const Vector3D<> &vec) {
 		return cross(vec,Vector3D<>(0,0,1));
 	}
 }
+
+rw::kinematics::Frame::CPtr ClosedFormIKSolverUR::getTCP() const {
+    return _device->getEnd();
+}

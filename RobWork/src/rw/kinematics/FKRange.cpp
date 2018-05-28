@@ -142,3 +142,8 @@ Transform3D<> FKRange::get(const State& state) const
             reversePathTransform(_forwardBranch, state);
     }
 }
+
+Frame::CPtr FKRange::getEnd() const
+{
+    return _forwardBranch.back();
+}

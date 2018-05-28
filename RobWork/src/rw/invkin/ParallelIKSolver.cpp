@@ -307,3 +307,7 @@ void ParallelIKSolver::setCheckJointLimits(bool check) {
 void ParallelIKSolver::setClampToBounds(bool enableClamping) {
 	_useJointClamping = enableClamping;
 }
+
+rw::kinematics::Frame::CPtr ParallelIKSolver::getTCP() const {
+    return _device->getEnd();
+}

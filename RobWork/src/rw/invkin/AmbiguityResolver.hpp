@@ -65,6 +65,10 @@ public:
      */
     virtual void setCheckJointLimits(bool check);
 
+    /**
+     * @copydoc InvKinSolver::getTCP
+     */
+    virtual rw::common::Ptr< const rw::kinematics::Frame > getTCP() const;            
 
 private:
 	InvKinSolver::Ptr _invkin;

@@ -5,7 +5,10 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Q.hpp>
 
-namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace kinematics { 
+    class State; 
+    class Frame; 
+} }
 
 namespace rw {
 namespace invkin {
@@ -30,6 +33,8 @@ class InvKinSolver
 public:
 	//! @brief smart pointer type to this class
 	typedef rw::common::Ptr<InvKinSolver> Ptr;
+	//! @brief smart pointer type to this const class
+	typedef rw::common::Ptr< const InvKinSolver > CPtr;
 
 	//! destructor
 	virtual ~InvKinSolver(){};
@@ -65,6 +70,13 @@ public:
      * @param check [in] If true the method should perform a check that joints are within bounds.
      */
     virtual void setCheckJointLimits(bool check) = 0;            
+
+    /**
+     * @brief Returns the Tool Center Point (TCP) used when solving the IK problem.
+     *
+     * @return The TCP Frame used when solving the IK.
+     */
+    virtual rw::common::Ptr< const rw::kinematics::Frame > getTCP() const = 0;            
 
 };
 

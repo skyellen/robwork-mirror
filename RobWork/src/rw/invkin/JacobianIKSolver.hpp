@@ -23,6 +23,7 @@
  * @file JacobianIKSolver.hpp
  */
 
+#include <rw/common/Ptr.hpp>
 #include <rw/invkin/IterativeIK.hpp>
 #include <rw/kinematics/FKRange.hpp>
 #include <vector>
@@ -164,6 +165,11 @@ namespace rw { namespace invkin {
         void setCheckJointLimits(bool check){
             _checkJointLimits = check;
         }
+
+        /**
+         * @copydoc InvKinSolver::getTCP
+         */
+        virtual rw::common::Ptr< const rw::kinematics::Frame > getTCP() const;            
 
     private:
         rw::common::Ptr< const rw::models::Device > _device;

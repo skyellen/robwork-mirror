@@ -160,3 +160,7 @@ void IKMetaSolver::setProximityLimit(double limit) {
 void IKMetaSolver::setCheckJointLimits(bool check) {
     _checkForLimits = check;
 }
+
+rw::kinematics::Frame::CPtr IKMetaSolver::getTCP() const {
+    return _iksolver->getTCP();
+}

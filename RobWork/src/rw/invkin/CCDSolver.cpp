@@ -538,3 +538,7 @@ std::vector<Q> CCDSolver::solve(const Transform3D<>& bTed, const State& initial_
     return std::vector<Q>();
     */
 //}
+
+rw::kinematics::Frame::CPtr CCDSolver::getTCP() const {
+    return _device->getEnd();
+}

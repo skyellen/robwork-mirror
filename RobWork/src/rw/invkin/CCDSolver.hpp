@@ -88,6 +88,11 @@ namespace rw { namespace invkin {
 
         virtual void setCheckJointLimits(bool check) {};
 
+        /**
+         * @copydoc InvKinSolver::getTCP
+         */
+        virtual rw::common::Ptr< const rw::kinematics::Frame > getTCP() const;            
+
     private:
         double _maxQuatStep;
 

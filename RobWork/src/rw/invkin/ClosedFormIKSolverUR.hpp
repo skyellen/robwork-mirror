@@ -34,6 +34,8 @@ class ClosedFormIKSolverUR: public rw::invkin::ClosedFormIK {
 public:
 	//! @brief Smart pointer type to ClosedFormURSolver
 	typedef rw::common::Ptr<ClosedFormIKSolverUR> Ptr;
+	//! @brief Smart pointer type to const ClosedFormURSolver
+	typedef rw::common::Ptr<const ClosedFormIKSolverUR> CPtr;
 
 	/**
 	 * @brief Construct new closed form solver for a Universal Robot.
@@ -51,6 +53,11 @@ public:
 
 	//! @copydoc InvKinSolver::setCheckJointLimits
     void setCheckJointLimits(bool check);
+
+    /**
+     * @copydoc InvKinSolver::getTCP
+     */
+    virtual rw::common::Ptr< const rw::kinematics::Frame > getTCP() const;            
 
 private:
     rw::math::Q adjustJoints(const rw::math::Q &q) const;

@@ -165,6 +165,11 @@ namespace rw { namespace invkin {
                                        size_t cnt,
                                        bool stopatfirst) const;
 
+        /**
+         * @copydoc InvKinSolver::getTCP
+         */
+        virtual rw::common::Ptr< const rw::kinematics::Frame > getTCP() const;                      
+
     private:
 		IterativeIK::Ptr _iksolver;
 		rw::common::Ptr<rw::proximity::CollisionDetector> _collisionDetector;

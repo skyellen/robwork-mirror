@@ -235,3 +235,7 @@ Vector3D<> ClosedFormIKSolverKukaIIWA::randomPerpendicularVector(const Vector3D<
 	}
 	return EAA<>(v,Random::ran(0,2*Pi)).toRotation3D()*perp;
 }
+
+rw::kinematics::Frame::CPtr ClosedFormIKSolverKukaIIWA::getTCP() const {
+    return _device->getEnd();
+}

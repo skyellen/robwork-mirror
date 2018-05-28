@@ -24,6 +24,8 @@
 #include <rw/models/Models.hpp>
 #include <rw/models/Device.hpp>
 
+#include <rw/kinematics/Frame.hpp>
+
 #include <rw/trajectory/LinearInterpolator.hpp>
 
 using namespace boost;
@@ -194,3 +196,6 @@ bool JacobianIKSolver::solveLocal(const Transform3D<> &bTed,
     return false;
 }
 
+rw::kinematics::Frame::CPtr JacobianIKSolver::getTCP() const {
+    return _fkrange.getEnd();
+}

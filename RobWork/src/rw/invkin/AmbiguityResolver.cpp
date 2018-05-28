@@ -88,3 +88,7 @@ std::vector<Q> AmbiguityResolver::solve(const Transform3D<>& baseTend, const Sta
 void AmbiguityResolver::setCheckJointLimits(bool check) {
     
 }
+
+rw::kinematics::Frame::CPtr AmbiguityResolver::getTCP() const {
+    return _invkin->getTCP();
+}
