@@ -179,6 +179,22 @@ Model3D::Ptr LoaderAssimp::load(const std::string& filename) {
 			objects[i]->_parentObj = parent;
 		}
 
+		// First check that there are not too many vertices to store in 16-bit IndexedTriMesh
+		for (std::size_t n = 0; n < nodes.size(); n++) {
+			aiNode* node = nodes[n];
+			unsigned int nodeVertices = 0;
+			for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+				const aiMesh* const mesh = scene->mMeshes[node->mMeshes[i]];
+				const unsigned int vertices = mesh->mNumVertices;
+				if (vertices >= UINT16_MAX)
+					RW_THROW("LoaderAssimp can not load the node \"" << node->mName.C_Str() << "\" (mesh \"" << mesh->mName.C_Str() << "\") from file " << filename << " as it has " << vertices << " vertices - max is " << UINT16_MAX << "!");
+				if (nodeVertices >= UINT16_MAX - vertices)
+					RW_THROW("LoaderAssimp can not load the node \"" << node->mName.C_Str() << "\" from file " << filename << " as the combined mesh has too many combined vertices - max is " << UINT16_MAX << "!");
+				else
+					nodeVertices += vertices;
+			}
+		}
+
 		// Add meshes to each object
 		for (std::size_t n = 0; n < nodes.size(); n++) {
 			aiNode* node = nodes[n];

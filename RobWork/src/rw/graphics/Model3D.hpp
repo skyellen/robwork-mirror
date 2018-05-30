@@ -431,10 +431,6 @@ namespace graphics {
         std::string _filePath;
         //! @brief The DrawableNode::DrawableTypeMask
         int _mask;
-        //! @brief Total number of vertices in the model
-        int totalVerts;
-        //! @brief Total number of faces in the model
-        int totalFaces;
         //! @brief If the data can be expected to change.
         bool _isDynamic;
     };
@@ -442,4 +438,4 @@ namespace graphics {
 }
 }
 
-#endif /* MODEL3D_HPP_ */
+#endif /* RW_GRAPHICS_MODEL3D_HPP_ */

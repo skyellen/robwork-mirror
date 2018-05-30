@@ -74,7 +74,30 @@ bool Model3D::hasMaterial(const std::string& matid){
 }
 
 rw::geometry::GeometryData::Ptr Model3D::toGeometryData(){
-	rw::geometry::IndexedTriMeshN0F::Ptr mesh = rw::common::ownedPtr( new rw::geometry::IndexedTriMeshN0F() );
+	// Determine data type size for the vertices
+	std::size_t totalVerts = 0;
+	BOOST_FOREACH(Object3D::Ptr obj, _objects){
+		const std::size_t vertices = obj->_vertices.size();
+		// Check that
+		if (totalVerts >=  std::numeric_limits<std::size_t>::max() - vertices)
+			RW_THROW("Model3D can not be converted to GeometryData as the combined number of vertices must be less than " << std::numeric_limits<std::size_t>::max() << "!");
+		totalVerts += vertices;
+	}
+
+	// 64 bit is currently not implemented to reduce compile time - such huge models will not be used in practice.
+	IndexedTriMeshN0<float,uint8_t>::Ptr mesh8;
+	IndexedTriMeshN0<float,uint16_t>::Ptr mesh16;
+	IndexedTriMeshN0<float,uint32_t>::Ptr mesh32;
+	IndexedTriMeshF::Ptr mesh;
+
+	if (totalVerts < UINT8_MAX)
+		mesh = mesh8 = rw::common::ownedPtr( new IndexedTriMeshN0<float,uint8_t>() );
+	else if (totalVerts < UINT16_MAX)
+		mesh = mesh16 = rw::common::ownedPtr( new IndexedTriMeshN0<float,uint16_t>() );
+	else if (totalVerts < UINT32_MAX)
+		mesh = mesh32 = rw::common::ownedPtr( new IndexedTriMeshN0<float,uint32_t>() );
+	else
+		RW_THROW("The Model3D has too many vertices to be converted to GeometryData (IndexedTriMesh) - should be less than " << UINT32_MAX << "!");
 
 	std::stack<std::pair<Object3D::Ptr,Transform3D<float> > > objects;
 	BOOST_FOREACH(Object3D::Ptr obj, _objects){
@@ -91,21 +114,45 @@ rw::geometry::GeometryData::Ptr Model3D::toGeometryData(){
 		}
 
 		size_t csize = mesh->getVertices().size();
-		size_t tsize = mesh->getTriangles().size();
+		size_t tsize = 0;
 
 		size_t vsize = obj->_vertices.size();
 		size_t fsize = obj->_faces.size();
+
 		mesh->getVertices().resize( csize+vsize );
-		mesh->resize( tsize+fsize );
+		if (totalVerts < UINT8_MAX) {
+			tsize = mesh8->getTriangles().size();
+			mesh8->resize( tsize+fsize );
+		} else if (totalVerts < UINT16_MAX) {
+			tsize = mesh16->getTriangles().size();
+			mesh16->resize( tsize+fsize );
+		} else if (totalVerts < UINT32_MAX) {
+			tsize = mesh32->getTriangles().size();
+			mesh32->resize( tsize+fsize );
+		}
 		// copy all from obj to mesh
 		for(size_t i=0;i<vsize;i++){
 			mesh->getVertices()[csize+i] = /*obj->_transform*/ t3d * obj->_vertices[i];
 		}
 
-		for(size_t i=0;i<fsize;i++){
-			mesh->getTriangles()[tsize+i][0] = obj->_faces[i][0]+(uint16_t)csize;
-			mesh->getTriangles()[tsize+i][1] = obj->_faces[i][1]+(uint16_t)csize;
-			mesh->getTriangles()[tsize+i][2] = obj->_faces[i][2]+(uint16_t)csize;
+		if (totalVerts < UINT8_MAX) {
+			for(size_t i=0;i<fsize;i++){
+				mesh8->getTriangles()[tsize+i][0] = static_cast<uint8_t>(obj->_faces[i][0])+static_cast<uint8_t>(csize);
+				mesh8->getTriangles()[tsize+i][1] = static_cast<uint8_t>(obj->_faces[i][1])+static_cast<uint8_t>(csize);
+				mesh8->getTriangles()[tsize+i][2] = static_cast<uint8_t>(obj->_faces[i][2])+static_cast<uint8_t>(csize);
+			}
+		} else if (totalVerts < UINT16_MAX) {
+			for(size_t i=0;i<fsize;i++){
+				mesh16->getTriangles()[tsize+i][0] = static_cast<uint16_t>(obj->_faces[i][0])+static_cast<uint16_t>(csize);
+				mesh16->getTriangles()[tsize+i][1] = static_cast<uint16_t>(obj->_faces[i][1])+static_cast<uint16_t>(csize);
+				mesh16->getTriangles()[tsize+i][2] = static_cast<uint16_t>(obj->_faces[i][2])+static_cast<uint16_t>(csize);
+			}
+		} else if (totalVerts < UINT32_MAX) {
+			for(size_t i=0;i<fsize;i++){
+				mesh32->getTriangles()[tsize+i][0] = static_cast<uint32_t>(obj->_faces[i][0])+static_cast<uint32_t>(csize);
+				mesh32->getTriangles()[tsize+i][1] = static_cast<uint32_t>(obj->_faces[i][1])+static_cast<uint32_t>(csize);
+				mesh32->getTriangles()[tsize+i][2] = static_cast<uint32_t>(obj->_faces[i][2])+static_cast<uint32_t>(csize);
+			}
 		}
 	}
 	return mesh;

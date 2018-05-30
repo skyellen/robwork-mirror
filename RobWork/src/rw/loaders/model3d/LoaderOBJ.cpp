@@ -817,6 +817,11 @@ Model3D::Ptr LoaderOBJ::load(const std::string& name){
                 nb_points++;
             }
 
+            if (sizeof(std::size_t) > sizeof(uint16_t)) {
+            	if (nb_points >= UINT16_MAX)
+            		RW_THROW("LoaderOBJ can not load file " << name << " as it has too many vertices (max is " << UINT16_MAX << ")!");
+            }
+
             if(face->_element.size()<3){
                 RW_WARN("An OBJ surface with only 2 vertices detected! It will be ignored!");
             } else if(face->_element.size()==3){
