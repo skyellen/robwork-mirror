@@ -714,10 +714,10 @@ void OBJReader::calcVertexNormals()
 
 
 namespace {
-
-    void triangulatePolygon(IndexedPolygonN<>& poly,
+	template <class T>
+    void triangulatePolygon(IndexedPolygonN<T>& poly,
                             std::vector<rw::math::Vector3D<float> >& verts,
-                            std::vector<IndexedTriangle<> >& res)
+                            std::vector<IndexedTriangle<T> >& res)
     {
 
         // calculate poly normal from first three vertices
@@ -744,7 +744,7 @@ namespace {
         int iidx=0;
         if( Triangulate::processPoints(points, indices) ){
             while(iidx < (int)indices.size()){
-                IndexedTriangle<> tri(poly[ indices[iidx  ] ],
+                IndexedTriangle<T> tri(poly[ indices[iidx  ] ],
                                       poly[ indices[iidx+1] ],
                                       poly[ indices[iidx+2] ]);
                 res.push_back(tri);
@@ -769,19 +769,33 @@ Model3D::Ptr LoaderOBJ::load(const std::string& name){
 	//Restore the old locale
 	setlocale(LC_ALL, locale.c_str());
 
+	// First count the vertices
+    std::size_t vertexPoints = 0;
+	BOOST_FOREACH(OBJReader::RenderItem* item, reader._renderItems){
+		if(const OBJReader::Face* const face = dynamic_cast<OBJReader::Face*>(item) ) {
+			vertexPoints += face->_element.size();
+		}
+	}
+
 	Model3D::Ptr model( ownedPtr( new Model3D(name) ) );
-    Model3D::Object3D *obj = new Model3D::Object3D("OBJModel");
+
+	Model3D::Object3DGeneric::Ptr obj;
+	Model3D::Object3D<uint8_t>::Ptr obj8;
+	Model3D::Object3D<uint16_t>::Ptr obj16;
+	Model3D::Object3D<uint32_t>::Ptr obj32;
+	if (vertexPoints < UINT8_MAX)
+		obj = obj8 = ownedPtr(new Model3D::Object3D<uint8_t>("OBJModel"));
+	else if (vertexPoints < UINT16_MAX)
+		obj = obj16 = ownedPtr(new Model3D::Object3D<uint16_t>("OBJModel"));
+	else if (vertexPoints < UINT32_MAX)
+		obj = obj32 = ownedPtr(new Model3D::Object3D<uint32_t>("OBJModel"));
+	else
+		RW_THROW("LoaderOBJ can not load file " << name << " as it has too many vertices (" << vertexPoints << " with max of " << UINT32_MAX << ")!");
+
 	int currentMatIdx = model->addMaterial(Model3D::Material("defcol",0.5,0.5,0.5));
-    Model3D::MaterialFaces *mface = new Model3D::MaterialFaces();
-    mface->_matIndex = currentMatIdx;
-    size_t nb_points=0;
+    std::size_t nb_points = 0;
 	BOOST_FOREACH(OBJReader::RenderItem* item, reader._renderItems){
 		if(OBJReader::UseMaterial* matobj = dynamic_cast<OBJReader::UseMaterial*>(item)){
-        	//if(mface->_subFaces.size()>0){
-        	//    obj->_matFaces.push_back(mface);
-        	//	mface = new Model3D::MaterialFaces();
-        	//}
-
         	float r = matobj->_material->_Kd._v[0];
         	float g = matobj->_material->_Kd._v[1];
         	float b = matobj->_material->_Kd._v[2];
@@ -795,7 +809,6 @@ Model3D::Ptr LoaderOBJ::load(const std::string& name){
     		mat.simplergb = false;
             currentMatIdx = model->addMaterial(mat);
             obj->setMaterial( currentMatIdx );
-            //mface->_matIndex = currentMatIdx;
 		} else if( OBJReader::Face* face = dynamic_cast<OBJReader::Face*>(item) ){
 
             RW_ASSERT(face->_element.size()>=2);
@@ -817,38 +830,58 @@ Model3D::Ptr LoaderOBJ::load(const std::string& name){
                 nb_points++;
             }
 
-            if (sizeof(std::size_t) > sizeof(uint16_t)) {
-            	if (nb_points >= UINT16_MAX)
-            		RW_THROW("LoaderOBJ can not load file " << name << " as it has too many vertices (max is " << UINT16_MAX << ")!");
-            }
-
             if(face->_element.size()<3){
                 RW_WARN("An OBJ surface with only 2 vertices detected! It will be ignored!");
             } else if(face->_element.size()==3){
                 // use TriangleUtil toIndexedTriMesh, though remember the normals
                 //obj->_faces.push_back( rw::geometry::IndexedTriangle<>(nb_points-3,nb_points-2,nb_points-1) );
-                obj->addTriangle(rw::geometry::IndexedTriangle<>(
-					(uint16_t)(nb_points-3),
-					(uint16_t)(nb_points-2),
-					(uint16_t)(nb_points-1)));
-                //mface->_subFaces.push_back(obj->_faces.back());
+            	if (vertexPoints < UINT8_MAX) {
+                    obj8->addTriangle(rw::geometry::IndexedTriangle<uint8_t>(
+    					static_cast<uint8_t>(nb_points-3),
+						static_cast<uint8_t>(nb_points-2),
+						static_cast<uint8_t>(nb_points-1)));
+            	} else if (vertexPoints < UINT16_MAX) {
+                    obj16->addTriangle(rw::geometry::IndexedTriangle<uint16_t>(
+    					static_cast<uint16_t>(nb_points-3),
+						static_cast<uint16_t>(nb_points-2),
+						static_cast<uint16_t>(nb_points-1)));
+            	} else if (vertexPoints < UINT32_MAX) {
+                    obj32->addTriangle(rw::geometry::IndexedTriangle<uint32_t>(
+    					static_cast<uint32_t>(nb_points-3),
+						static_cast<uint32_t>(nb_points-2),
+						static_cast<uint32_t>(nb_points-1)));
+            	}
             } else {
                 // its a polygon, since we don't support that in Model3D, we make triangles of it
-                IndexedPolygonN<> poly(face->_element.size());
-                for(size_t j=0; j<face->_element.size();j++)
-                    poly[j] = (uint16_t)(nb_points-face->_element.size()+j);
-                std::vector<IndexedTriangle<> > tris;
-                triangulatePolygon(poly, obj->_vertices, tris);
-                obj->addTriangles(tris);
+            	if (vertexPoints < UINT8_MAX) {
+                    IndexedPolygonN<uint8_t> poly(face->_element.size());
+                    for(size_t j = 0; j < face->_element.size(); j++)
+                        poly[j] = (uint8_t)(nb_points-face->_element.size()+j);
+                    std::vector<IndexedTriangle<uint8_t> > tris;
+                    triangulatePolygon(poly, obj8->_vertices, tris);
+                    obj8->addTriangles(tris);
+            	} else if (vertexPoints < UINT16_MAX) {
+                    IndexedPolygonN<uint16_t> poly(face->_element.size());
+                    for(size_t j = 0; j < face->_element.size(); j++)
+                        poly[j] = (uint16_t)(nb_points-face->_element.size()+j);
+                    std::vector<IndexedTriangle<uint16_t> > tris;
+                    triangulatePolygon(poly, obj16->_vertices, tris);
+                    obj16->addTriangles(tris);
+            	} else if (vertexPoints < UINT32_MAX) {
+                    IndexedPolygonN<uint32_t> poly(face->_element.size());
+                    for(size_t j = 0; j < face->_element.size(); j++)
+                        poly[j] = (uint32_t)(nb_points-face->_element.size()+j);
+                    std::vector<IndexedTriangle<uint32_t> > tris;
+                    triangulatePolygon(poly, obj32->_vertices, tris);
+                    obj32->addTriangles(tris);
+            	}
                 //BOOST_FOREACH(IndexedTriangle<> &tri, tris){
                     //obj->_faces.push_back( tri );
-                    //mface->_subFaces.push_back( tri );
                 //}
             }
 		}
 	}
 	//std::cout << "nr faces: " << obj->_faces.size() << std::endl;
-    //obj->_matFaces.push_back(mface);
 
     // order stuff in matrial faces
 

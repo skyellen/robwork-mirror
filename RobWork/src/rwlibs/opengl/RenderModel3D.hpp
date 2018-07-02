@@ -89,12 +89,15 @@ namespace rwlibs { namespace opengl {
         //void drawUsingList(DrawType type, double alpha) const;
 
     private:
-        void drawUsingArrays(const rw::graphics::DrawableNode::RenderInfo& info,
-                             const rw::graphics::Model3D::Object3D& obj,
+        template <class T>
+        void drawUsingSimpleFct(const rw::graphics::DrawableNode::RenderInfo& info,
+                             const rw::graphics::Model3D::Object3D<T> &obj,
                              rw::graphics::DrawableNode::DrawType type,
                              double alpha) const;
-        void drawUsingSimple(const rw::graphics::DrawableNode::RenderInfo& info,
-                             const rw::graphics::Model3D::Object3D& obj,
+
+        template <class T>
+        void drawUsingArraysFct(const rw::graphics::DrawableNode::RenderInfo& info,
+                             const rw::graphics::Model3D::Object3D<T> &obj,
                              rw::graphics::DrawableNode::DrawType type,
                              double alpha) const;
 

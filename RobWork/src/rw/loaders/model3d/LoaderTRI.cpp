@@ -39,11 +39,9 @@ Model3D::Ptr LoaderTRI::load(const std::string& filename)
     char input[LINE_MAX_LENGTH];
     int nb_points = 0;
     Model3D::Ptr model = ownedPtr(new Model3D(filename));
-    Model3D::Object3D::Ptr obj = ownedPtr(new Model3D::Object3D("TRIModel"));
+    Model3D::Object3D<uint16_t>::Ptr obj = ownedPtr(new Model3D::Object3D<uint16_t>("TRIModel"));
 
     int currentMatIdx = model->addMaterial(Model3D::Material("defcol",0.5,0.5,0.5));
-    Model3D::MaterialFaces *mface = new Model3D::MaterialFaces();
-    mface->_matIndex = currentMatIdx;
     // while characters still exists and no errors occour
     while (  input_stream.fail()==0 && input_stream.eof()==0 ){
         //  Read the next line of the file into INPUT.
@@ -63,10 +61,6 @@ Model3D::Ptr LoaderTRI::load(const std::string& filename)
         next = next + width;
 
         if ( !strcmp( token, "color" ) ){
-        	//if(mface->_subFaces.size()>0){
-        	//	obj->_matFaces.push_back(mface);
-        	//	mface = new Model3D::MaterialFaces();
-        	//}
             float r,g,b;
             sscanf ( next, "%e %e %e", &r, &g, &b );
             // create material in object
@@ -75,7 +69,6 @@ Model3D::Ptr LoaderTRI::load(const std::string& filename)
             Model3D::Material mat(sstr.str(), r, g, b);
             currentMatIdx = model->addMaterial(mat);
             obj->setMaterial(currentMatIdx);
-            //mface->_matIndex = currentMatIdx;
         } else if( !strcmp( token, "point" ) ){
             float x,y,z,nx,ny,nz;
             sscanf ( next, "%e %e %e %e %e %e", &x, &y, &z, &nx, &ny, &nz );
@@ -88,15 +81,12 @@ Model3D::Ptr LoaderTRI::load(const std::string& filename)
             if(nb_points%3==0){
                 obj->addTriangle(IndexedTriangle<>(nb_points-3,nb_points-2,nb_points-1));
                 //obj->_faces.push_back( IndexedTriangle<>(nb_points-3,nb_points-2,nb_points-1) );
-                //mface->_subFaces.push_back(obj->_faces.back());
             }
         } else {
             setlocale(LC_ALL, locale.c_str());
             RW_THROW("unrecognized keyword " << "'" << token << "'");
         }
     }
-    //obj->_matFaces.push_back(mface);
-    delete mface;
 
     // order stuff in matrial faces
 

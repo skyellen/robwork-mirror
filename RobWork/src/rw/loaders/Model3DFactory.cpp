@@ -208,6 +208,12 @@ Model3D::Ptr Model3DFactory::loadModel(const std::string &raw_filename, const st
         return getCache().get(filename);
 #endif
 	} else {
+    	if (Model3DLoader::Factory::hasModel3DLoader(filetype)) {
+    		const Model3DLoader::Ptr loader = Model3DLoader::Factory::getModel3DLoader(filetype);
+    		Model3D::Ptr model = loader->load(filename);
+    		getCache().add(filename, model, moddate);
+    		return getCache().get(filename);
+    	}
         RW_THROW(
             "Unknown extension "
             << StringUtil::quote(StringUtil::getFileExtension(filename))

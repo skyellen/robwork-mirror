@@ -85,11 +85,12 @@ Model3D::Ptr Loader3DS::load(const std::string& name)
 
 	// next we copy all objects of the 3ds model
 	model->_objects.resize(m3ds.Objects.size());
-	std::vector<Model3D::Object3D::Ptr> &objects = model->_objects;
+	std::vector<Model3D::Object3DGeneric::Ptr> &objects = model->_objects;
 	for(size_t i=0; i<objects.size(); i++){
 		Model3DS::Object& obj_src = m3ds.Objects[i];
-		objects[i] = ownedPtr( new Model3D::Object3D(obj_src.name) );
-		Model3D::Object3D& obj_dst = *objects[i];
+		const Model3D::Object3D<uint16_t>::Ptr obj_dst_ptr = ownedPtr(new Model3D::Object3D<uint16_t>(obj_src.name));
+		Model3D::Object3D<uint16_t>& obj_dst = *obj_dst_ptr;
+		objects[i] = obj_dst_ptr;
 		// copy transformation
 		RPY<float> rpyX(0,0,(float)(obj_src.rot.x*Deg2Rad));
 		RPY<float> rpyY(0,(float)(obj_src.rot.y*Deg2Rad),0);

@@ -49,7 +49,7 @@ namespace loaders {
 		virtual ~Loader3DS(){};
 
 		//! @copydoc Model3DLoader::load
-		rw::graphics::Model3D::Ptr load(const std::string& name); // Loads a model
+		rw::graphics::Model3D::Ptr load(const std::string& filename); // Loads a model
 
 	private:
 		std::string _path; // The path of the model

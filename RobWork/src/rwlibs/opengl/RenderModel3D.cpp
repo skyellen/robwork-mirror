@@ -57,9 +57,16 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, DrawTy
     //glScalef(scale, scale, scale);
 
     // Loop through the objects
-    BOOST_FOREACH(Model3D::Object3D::Ptr &objPtr, _model->getObjects()){
-        const Model3D::Object3D& obj = *objPtr;
-        drawUsingSimple(info,obj,type, alpha);
+    BOOST_FOREACH(Model3D::Object3DGeneric::Ptr &objPtr, _model->getObjects()){
+		if (const Model3D::Object3D<uint8_t>::Ptr objPtrT = objPtr.cast<Model3D::Object3D<uint8_t> >()) {
+			drawUsingSimpleFct(info,*objPtrT,type, alpha);
+		} else if (const Model3D::Object3D<uint16_t>::Ptr objPtrT = objPtr.cast<Model3D::Object3D<uint16_t> >()) {
+			drawUsingSimpleFct(info,*objPtrT,type, alpha);
+		} else if (const Model3D::Object3D<uint32_t>::Ptr objPtrT = objPtr.cast<Model3D::Object3D<uint32_t> >()) {
+			drawUsingSimpleFct(info,*objPtrT,type, alpha);
+		} else {
+			RW_THROW("RenderModel3D could not recognize the type of Object3D in the model.");
+		}
     }
 
     glPopMatrix();
@@ -73,129 +80,146 @@ void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, DrawTy
 	//glScalef(scale, scale, scale);
 
 	// Loop through the objects
-	BOOST_FOREACH(Model3D::Object3D::Ptr &objPtr, _model->getObjects()){
-		const Model3D::Object3D& obj = *objPtr;
-		drawUsingArrays(info,obj,type, alpha);
+	BOOST_FOREACH(Model3D::Object3DGeneric::Ptr &objPtr, _model->getObjects()){
+		if (const Model3D::Object3D<uint8_t>::Ptr objPtrT = objPtr.cast<Model3D::Object3D<uint8_t> >()) {
+			drawUsingArraysFct(info,*objPtrT,type, alpha);
+		} else if (const Model3D::Object3D<uint16_t>::Ptr objPtrT = objPtr.cast<Model3D::Object3D<uint16_t> >()) {
+			drawUsingArraysFct(info,*objPtrT,type, alpha);
+		} else if (const Model3D::Object3D<uint32_t>::Ptr objPtrT = objPtr.cast<Model3D::Object3D<uint32_t> >()) {
+			drawUsingArraysFct(info,*objPtrT,type, alpha);
+		} else {
+			RW_THROW("RenderModel3D could not recognize the type of Object3D in the model.");
+		}
 	}
 
 	glPopMatrix();
 }
 
-void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const Model3D::Object3D &obj, DrawType type, double alpha) const {
-    // for some reason opengl does not allow drawing to large meshes within glBegin/glEnd
-    // so we split it up in smaller chunks
-    glPushMatrix();
+template <class T>
+void RenderModel3D::drawUsingSimpleFct(const DrawableNode::RenderInfo& info, const Model3D::Object3D<T> &obj, DrawableNode::DrawType type, double alpha) const {
+	// for some reason opengl does not allow drawing to large meshes within glBegin/glEnd
+	// so we split it up in smaller chunks
+	glPushMatrix();
 
-    DrawableUtil::multGLTransform( obj._transform );
-    if(obj._normals.size()!=0 && obj._vertices.size()!=0){
+	DrawableUtil::multGLTransform( obj._transform );
+	if(obj._normals.size()!=0 && obj._vertices.size()!=0){
 
-        // Loop through the faces as sorted by material and draw them
-        BOOST_FOREACH(const Model3D::Object3D::MaterialMapData& data, obj._materialMap){
-            //const Model3D::MaterialFaces& faces = *facesptr;
-            // Use the material's texture
-            //RW_ASSERT(faces._matIndex<_model->_materials.size());
-            //if( (_model->_materials[data.matId].transparency < 0.98) && !info._renderTransparent )
-            //    continue;
-            //if( (_model->_materials[data.matId].transparency >= 0.98) && !info._renderSolid )
-            //    continue;
+		// Loop through the faces as sorted by material and draw them
+		BOOST_FOREACH(const typename Model3D::Object3DGeneric::MaterialMapData& data, obj._materialMap){
+			//const Model3D::MaterialFaces& faces = *facesptr;
+			// Use the material's texture
+			//RW_ASSERT(faces._matIndex<_model->_materials.size());
+			//if( (_model->_materials[data.matId].transparency < 0.98) && !info._renderTransparent )
+			//    continue;
+			//if( (_model->_materials[data.matId].transparency >= 0.98) && !info._renderSolid )
+			//    continue;
 
-            useMaterial( _model->_materials[data.matId], type, alpha);
+			useMaterial( _model->_materials[data.matId], type, alpha);
 
-            if (obj.hasTexture()){
-                glEnable(GL_TEXTURE_2D);
-                
-                if(obj._mappedToFaces){
-                    glBegin(GL_TRIANGLES);
-                    for(int i=data.startIdx; i<data.startIdx+data.size; i++){
-                        // draw faces
-                        const rw::geometry::IndexedTriangle<uint16_t> &tri = obj._faces[i];
-                        glTexCoord2fv(&obj._texCoords[i*3](0) );
-                        glNormal3fv(&obj._normals[tri[0]](0));
-                        glVertex3fv(&obj._vertices[tri[0]](0));
+			if (obj.hasTexture()){
+				glEnable(GL_TEXTURE_2D);
 
-                        glTexCoord2fv(&obj._texCoords[i*3+1](0) );
-                        glNormal3fv(&obj._normals[tri[1]](0));
-                        glVertex3fv(&obj._vertices[tri[1]](0));
+				if(obj._mappedToFaces){
+					glBegin(GL_TRIANGLES);
+					for(std::size_t i = data.startIdx; i < data.startIdx+data.size; i++) {
+						// draw faces
+						const rw::geometry::IndexedTriangle<T> &tri = obj._faces[i];
+						glTexCoord2fv(&obj._texCoords[i*3](0) );
+						glNormal3fv(&obj._normals[tri[0]](0));
+						glVertex3fv(&obj._vertices[tri[0]](0));
 
-                        glTexCoord2fv(&obj._texCoords[i*3+2](0) );
-                        glNormal3fv(&obj._normals[tri[2]](0));
-                        glVertex3fv(&obj._vertices[tri[2]](0));
-                    }
-                    glEnd();
+						glTexCoord2fv(&obj._texCoords[i*3+1](0) );
+						glNormal3fv(&obj._normals[tri[1]](0));
+						glVertex3fv(&obj._vertices[tri[1]](0));
 
-                } else {
-                    RW_ASSERT(obj._texCoords.size()==obj._normals.size());
-                    glBegin(GL_TRIANGLES);
-                    for(int i=data.startIdx; i<data.startIdx+data.size; i++){
-                        // draw faces
-                        const rw::geometry::IndexedTriangle<uint16_t> &tri = obj._faces[i];
-                        glTexCoord2fv(&obj._texCoords[tri[0]](0) );
-                        glNormal3fv(&obj._normals[tri[0]](0));
-                        glVertex3fv(&obj._vertices[tri[0]](0));
+						glTexCoord2fv(&obj._texCoords[i*3+2](0) );
+						glNormal3fv(&obj._normals[tri[2]](0));
+						glVertex3fv(&obj._vertices[tri[2]](0));
+					}
+					glEnd();
 
-                        glTexCoord2fv(&obj._texCoords[tri[1]](0) );
-                        glNormal3fv(&obj._normals[tri[1]](0));
-                        glVertex3fv(&obj._vertices[tri[1]](0));
+				} else {
+					RW_ASSERT(obj._texCoords.size()==obj._normals.size());
+					glBegin(GL_TRIANGLES);
+					for(std::size_t i = data.startIdx; i < data.startIdx+data.size; i++) {
+						// draw faces
+						const rw::geometry::IndexedTriangle<T> &tri = obj._faces[i];
+						glTexCoord2fv(&obj._texCoords[tri[0]](0) );
+						glNormal3fv(&obj._normals[tri[0]](0));
+						glVertex3fv(&obj._vertices[tri[0]](0));
 
-                        glTexCoord2fv(&obj._texCoords[tri[2]](0) );
-                        glNormal3fv(&obj._normals[tri[2]](0));
-                        glVertex3fv(&obj._vertices[tri[2]](0));
-                    }
-                    glEnd();
+						glTexCoord2fv(&obj._texCoords[tri[1]](0) );
+						glNormal3fv(&obj._normals[tri[1]](0));
+						glVertex3fv(&obj._vertices[tri[1]](0));
+
+						glTexCoord2fv(&obj._texCoords[tri[2]](0) );
+						glNormal3fv(&obj._normals[tri[2]](0));
+						glVertex3fv(&obj._vertices[tri[2]](0));
+					}
+					glEnd();
 
 
-                }
-                glDisable(GL_TEXTURE_2D);
-            } else {
-                glBegin(GL_TRIANGLES);
-                for(int i=data.startIdx; i<data.startIdx+data.size; i++){
-                    // draw faces
-                    const rw::geometry::IndexedTriangle<uint16_t> &tri = obj._faces[i];
-                    glNormal3fv( &obj._normals[ tri[0] ](0) );
-                    glVertex3fv( &obj._vertices[ tri[0] ](0) );
-                    glNormal3fv( &obj._normals[ tri[1] ](0) );
-                    glVertex3fv( &obj._vertices[ tri[1] ](0) );
-                    glNormal3fv( &obj._normals[ tri[2] ](0) );
-                    glVertex3fv( &obj._vertices[ tri[2] ](0) );
-                }
-                glEnd();
-            }
-            // this render the normals
-            // TODO: create method to switch normal rendering on and off
-            /*
-            glBegin(GL_LINES);
-            for(size_t i=data.startIdx; i<data.startIdx+data.size; i++){
-                // draw faces
-                const rw::geometry::IndexedTriangle<uint16_t> &tri = obj._faces[i];
-                glVertex3fv(&obj._vertices[tri[0]](0));
-                glVertex3fv(&(obj._normals[tri[0]]*0.01+obj._vertices[tri[0]])(0));
+				}
+				glDisable(GL_TEXTURE_2D);
+			} else {
+				glBegin(GL_TRIANGLES);
+				for(std::size_t i = data.startIdx; i < data.startIdx+data.size; i++) {
+					// draw faces
+					const rw::geometry::IndexedTriangle<T> &tri = obj._faces[i];
+					glNormal3fv( &obj._normals[ tri[0] ](0) );
+					glVertex3fv( &obj._vertices[ tri[0] ](0) );
+					glNormal3fv( &obj._normals[ tri[1] ](0) );
+					glVertex3fv( &obj._vertices[ tri[1] ](0) );
+					glNormal3fv( &obj._normals[ tri[2] ](0) );
+					glVertex3fv( &obj._vertices[ tri[2] ](0) );
+				}
+				glEnd();
+			}
+			// this render the normals
+			// TODO: create method to switch normal rendering on and off
+			/*
+			glBegin(GL_LINES);
+			for(size_t i=data.startIdx; i<data.startIdx+data.size; i++){
+				// draw faces
+				const rw::geometry::IndexedTriangle<uint16_t> &tri = obj._faces[i];
+				glVertex3fv(&obj._vertices[tri[0]](0));
+				glVertex3fv(&(obj._normals[tri[0]]*0.01+obj._vertices[tri[0]])(0));
 
-                glVertex3fv(&obj._vertices[tri[1]](0));
-                glVertex3fv(&(obj._normals[tri[1]]*0.01+obj._vertices[tri[1]])(0));
+				glVertex3fv(&obj._vertices[tri[1]](0));
+				glVertex3fv(&(obj._normals[tri[1]]*0.01+obj._vertices[tri[1]])(0));
 
-                glVertex3fv(&obj._vertices[tri[2]](0));
-                glVertex3fv(&(obj._normals[tri[2]]*0.01+obj._vertices[tri[2]])(0));
-            }
-            glEnd();
-             */
-        }
-        //std::cout << glGetError() << std::endl;
-    }
+				glVertex3fv(&obj._vertices[tri[2]](0));
+				glVertex3fv(&(obj._normals[tri[2]]*0.01+obj._vertices[tri[2]])(0));
+			}
+			glEnd();
+			 */
+		}
+		//std::cout << glGetError() << std::endl;
+	}
 
-    // draw children
-    // TODO: create method to switch normal rendering on and off
-    BOOST_FOREACH(const Model3D::Object3D::Ptr& child, obj._kids){
-        drawUsingSimple(info, *child, type, alpha);
-    }
+	// draw children
+	// TODO: create method to switch normal rendering on and off
+	BOOST_FOREACH(const Model3D::Object3DGeneric::Ptr& child, obj._kids){
+		if (const Model3D::Object3D<uint8_t>::Ptr objPtrT = child.cast<Model3D::Object3D<uint8_t> >()) {
+			drawUsingSimpleFct<uint8_t>(info, *objPtrT, type, alpha);
+		} else if (const Model3D::Object3D<uint16_t>::Ptr objPtrT = child.cast<Model3D::Object3D<uint16_t> >()) {
+			drawUsingSimpleFct<uint16_t>(info, *objPtrT, type, alpha);
+		} else if (const Model3D::Object3D<uint32_t>::Ptr objPtrT = child.cast<Model3D::Object3D<uint32_t> >()) {
+			drawUsingSimpleFct<uint32_t>(info, *objPtrT, type, alpha);
+		} else {
+			RW_THROW("RenderModel3D could not recognize the type of Object3D in the model.");
+		}
+	}
 
-    //if (obj.hasTexture()){
-        //glBindTexture(GL_TEXTURE_2D, 0 );
-        //glDisable(GL_TEXTURE_2D);
-    //}
-    glPopMatrix();
+	//if (obj.hasTexture()){
+		//glBindTexture(GL_TEXTURE_2D, 0 );
+		//glDisable(GL_TEXTURE_2D);
+	//}
+	glPopMatrix();
 }
 
-void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, const Model3D::Object3D &obj, DrawType type, double alpha) const {
+template <class T>
+void RenderModel3D::drawUsingArraysFct(const DrawableNode::RenderInfo& info, const Model3D::Object3D<T> &obj, DrawableNode::DrawType type, double alpha) const {
 	//std::cout << "obj._normals.size()==" << obj._normals.size() << "\n";
 	//std::cout << "obj._vertices.size()==" << obj._vertices.size() << "\n";
 	glPushMatrix();
@@ -205,7 +229,7 @@ void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, const 
 
 		// Enable texture coordiantes, ngetormals, and vertices arrays
 		if (obj.hasTexture()){
-		    glEnable(GL_TEXTURE_2D);
+			glEnable(GL_TEXTURE_2D);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
 		//if (lit)
@@ -222,14 +246,14 @@ void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, const 
 		glVertexPointer(3, GL_FLOAT, sizeof(Vector3D<float>), &(obj._vertices.at(0)[0]));
 
 		// Loop through the faces as sorted by material and draw them
-		BOOST_FOREACH(const Model3D::Object3D::MaterialMapData& data, obj._materialMap){
+		BOOST_FOREACH(const typename Model3D::Object3DGeneric::MaterialMapData& data, obj._materialMap){
 			//const Model3D::MaterialFaces& faces = *facesptr;
 			// Use the material's texture
 			//RW_ASSERT(faces._matIndex<_model->_materials.size());
-            //if( (_model->_materials[data.matId].transparency < 0.98) && !info._renderTransparent )
-            //    continue;
-            //if( (_model->_materials[data.matId].transparency >= 0.98) && !info._renderSolid )
-            //    continue;
+			//if( (_model->_materials[data.matId].transparency < 0.98) && !info._renderTransparent )
+			//    continue;
+			//if( (_model->_materials[data.matId].transparency >= 0.98) && !info._renderSolid )
+			//    continue;
 
 			useMaterial( _model->_materials[data.matId], type, alpha);
 
@@ -243,13 +267,21 @@ void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, const 
 		}
 
 		if (obj.hasTexture()){
-		    glDisable(GL_TEXTURE_2D);
+			glDisable(GL_TEXTURE_2D);
 		}
 	}
-	// TODO: make sure polygons are allso drawn
+	// TODO: make sure polygons are also drawn
 	// draw children
-	BOOST_FOREACH(const Model3D::Object3D::Ptr& child, obj._kids){
-		drawUsingArrays(info, *child, type, alpha);
+	BOOST_FOREACH(const Model3D::Object3DGeneric::Ptr& child, obj._kids){
+		if (const Model3D::Object3D<uint8_t>::Ptr objPtrT = child.cast<Model3D::Object3D<uint8_t> >()) {
+			drawUsingArraysFct<uint8_t>(info, *objPtrT, type, alpha);
+		} else if (const Model3D::Object3D<uint16_t>::Ptr objPtrT = child.cast<Model3D::Object3D<uint16_t> >()) {
+			drawUsingArraysFct<uint16_t>(info, *objPtrT, type, alpha);
+		} else if (const Model3D::Object3D<uint32_t>::Ptr objPtrT = child.cast<Model3D::Object3D<uint32_t> >()) {
+			drawUsingArraysFct<uint32_t>(info, *objPtrT, type, alpha);
+		} else {
+			RW_THROW("RenderModel3D could not recognize the type of Object3D in the model.");
+		}
 	}
 
 	glPopMatrix();

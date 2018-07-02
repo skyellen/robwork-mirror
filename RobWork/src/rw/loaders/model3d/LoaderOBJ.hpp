@@ -47,7 +47,7 @@ namespace rw { namespace loaders {
 		virtual ~LoaderOBJ(){};
 
 		//! @copydoc Model3DLoader::load
-		rw::graphics::Model3D::Ptr load(const std::string& name);
+		rw::graphics::Model3D::Ptr load(const std::string& filename);
 
 	};
 

@@ -119,16 +119,16 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
         rwmodel->_textures = model->_textures;
 
         // next we
-        std::vector<Model3D::Object3D::Ptr> &objects = rwmodel->getObjects();
+        std::vector<Model3D::Object3DGeneric::Ptr> &objects = rwmodel->getObjects();
 
-        std::stack<std::pair<AC3DObject*, Model3D::Object3D*> > mobjects;
-        mobjects.push( std::make_pair(object,(Model3D::Object3D*)NULL) );
+        std::stack<std::pair<AC3DObject*, Model3D::Object3DGeneric*> > mobjects;
+        mobjects.push( std::make_pair(object,(Model3D::Object3DGeneric*)NULL) );
         while(!mobjects.empty()){
             AC3DObject* obj  = mobjects.top().first;
-            Model3D::Object3D* parent  = mobjects.top().second;
+            Model3D::Object3DGeneric* parent  = mobjects.top().second;
             mobjects.pop();
 
-            Model3D::Object3D *rwobj = new Model3D::Object3D(obj->name);
+            Model3D::Object3D<uint16_t> *rwobj = new Model3D::Object3D<uint16_t>(obj->name);
             rwobj->_transform = Transform3D<float>(obj->loc,obj->rot);
 
             rwobj->_texOffset(0) = obj->texture_offset_x;
