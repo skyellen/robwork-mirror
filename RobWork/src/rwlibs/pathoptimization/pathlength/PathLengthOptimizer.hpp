@@ -19,6 +19,7 @@
 #ifndef RWLIBS_PATHOPTIMIZATION_PATHLENGTHOPTIMIZER_HPP
 #define RWLIBS_PATHOPTIMIZATION_PATHLENGTHOPTIMIZER_HPP
 
+#include <rw/common/Ptr.hpp>
 #include <rw/math/Metric.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/pathplanning/PlannerConstraint.hpp>
@@ -52,6 +53,11 @@ namespace rwlibs { namespace pathoptimization {
     class PathLengthOptimizer
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<PathLengthOptimizer> Ptr;
+		//! @brief smart pointer type to this const class
+		typedef rw::common::Ptr<const PathLengthOptimizer> CPtr;
+
         //! A list of configurations.
 		typedef std::list<rw::math::Q> QList;
 
@@ -81,7 +87,7 @@ namespace rwlibs { namespace pathoptimization {
 
            @param path [in] Path to optimize
         */
-        rw::trajectory::QPath pathPruning(const rw::trajectory::QPath& path);
+        rw::trajectory::QPath pathPruning(const rw::trajectory::QPath& path) const;
 
         /**
          * @brief Optimizes using the shortcut technique
@@ -100,7 +106,7 @@ namespace rwlibs { namespace pathoptimization {
         rw::trajectory::QPath shortCut(const rw::trajectory::QPath& path,
                                        size_t cnt,
                                        double time,
-                                       double subDivideLength);
+                                       double subDivideLength) const;
 
         /**
          * @brief Optimizes using the shortcut technique
@@ -110,7 +116,7 @@ namespace rwlibs { namespace pathoptimization {
          *
          * @param path [inout] Path to optimize
          */
-        rw::trajectory::QPath shortCut(const rw::trajectory::QPath& path);
+        rw::trajectory::QPath shortCut(const rw::trajectory::QPath& path) const;
 
         /**
          * @brief Optimizes using the partial shortcut technique
@@ -130,7 +136,7 @@ namespace rwlibs { namespace pathoptimization {
         rw::trajectory::QPath partialShortCut(const rw::trajectory::QPath& path,
                                               size_t cnt,
                                               double time,
-                                              double subDivideLength);
+                                              double subDivideLength) const;
 
         /**
          * @brief Optimizes using the partial shortcut technique
@@ -142,7 +148,7 @@ namespace rwlibs { namespace pathoptimization {
          * @param path [inout] Path to optimize
          * @return The optimized path
          */
-        rw::trajectory::QPath partialShortCut(const rw::trajectory::QPath& path);
+        rw::trajectory::QPath partialShortCut(const rw::trajectory::QPath& path) const;
 
         //----------------------------------------------------------------------
 
@@ -166,36 +172,30 @@ namespace rwlibs { namespace pathoptimization {
 		rw::math::QMetric::CPtr _metric;
         rw::common::PropertyMap _propertyMap;
 
-        void pathPruning(QList& path);
+        void pathPruning(QList& path) const;
 
         void shortCut(QList& path,
                       size_t cnt,
                       double time,
-                      double subDivideLength);
+                      double subDivideLength) const;
 
-        void shortCut(QList& path);
+        void shortCut(QList& path) const;
 
         void partialShortCut(QList& path,
                              size_t cnt,
                              double time,
-                             double subDivideLength);
+                             double subDivideLength) const;
 
-        void partialShortCut(QList& path);
+        void partialShortCut(QList& path) const;
 
-        void resamplePath(QList& path, double subDivisionSize);
+        void resamplePath(QList& path, double subDivisionSize) const;
 
         QList::iterator resample(QList::iterator it1,
                                  const rw::math::Q& q2,
                                  double subDivisionSize,
-                                 QList& result);
+                                 QList& result) const;
 
-        bool validPath(const rw::math::Q& from, const rw::math::Q& to);
-
-        bool _testQStart;
-        void setTestQStart(bool value) { _testQStart = value; }
-
-        bool _testQEnd;
-        void setTestQEnd(bool value) { _testQEnd = value; }
+        bool validPath(const rw::math::Q& from, const rw::math::Q& to, const bool testQStart, const bool testQEnd) const;
     };
 
     /** @} */

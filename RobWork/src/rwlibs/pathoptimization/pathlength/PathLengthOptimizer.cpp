@@ -84,14 +84,15 @@ PropertyMap& PathLengthOptimizer::getPropertyMap()
  * Runs through the path an tests if nodes with
  * index i and i+2 can be directly connected. If so it removed node i+1.
  */
-void PathLengthOptimizer::pathPruning(QList& result)
+void PathLengthOptimizer::pathPruning(QList& result) const
 {
     QList::iterator it1 = result.begin();
     QList::iterator it2 = result.begin();
     it2++; it2++;
 
     while (it2 != result.end()) {
-        if (validPath(*it1, *it2)) {
+		// The start and end configurations does not change
+		if (validPath(*it1, *it2, false, false)) {
             it2 = result.erase(++it1);
             it1 = it2;
             it1--;
@@ -103,7 +104,7 @@ void PathLengthOptimizer::pathPruning(QList& result)
     }
 }
 
-void PathLengthOptimizer::shortCut(QList& path)
+void PathLengthOptimizer::shortCut(QList& path) const
 {
     shortCut(
         path,
@@ -115,7 +116,7 @@ void PathLengthOptimizer::shortCut(QList& path)
 void PathLengthOptimizer::shortCut(QList& result,
                                    size_t maxcnt,
                                    double time,
-                                   double subDivideLength)
+                                   double subDivideLength) const
 {
     if (maxcnt == 0 && time == 0)
         RW_THROW("With maxcnt == 0 and time == 0 the algorithm will never terminate");
@@ -127,10 +128,6 @@ void PathLengthOptimizer::shortCut(QList& result,
 
     QList::iterator it1;
     QList::iterator it2;
-
-    // The start and end configurations does not change
-    setTestQStart(false);
-    setTestQEnd(false);
 
     while ((maxcnt == 0 || cnt < maxcnt) && (time == 0 || timer.getTime() < time))
     {
@@ -151,14 +148,15 @@ void PathLengthOptimizer::shortCut(QList& result,
 		if (pathLength(it1, it2, *_metric) <= _metric->distance(*it1, *it2))
             continue;
 
-        if (validPath(*it1, *it2)) {
+		// The start and end configurations does not change
+		if (validPath(*it1, *it2, false, false)) {
             it1 = resample(it1, *it2, subDivideLength, result);
             result.erase(it1, it2);
         }
     }
 }
 
-void PathLengthOptimizer::partialShortCut(QList& path)
+void PathLengthOptimizer::partialShortCut(QList& path) const
 {
     partialShortCut(
         path,
@@ -171,7 +169,7 @@ void PathLengthOptimizer::partialShortCut(
     QList& result,
     size_t maxcnt,
     double time,
-    double subDivideLength)
+    double subDivideLength) const
 {
     if (maxcnt == 0 && time == 0)
         RW_THROW("With maxcnt == 0 and time == 0 the algorithm will never terminate");
@@ -186,9 +184,6 @@ void PathLengthOptimizer::partialShortCut(
     size_t cnt = 0;
     QList::iterator it1;
     QList::iterator it2;
-
-    setTestQStart(false);
-    setTestQEnd(true);
 
     while (
         (maxcnt == 0 || cnt < maxcnt) &&
@@ -230,7 +225,7 @@ void PathLengthOptimizer::partialShortCut(
         itsub2++;
         bool fail = false;
         for (; itsub2 != subpath.end(); itsub1++, itsub2++) {
-            if (!validPath(*itsub1, *itsub2)) {
+            if (!validPath(*itsub1, *itsub2, false, true)) {
                 fail = true;
                 break;
             }
@@ -248,7 +243,7 @@ void PathLengthOptimizer::partialShortCut(
     }
 }
 
-void PathLengthOptimizer::resamplePath(QList& path, double subDivideLength)
+void PathLengthOptimizer::resamplePath(QList& path, double subDivideLength) const
 {
     QList::iterator it1 = path.begin();
     QList::iterator it2 = it1; ++it2;
@@ -261,7 +256,7 @@ void PathLengthOptimizer::resamplePath(QList& path, double subDivideLength)
 QList::iterator PathLengthOptimizer::resample(QList::iterator it1,
                                               const Q& q2,
                                               double subDivideLength,
-                                              QList& result)
+                                              QList& result) const
 {
     if (subDivideLength == 0) return ++it1;
 
@@ -285,29 +280,30 @@ QList::iterator PathLengthOptimizer::resample(QList::iterator it1,
 
 bool PathLengthOptimizer::validPath(
     const Q& from,
-    const Q& to)
+    const Q& to, 
+	const bool testQStart, const bool testQEnd) const
 {
     return !PlannerUtil::inCollision(
         _constraint,
         from,
         to,
-        _testQStart,
-        _testQEnd);
+		testQStart,
+		testQEnd);
 }
 
 //----------------------------------------------------------------------
 
-QPath PathLengthOptimizer::pathPruning(const QPath& path)
+QPath PathLengthOptimizer::pathPruning(const QPath& path) const
 {
-    QList tmp(path.begin(), path.end());
+    QList tmp(path.cbegin(), path.cend());
     pathPruning(tmp);
-    return QPath(tmp.begin(), tmp.end());
+    return QPath(tmp.cbegin(), tmp.cend());
 }
 
 QPath PathLengthOptimizer::shortCut(const QPath& path,
                                     size_t cnt,
                                     double time,
-                                    double subDivideLength)
+                                    double subDivideLength) const
 {
     if (path.empty()) return path;
 
@@ -316,7 +312,7 @@ QPath PathLengthOptimizer::shortCut(const QPath& path,
     return QPath(tmp.begin(), tmp.end());
 }
 
-QPath PathLengthOptimizer::shortCut(const QPath& path)
+QPath PathLengthOptimizer::shortCut(const QPath& path) const
 {
     QList tmp(path.begin(), path.end());
     shortCut(tmp);
@@ -326,14 +322,14 @@ QPath PathLengthOptimizer::shortCut(const QPath& path)
 QPath PathLengthOptimizer::partialShortCut(const QPath& path,
                                            size_t cnt,
                                            double time,
-                                           double subDivideLength)
+                                           double subDivideLength) const
 {
     QList tmp(path.begin(), path.end());
     partialShortCut(tmp, cnt, time, subDivideLength);
     return QPath(tmp.begin(), tmp.end());
 }
 
-QPath PathLengthOptimizer::partialShortCut(const QPath& path)
+QPath PathLengthOptimizer::partialShortCut(const QPath& path) const
 {
     QList tmp(path.begin(), path.end());
     partialShortCut(tmp);

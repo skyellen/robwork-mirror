@@ -145,5 +145,16 @@ Transform3D<> FKRange::get(const State& state) const
 
 Frame::CPtr FKRange::getEnd() const
 {
-    return _forwardBranch.back();
+    if(_forwardBranch.empty()){
+        return nullptr;
+    }
+    return _forwardBranch.front();
+}
+
+Frame::CPtr FKRange::getBase() const
+{
+    if(_inverseBranch.empty()){
+        return nullptr;
+    }
+    return _inverseBranch.front();
 }

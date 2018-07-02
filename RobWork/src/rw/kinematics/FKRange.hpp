@@ -82,9 +82,16 @@ namespace rw { namespace kinematics {
         /**
          * @brief Returns the last frame in the range.
          *
-         * @return The end frame.
+         * @return The end frame (to).
          */
         rw::common::Ptr< const Frame > getEnd() const;
+
+        /**
+         * @brief Returns the first frame in the range.
+         *
+         * @return The base frame (from).
+         */
+        rw::common::Ptr< const Frame > getBase() const;
         
     private:
         std::vector<const Frame*> _inverseBranch;
