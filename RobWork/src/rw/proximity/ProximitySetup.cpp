@@ -53,7 +53,7 @@ void ProximitySetup::addProximitySetupRule(const ProximitySetupRule& rule) {
 
 void ProximitySetup::removeProximitySetupRule(const ProximitySetupRule& rule) {
 	for (std::vector<ProximitySetupRule>::iterator it = _rules.begin(); it != _rules.end(); ++it) {
-		ProximitySetupRule r = *it;
+		ProximitySetupRule& r = *it;
 		if ( r == rule) {
 			_rules.erase(it); 
 			break;

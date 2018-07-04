@@ -32,7 +32,7 @@ using namespace rw::common;
 
 namespace
 {
-	DistanceCalculator::Ptr getDistanceCalculator(WorkCell::Ptr workcell,
+	DistanceCalculator::Ptr getDistanceCalculator(const WorkCell::Ptr& workcell,
                                                   const State& state)
     {
 		DistanceStrategy::Ptr strat = ProximityStrategyFactory::makeDefaultDistanceStrategy();
@@ -45,12 +45,12 @@ namespace
     }
 }
 
-MinimumClearanceCalculator::MinimumClearanceCalculator(DistanceCalculator::Ptr distancecalculator)
+MinimumClearanceCalculator::MinimumClearanceCalculator(const DistanceCalculator::CPtr& distancecalculator)
     :
     _distancecalculator(distancecalculator)
 {}
 
-MinimumClearanceCalculator::MinimumClearanceCalculator(WorkCell::Ptr workcell,
+MinimumClearanceCalculator::MinimumClearanceCalculator(const WorkCell::Ptr& workcell,
                                                        const State& state):
     _distancecalculator(getDistanceCalculator(workcell, state))
 {}

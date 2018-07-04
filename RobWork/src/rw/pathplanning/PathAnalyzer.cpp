@@ -15,6 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 
+#include <limits>
 
 #include "PathAnalyzer.hpp"
 
@@ -32,7 +33,7 @@ using namespace rw::trajectory;
 using namespace rw::proximity;
 using namespace rw::pathplanning;
 
-PathAnalyzer::PathAnalyzer(Device::Ptr device, const State& state):
+PathAnalyzer::PathAnalyzer(const Device::CPtr& device, const State& state):
     _device(device),
     _state(state)
 {
@@ -45,7 +46,7 @@ PathAnalyzer::~PathAnalyzer()
 
 
 PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(const QPath& path,
-																 QMetric::Ptr metric)
+																 QMetric::Ptr metric) const 
 {
     JointSpaceAnalysis analysis;
     analysis.nodecount = (double)path.size();
@@ -60,7 +61,7 @@ PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(const QPath& pa
 }
 
 
-PathAnalyzer::CartesianAnalysis PathAnalyzer::analyzeCartesian(const QPath& path, Frame* frame) {
+PathAnalyzer::CartesianAnalysis PathAnalyzer::analyzeCartesian(const QPath& path, const Frame* frame) {
     CartesianAnalysis analysis;
     if (path.size() < 1)
         return analysis;
@@ -84,7 +85,7 @@ PathAnalyzer::CartesianAnalysis PathAnalyzer::analyzeCartesian(const QPath& path
 }
 
 
-PathAnalyzer::TimeAnalysis PathAnalyzer::analyzeTime(const QPath& path) {
+PathAnalyzer::TimeAnalysis PathAnalyzer::analyzeTime(const QPath& path) const {
     TimeAnalysis analysis;
     Q vellimits = _device->getVelocityLimits();
 
@@ -105,10 +106,10 @@ PathAnalyzer::TimeAnalysis PathAnalyzer::analyzeTime(const QPath& path) {
 }
 
 
-PathAnalyzer::ClearanceAnalysis PathAnalyzer::analyzeClearance(const QPath& path, rw::proximity::DistanceCalculator::Ptr distanceCalculator) {
+PathAnalyzer::ClearanceAnalysis PathAnalyzer::analyzeClearance(const QPath& path, const rw::proximity::DistanceCalculator::CPtr& distanceCalculator) {
     ClearanceAnalysis analysis;
     analysis.average = 0;
-    analysis.min = 1e100;
+    analysis.min = std::numeric_limits<double>::max();
 
     for (QPath::const_iterator it = path.begin()++; it != path.end()--; ++it) {
         _device->setQ(*it, _state);

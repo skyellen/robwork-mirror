@@ -41,6 +41,8 @@ class BasicFilterStrategy: public ProximityFilterStrategy {
 public:
 	//! @brief smart pointer type to this class
 	typedef rw::common::Ptr<BasicFilterStrategy> Ptr;
+	//! @brief smart pointer type to this const class
+	typedef rw::common::Ptr<const BasicFilterStrategy> CPtr;
 
 private:
 	/**

@@ -43,7 +43,10 @@ namespace rw { namespace models {
     class RigidObject: public Object
     {
     public:
-        typedef rw::common::Ptr<RigidObject> Ptr;
+		//! smart pointer
+		typedef rw::common::Ptr<RigidObject> Ptr;
+		//! const smart pointer
+		typedef rw::common::Ptr<const RigidObject> CPtr;
 
         //! constructor
         RigidObject(rw::kinematics::Frame* baseframe);
