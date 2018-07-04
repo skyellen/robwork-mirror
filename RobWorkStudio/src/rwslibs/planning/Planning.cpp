@@ -459,14 +459,14 @@ void Planning::optimize() {
         try {
 			DistanceStrategy::Ptr strat = ProximityStrategyFactory::makeDefaultDistanceStrategy();
 
-            boost::shared_ptr<DistanceCalculator> distanceCalculator(
+            DistanceCalculator::CPtr distanceCalculator = ownedPtr(
                 new DistanceCalculator(
                     _workcell->getWorldFrame(),
 					_workcell,
                         strat,
                     _state));
 
-			ClearanceCalculatorPtr clearanceCalculator = ownedPtr(new MinimumClearanceCalculator(distanceCalculator));
+			ClearanceCalculator::CPtr clearanceCalculator = ownedPtr(new MinimumClearanceCalculator(distanceCalculator));
             ClearanceOptimizer optimizer(//_workcell,
                                          device,
                                          _state,
