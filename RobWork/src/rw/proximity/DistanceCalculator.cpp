@@ -18,6 +18,8 @@
 
 #include "DistanceCalculator.hpp"
 
+#include <RobWorkConfig.hpp>
+
 #include <rw/common/ScopedTimer.hpp>
 #include <rw/kinematics/FKTable.hpp>
 #include <rw/kinematics/Kinematics.hpp>
@@ -60,9 +62,7 @@ namespace
 }
 
 DistanceCalculator::DistanceCalculator(WorkCell::Ptr workcell,
-									   DistanceStrategy::Ptr strategy)
-    :
-    _shortestDistance(true),
+									   DistanceStrategy::Ptr strategy):
     _root(workcell->getWorldFrame()),
     _strategy(strategy),
     _state(workcell->getDefaultState())
@@ -84,7 +84,6 @@ DistanceCalculator::DistanceCalculator(Frame* root,
                                        WorkCell::Ptr workcell,
                                        DistanceStrategy::Ptr strategy,
                                        const State& initialState):
-    _shortestDistance(true),
     _root(root),
     _strategy(strategy),
     _state(initialState)
@@ -106,9 +105,10 @@ DistanceCalculator::DistanceCalculator(Frame* root,
 
 DistanceCalculator::DistanceCalculator(const FramePairList& pairs,
 									   DistanceStrategy::Ptr strategy):
-                                       _strategy(strategy),
-                                       _distancePairs(pairs)
-
+	_cnt(0),
+	_root(nullptr),
+	_strategy(strategy),
+	_distancePairs(pairs)
 {
     RW_ASSERT(strategy);
 	_thresholdStrategy = _strategy;
@@ -240,8 +240,10 @@ DistanceResult DistanceCalculator::distanceOMP(const State& state,
 	const int N = (int)_distancePairs.size();
 	int i;
 	Transform3D<> ta, tb; 
-		
+
+#ifdef RW_HAVE_OMP
 #pragma omp parallel for shared(distance, result, fk) private(i, data, ta, tb) schedule(static, 1)
+#endif
 	for (i = 0; i<N; i++) {
 	//for (I p = _distancePairs.begin(); p != _distancePairs.end(); ++p) {
         //const Frame* a = p->first;
@@ -250,7 +252,9 @@ DistanceResult DistanceCalculator::distanceOMP(const State& state,
 		const Frame* b = _distancePairs[i].second;
 
         DistanceResult *dist;
+#ifdef RW_HAVE_OMP
 #pragma omp critical
+#endif
 		{
 		ta = fk.get(*a);
 		tb = fk.get(*b);
@@ -264,8 +268,9 @@ DistanceResult DistanceCalculator::distanceOMP(const State& state,
 
         dist->f1 = a;
         dist->f2 = b;
-
+#ifdef RW_HAVE_OMP
 #pragma omp critical
+#endif
 	{
         if (dist->distance < distance.distance)
             distance = *dist;

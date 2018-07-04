@@ -582,6 +582,41 @@ IF( "${RW_CXX_FLAGS}" STREQUAL "")
 	)
 ENDIF()
 
+#
+# Enable the use of OMP definitions.
+#
+OPTION(RW_ENABLE_OMP "Enables use of OpenMP #pragmas: on|off" ON)
+IF( RW_ENABLE_OMP )
+    MESSAGE(STATUS "RobWork: OpenMP enabled.")
+    FIND_PACKAGE(OpenMP QUIET)
+    IF(${CMAKE_VERSION} VERSION_LESS "3.9")
+		IF( OPENMP_FOUND )
+			IF(${CMAKE_VERSION} VERSION_LESS "3.7")
+				MESSAGE(STATUS "RobWork: OpenMP CXX FOUND!")
+			ELSE()
+				MESSAGE(STATUS "RobWork: OpenMP CXX FOUND! - Specification date ${OpenMP_CXX_SPEC_DATE}")
+			ENDIF()
+			SET(RW_HAVE_OMP TRUE)
+			SET(RW_CXX_FLAGS "${RW_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+		ELSE ()
+			MESSAGE( STATUS "RobWork: OpenMP CXX NOT FOUND!" )
+			SET(RW_HAVE_OMP FALSE)
+		ENDIF()
+    ELSE() # CMake 3.9 and newer
+		IF( OpenMP_CXX_FOUND )
+			MESSAGE(STATUS "RobWork: OpenMP ${OpenMP_CXX_VERSION} CXX FOUND! - Specification date ${OpenMP_CXX_SPEC_DATE}")
+			SET(RW_HAVE_OMP TRUE)
+			SET(RW_CXX_FLAGS "${RW_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+			# Todo: use OpenMP_CXX_LIB_NAMES, OpenMP_CXX_LIBRARY and/or OpenMP_CXX_LIBRARIES ?
+		ELSE ()
+			MESSAGE( STATUS "RobWork: OpenMP CXX NOT FOUND!" )
+			SET(RW_HAVE_OMP FALSE)
+		ENDIF()
+	ENDIF()
+ELSE ()
+    MESSAGE(STATUS "RobWork: OpenMP disabled.")
+ENDIF ()
+
 IF( "${RW_DEFINITIONS}" STREQUAL "")
     # GCC and MinGW
     IF ( (CMAKE_COMPILER_IS_GNUCXX) OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang") )

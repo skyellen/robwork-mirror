@@ -155,20 +155,6 @@ namespace rw { namespace proximity {
 		void setDistanceStrategy(DistanceStrategy::Ptr strategy);
 
         /**
-         * @brief Toggle whether the distance calculator should calculate the
-         * distance along the nearest objects or all nearest points between every
-         * other frame in the tree and the given frame in the distance calculation.
-         *
-         * By default the value of shortest distance is true.
-         *
-         * @param b [in] - if true the shortest distance will return after the
-         * shortest distance has been found. This might be faster (depending on the
-         * distance calculator)
-         */
-        void setShortestDistance(bool b) { _shortestDistance = b; }
-
-
-        /**
          * @brief Adds distance model to frame
          *
          * The distance model is constructed based on the list of faces given.
@@ -203,8 +189,6 @@ namespace rw { namespace proximity {
     private:
 		mutable rw::common::Timer _timer;
 		mutable int _cnt;
-
-    	bool _shortestDistance;
 
     	rw::kinematics::Frame* _root;
     	rw::proximity::CollisionSetup _setup;
