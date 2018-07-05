@@ -195,6 +195,23 @@ TARGET_LINK_LIBRARIES( rw_models-gtest ${MODELS_TEST_LIBRARIES})
 ADD_RW_GTEST(rw_models-gtest)
 
 ########################################################################
+# Pathoptimization
+########################################################################
+
+SET(PATHOPTIMIZATION_TEST_LIBRARIES
+ ${GTEST_BOTH_LIBRARIES}
+ rw_pathoptimization
+ rw
+ )
+
+SET(PATHOPTIMIZATION_TEST_SRC
+  pathoptimization/ClearanceOptimizerTest.cpp
+)
+ADD_EXECUTABLE( rw_pathoptimization-gtest ${PATHOPTIMIZATION_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rw_pathoptimization-gtest ${PATHOPTIMIZATION_TEST_LIBRARIES})
+ADD_RW_GTEST(rw_pathoptimization-gtest)
+
+########################################################################
 # Proximity
 ########################################################################
 
