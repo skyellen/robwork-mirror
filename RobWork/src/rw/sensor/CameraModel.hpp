@@ -48,6 +48,8 @@ namespace rw { namespace sensor {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<CameraModel> Ptr;
+		//! @brief smart pointer type to this const class
+		typedef rw::common::Ptr<const CameraModel> CPtr;
 
     public:
 
@@ -59,7 +61,7 @@ namespace rw { namespace sensor {
 		 * @param modelInfo [in] text description of the camera
 		 */
 		CameraModel(
-        			rw::math::ProjectionMatrix projection,
+        			const rw::math::ProjectionMatrix& projection,
         			const std::string& name,
         			rw::kinematics::Frame* frame,
         			const std::string& modelInfo = "");

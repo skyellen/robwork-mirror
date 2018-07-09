@@ -92,7 +92,7 @@ namespace math {
 
         /**
          * @brief set the projection matrix to perspective projection
-         * @param fovy [in] vertical field of view
+         * @param fovy [in] vertical field of view [degrees]
          * @param aspectRatio [in] aspect ratio between width and height of image
          * @param zNear [in] distance to near cutting plane
          * @param zFar [in] distance to far cutting plane
@@ -101,7 +101,7 @@ namespace math {
 
         /**
          * @brief set the projection matrix to perspective projection
-         * @param fovy [in] vertical field of view
+         * @param fovy [in] vertical field of view [degrees]
          * @param width [in] width of image
          * @param height [in] height of image
          * @param zNear [in] distance to near cutting plane
@@ -113,7 +113,7 @@ namespace math {
 
         /**
          * @brief set the projection matrix to perspective projection
-         * @param fovy [in] vertical field of view
+         * @param fovy [in] vertical field of view [degrees]
          * @param aspectRatio [in] aspect ratio between width and height of image
          * @param zNear [in] distance to near cutting plane
          * @param zFar [in] distance to far cutting plane
