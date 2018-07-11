@@ -19,12 +19,18 @@
 #ifndef RWLIBS_PATHOPTIMIZATION_CLEARANCEOPTIMIZATION_HPP
 #define RWLIBS_PATHOPTIMIZATION_CLEARANCEOPTIMIZATION_HPP
 
+#include <RobWorkConfig.hpp>
+
 #include <rw/common/PropertyMap.hpp>
 #include <rw/trajectory/Path.hpp>
 #include <rw/math/Metric.hpp>
 //#include <rw/models/WorkCell.hpp>
 
+#ifndef RW_HAVE_OMP
 #include <list>
+#else
+#include <vector>
+#endif
 
 namespace rw { namespace kinematics { class State; } }
 namespace rw { namespace models { class Device; } }
@@ -52,6 +58,18 @@ namespace pathoptimization {
  */
 class ClearanceOptimizer {
 public:
+	//! @brief smart pointer type to this class
+	typedef rw::common::Ptr<ClearanceOptimizer> Ptr;
+	//! @brief smart pointer type to this const class
+	typedef rw::common::Ptr< const ClearanceOptimizer > CPtr;
+
+    /**
+     * @brief Deleted default constructor.
+     * 
+     * @todo Implement required functionality (setters) for this to be usable.
+     */
+    ClearanceOptimizer() = delete;
+    
     /**
      * @brief Constructs clearance optimizer
      *
@@ -62,10 +80,10 @@ public:
      * @param metric [in] Metric to use for computing distance betweem configurations
      * @param clearanceCalculator [in] Calculator for calculating the clearance
      */
-	ClearanceOptimizer(rw::common::Ptr< const rw::models::Device > device,
+	ClearanceOptimizer(const rw::common::Ptr< const rw::models::Device >& device,
 		const rw::kinematics::State& state,
-		rw::math::QMetric::CPtr metric,
-		rw::common::Ptr< const ClearanceCalculator > clearanceCalculator);
+		const rw::math::QMetric::CPtr& metric,
+		const rw::common::Ptr< const ClearanceCalculator >& clearanceCalculator);
 
     /**
      * @brief Destructor
@@ -122,6 +140,13 @@ public:
      */
 	rw::common::PropertyMap& getPropertyMap();
 
+    /**
+     * @brief Returns the ClearanceCalculator associated with the optimizer.
+     *
+     * @return Const reference to the ClearanceCalculator.
+     */
+    const rw::common::Ptr< const ClearanceCalculator>& getClearanceCalculator() const;
+    
 	/**
 	 * @brief Sets the minimum clearance optimized for.
      * Points on the path with clearance greater than \b _minClearance are not optimized further.
@@ -145,7 +170,7 @@ public:
 	*
 	* @param stateConstraint [in] the constraint.
 	*/
-	void setStateConstraint(rw::common::Ptr< const rw::pathplanning::StateConstraint > stateConstraint);
+	void setStateConstraint(const rw::common::Ptr< const rw::pathplanning::StateConstraint >& stateConstraint);
 
 	/**
 	* @brief Set a configuration constraint in the clearance optimizer.
@@ -154,7 +179,7 @@ public:
 	*
 	* @param qConstraint [in] the constraint.
 	*/
-	void setQConstraint(rw::common::Ptr< const rw::pathplanning::QConstraint > qConstraint);
+	void setQConstraint(const rw::common::Ptr< const rw::pathplanning::QConstraint >& qConstraint);
 
 private:
 
@@ -162,7 +187,11 @@ private:
     typedef std::pair<rw::math::Q, double> AugmentedQ;
 
     //Path of AugmentedQ's
-    typedef std::list<AugmentedQ > AugmentedPath;
+#ifndef RW_HAVE_OMP
+	typedef std::list<AugmentedQ > AugmentedPath;
+#else
+	typedef std::vector<AugmentedQ > AugmentedPath;
+#endif
 
 	//Calculated the clearance for a configuration q
 	double clearance(const rw::math::Q& q);
@@ -174,24 +203,24 @@ private:
 	AugmentedPath validatePath(const AugmentedPath& newPath, const AugmentedPath& orgPath);
 
 	//Removed branches
-	void removeBranches(AugmentedPath& path);
+	void removeBranches(AugmentedPath& path) const;
 
 	//Calculates the avarage clearance of the path
-	double calcAvgClearance(const AugmentedPath& path);
+	double calcAvgClearance(const AugmentedPath& path) const;
 
 	//Performs an interpolator of two configurations.
-	rw::math::Q interpolate(const rw::math::Q& q1, const rw::math::Q& q2, double ratio);
+	rw::math::Q interpolate(const rw::math::Q& q1, const rw::math::Q& q2, double ratio) const;
 
 	//Returns a random direction
-	rw::math::Q randomDirection();
+	rw::math::Q randomDirection() const;
 
 	rw::common::PropertyMap _propertymap;
 
 	//rw::models::WorkCell::Ptr _workcell;
-	rw::common::Ptr< const rw::models::Device > _device;
+	rw::common::Ptr< const rw::models::Device > _device = nullptr;
 	rw::kinematics::State _state;
-	rw::math::QMetric::CPtr _metric;
-	rw::common::Ptr< const ClearanceCalculator> _clearanceCalculator;
+	rw::math::QMetric::CPtr _metric = nullptr;
+	rw::common::Ptr< const ClearanceCalculator> _clearanceCalculator = nullptr;
 	double _stepsize;
 	size_t _dof;
 

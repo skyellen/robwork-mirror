@@ -395,10 +395,13 @@ A user property for defining a camera on a frame. The string value
 can be parsed by the user to get image dimensions [640;480] and field
 of view 40
 \verbatim
-<Property name="Camera" refframe="WORLD" desc="[width,hwight,fovy]">
-    640 480 40
+<Property name="Camera" refframe="WORLD" desc="[fovy,width,height]">
+    40 640 480
 </Property>
 \endverbatim
+
+When the 'Camera' property name is used, this will also, when opened in RobWorkStudio, draw the outline of the camera frame.
+In this case the camera parameters will always be interpreted in the order fovy,width,height, as shown above, ignoring the description given.
 
 \subsection sec_rwxml_transform Transform
 \b Attributes
