@@ -209,12 +209,25 @@ public:
 		 */
 		void callback(double time, bool failed, bool done);
 
+		/**
+		 * @brief Set the Dynamic WorkCell used in the test.
+		 * @param dwc [in] reference to a DynamicWorkCell smart pointer.
+		 */
+		void setDynamicWorkCell(const rw::common::Ptr<rwsim::dynamics::DynamicWorkCell>& dwc);
+
+		/**
+		 * @brief Get the Dynamic WorkCell used in the test.
+		 * @return reference to a DynamicWorkCell smart pointer.
+		 */
+		const rw::common::Ptr<rwsim::dynamics::DynamicWorkCell>& getDynamicWorkCell() const;
+
 	private:
 		std::string _error;
 		rw::trajectory::TimedStatePath _path;
 		std::vector<Result> _results;
 		rw::common::ThreadSafeVariable<bool>* _abort;
 		TimeCallback _cb;
+		rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> _dwc;
 	};
 
 	//! @brief Construct new test.

@@ -211,6 +211,14 @@ void EngineTest::TestHandle::callback(const double a, const bool b, const bool c
 		_cb(a,b,c);
 }
 
+void EngineTest::TestHandle::setDynamicWorkCell(const DynamicWorkCell::Ptr& dwc) {
+	_dwc = dwc;
+}
+
+const DynamicWorkCell::Ptr& EngineTest::TestHandle::getDynamicWorkCell() const {
+	return _dwc;
+}
+
 EngineTest::EngineTest()
 {
 }
@@ -300,6 +308,8 @@ void EngineTest::runEngineLoop(const double dt, const TestHandle::Ptr handle, co
 	if (dwc == NULL) {
 		handle->setError("Could not make dynamic workcell.");
 		return;
+	} else {
+		handle->setDynamicWorkCell(dwc);
 	}
 	const PhysicsEngine::Ptr engine = PhysicsEngine::Factory::makePhysicsEngine(engineID);
 	if (engine == NULL) {

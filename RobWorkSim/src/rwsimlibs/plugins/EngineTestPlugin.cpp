@@ -271,6 +271,8 @@ void EngineTestPlugin::testChanged(QListWidgetItem* current) {
 	}
 	const std::string testName = current->text().toStdString();
 	const EngineTest::Ptr test = EngineTest::Factory::getTest(testName);
+	if (test.isNull())
+		RW_THROW("Could not get EngineTest with name " << testName << "!");
 	for (int i = 0; i < _ui->testList->count(); i++) {
 		QListWidgetItem* const item = _ui->testList->item(i);
 		item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
@@ -440,7 +442,14 @@ bool EngineTestPlugin::event(QEvent *event) {
     		}
     	}
     	if (simEvent->done) {
-            getRobWorkStudio()->setTimedStatePath(_testHandle->getTimedStatePath());
+    		const DynamicWorkCell::Ptr dwc = _testHandle->getDynamicWorkCell();
+    		getRobWorkStudio()->getPropertyMap().add<DynamicWorkCell::Ptr>(
+    				"DynamicWorkcell",
+					"A workcell with dynamic description",
+					dwc );
+    		getRobWorkStudio()->genericEvent().fire("DynamicWorkCellLoaded");
+    		getRobWorkStudio()->setWorkcell( dwc->getWorkcell() );
+    		getRobWorkStudio()->setTimedStatePath(_testHandle->getTimedStatePath());
     		_ui->run->setText("Run");
     		_ui->run->setEnabled(true);
     		bool verbose = false;
@@ -534,5 +543,5 @@ void EngineTestPlugin::genericAnyEventListener(const std::string& event, boost::
 
 #if !RWS_USE_QT5
 #include <QtCore/qplugin.h>
-Q_EXPORT_PLUGIN(EngineTestPlugin);
+Q_EXPORT_PLUGIN(EngineTestPlugin)
 #endif
