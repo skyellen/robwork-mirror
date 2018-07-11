@@ -111,7 +111,7 @@ QPath ClearanceOptimizer::optimize(const QPath& inputPath, double stepsize, size
 #ifdef RW_HAVE_OMP
         // optimize the remaining path
 #pragma omp parallel for schedule(dynamic,1)
-		for (std::size_t q = 0; q < newPath.size(); ++q) {
+		for (int q = 0; q < static_cast<int>(newPath.size()); ++q) {
 			AugmentedPath::iterator it = newPath.begin() + q;
 #else
 		for (AugmentedPath::iterator it = ++(newPath.begin()); it != --(newPath.end()); ++it) {
