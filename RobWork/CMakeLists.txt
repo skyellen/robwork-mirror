@@ -7,6 +7,9 @@ endif()
 if(POLICY CMP0048)
   cmake_policy(SET CMP0048 NEW)
 endif()
+if(POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW)
+endif()
 
 IF(DEFINED CMAKE_BUILD_TYPE)
    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of

@@ -31,7 +31,7 @@ IF( build )
 	
 	# lua interface generation
 	IF ((CMAKE_VERSION VERSION_GREATER 3.8) OR (CMAKE_VERSION VERSION_EQUAL 3.8))
-		SWIG_ADD_LIBRARY(rws_lua MODULE LANGUAGE lua SOURCES ../rws.i Lua.cpp ../ScriptTypes.cpp)
+		SWIG_ADD_LIBRARY(rws_lua TYPE MODULE LANGUAGE lua SOURCES ../rws.i Lua.cpp ../ScriptTypes.cpp)
 	ELSE()
 		SWIG_ADD_MODULE(rws_lua lua ../rws.i Lua.cpp ../ScriptTypes.cpp)
 	ENDIF()
@@ -45,7 +45,11 @@ IF( build )
       SET_TARGET_PROPERTIES(${SWIG_MODULE_rws_lua_REAL_NAME} PROPERTIES LINK_FLAGS -Wl,--no-undefined)
     ENDIF()
 
-    ADD_LIBRARY(rws_lua_s STATIC ${swig_generated_sources} ${swig_other_sources})
+    IF ((CMAKE_VERSION VERSION_GREATER 3.12.0) OR (CMAKE_VERSION VERSION_EQUAL 3.12.0))
+        SWIG_ADD_LIBRARY(rws_lua_s TYPE STATIC LANGUAGE lua SOURCES ../rws.i Lua.cpp ../ScriptTypes.cpp)
+    ELSE()
+        ADD_LIBRARY(rws_lua_s STATIC ${swig_generated_sources} ${swig_other_sources})
+    ENDIF()
     TARGET_LINK_LIBRARIES(rws_lua_s
                 ${RWS_COMPONENT_LIBRARIES}
                 ${RWS_PLUGIN_LIBRARIES}
