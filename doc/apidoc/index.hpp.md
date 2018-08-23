@@ -3,6 +3,36 @@ RobWork   {#mainpage}
 		
 [TOC]
 
+\htmlonly
+<div class="mymenu">
+<h3>Resources</h3>
+<ul><ul>
+<li class="level1"><a href="page_rw_gettingstarted.html">Getting started</a> </li>
+<li class="level1"><a href="page_rw_installation_ubuntu.html">Installation (Ubuntu)</a> </li>
+<li class="level1"><a href="page_rw_installation_centos.html">Installation (CentOS)</a> </li>
+<li class="level1"><a href="page_rw_installation_windows.html">Installation (Windows)</a> </li>
+<li class="level1"><a href="page_rw_manual.html">RobWork Manual</a> </li>
+<li class="level1"><a href="page_rw_scriptinterface.html">Script interface</a> </li>
+<li class="level1"><a href="page_rw_file_formats.html">File Formats</a> </li>
+<li class="level1"><a href="page_rw_robot_database.html">Robot Database</a> </li>
+<li class="level1"><a href="page_rw_tutorials.html">Tutorials</a> </li>
+</ul>
+</ul>
+
+<h3>Topics</h3>
+<ul><ul>
+<li class="level1"><a href="page_rw_usermanual.html">User Manual</a> </li>
+<li class="level1"><a href="page_rw_plugins.html">Plugins</a> </li>
+<li class="level1"><a href="page_rw_motionplanning.html">Motion Planning</a> </li>
+<li class="level1"><a href="page_rw_onlinecontrol.html">Online Control</a> </li>
+<li class="level1"><a href="page_rw_graspsimulation.html">Grasp Simulation</a> </li>
+<li class="level1"><a href="page_rw_assemblysimulation.html">Assembly Simulation</a> </li>
+<li class="level1"><a href="page_lua.html">Lua scripting</a> </li>
+<li class="level1"><a href="page_coding_guidelines.html">Coding Guidelines</a> </li>
+</ul></ul>
+</div>
+\endhtmlonly
+
 # Introduction # {#sec_index_intro}
 *RobWork* is a collection of C++ libraries for simulation and control
 of robot systems. RobWork is used for research and education as well

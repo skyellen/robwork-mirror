@@ -2,6 +2,27 @@
   <!-- Navigation index tabs for HTML output -->
   <navindex>
     <tab type="mainpage" visible="yes" title=""/>
+    <tab type="user" url="@ref page_rw_ressources" visible="yes" title="Resources">
+      <tab type="user" url="@ref page_rw_gettingstarted" visible="yes" title="Getting started" intro=""/>
+      <tab type="user" url="@ref page_rw_installation_ubuntu" visible="yes" title="Installation (Ubuntu)" intro=""/>
+      <tab type="user" url="@ref page_rw_installation_centos" visible="yes" title="Installation (CentOS)" intro=""/>
+      <tab type="user" url="@ref page_rw_installation_windows" visible="yes" title="Installation (Windows)" intro=""/>
+      <tab type="user" url="@ref page_rw_manual" visible="yes" title="RobWork Manual" intro=""/>
+      <tab type="user" url="@ref page_rw_scriptinterface" visible="yes" title="Script interface" intro=""/>
+      <tab type="user" url="@ref page_rw_file_formats" visible="yes" title="File Formats" intro=""/>
+      <tab type="user" url="@ref page_rw_robot_database" visible="yes" title="Robot Database" intro=""/>
+      <tab type="user" url="@ref page_rw_tutorials" visible="yes" title="Tutorials" intro=""/>
+    </tab>
+    <tab type="user" url="@ref page_rw_topics" visible="yes" title="Topics">
+      <tab type="user" url="@ref page_rw_usermanual" visible="yes" title="User Manual" intro=""/>
+      <tab type="user" url="@ref page_rw_plugins" visible="yes" title="Plugins" intro="Test"/>
+      <tab type="user" url="@ref page_rw_motionplanning" visible="yes" title="Motion Planning" intro=""/>
+      <tab type="user" url="@ref page_rw_onlinecontrol" visible="yes" title="Online Control" intro=""/>
+      <tab type="user" url="@ref page_rw_graspsimulation" visible="yes" title="Grasp Simulation" intro=""/>
+      <tab type="user" url="@ref page_rw_assemblysimulation" visible="yes" title="Assembly Simulation" intro=""/>
+      <tab type="user" url="@ref page_lua" visible="yes" title="Lua scripting" intro=""/>
+      <tab type="user" url="@ref page_coding_guidelines" visible="yes" title="Coding Guidelines" intro=""/>
+    </tab>
     <tab type="pages" visible="yes" title="" intro=""/>
     <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">
@@ -27,10 +48,11 @@
     <includes visible="$SHOW_INCLUDE_FILES"/>
     <inheritancegraph visible="$CLASS_GRAPH"/>
     <collaborationgraph visible="$COLLABORATION_GRAPH"/>
-    <allmemberslink visible="yes"/>
     <memberdecl>
       <nestedclasses visible="yes" title=""/>
       <publictypes title=""/>
+      <services title=""/>
+      <interfaces title=""/>
       <publicslots title=""/>
       <signals title=""/>
       <publicmethods title=""/>
@@ -65,6 +87,8 @@
       <inlineclasses title=""/>
       <typedefs title=""/>
       <enums title=""/>
+      <services title=""/>
+      <interfaces title=""/>
       <constructors title=""/>
       <functions title=""/>
       <related title=""/>
@@ -72,6 +96,7 @@
       <properties title=""/>
       <events title=""/>
     </memberdef>
+    <allmemberslink visible="yes"/>
     <usedfiles visible="$SHOW_USED_FILES"/>
     <authorsection visible="yes"/>
   </class>
@@ -81,6 +106,7 @@
     <briefdescription visible="yes"/>
     <memberdecl>
       <nestednamespaces visible="yes" title=""/>
+      <constantgroups visible="yes" title=""/>
       <classes visible="yes" title=""/>
       <typedefs title=""/>
       <enums title=""/>
@@ -109,6 +135,7 @@
     <memberdecl>
       <classes visible="yes" title=""/>
       <namespaces visible="yes" title=""/>
+      <constantgroups visible="yes" title=""/>
       <defines title=""/>
       <typedefs title=""/>
       <enums title=""/>
