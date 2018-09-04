@@ -266,7 +266,7 @@ xercesc::DOMDocument* XMLPropertySaver::createDOMDocument(const PropertyMap& map
         RW_THROW("XMLPropertySaver: Unable to find a suitable DOM Implementation");
     }
     return doc;
-}
+} 
 
 void XMLPropertySaver::save(const rw::common::PropertyMap& map, const std::string& filename) {
     xercesc::DOMDocument* doc = createDOMDocument(map);

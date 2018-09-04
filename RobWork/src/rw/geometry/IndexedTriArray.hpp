@@ -256,6 +256,15 @@ namespace geometry {
 			return rw::common::ownedPtr( new IndexedTriArray<T>(_objArr,_idxArr,_centerArr, _valArr, _valCenterArr, _first, _last) );
 		}
 
+				//! @copydoc TriMesh::scale
+		void scale(double s) {
+			_objArr->scale(s);
+			for (size_t i = 0; i<_centerArr->size(); i++) {
+				_centerArr->at(i) *= static_cast<float>(s);
+			}
+
+		}
+
 		//size_t getGlobalIndex(int idx){ return (*_idxArr)[_first+idx]; }
 		inline size_t getGlobalIndex(int idx) const { return boost::tuples::get<0>( (*_valCenterArr)[_first+idx] ); }
 

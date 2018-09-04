@@ -53,6 +53,13 @@ int Model3D::addMaterial(const Model3D::Material& mat){
     return (int)_materials.size()-1;
 }
 
+void Model3D::scale(float scale) 
+{
+	for(Object3DGeneric::Ptr obj: _objects) {
+        obj->scale(scale);
+    }
+}
+
 void Model3D::removeObject(const std::string& name){
 
 }

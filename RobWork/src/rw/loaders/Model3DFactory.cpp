@@ -74,7 +74,7 @@ namespace
     }
 }
 
-Model3D::Ptr Model3DFactory::getModel(const std::string& str, const std::string& name)
+Model3D::Ptr Model3DFactory::getModel(const std::string& str, const std::string& name, bool useCache)
 {
     if (getCache().isInCache(str,"")) {
         Model3D::Ptr res = ownedPtr( new Model3D( *getCache().get(str) ) );
@@ -85,7 +85,7 @@ Model3D::Ptr Model3DFactory::getModel(const std::string& str, const std::string&
         return constructFromGeometry(str, name);
     }
     else {
-        return loadModel(str, name);
+        return loadModel(str, name, useCache);
     }
 }
 
@@ -111,7 +111,7 @@ Model3DFactory::FactoryCache& Model3DFactory::getCache()
 	return cache;
 }
 
-Model3D::Ptr Model3DFactory::loadModel(const std::string &raw_filename, const std::string& name)
+Model3D::Ptr Model3DFactory::loadModel(const std::string &raw_filename, const std::string& name, bool useCache)
 {
     const std::string& filename = IOUtil::resolveFileName(raw_filename, extensions);
     const std::string& filetype = StringUtil::toUpper(StringUtil::getFileExtension(filename));
@@ -126,7 +126,7 @@ Model3D::Ptr Model3DFactory::loadModel(const std::string &raw_filename, const st
     }
 
     std::string moddate = getLastModifiedStr(filename);
-    if ( getCache().isInCache(filename, moddate) ) {
+    if (useCache && getCache().isInCache(filename, moddate) ) {
         Model3D::Ptr res = ownedPtr( new Model3D( *getCache().get(filename) ) );
         res->setName( name );
         return res;

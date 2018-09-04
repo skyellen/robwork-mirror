@@ -21,8 +21,10 @@
 #include "StateConstraint.hpp"
 
 #include <rw/models/Models.hpp>
+#include <rw/models/WorkCell.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/kinematics/State.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
 #include <boost/foreach.hpp>
 
 using namespace rw::math;

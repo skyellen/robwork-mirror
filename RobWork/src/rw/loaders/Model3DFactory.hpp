@@ -47,7 +47,7 @@ namespace rw { namespace loaders {
          * Otherwise it calls loadModel
          * otherwise
          */
-        static rw::graphics::Model3D::Ptr getModel(const std::string& str, const std::string& name);
+        static rw::graphics::Model3D::Ptr getModel(const std::string& str, const std::string& name, bool useCache = true);
 
         /**
          * @brief Factory method constructing a Drawable from a file.
@@ -62,7 +62,7 @@ namespace rw { namespace loaders {
          *
          * An exception is thrown if the file can't be loaded.
          */
-        static rw::graphics::Model3D::Ptr loadModel(const std::string &filename, const std::string& name);
+        static rw::graphics::Model3D::Ptr loadModel(const std::string &filename, const std::string& name, bool useCache = true);
 
         /**
          * @brief Factory method constructing a Drawable based on

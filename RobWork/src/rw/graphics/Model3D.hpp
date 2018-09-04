@@ -29,6 +29,8 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector2D.hpp>
 
+#include <boost/foreach.hpp>
+
 namespace rw { namespace geometry { class Geometry; } }
 namespace rw { namespace geometry { class TriMesh; } }
 
@@ -151,10 +153,11 @@ namespace graphics {
          * To reduce memory, the geometry is implemented slightly differently for different mesh sizes.
          * One of the concrete Object3D implementations should be used in practice.
          */
-        struct Object3DGeneric {
+        class Object3DGeneric {
+		public:
         	//! @brief Smart pointer type for Object3DGeneric.
             typedef rw::common::Ptr<Object3DGeneric> Ptr;
-
+		
             //! @brief test if the object is textured
             bool hasTexture() const{ return _hasTexture;}
 
@@ -167,6 +170,12 @@ namespace graphics {
                     _materialMap.push_back( MaterialMapData(material, countFaces(), 0) );
                 }
             }
+
+            /**
+             * @brief Scales the object by \bscale
+             * @param scale [in] The scaling factor.
+             */
+			virtual void scale(float scale) = 0; 
 
             //! @brief name/id of object
             std::string _name;
@@ -213,6 +222,7 @@ namespace graphics {
                 std::size_t size;
             };
 
+
             //! @brief Transform of the object.
             rw::math::Transform3D<float> _transform;
             //! @brief Child objects.
@@ -236,6 +246,13 @@ namespace graphics {
              */
             virtual std::size_t countFaces() const = 0;
 
+			/**
+			 * @brief Returns vertices corresponding to the \b idx face
+			 * @param idx [in] Index of the face
+		     * @return List with vertices
+			 */
+			virtual std::vector<rw::math::Vector3D<float> > getFaceVertices(size_t idx) const = 0;
+
         protected:
             /**
              * @brief constructor
@@ -251,6 +268,7 @@ namespace graphics {
                 {}
         };
 
+
         /**
          * @brief A concrete 3d object consisting of geometry information, material and texture.
          *
@@ -263,7 +281,8 @@ namespace graphics {
          * For a mesh that has more than 65535 vertices, use Object3D<uint32_t>.
          */
         template<class T = uint16_t>
-        struct Object3D: public Object3DGeneric {
+        class Object3D: public Object3DGeneric {
+		public:
         	//! @brief Smart pointer type for Object3D.
             typedef rw::common::Ptr<Object3D> Ptr;
 
@@ -275,6 +294,18 @@ namespace graphics {
 
             //! @copydoc Object3DGeneric::countFaces
             virtual std::size_t countFaces() const { return _faces.size(); }
+
+			//! @copydoc Object3DGeneric::getFaceVertices
+			virtual std::vector<rw::math::Vector3D<float> > getFaceVertices(size_t idx) const 
+			{
+				RW_ASSERT(idx < _faces.size());
+				std::vector<rw::math::Vector3D<float> > result;
+				result.push_back(_vertices[_faces[idx].getVertexIdx(0)]);
+				result.push_back(_vertices[_faces[idx].getVertexIdx(1)]);
+				result.push_back(_vertices[_faces[idx].getVertexIdx(2)]);
+				return result;
+			}
+
 
             //! add triangle using currently selected material
             void addTriangle(const rw::geometry::IndexedTriangle<T>& tri){
@@ -312,6 +343,30 @@ namespace graphics {
                 }
                 _materialMap.back().size += tris.size();
             }
+
+			/**
+			* @brief Scales the model by \bscale.
+			*
+			* The transformation of the model is not scaled.
+			*
+			* @param scale [in] scaling factor
+			*/
+			void scale(float scale) {
+				for (rw::math::Vector3D<float>& v : _vertices) {
+					v *= scale;
+				}
+
+				for (rw::math::Vector2D<float>& v : _texCoords) {
+					v *= scale;
+				}
+				_transform.P() *= scale;
+				_texOffset *= scale;
+				_texRepeat *= scale;
+
+				for(Object3DGeneric::Ptr kid: _kids) {
+					kid->scale(scale);
+				}
+			}
 
             /**
              * @brief list containing indexed polygons. The polygons index into the
@@ -395,6 +450,7 @@ namespace graphics {
          */
         void removeObject(const std::string& name);
 
+		void Model3D::scale(float scale);
 
         //! @brief get all materials that are available in this model
         std::vector<Material>& getMaterials(){ return _materials; }
@@ -402,9 +458,9 @@ namespace graphics {
         //! @brief get all objects that make out this model
         std::vector<Object3DGeneric::Ptr>& getObjects(){ return _objects; }
 
-        //! get pose of this modle3d
+        //! get pose of this Model3D
         const rw::math::Transform3D<>& getTransform(){ return _transform;}
-        //! set the pose of this modle3d
+        //! set the pose of this Model3D
         void setTransform(const rw::math::Transform3D<>& t3d){ _transform = t3d;}
 
         //! get string identifier of this model3d

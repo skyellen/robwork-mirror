@@ -80,6 +80,11 @@ public:
      */
     void initialize(const std::vector<std::string>& plugins = std::vector<std::string>());
 
+	/**
+	 * @brief finalizes the robwork instance
+	 */
+	void finalize();
+
     /**
      * @brief get settings of RobWork instance
      * @return
@@ -117,6 +122,11 @@ public:
      * @brief initialize robwork - including possible command line options
      */
     static void init(int argc, const char* const* argv);
+
+	/**
+	 * @brief finalize the robwork instance
+	 */
+	static void finish();
 
     /**
      * @brief sets the robwork instance

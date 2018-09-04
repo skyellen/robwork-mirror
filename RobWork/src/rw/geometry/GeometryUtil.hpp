@@ -251,6 +251,28 @@ public:
 		return volume;
 	}
 
+	/**
+	 * @brief Returns the extremum distances for the vertices of the TriMesh given the specified transformation
+	 * @param trimesh [in] TriMesh to find extremum distances for
+	 * @param t3d [in] Transformation of the vertices
+	 * @return Pair containing the lower and upper extremum distances of the vertices.
+	 */
+	static std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > getExtremumDistances(rw::common::Ptr<TriMesh> trimesh, const rw::math::Transform3D<>& t3d = rw::math::Transform3D<>::identity());
+
+	/**
+	 * @brief Returns the dimensions of \bgeometry
+	 * @param geometry [in] Geometry to analyse
+	 * @return Dimensions in the x,y and z directions.
+	 */
+	static rw::math::Vector3D<> getDimensions(rw::common::Ptr<Geometry> geometry);
+
+	/**
+	* @brief Returns the dimensions of \btrimesh
+	* @param trimesh [in] TriMesh to analyse
+	* @return Dimensions in the x,y and z directions.
+	*/
+	static rw::math::Vector3D<> getDimensions(rw::common::Ptr<TriMesh> trimesh);
+
     /**
      * @brief Calculates the volume of a N-simplex.
      * Volume of a N-simplex is calculated as:

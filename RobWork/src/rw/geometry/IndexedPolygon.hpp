@@ -36,6 +36,10 @@ namespace geometry {
     template <class T=uint16_t>
     class IndexedPolygon {
     public:
+	
+		//! @brief Smart pointer to IndexedPolygonN
+		typedef rw::common::Ptr<IndexedPolygon<T> > Ptr;
+	
         //! @brief value type of the index pointer
         typedef T value_type;
 
@@ -78,17 +82,21 @@ namespace geometry {
 	template<class T=uint16_t>
 	class IndexedPolygonN : public IndexedPolygon<T> {
 	protected:
-		//! @brief The vertices of the polygon.
 		std::vector<T> _vertices;
 
 	public:
 		//! @brief Smart pointer to IndexedPolygonN
 		typedef rw::common::Ptr<IndexedPolygonN<T> > Ptr;
 
-	    //! @brief Constructs IndexedPolygon with space for n vertices
+		//@brief Construct empty IndexedPolygon
+		IndexedPolygonN()
+		{}
+
+
+	    //@brief Constructs IndexedPolygon with space for n vertices
 	    IndexedPolygonN(size_t n):
 	    	_vertices(n)
-	    {};
+	    {}
 
 		/** 
 		 * @brief Constructs IndexedPolygonN with the vertices specified
@@ -158,7 +166,7 @@ namespace geometry {
         IndexedPolygonNN(size_t n):
         	_polyN(n),
         	_normals(n)
-        {};
+        {}
 
 		/** 
 		 * @brief Constructs IndexedPolygonN-n with the vertices and normals specified

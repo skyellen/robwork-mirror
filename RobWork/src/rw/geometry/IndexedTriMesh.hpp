@@ -212,6 +212,14 @@ namespace geometry {
          */
         void* getIndices() {return (void*)_triIdxArr;}
 
+
+		//! @copydoc TriMesh::scale
+		void scale(double scale) {
+			for (size_t i = 0; i<_vertices->size(); i++) {
+				_vertices->at(i) *= static_cast<T>(scale);
+			}
+		}
+
     private:
         IndexedTriMesh(IndexedTriMesh<T>& mesh): _vertices(NULL), _normals(NULL), _triIdxArr(NULL), _stride(0), _idxsize(0) {} // this is illegal
 

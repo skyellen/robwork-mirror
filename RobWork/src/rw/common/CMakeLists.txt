@@ -9,6 +9,7 @@ SET(FILES_CPP
   LogStreamWriter.cpp
   LogMultiWriter.cpp
   LogFileWriter.cpp
+  LogMultiWriter.cpp
   Message.cpp
   Property.cpp
   PropertyBase.cpp
@@ -59,6 +60,7 @@ SET(FILES_HPP
   LogStreamWriter.hpp
   LogMultiWriter.hpp
   LogFileWriter.hpp
+  LogMultiWriter.hpp
   Message.hpp
   Property.hpp
   PropertyBase.hpp

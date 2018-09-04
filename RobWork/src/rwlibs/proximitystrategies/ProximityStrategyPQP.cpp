@@ -215,7 +215,7 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
     // check if model is in
     CacheKey key(geom.getGeometryData().get(),geom.getScale());
     if( _modelCache.has(key) ){
-        //std::cout << "Cached" << std::endl;
+        std::cout << "Cached" << std::endl;
         pqpmodel = _modelCache.get(key);
     } else {
 		TriMesh::Ptr mesh = gdata->getTriMesh(false);

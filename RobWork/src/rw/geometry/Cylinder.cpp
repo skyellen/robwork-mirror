@@ -48,6 +48,13 @@ Cylinder::Cylinder(float radius, float height):
 {
 }
 
+Cylinder::Cylinder(const Transform3D<>& transform, float radius, float height):
+	_transform(cast<float>(transform)),
+	_radius(radius),
+	_height(height)
+{
+}
+
 Cylinder::Cylinder(const rw::math::Q& initQ) {
 	setParameters(initQ);
 }
@@ -77,7 +84,7 @@ TriMesh::Ptr Cylinder::createMesh(int resolution) const{
 		Vector3D<float> p3(x2, y2, z);
 		Vector3D<float> p4(x2, y2, -z);
 
-		(*mesh)[i*4+0] = Triangle<float>(p1,p2,p3);
+		(*mesh)[i*4+0] = Triangle<float>(p1,p2,p3);		
 		(*mesh)[i*4+1] = Triangle<float>(p2,p4,p3);
 
 		//Construct triangles for the end-plates
@@ -86,6 +93,13 @@ TriMesh::Ptr Cylinder::createMesh(int resolution) const{
 		(*mesh)[i*4+2] = Triangle<float>(p1,p3,p5);
 		(*mesh)[i*4+3] = Triangle<float>(p6,p4,p2);
 	}
+
+	if ( _transform.equal(Transform3D<float>::identity()) == false) {
+		for (int i = 0; i < 4*level; i++) {
+			(*mesh)[i].applyTransform(_transform);
+		}
+	}
+
 	return ownedPtr(mesh);
 }
 

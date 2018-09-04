@@ -20,6 +20,7 @@
 
 #include <rw/proximity/BasicFilterStrategy.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
+#include <rw/models/WorkCell.hpp>
 
 using namespace rw::pathplanning;
 using namespace rw::proximity;

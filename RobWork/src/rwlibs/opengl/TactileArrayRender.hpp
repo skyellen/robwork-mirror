@@ -21,8 +21,9 @@
 //! @file TactileArrayRender.hpp
 
 #include <rw/graphics/Render.hpp>
+#include <rw/sensor/TactileArrayModel.hpp>
 
-namespace rw { namespace sensor { class TactileArrayModel; } }
+//namespace rw { namespace sensor { class TactileArrayModel; } }
 
 namespace rwlibs {
 namespace opengl {

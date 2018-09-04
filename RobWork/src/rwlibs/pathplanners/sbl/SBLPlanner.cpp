@@ -19,6 +19,7 @@
 #include "SBLPlanner.hpp"
 #include "SBLInternal.hpp"
 #include "SBLSetup.hpp"
+#include <rw/pathplanning/QIKSampler.hpp>
 
 using namespace rwlibs::pathplanners;
 using namespace rw::pathplanning;

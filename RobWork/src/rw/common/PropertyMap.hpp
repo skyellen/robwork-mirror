@@ -87,6 +87,11 @@ namespace rw { namespace common {
         */
         void swap(PropertyMap& other);
 
+		/**
+		 * @brief Clear the content of the property map
+		 */
+		void clear();
+
         /**
          * @brief get the name of this propertymap
          * @return name of this propertymap
@@ -335,11 +340,6 @@ namespace rw { namespace common {
         bool erase(const std::string& identifier);
 
 
-		/**
-		 * @brief Clears all properties form the map
-		 */
-		void clear();
-
 
         // The following methods are rarely used and are therefore given longer
         // names. They more strongly expose the internal use of Property<T>.
@@ -392,6 +392,11 @@ namespace rw { namespace common {
          * @param callback [in] Callback method
          */
         void addChangedListener(PropertyChangedListener callback);
+
+		/** 
+		 * @brief Clears the list of changed listeners
+		 */
+		void clearChangedListeners();
 
         /**
          * @brief Notifies listeners about a change in the Property

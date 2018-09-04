@@ -62,9 +62,14 @@ RobWork::RobWork(void): _initialized(false)
 
 RobWork::~RobWork(void)
 {
-    if(!_settingsFile.empty()) {
-        DOMPropertyMapSaver::save(_settings, _settingsFile);
-    }
+}
+
+void RobWork::finalize()
+{
+	if (!_settingsFile.empty()) {
+		DOMPropertyMapSaver::save(_settings, _settingsFile);
+	}
+
 }
 
 void RobWork::initialize(const std::vector<std::string>& plugins){
@@ -355,6 +360,11 @@ rw::common::PropertyMap& RobWork::getSettings() {
 
 void RobWork::init(){
 	rwinstance()->initialize();
+}
+
+
+void RobWork::finish() {
+	rwinstance()->finalize();
 }
 
 RobWork::Ptr RobWork::getInstance(){

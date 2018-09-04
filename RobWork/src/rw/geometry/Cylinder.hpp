@@ -20,6 +20,7 @@
 #define RW_GEOMETRY_CYLINDER_HPP_
 
 #include "Primitive.hpp"
+#include <rw/math/Transform3D.hpp>
 
 namespace rw {
 namespace geometry {
@@ -27,7 +28,7 @@ namespace geometry {
 // @{
 
 	/**
-	 * @brief a cylinder primitive. radius is in x-y plane and height is in z-axis
+	 * @brief a cylinder primitive. By default the radius is in the x-y plane and height is along the z-axis
 	 */
 	class Cylinder: public Primitive {
 	public:
@@ -53,6 +54,17 @@ namespace geometry {
 		 */
 		Cylinder(const rw::math::Q& initQ);
 
+		/**
+		 * @brief Construct cylinder primitive with specified radius and height and with the given transform.
+		 *
+		 * The cylinder will be centered in the position of \b transform and oriented in the direction of the third column of the 
+		 * rotation matrix of \b transform.
+		 * @param transform [in] The transform specifying how the pose of the cylinder
+		 * @param radius [in] radius of the cylinder.
+		 * @param height [in] height of the cylinder.
+		 */
+		Cylinder(const rw::math::Transform3D<>& transform, float radius, float height);
+
 		//! @brief destructor
 		virtual ~Cylinder();
 
@@ -67,6 +79,15 @@ namespace geometry {
 		 * @return the height.
 		 */
 		double getHeight() const { return _height;}
+
+		/**
+		 * @brief Returns the transform of the cylinder.
+		 * 
+		 * Default is the identity matrix unless a transform has been specified.
+		 * @return Transform of the cylinder
+		 */
+		const rw::math::Transform3D<float>& getTransform() const { return _transform; }
+
 		// inherited from Primitive
 
 		//! @copydoc Primitive::createMesh
@@ -82,6 +103,7 @@ namespace geometry {
 		GeometryType getType() const { return CylinderPrim; };
 
 	private:
+		rw::math::Transform3D<float> _transform;
 		float _radius;
 		float _height;
 	};

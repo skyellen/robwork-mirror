@@ -287,6 +287,21 @@ double GeometryUtil::estimateVolume(const TriMesh &trimesh) {
 	return par.volume;
 }
 
+
+Vector3D<> GeometryUtil::getDimensions(Geometry::Ptr geom) {
+	const GeometryData::Ptr gdata = geom->getGeometryData();
+    const TriMesh::Ptr trimesh = gdata->getTriMesh(false);
+	return getDimensions(trimesh);
+
+
+}
+
+
+Vector3D<> GeometryUtil::getDimensions(rw::common::Ptr<TriMesh> trimesh) {
+	std::pair<Vector3D<>, Vector3D<> > extremes = getExtremumDistances(trimesh);
+	return extremes.second - extremes.first;
+}
+
 /*
  * Locates all frames that are staticly connected to the frame and
  * that has geometry information
@@ -500,4 +515,24 @@ InertiaMatrix<> GeometryUtil::estimateInertia(
     	}
     }
     return inertia;
+}
+
+
+std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > GeometryUtil::getExtremumDistances(TriMesh::Ptr trimesh, const rw::math::Transform3D<>& t3d) {
+	Vector3D<> minimum(DBL_MAX, DBL_MAX, DBL_MAX);
+	Vector3D<> maximum(-DBL_MAX, -DBL_MAX, -DBL_MAX);
+	Triangle<double> tri;
+	for (size_t i = 0; i<trimesh->size(); i++) {
+		trimesh->getTriangle(i, tri);
+		for (size_t j = 0; j<3; j++) {
+			const Vector3D<>& p = tri.getVertex(j);
+			for (size_t k = 0; k<3; k++) {
+				if (p(k) < minimum(k))
+					minimum(k) = p(k);
+				if (p(k) > maximum(k))
+					maximum(k) = p(k);
+			}
+		}
+	}
+	return std::make_pair(minimum, maximum);
 }

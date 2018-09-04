@@ -112,15 +112,19 @@ Geometry::Ptr Geometry::makeGrid(int dim_x, int dim_y, double size_x, double siz
 
     for(int dy=0;dy<=dim_y;dy++){
     	for(int dx=0;dx<=dim_x;dx++){
-    		imesh->getVertices().push_back( xdir_n* static_cast<float>(dx-dim_x/2.0*size_x) + ydir_n*static_cast<float>(dy-dim_y/2.0*size_y) );
+    		imesh->getVertices().push_back( (xdir_n* (float)(dx-dim_x/2.0*size_x) + ydir_n*(float)(dy-dim_y/2.0*size_y) ));
     	}
     }
 
     for(int dy=0;dy<=dim_y-1;dy++){
-    	for(int dx=0;dx<=dim_x-1;dx++){
-    		imesh->add( IndexedTriangle<>(static_cast<uint16_t>(dx+1 + dy*size_y), static_cast<uint16_t>(dx + dy*size_y), static_cast<uint16_t>(dx+1 + (dy+1)*size_y)) );
-    		imesh->add( IndexedTriangle<>(static_cast<uint16_t>(dx + (dy+1)*size_y), static_cast<uint16_t>(dx+1 + (dy+1)*size_y), static_cast<uint16_t>(dx+1 + dy*size_y)) );
-    	}
+    	for(int dx=0;dx<=dim_x-1;dx++){			
+    		//imesh->add( IndexedTriangle<>(dx+1 + dy*size_y, dx + dy*size_y , dx+1 + (dy+1)*size_y) );
+    		//imesh->add( IndexedTriangle<>(dx + (dy+1)*size_y , dx+1 + (dy+1)*size_y, dx+1 + dy*size_y) );
+			//LPE: Changed code to the one below as it does not make sense to use the size of the grid to select the indices.
+    		imesh->add( IndexedTriangle<>(dx+1 + dy*dim_y, dx + dy*dim_y , dx+1 + (dy+1)*dim_y) );
+    		imesh->add( IndexedTriangle<>(dx + (dy+1)*dim_y , dx+1 + (dy+1)*dim_y, dx+1 + dy*dim_y) );
+
+		}
     }
 
     return ownedPtr(new Geometry(imesh));

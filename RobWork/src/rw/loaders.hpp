@@ -50,5 +50,13 @@
 #include "./loaders/xml/XMLTrajectoryLoader.hpp"
 #include "./loaders/xml/XMLTrajectorySaver.hpp"
 
+#include "./loaders/dom/DOMBasisTypes.hpp"
+#include "./loaders/dom/DOMPathLoader.hpp"
+#include "./loaders/dom/DOMPathSaver.hpp"
+#include "./loaders/dom/DOMPropertyMapLoader.hpp"
+#include "./loaders/dom/DOMProximitySetupLoader.hpp"
+#include "./loaders/dom/DOMTrajectoryLoader.hpp"
+#include "./loaders/dom/DOMTrajectorySaver.hpp"
+
 
 #endif /* LOADERS_HPP_ */

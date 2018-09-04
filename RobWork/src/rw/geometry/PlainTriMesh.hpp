@@ -81,6 +81,17 @@ namespace geometry {
 
 		virtual ~PlainTriMesh(){}
 
+
+		//! @copydoc TriMesh::scale
+		void scale(double scale) {			
+			for (std::vector<TRI>::iterator it = _triangles.begin(); it != _triangles.end(); ++it) {
+				for (size_t i = 0; i<3; i++) {
+					(*it).getVertex(i) *= static_cast<value_type>(scale);
+				}
+			}
+		}
+
+
 		/**
 		 * @brief add a triangle to the triangle mesh.
 		 * @param triangle [in] Triangle to add. The triangle is copied.
@@ -203,6 +214,7 @@ namespace geometry {
 		rw::common::Ptr<TriMesh> clone() const{
 			return rw::common::ownedPtr( new PlainTriMesh(*this) );
 		}
+
 
 	};
 

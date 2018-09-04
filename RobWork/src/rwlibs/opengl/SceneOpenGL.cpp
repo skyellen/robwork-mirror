@@ -32,7 +32,7 @@
 #include <rwlibs/opengl/RWGLFrameBuffer.hpp>
 
 #include <rw/graphics/SceneCamera.hpp>
-
+#include <rw/geometry/Geometry.hpp>
 #include <rw/common/macros.hpp>
 
 #include <boost/foreach.hpp>
