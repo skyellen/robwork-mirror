@@ -26,6 +26,7 @@
 #include <boost/foreach.hpp>
 
 #include <stack>
+#include <float.h>
 
 using namespace rw;
 using namespace rw::math;
