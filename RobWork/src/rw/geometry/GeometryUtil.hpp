@@ -260,14 +260,14 @@ public:
 	static std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > getExtremumDistances(rw::common::Ptr<TriMesh> trimesh, const rw::math::Transform3D<>& t3d = rw::math::Transform3D<>::identity());
 
 	/**
-	 * @brief Returns the dimensions of \bgeometry
+	 * @brief Returns the dimensions of \b geometry
 	 * @param geometry [in] Geometry to analyse
 	 * @return Dimensions in the x,y and z directions.
 	 */
 	static rw::math::Vector3D<> getDimensions(rw::common::Ptr<Geometry> geometry);
 
 	/**
-	* @brief Returns the dimensions of \btrimesh
+	* @brief Returns the dimensions of \b trimesh
 	* @param trimesh [in] TriMesh to analyse
 	* @return Dimensions in the x,y and z directions.
 	*/

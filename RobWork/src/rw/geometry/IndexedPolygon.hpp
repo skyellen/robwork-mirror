@@ -82,18 +82,18 @@ namespace geometry {
 	template<class T=uint16_t>
 	class IndexedPolygonN : public IndexedPolygon<T> {
 	protected:
+		//! @brief The vertices of the polygon.
 		std::vector<T> _vertices;
 
 	public:
 		//! @brief Smart pointer to IndexedPolygonN
 		typedef rw::common::Ptr<IndexedPolygonN<T> > Ptr;
 
-		//@brief Construct empty IndexedPolygon
+	    //! @brief Constructs IndexedPolygon with space for n vertices
 		IndexedPolygonN()
 		{}
 
-
-	    //@brief Constructs IndexedPolygon with space for n vertices
+	    //! @brief Constructs IndexedPolygon with space for n vertices
 	    IndexedPolygonN(size_t n):
 	    	_vertices(n)
 	    {}

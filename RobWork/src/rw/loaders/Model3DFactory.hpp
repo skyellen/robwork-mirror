@@ -53,6 +53,7 @@ namespace rw { namespace loaders {
          * @brief Factory method constructing a Drawable from a file.
          * @param filename [in] path and name of file to load
          * @param name [in] the id/name of the drawable
+         * @param useCache [in] save resources by resusing an already loaded file, but only if not modified since last load of the file.
          * @return drawable
          *
          * The factory determines which type of Drawable to used

@@ -172,7 +172,7 @@ namespace graphics {
             }
 
             /**
-             * @brief Scales the object by \bscale
+             * @brief Scales the object by \b scale
              * @param scale [in] The scaling factor.
              */
 			virtual void scale(float scale) = 0; 
@@ -345,7 +345,7 @@ namespace graphics {
             }
 
 			/**
-			* @brief Scales the model by \bscale.
+			* @brief Scales the model by \b scale.
 			*
 			* The transformation of the model is not scaled.
 			*
@@ -450,7 +450,8 @@ namespace graphics {
          */
         void removeObject(const std::string& name);
 
-		void Model3D::scale(float scale);
+        //! @copydoc Object3DGeneric::scale
+		void scale(float scale);
 
         //! @brief get all materials that are available in this model
         std::vector<Material>& getMaterials(){ return _materials; }

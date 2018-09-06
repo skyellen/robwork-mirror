@@ -204,11 +204,11 @@ public:
     * @brief Creates a TriMesh representing the OBB.
     *
     * The triangles of the mesh is by default placed in the "global" frame corresponding to the frame 
-    * in which the OBB is defined. In case the parameter \blocal is set to true, the reference frame will 
+    * in which the OBB is defined. In case the parameter \b local is set to true, the reference frame will
     * be the frame of the OBB itself.
     */
     TriMesh::Ptr createMesh(bool local = false) const{
-		PlainTriMesh<Triangle<T> >::Ptr mesh = rw::common::ownedPtr(new PlainTriMesh<Triangle<T> >(12));
+		typename PlainTriMesh<Triangle<T> >::Ptr mesh = rw::common::ownedPtr(new PlainTriMesh<Triangle<T> >(12));
 
         T x = _halfLng(0);
 		T y = _halfLng(1);
